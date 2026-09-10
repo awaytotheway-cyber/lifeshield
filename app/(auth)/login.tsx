@@ -1,0 +1,227 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { StyleSheet, Text } from "react-native";
+import { z } from "zod";
+
+import { PostAuthRedirect } from "@/components/journey/PostAuthRedirect";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Screen } from "@/components/ui/Screen";
+import { SetupBanners } from "@/components/ui/SetupBanners";
+import { TextField } from "@/components/ui/TextField";
+import { COPY } from "@/lib/copy";
+import { colors, spacing } from "@/lib/design-tokens";
+import { routes } from "@/lib/routes";
+import { fontFamily, typography } from "@/lib/typography";
+import { useAuthStore } from "@/stores/auth-store";
+
+const loginSchema = z.object({
+  email: z.email("Enter a valid email"),
+  password: z.string().min(8, "Use at least 8 characters"),
+});
+
+type LoginValues = z.infer<typeof loginSchema>;
+
+export default function LoginScreen() {
+  const router = useRouter();
+  const session = useAuthStore((state) => state.session);
+  const loading = useAuthStore((state) => state.loading);
+  const configured = useAuthStore((state) => state.configured);
+  const signIn = useAuthStore((state) => state.signIn);
+  const requestPasswordReset = useAuthStore((state) => state.requestPasswordReset);
+  const [resetBusy, setResetBusy] = useState(false);
+  const [resetNotice, setResetNotice] = useState<string | null>(null);
+
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: { errors, isSubmitting },
+    setError,
+    clearErrors,
+  } = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  if (loading) {
+    return (
+      <Screen contentPadding={spacing.screenX}>
+        <Text style={styles.loading}>{COPY.authLoading}</Text>
+      </Screen>
+    );
+  }
+
+  if (session) {
+    return <PostAuthRedirect />;
+  }
+
+  const onSubmit = handleSubmit(async (values) => {
+    try {
+      setResetNotice(null);
+      const result = await signIn(values.email, values.password);
+      if (!result.ok) {
+        setError("root", { message: result.message });
+      }
+    } catch (error) {
+      setError("root", {
+        message:
+          error instanceof Error
+            ? error.message
+            : "We couldn't log you in. Check your connection and try again.",
+      });
+    }
+  });
+
+  const onForgotPassword = async () => {
+    const email = getValues("email").trim();
+    if (!email) {
+      setError("email", { message: COPY.forgotPasswordNeedEmail });
+      return;
+    }
+    setResetBusy(true);
+    clearErrors("root");
+    setResetNotice(null);
+    try {
+      const result = await requestPasswordReset(email);
+      if (!result.ok) {
+        setError("root", { message: result.message });
+        return;
+      }
+      setResetNotice(result.message ?? COPY.forgotPasswordSent);
+    } catch (error) {
+      setError("root", {
+        message:
+          error instanceof Error
+            ? error.message
+            : "We couldn't send a reset email. Try again.",
+      });
+    } finally {
+      setResetBusy(false);
+    }
+  };
+
+  return (
+    <Screen scroll contentPadding={spacing.screenX}>
+      <Text style={styles.brand}>{COPY.appName}</Text>
+      <Text style={styles.title}>{COPY.loginTitle}</Text>
+      <Text style={styles.sub}>{COPY.loginSubtitle}</Text>
+      <Text style={styles.tagline}>{COPY.tagline}</Text>
+
+      <SetupBanners />
+
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextField
+            label="Email"
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoComplete="email"
+            error={errors.email?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextField
+            label="Password"
+            value={value}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            secureTextEntry
+            textContentType="password"
+            autoComplete="password"
+            error={errors.password?.message}
+          />
+        )}
+      />
+
+      <TextButton
+        title={COPY.forgotPassword}
+        onPress={() => void onForgotPassword()}
+        loading={resetBusy}
+        disabled={resetBusy || isSubmitting}
+        style={styles.forgot}
+        accessibilityLabel={COPY.forgotPassword}
+      />
+
+      {resetNotice ? <Text style={styles.notice}>{resetNotice}</Text> : null}
+      {errors.root?.message ? (
+        <Text style={styles.error}>{errors.root.message}</Text>
+      ) : null}
+
+      <PrimaryButton
+        title={COPY.loginButton}
+        onPress={() => void onSubmit()}
+        loading={isSubmitting}
+        disabled={!configured || isSubmitting}
+      />
+
+      <TextButton
+        title={COPY.loginToRegister}
+        onPress={() => router.push(routes.register)}
+      />
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  brand: {
+    ...typography.display,
+    color: colors.deepTeal,
+  },
+  title: {
+    marginTop: 12,
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 20,
+    lineHeight: 26,
+    color: colors.charcoal,
+  },
+  sub: {
+    marginTop: 8,
+    fontFamily: fontFamily.body,
+    fontSize: 15,
+    lineHeight: 24,
+    color: colors.slate,
+  },
+  tagline: {
+    marginTop: 8,
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    lineHeight: 20,
+    color: colors.slate,
+  },
+  forgot: {
+    marginTop: 8,
+    alignSelf: "flex-start",
+  },
+  error: {
+    marginTop: 12,
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    lineHeight: 20,
+    color: colors.coral,
+  },
+  notice: {
+    marginTop: 12,
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    lineHeight: 20,
+    color: colors.sage,
+  },
+  loading: {
+    textAlign: "center",
+    fontFamily: fontFamily.body,
+    fontSize: 15,
+    color: colors.slate,
+  },
+});

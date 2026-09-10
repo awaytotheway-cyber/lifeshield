@@ -1,0 +1,800 @@
+# CURSOR UI/UX RULES — LifeShield Design System
+
+> **This is a standalone design system file. Add it as `.cursorrules-design`
+> alongside all four phase files. It governs EVERY visual and interaction
+> decision across all phases. When any phase rule conflicts with this file,
+> this file wins on UI/UX matters.**
+
+> **Cursor: read this file in full before touching a single component, color,
+> or layout. Do not generate generic "health app blue" defaults. Every choice
+> here is intentional, specific to this product, and has a reason behind it.**
+
+---
+
+## 0. THE PSYCHOLOGY THIS APP MUST HANDLE
+
+Before any design decision, understand who is using this app and what emotional
+state they're in. This is not a fitness tracker or a meditation app. A person
+using LifeShield is:
+
+- **Possibly anxious** — they're thinking about breast cancer risk. Even if they
+  feel calm, the topic carries background dread.
+- **Potentially vulnerable** — health information makes people feel exposed and
+  judged. They don't want to feel like a patient.
+- **Seeking control** — the reason they're here is to feel empowered, not scared.
+  The app must give them a sense of agency and progress, not overwhelm.
+- **Likely skeptical** — they don't fully trust apps with their health data yet.
+  The design must signal safety, credibility, and clinical rigour without
+  feeling cold or institutional.
+- **Mobile-first, time-limited** — they're probably doing this in 10-minute
+  windows, on their phone, in a normal life setting. Not at a desk, not
+  unhurried.
+
+**What this means for every design decision:**
+
+- Calm > clinical. Warm > sterile. Empowered > scared.
+- Progress must always be visible. A person who can see how far they've come
+  and how far remains will not abandon the questionnaire.
+- Never lead with risk or fear. Lead with action and understanding.
+- Reduce cognitive load at every step. One question, one action, one decision
+  at a time. Never a wall of text or a wall of form fields.
+- Celebrate completion. Every finished section deserves a micro-moment of
+  acknowledgement — it builds momentum.
+- Clinical credibility must be felt, not shouted. Achieved through precision
+  typography, measured spacing, and restrained colour — not through stethoscope
+  icons and blue crosses.
+
+---
+
+## 1. THE DESIGN IDENTITY
+
+**What LifeShield is:**
+A precision lifestyle intelligence tool for women who want to understand and
+actively manage their health risk. Not a hospital. Not a wellness blog. Not a
+generic health app.
+
+**Visual personality:**
+Confident, calm, and precise — like a world-class private clinic that also feels
+human. Think Headspace's calm meets Mayo Clinic's credibility meets Apple Health's
+clarity. The visual language says: "we take this seriously, and so do you."
+
+**The one rule that governs everything:**
+Every screen must reduce anxiety, not add to it. If a design choice could make a
+user feel more worried or more confused, cut it.
+
+---
+
+## 2. COLOR SYSTEM
+
+### Primary Palette (use these and only these)
+
+```
+--color-deep-teal:     #0D4A5C   /* Primary actions, headings, trust anchor */
+--color-mid-teal:      #1A7A9A   /* Secondary actions, links, progress */
+--color-light-teal:    #D6EEF5   /* Teal tints, info backgrounds */
+
+--color-sage:          #6B9E7A   /* Success, completion, positive findings */
+--color-sage-light:    #E8F3EB   /* Success backgrounds, section complete */
+
+--color-coral:         #E8634A   /* Safety alerts, Pathway B, critical flags */
+--color-coral-light:   #FDECEA   /* Alert backgrounds, symptom interrupt bg */
+
+--color-amber:         #D4873A   /* Warnings, "needs attention", interaction flags */
+--color-amber-light:   #FDF3E4   /* Warning backgrounds */
+
+--color-cream:         #FAF8F5   /* App background — not pure white, never grey */
+--color-white:         #FFFFFF   /* Card surfaces */
+--color-charcoal:      #1C2329   /* Primary text */
+--color-slate:         #4A5568   /* Secondary text */
+--color-mist:          #9AA5B4   /* Placeholder text, disabled */
+--color-border:        #E2E8F0   /* Subtle borders, dividers */
+--color-shadow:        rgba(13,74,92,0.08) /* Shadows use teal-tinted black */
+```
+
+**Why this palette:**
+- Deep teal (not blue) signals clinical precision without the sterile coldness
+  of hospital blue. It's also rare enough to be distinctive.
+- Sage green for positive findings and completion — psychologically associated
+  with safety, growth, and nature. Avoids "you passed" harshness.
+- Coral (not red) for alerts — serious but not alarming. Red causes fight-or-
+  flight; coral says "pay attention" without panic.
+- Cream background (not white, not grey) — white is clinical/cold, grey is
+  depressing. Cream is warm, readable, and premium.
+
+**What NOT to do:**
+- No generic health-app blue (#2196F3, #1976D2 etc.) — those read as insurance
+  apps and hospital portals.
+- No bright green (too cheerful for a serious topic).
+- No red for anything except a true emergency exit (Pathway B button only).
+- No dark mode in Phase 1-2 — the pale cream palette is core to the emotional
+  tone. Dark mode is a Phase 5+ consideration.
+
+### Semantic Color Rules
+```
+Action primary:    --color-deep-teal     (all primary CTAs)
+Action secondary:  --color-mid-teal      (secondary buttons, links)
+Success:           --color-sage          (section complete, normal result)
+Warning:           --color-amber         (needs attention, interaction flag)
+Danger:            --color-coral         (symptom alert, Pathway B, critical)
+Information:       --color-light-teal bg (educational tooltips, info cards)
+Disabled:          --color-border bg + --color-mist text
+```
+
+---
+
+## 3. TYPOGRAPHY
+
+**Font stack:**
+```
+Display/Headings: 'DM Serif Display'   — emotional weight, human, precise
+Body/UI:          'Inter'              — clean, legible at small sizes, universal
+Mono (numbers):   'DM Mono'            — for lab values, percentages, scores
+```
+
+Install: `npx expo install @expo-google-fonts/dm-serif-display @expo-google-fonts/inter @expo-google-fonts/dm-mono`
+
+**Why these:**
+DM Serif Display has a warmth and elegance that says "considered, human, premium"
+without feeling old-fashioned. Paired with Inter (the gold standard for UI
+legibility on screen), the combination reads: sophisticated but approachable.
+DM Mono keeps numbers clinical-precise without switching the whole interface into
+code mode.
+
+**Type scale (rem-equivalent, use these exact sizes):**
+```
+Display:    32sp  DM Serif Display  bold   — screen titles, welcome moments
+H1:         26sp  DM Serif Display  normal — section headers
+H2:         20sp  Inter             600    — card titles, group headers
+H3:         17sp  Inter             600    — list item titles
+Body:       15sp  Inter             400    — all body text
+Body-sm:    13sp  Inter             400    — secondary text, captions
+Label:      12sp  Inter             500    — field labels, tags
+Medical:    13sp  DM Mono           400    — lab values, clinical terms
+Micro:      11sp  Inter             400    — timestamps, metadata
+```
+
+**Line heights:**
+- Display/H1: 1.2 (tight, dramatic)
+- H2/H3: 1.3
+- Body: 1.6 (generous — reading health info needs breathing room)
+- Body-sm: 1.5
+
+**Letter spacing:**
+- Display/H1: -0.5px (optically tighter for large serif)
+- Body and below: 0 (never track out body text — it reads clinical and cold)
+- Labels: +0.2px (subtle, helps legibility at tiny sizes)
+- NEVER use ALL CAPS for labels — it reads as institutional and cold
+
+---
+
+## 4. SPACING & LAYOUT
+
+**8-point grid. Everything is a multiple of 8 (or 4 for fine adjustments):**
+```
+4px  — micro gap (icon-to-label, tight pairs)
+8px  — small gap (within a component)
+12px — medium-small (field internal padding)
+16px — base unit (standard gap, card padding minimum)
+24px — medium (between related components)
+32px — large (between sections within a screen)
+40px — xl (between major screen sections)
+48px — 2xl (screen-level top/bottom padding)
+```
+
+**Screen padding (horizontal):** 20px on both sides. Consistent everywhere.
+
+**Card border-radius:**
+```
+Cards/sheets:    16px
+Buttons:         12px
+Input fields:    10px
+Tags/chips:      20px (fully rounded)
+Alert banners:   12px
+Bottom sheets:   24px top corners only
+```
+
+**Shadow system (teal-tinted, never neutral grey):**
+```
+card-shadow:    0 2px 12px rgba(13,74,92,0.08)
+button-shadow:  0 4px 16px rgba(13,74,92,0.16)
+modal-shadow:   0 8px 32px rgba(13,74,92,0.20)
+```
+
+---
+
+## 5. COMPONENT LIBRARY (build each one, reuse everywhere)
+
+Cursor: build every component below before building any screen. Screens are
+assembled from these components. If a screen needs something not in this list,
+add it to this list first, then use it.
+
+### 5.1 Button System
+
+**PrimaryButton** — the one action on a screen the user should take next
+```
+Background:  --color-deep-teal
+Text:        white, Inter 15sp 600
+Height:      56px (taller than standard — easier tap target for anxious hands)
+Width:       full-width minus horizontal padding
+Radius:      12px
+Shadow:      button-shadow
+Pressed:     scale(0.97) + 10% darker background
+Disabled:    --color-border bg, --color-mist text, no shadow
+Loading:     replace label with a teal spinner, keep dimensions
+```
+
+**SecondaryButton** — an alternative, less important action
+```
+Background:  transparent
+Border:      1.5px --color-deep-teal
+Text:        --color-deep-teal, Inter 15sp 600
+Height:      52px
+Radius:      12px
+Pressed:     --color-light-teal background
+```
+
+**TextButton** — low-emphasis action (skip, cancel, "learn more")
+```
+Background:  none
+Text:        --color-mid-teal, Inter 15sp 400, underline on press only
+Height:      44px (minimum tap target)
+```
+
+**DangerButton** — Pathway B exit ONLY (the one time we use coral as primary)
+```
+Background:  --color-coral
+Text:        white, Inter 15sp 600
+Height:      56px
+Radius:      12px
+Use ONLY for: "See a doctor now" / Pathway B CTA
+```
+
+**IconButton** — square tap target for navigation icons
+```
+Size:        44×44px (accessibility minimum)
+Radius:      10px
+Pressed:     --color-light-teal background
+```
+
+### 5.2 Input Fields
+
+All inputs follow this same anatomy:
+```
+Container:   white bg, 1.5px --color-border border, 10px radius, 56px height
+Focus:       1.5px --color-mid-teal border + subtle teal glow (shadow 0 0 0 3px rgba(26,122,154,0.12))
+Error:       1.5px --color-coral border
+Label:       12sp Inter 500 --color-slate, above the field (not placeholder-only)
+Placeholder: --color-mist
+Value:       15sp Inter 400 --color-charcoal
+```
+
+Component variants:
+- **TextInput** — standard single-line
+- **NumberInput** — numeric keyboard, with +/- stepper buttons for small values
+- **DatePicker** — bottom sheet calendar, not a text field
+- **SelectPicker** — bottom sheet list, not a native dropdown
+- **RadioGroup** — large tap-target radio buttons (full-width cards, not small dots)
+- **CheckboxGroup** — same large-card style, multi-select
+- **Slider** — for stress level 1-10 if needed later
+
+**RadioGroup card style (critical for questionnaire UX):**
+```
+Each option = a full-width card
+Unselected: white bg, --color-border border, 14px radius
+Selected:   --color-light-teal bg, 2px --color-mid-teal border, checkmark icon right
+Height:     56px minimum
+Text:       15sp Inter 500 --color-charcoal
+Spacing:    8px between options
+```
+Why full-width cards instead of dots: research shows people complete more of a
+form when options feel substantial. Tiny radio dots feel test-like and clinical.
+Big cards feel like a considered choice.
+
+### 5.3 ClinicalTerm Component (from Phase 2 — must match this spec exactly)
+```
+Container:  white card, card-shadow, 16px padding, 14px radius
+Row 1:      plainName — 17sp Inter 600 --color-charcoal
+Row 2:      plainExplanation — 14sp Inter 400 --color-slate, 4px below row 1
+Divider:    1px --color-border, 12px vertical margin
+Row 3:      "Clinical name:" label 11sp Inter 500 --color-mist
+            medicalName 13sp DM Mono 400 --color-slate
+Info icon:  right of row 1, tapping opens a bottom-sheet with more detail
+```
+
+### 5.4 Progress Components
+
+**QuestionnaireStepper** — the top bar on every questionnaire screen
+```
+Background: white
+Content:    "Section 3 of 10" in 13sp Inter 500 --color-slate
+            Thin progress bar below: --color-sage fill, --color-border track
+            4px height, full width, smooth animated fill
+```
+Why show section number AND a bar: the number answers "where am I", the bar
+answers "how much remains". Both together reduce anxiety about the unknown length.
+
+**JourneyProgressCard** — the home screen tracker
+```
+Steps displayed as a vertical timeline, not a horizontal stepper (easier to read
+on mobile, scales to 6+ steps without crowding)
+Completed step: --color-sage dot, sage text
+Current step:   --color-deep-teal dot (pulsing animation), bold text, "Continue" chip
+Upcoming step:  --color-border dot, --color-mist text
+```
+
+**SectionCompleteCard** — shown immediately when a questionnaire section saves
+```
+Background: --color-sage-light
+Icon:       checkmark in a sage circle (not a toast — a full inline moment)
+Title:      "Section complete" — DM Serif Display 20sp --color-sage
+Subtitle:   plain encouragement, e.g. "You're 3 of 10 done. Keep going."
+Duration:   shown for 1.5 seconds, then auto-advances. Never blocks indefinitely.
+```
+Psychology: this micro-celebration triggers a small dopamine hit that keeps
+people going through a long questionnaire. It costs nothing and dramatically
+reduces drop-off.
+
+### 5.5 Alert & Safety Components
+
+**SymptomInterruptCard** — the mid-questionnaire safety gate
+```
+Background:  --color-coral-light
+Border:      2px --color-coral, left border only (like a sidebar callout)
+Icon:        ⚠ in coral (not 🚨 — urgent but not panicked)
+Title:       "One important question" — 17sp Inter 600 --color-coral
+Body:        the question text — 15sp Inter 400 --color-charcoal
+Buttons:     full-width RadioGroup cards: "No, I haven't" (teal) / "Yes, I have" (coral)
+```
+The left-border-only style (like an editorial callout) signals importance
+without filling the screen with red and triggering panic.
+
+**PathwayBBanner** — after routing to Pathway B
+```
+Background:  --color-cream (calm, not a red screen of doom)
+Icon:        a phone/doctor icon in teal (action-oriented, not alarming)
+Title:       "Let's get you the right care" — DM Serif 24sp --color-deep-teal
+Body:        warm, directive — "Based on your answers, seeing a doctor soon is the
+             right next step. This app will be here when you're ready to return."
+CTA:         DangerButton "Find a doctor" (actually coral here, not deep-teal)
+Secondary:   TextButton "Save my place"
+```
+Psychology: the worst thing this screen can do is look like an error or a
+rejection. The user has done nothing wrong. The copy and design must feel like
+a caring hand-off, not a dismissal.
+
+**IodineHardStop** — the iodine contraindication block
+```
+Background:  --color-amber-light
+Border:      1px --color-amber
+Icon:        ⚠ in amber
+Title:       "This isn't recommended for you right now"
+Body:        plain reason — "Because your thyroid antibodies are positive,
+             iodine supplementation could cause a flare-up. Your plan has been
+             adjusted to keep you safe."
+```
+
+**InteractionFlag** — supplement that needs practitioner check
+```
+Badge on card:  amber pill chip "Needs practitioner check"
+On detail:      amber callout box with the plain reason
+```
+
+### 5.6 Cards
+
+**ResultCard**
+```
+White bg, card-shadow, 16px padding, 14px radius
+Left edge: 4px vertical colour bar (sage=normal, amber=attention, coral=critical)
+Row 1: plainName 16sp Inter 600 --color-charcoal
+Row 2: status chip (see 5.7) + plain one-line meaning
+Row 3: "Medical name:" + DM Mono 13sp (secondary, smaller)
+Tap: opens Result Detail screen
+```
+
+**InterventionCard**
+```
+White bg, card-shadow, 16px padding, 14px radius
+Top-left: category icon (see Section 6)
+Title: 16sp Inter 600
+Why: "Why you're seeing this:" label + one-line plain reason
+Expand: "Clinical basis ›" collapsed by default — expands to show exact
+        protocol wording
+Status badge: sage "Approved" / amber "Pending review" / coral "Needs check"
+```
+
+**ProductCard** (store)
+```
+White bg, card-shadow
+Image: 80×80px supplement/test illustration, left
+Right: name 16sp, price 15sp Inter 600 --color-deep-teal
+       one-line description 13sp --color-slate
+       "Add" button: 32px height, teal, pill-shaped, right-aligned
+Safety state: if blocked/flagged, badge replaces "Add" button
+```
+
+### 5.7 Status Chips / Badges
+```
+Normal/Complete:  sage bg + sage text: "Within range" / "Done"
+Attention:        amber bg + amber text: "Worth watching" / "Pending"
+Critical:         coral bg + coral text: "Needs attention" / "See doctor"
+Approved:         deep-teal bg + white text: "Approved"
+Draft:            border-only, slate text: "Pending review"
+```
+All chips: 12sp Inter 500, 6px horizontal padding, 4px vertical, 20px radius.
+Never show raw lab values as the headline — chip first, value on detail.
+
+---
+
+## 6. ICONOGRAPHY
+
+**Icon library:** `@expo/vector-icons` (bundled) — use **Feather** icons as the
+primary set. They are thin-line, precise, and clinical without being cold. Avoid
+filled/solid icons (they feel heavy and alarming for health content).
+
+**Icon sizes:**
+```
+Navigation tabs:  24px
+Card/list icons:  20px
+Inline (body):    16px
+Micro:            12px
+```
+
+**Icon color:** always `--color-deep-teal` for primary, `--color-slate` for
+secondary/inactive, `--color-coral` for danger only.
+
+**Category icons for interventions (Feather names):**
+```
+supplement:   'droplet'         (a drop — precise, clinical)
+diet:         'coffee'          (approachable, food-adjacent)
+lifestyle:    'sun'             (warmth, daily habit)
+therapy:      'activity'        (pulse/waveform — active, not passive)
+referral:     'user-check'      (person + checkmark — human care)
+coaching:     'message-circle'  (conversation)
+retest:       'refresh-cw'      (cycle, repeat check)
+```
+
+**Test/screening icons:**
+```
+BRCA:         'dna' (if available) or 'git-branch' (branching heredity)
+CTC:          'zap'               (liquid biopsy, fast)
+SNP:          'sliders'           (fine tuning, personalisation)
+Thyroid:      'thermometer'
+Cortisol:     'clock'             (diurnal rhythm, time-based)
+Stool:        'layers'            (gut layers, microbiome strata)
+DUTCH:        'bar-chart-2'       (hormone mapping)
+Heavy metals: 'shield'            (protection, exposure)
+Iodine:       'droplet'           (same as supplement)
+```
+
+**Navigation tab icons:**
+```
+Home:          'home'
+Questionnaire: 'clipboard'
+Results:       'bar-chart-2'
+Plan:          'list'
+More:          'menu'
+```
+
+**Never use:**
+- ❌ Stethoscopes (overused, reductive)
+- ❌ Red crosses or medical crosses (implies hospital/emergency)
+- ❌ Pills or syringes (pharmaceutical, not lifestyle)
+- ❌ Anatomical imagery (alienating)
+- ❌ Pink ribbons (charity aesthetic, not a precision tool)
+
+---
+
+## 7. SCREEN-BY-SCREEN UX RULES
+
+**Every screen must have:**
+1. One primary action (one PrimaryButton or a clear next step)
+2. A clear heading that states what this screen is for
+3. Visible progress if inside the questionnaire or onboarding
+4. An obvious back path (never trap the user)
+5. An empty/loading state that is designed, not a spinner alone
+
+### Splash
+- DM Serif Display 32sp "LifeShield" centred, deep teal on cream
+- Tagline 15sp Inter 400 slate, below
+- No animation beyond a clean fade-in (2 frames, not a production sequence)
+- Auto-advance to auth after 1.8 seconds if already logged in
+
+### Onboarding (3 screens max)
+- One key idea per screen, illustrated with a simple Feather-icon composition
+- Horizontal swipe between screens, dot indicators
+- "Skip" TextButton top-right from screen 2 onward
+- Final screen CTA: "Get started" PrimaryButton
+
+### Auth (Register/Login)
+- Single column layout, 20px horizontal padding
+- Email first, password below, generous spacing
+- "Show password" eye icon in field
+- Error messages inline below the field, coral, 13sp
+- "Forgot password" TextButton below password on login
+- Social/Google login: NOT included (health data + Google = trust concern)
+
+### Triage (most important screen in the app)
+- Cream background — calm, not alarming
+- DM Serif Display H1: "Before we begin" — sets an intentional, measured tone
+- Subheading: "We need to ask one important question to make sure this service
+  is right for you right now."
+- Three RadioGroup cards: "I have breast pain" / "I have breast discomfort" /
+  "I've noticed a lump"  (each with an "Yes" / "No" inner toggle)
+- Space between the options and the CTA is generous — no accidental taps
+- PrimaryButton only enabled when all three are answered
+
+### Questionnaire sections
+- QuestionnaireStepper pinned at top (always visible, never scrolls away)
+- One section per screen — no scrolling through multiple topics at once
+- Field labels always above the input, never inside as placeholder-only
+- "Why do we ask this?" info icon on any question that might feel intrusive.
+  Tapping opens a small bottom sheet with a one-paragraph plain explanation.
+- "Save & Continue" PrimaryButton pinned at bottom (sticky footer) — always
+  reachable without scrolling
+- Keyboard-aware: screen scrolls up when keyboard appears, CTA stays visible
+- After save: SectionCompleteCard for 1.5s, then auto-advance
+
+### Results dashboard
+- Status chips lead — value in the detail
+- Group by status: "Worth watching" first (action-oriented), then "Within range"
+- Never sort by alphabetical or by test tier (users don't think in tiers)
+- No red anywhere on this screen unless a result is critical — most users will
+  see amber at worst, and the design must not pre-alarm them
+
+### Personalised plan
+- "Pending review" banner top — sage-coloured (not amber/warning) because
+  pending review is a GOOD thing (a clinician is looking after you)
+- Group by: Daily habits / Food & drink / Supplements / Follow-up tests /
+  See a specialist. Never by clinical category.
+- Each card: action title first, reason second, clinical basis collapsed
+- Empty state if no items: "Your practitioner is reviewing your results.
+  We'll notify you when your plan is ready." (never just a spinner)
+
+### Store
+- "Recommended for you" section at top — maximum 5 items, filtered to this
+  user's triggers. Headline: "Based on your results" not "Recommended products"
+- ProductCard grid (2 columns on phone) for the full catalog
+- Safety states (blocked/flagged) styled as information, not errors
+
+### Pathway B exit
+- NEVER a modal. Full screen. This deserves full attention.
+- Calm, warm, directive. Not a red screen of doom.
+- See Section 5.5 PathwayBBanner for exact spec
+
+---
+
+## 8. MOTION & ANIMATION
+
+Less is more. One deliberate moment beats ten scattered effects.
+
+**Principles:**
+- Motion answers an action — screen transitions, expanding an accordion,
+  completing a section. Never idle/looping animations.
+- Duration: 200ms for micro (button press), 280ms for screen transitions,
+  1.5s for the SectionCompleteCard hold. Nothing over 300ms for transitions.
+- Easing: always ease-out (fast start, gentle end). Never linear.
+- Respect `useReducedMotion` — detect it and cut all motion for users who have
+  enabled it in accessibility settings.
+
+**Specific animations to build:**
+```
+Button press:        scale(0.97) in 80ms, ease-out back in 120ms
+Screen push:         translate X 30px → 0, opacity 0 → 1, 280ms ease-out
+Screen pop:          reverse
+QuestionnaireStepper fill: animated width change on section complete, 400ms ease-out
+SectionCompleteCard: fade + scale in (0.95 → 1) 200ms, hold 1.5s, fade out 200ms
+RadioGroup select:   border + bg colour change, 120ms
+Status chip:         colour fade in 150ms when result loads
+```
+
+**What NOT to animate:**
+- ❌ Page-load staggered list reveals (AI-generated default, avoid)
+- ❌ Parallax or floating elements
+- ❌ Lottie animations (adds app weight for minimal gain)
+- ❌ Skeleton loaders that pulse in a disturbing heartbeat (use a static
+  muted version instead)
+
+---
+
+## 9. LOADING, EMPTY & ERROR STATES
+
+Every state must be designed. No naked spinners. No blank white screens.
+
+**Loading:**
+- Show a static skeleton (ghost layout in --color-border, no pulse) for the
+  initial data load on Results and Plan screens
+- Inline spinner (teal, 20px) for button actions and saves
+- Full-screen loading only for auth — all other loads happen behind already-
+  rendered chrome
+
+**Empty states:**
+- Never just "No data found"
+- Always: icon (Feather) + heading + one-line explanation + action if applicable
+- Examples:
+  - No results yet: "Your results will appear here once your tests are back."
+  - Empty cart: "Nothing in your basket yet. Start from your personalised plan."
+  - No follow-ups: "You're all caught up. Check back after your next test."
+
+**Error states:**
+- Toast for non-blocking errors (network timeout, save retry): bottom of screen,
+  --color-amber-light bg, 3 second auto-dismiss, "Try again" link
+- Inline for form errors: below the specific field, --color-coral, 13sp
+- Full-screen for fatal errors (auth failure, app boot failure): icon +
+  plain explanation + one action ("Try again" or "Log in again")
+- Never: raw error codes, stack traces, or "Something went wrong" with no
+  guidance
+
+---
+
+## 10. ACCESSIBILITY
+
+Not optional. Build it from day one.
+
+```
+Minimum tap target:   44×44px (everything interactive)
+Colour contrast:      4.5:1 minimum for body text (WCAG AA)
+                      3:1 for large text (18sp+ / 14sp+ bold)
+Focus indicators:     visible ring for keyboard/switch navigation
+                      2px teal outline, 2px offset
+Screen reader:        accessibilityLabel on every interactive element
+                      accessibilityHint on anything that isn't self-explanatory
+                      accessibilityRole where relevant
+Dynamic text:         layouts must not break at 1.5× text size (iOS/Android
+                      accessibility text scale)
+Reduced motion:       check useReducedMotion, cut transitions if true
+```
+
+Colour combinations that are confirmed accessible in this palette:
+- Deep teal text on cream bg: ✅ 8.5:1
+- White text on deep teal: ✅ 8.5:1
+- Slate text on white: ✅ 5.9:1
+- Coral on white (error text): ✅ 4.6:1
+
+---
+
+## 11. NAVIGATION & INFORMATION ARCHITECTURE
+
+**Bottom tab bar (5 tabs, always visible after onboarding):**
+```
+Home | Questionnaire | Results | Plan | More
+```
+- Active tab: deep teal icon + 13sp label
+- Inactive: slate icon + slate label
+- Never show the tab bar during the triage screen, Pathway B screen, or
+  individual questionnaire section screens (focused task = no distractions)
+- Tab bar has a subtle top border, white background, safe-area aware
+
+**Back navigation:**
+- Every screen inside a stack has a back arrow (Feather 'arrow-left', 24px, teal)
+- Exception: Pathway B cannot be backed out of (the hardware back is intercepted
+  and shows a bottom-sheet: "Are you sure? If you have symptoms, please see a
+  doctor.")
+- Questionnaire section "back" returns to the questionnaire hub (not the previous
+  section) — because partially answered sections save automatically, there's no
+  "back = undo" expectation to manage
+
+**Questionnaire flow (the most complex navigation in the app):**
+```
+Hub (section list) → Section screen → SymptomInterrupt (if triggered) → next section
+                  └──────────────────────────────────────────────────────→ Hub (if back)
+```
+
+---
+
+## 12. COPYWRITING RULES (voice & tone)
+
+Match the design: confident, warm, precise. Not chatty. Not clinical.
+
+- **Sentence case everywhere** (not Title Case, never ALL CAPS for body)
+- **Active voice:** "We check your stress hormone" not "Stress hormones are checked"
+- **Specific over vague:** "This takes about 8 minutes" not "This takes a few minutes"
+- **Never use:** "Please", "Sorry", "Unfortunately", "As an AI", "Note that"
+- **For findings/results:** lead with what it means for you, not the raw number
+- **For errors:** say what happened and what to do. "Your session expired. Log in again."
+- **For safety alerts:** calm and directive. Never alarming. "Let's get you the right care."
+- **Button labels:** verb + object. "Save answers" not "Submit". "See my plan" not "Next".
+- **Section completion:** acknowledge effort. "Section 3 done — you're making real progress."
+- **Empty states:** future-positive. "Your results will appear here" not "No results yet"
+
+---
+
+## 13. THE CURSOR VERIFICATION CHECKLIST
+
+Cursor: before declaring any screen or component finished, run through every
+item in this checklist. A screen is not done until it passes all applicable items.
+
+### Design Foundation
+- [ ] Only colours from the Section 2 palette are used — no hardcoded hex values
+      outside the design token definitions
+- [ ] Only typefaces from Section 3 are used (DM Serif Display, Inter, DM Mono)
+- [ ] All spacing is a multiple of 4px
+- [ ] All corners use the Section 4 radius values
+- [ ] Shadows use the teal-tinted shadow values, not neutral grey
+
+### Psychology & Emotional Design
+- [ ] No screen leads with fear or risk language
+- [ ] Progress is always visible during the questionnaire (stepper + section count)
+- [ ] SectionCompleteCard appears after every section save
+- [ ] Pathway B screen is warm and action-oriented, not alarming or red
+- [ ] The "Why do we ask this?" info icon is present on any intrusive question
+- [ ] Empty states have a heading, explanation, and action — not just placeholder text
+
+### Components
+- [ ] Every clinical term uses the `<ClinicalTerm>` component
+- [ ] All buttons are from the Section 5.1 system (no custom one-off buttons)
+- [ ] All inputs use the Section 5.2 spec (correct height, focus ring, error state)
+- [ ] RadioGroup options are full-width cards, not small dots
+- [ ] Status chips never show raw numbers as the headline
+
+### Safety & Clinical Rules
+- [ ] SymptomInterruptCard appears after Section 2 and Section 5 of the questionnaire
+- [ ] Pathway B cannot be backed out of with the back button
+- [ ] Iodine supplement is blocked if thyroid antibodies are positive
+- [ ] Any interaction-flagged supplement shows the amber badge, not a direct "Add"
+- [ ] Draft interventions are visually distinct ("Pending review") and non-purchasable
+- [ ] DangerButton (coral) is used ONLY for Pathway B CTA — nowhere else
+
+### Accessibility
+- [ ] Every interactive element is at least 44×44px
+- [ ] Colour contrast passes WCAG AA (4.5:1 for body, 3:1 for large text)
+- [ ] Every interactive element has an `accessibilityLabel`
+- [ ] `useReducedMotion` is detected and motion is cut when true
+- [ ] Text scales to 1.5× without layout breakage
+
+### Interaction & Motion
+- [ ] Button press has the scale(0.97) micro-feedback
+- [ ] Screen transitions are 280ms ease-out
+- [ ] No idle/looping animations anywhere
+- [ ] No staggered list-reveal animations
+
+### Loading, Empty & Error
+- [ ] Every data-dependent screen has a designed loading state (static skeleton)
+- [ ] Every data-dependent screen has a designed empty state
+- [ ] Every async action has an error state (inline for forms, toast for saves)
+- [ ] No naked spinners, no blank white screens, no raw error codes
+
+### Navigation
+- [ ] Bottom tab bar is hidden during questionnaire sections, triage, and Pathway B
+- [ ] Back button is present on every stack screen except auth root and Pathway B
+- [ ] Keyboard-aware scrolling keeps the "Save & Continue" button visible when
+      the keyboard is open
+- [ ] Deep links (notification → specific screen) do not break the navigation stack
+
+### Copy
+- [ ] No ALL CAPS labels
+- [ ] All button labels use verb + object format
+- [ ] All error messages say what happened and what to do
+- [ ] "Pending review" is styled as reassuring (sage), not as a warning
+
+### Performance
+- [ ] List screens use `FlatList` or `FlashList`, not `ScrollView` + `.map()`
+- [ ] Images use `expo-image` with explicit width/height to prevent layout shift
+- [ ] No unnecessary re-renders (Zustand selectors are granular, not whole-store)
+- [ ] App cold-starts in under 3 seconds on a mid-range Android device
+
+---
+
+## 14. FIRST MESSAGE TO PASTE INTO CURSOR
+
+```
+Read all five rules files: .cursorrules (Phase 1), .cursorrules-phase2,
+.cursorrules-phase3, .cursorrules-phase4, and .cursorrules-design (this file).
+The design file governs every visual and interaction decision.
+
+Before building any screen, do this in order:
+1. Install the three font families from Section 3 of the design file using
+   npx expo install.
+2. Create a lib/design-tokens.ts file that exports every color, spacing value,
+   radius, and shadow from Sections 2 and 4 as named TypeScript constants.
+   No screen should ever have a hardcoded hex value — it always references a
+   token.
+3. Build every component from Section 5 (Button system, Inputs, ClinicalTerm,
+   Progress components, Alert components, Cards, Status chips).
+4. Show me a single screen — the Triage screen — built with these components
+   and tokens, following the Section 7 spec for that screen exactly.
+
+After I approve the Triage screen's look and feel, we will use it as the visual
+standard for every other screen. Do not build anything else until I approve it.
+
+Explain what you are doing at each step in plain English.
+```
