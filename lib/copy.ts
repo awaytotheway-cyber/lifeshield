@@ -166,7 +166,22 @@ export const COPY = {
     "We couldn’t load your questionnaire progress. Pull away and come back, or try again in a moment.",
   hubProgressLabel: "Sections completed",
   hubBack: "Back to list",
-  sectionSave: "Save and continue",
+  sectionSave: "Save & continue",
+  sectionSaveAnswers: "Save answers",
+  sectionCompleteSubtitle: "You're {current} of {total} done. Keep going.",
+  whyWeAsk: "Why do we ask this?",
+  whyWeAskHint: "Opens a short explanation",
+  whyWeAskClose: "Close",
+  whyAskFamily:
+    "Family patterns help us suggest which tests to discuss with a practitioner. This is lifestyle awareness, not a diagnosis.",
+  whyAskReproductive:
+    "Period, pregnancy, and contraceptive history can change which lifestyle checks are worth discussing. You can skip details that do not apply.",
+  whyAskPersonal:
+    "Smoking, alcohol, and similar habits are used only to suggest lifestyle checks. They are not used to judge you, and they do not diagnose anything.",
+  whyAskThyroid:
+    "Active autoimmune thyroid disease is a safety question. It can change whether iodine-related suggestions are appropriate.",
+  whyAskEthnicity:
+    "Background can change how some measurements are discussed later. Choose what feels right, or prefer not to say.",
   sectionSaveFailed:
     "We couldn’t save this section. Please try again. Your other answers are still on this screen.",
   sectionLoadFailed:
@@ -249,8 +264,12 @@ export const COPY = {
   resultsTitle: "Suggested tests to discuss",
   resultsBody:
     "These are lifestyle-awareness suggestions from a fixed checklist — not a diagnosis, and not a test order. Take this list to a qualified practitioner.",
+  resultsEmptyHeading: "Your suggestions will appear here",
   resultsEmpty:
-    "No suggestions saved yet. Finish section 10 of the questionnaire to generate this list.",
+    "Finish the last questionnaire section to generate this list. Take it to a qualified practitioner — it is not a diagnosis or a booked test.",
+  labResultsEmptyHeading: "Your results will appear here",
+  labResultsEmpty:
+    "Your results will appear here once your tests are back. A clinician adds them in everyday words. This is information, not a diagnosis.",
   resultsLoadFailed:
     "We couldn’t load your suggestions. Please try again in a moment.",
   resultsSaveFailed:
@@ -265,15 +284,13 @@ export const COPY = {
   resultsOpenLabResults: "View my results",
   resultsActionDiscuss:
     "One next step: take this list to a qualified practitioner. LifeShield does not book, run, or interpret tests.",
-  resultsTier3: "Starting panel to discuss (tier 3)",
-  resultsTier4: "Extra checks if they apply (tier 4)",
-  resultsTierOther: "Other suggestions",
+  resultsGroupWatching: "Worth watching",
+  resultsGroupRange: "Within range",
+  resultsChipDiscuss: "Worth discussing",
   resultsBackHome: "Back to Home",
   labResultsTitle: "Your results",
   labResultsSummary:
     "Your results are in. Here's what they mean in plain language.",
-  labResultsEmpty:
-    "No lab results are saved for you yet. When a clinician adds them, they will show here in everyday words. This is information, not a diagnosis.",
   labResultsLoadFailed:
     "We couldn’t load your results. Please try again in a moment.",
   labResultsRetry: "Try loading again",
@@ -316,15 +333,16 @@ export const COPY = {
   planTitleApproved: "Your plan — practitioner approved",
   planTitleFinalised: "Your plan",
   planBanner:
-    "Draft plan — your practitioner reviews this before anything is confirmed.",
+    "Your practitioner is reviewing this plan. That is a good next step — they are looking after you.",
+  planEmptyHeading: "Your plan is on its way",
+  planEmpty:
+    "Your practitioner is reviewing your results. We'll notify you when your plan is ready.",
   planBannerApproved:
     "Some items are approved. Your practitioner will finalise the full plan soon. Approved supplements can be ordered from the store.",
   planBannerFinalised:
     "Your practitioner has finalised this plan. Discuss it with them — you can order approved supplements from the store.",
   planBody:
     "These are draft ideas from a fixed checklist, written so you can discuss them. They are not instructions, not a diagnosis, and they do not detect or treat anything.",
-  planEmpty:
-    "No draft ideas yet. Finish the questionnaire, save a lab result, then tap Refresh draft plan. This is information, not a diagnosis.",
   planLoadFailed:
     "We couldn’t load your draft plan. Please try again in a moment.",
   planGenerateFailed:
@@ -338,11 +356,11 @@ export const COPY = {
   planClinicalBasisHide: "Hide clinical basis",
   planNeedsCheck: "Needs practitioner check",
   planOpenDetail: "Read the full draft idea",
-  planGroupFood: "Food",
+  planGroupFood: "Food & drink",
   planGroupSupplements: "Supplements",
   planGroupHabits: "Daily habits",
   planGroupFollowUp: "Follow-up tests",
-  planGroupReferrals: "Referrals",
+  planGroupReferrals: "See a specialist",
   planStatusDraft: "Draft — pending practitioner review",
   planStatusPending: "Pending practitioner review",
   planStatusReviewed:
@@ -363,8 +381,9 @@ export const COPY = {
   followUpTitle: "Follow-up",
   followUpBody:
     "A simple list of check-ins: a symptom re-check, suggested re-tests, and a draft-plan review. This is a reminder list, not a diagnosis, and it does not detect or treat anything.",
+  followUpEmptyHeading: "You're all caught up",
   followUpEmpty:
-    "Nothing upcoming yet. Tap the button below to set up your first symptom re-check (due today).",
+    "You're all caught up. Check back after your next test.",
   followUpLoading: "Loading your follow-up list…",
   followUpSeedNow: "Set up my first check-in",
   followUpLoadFailed:
@@ -478,7 +497,7 @@ export const COPY = {
   storeTitle: "Store",
   storeBody:
     "Browse supplements and tests linked to your draft plan. This is a lifestyle awareness tool — nothing here diagnoses, detects, or treats a condition.",
-  storeRecommended: "Recommended from your plan",
+  storeRecommended: "Based on your results",
   storeRecommendedEmpty:
     "Nothing matched your draft plan yet. Finish your plan or refresh it, then come back. You can still browse the full catalog below.",
   storeFullCatalog: "Full catalog",

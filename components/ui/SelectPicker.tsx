@@ -10,6 +10,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { LabelRow } from "@/components/ui/WhyAskSheet";
 import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
 import { COPY } from "@/lib/copy";
 import { fontFamily } from "@/lib/typography";
@@ -23,6 +24,7 @@ type SelectPickerProps = {
   onChange: (value: string) => void;
   error?: string;
   placeholder?: string;
+  whyAsk?: string;
 };
 
 /**
@@ -35,13 +37,14 @@ export function SelectPicker({
   onChange,
   error,
   placeholder,
+  whyAsk,
 }: SelectPickerProps) {
   const [open, setOpen] = useState(false);
   const selected = options.find((option) => option.value === value);
 
   return (
     <View style={styles.wrap}>
-      <Text style={styles.label}>{label}</Text>
+      <LabelRow label={label} whyAsk={whyAsk} />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}

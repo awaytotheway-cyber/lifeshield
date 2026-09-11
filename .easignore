@@ -1,0 +1,10 @@
+# Browser-only admin panel — not part of the mobile APK
+admin/
+
+# Local secrets never go to EAS
+.env
+.env*.local
+
+# Dev / test noise
+example
+*.tsbuildinfo

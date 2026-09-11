@@ -1,0 +1,264 @@
+:root {
+  --color-deep-teal: #0d4a5c;
+  --color-mid-teal: #1a7a9a;
+  --color-light-teal: #d6eef5;
+  --color-sage: #6b9e7a;
+  --color-sage-light: #e8f3eb;
+  --color-coral: #e8634a;
+  --color-coral-light: #fdecea;
+  --color-amber: #d4873a;
+  --color-amber-light: #fdf3e4;
+  --color-cream: #faf8f5;
+  --color-white: #ffffff;
+  --color-charcoal: #1c2329;
+  --color-slate: #4a5568;
+  --color-mist: #9aa5b4;
+  --color-border: #e2e8f0;
+  --shadow-card: 0 2px 12px rgba(13, 74, 92, 0.08);
+  --shadow-button: 0 4px 16px rgba(13, 74, 92, 0.16);
+  --font-display: "DM Serif Display", Georgia, "Times New Roman", serif;
+  --font-ui: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--color-charcoal);
+  background: var(--color-cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Page titles only — Inter stays on tables, forms, chips, and card headings */
+.ant-page-header-heading-title,
+.ls-page-title {
+  font-family: var(--font-display) !important;
+  font-weight: 400 !important;
+  color: var(--color-deep-teal) !important;
+}
+
+/* Sidebar: deep teal, not Material blue */
+.ant-layout-sider {
+  background: var(--color-deep-teal) !important;
+  border-right: none !important;
+}
+
+.ant-layout-sider .ant-layout-sider-children > div {
+  background: var(--color-deep-teal) !important;
+}
+
+.ant-layout-sider .ant-menu {
+  background: transparent !important;
+}
+
+.ant-layout-sider .ant-layout-sider-trigger,
+.ant-layout-sider .ant-layout-sider-trigger .ant-btn {
+  background: #0a3a48 !important;
+  color: var(--color-white) !important;
+}
+
+.ant-layout .ant-layout-header {
+  background: var(--color-white) !important;
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+}
+
+.ant-layout .ant-layout-content {
+  background: var(--color-cream);
+}
+
+.ls-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ls-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--color-white);
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.2px;
+}
+
+.ls-brand-text {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--color-white);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.ant-layout-sider .ant-menu-item,
+.ant-layout-sider .ant-menu-submenu-title {
+  color: rgba(255, 255, 255, 0.82) !important;
+  border-radius: 10px !important;
+  margin-inline: 8px !important;
+  width: calc(100% - 16px) !important;
+}
+
+.ant-layout-sider .ant-menu-item-selected {
+  background: var(--color-mid-teal) !important;
+  color: var(--color-white) !important;
+}
+
+.ant-layout-sider .ant-menu-item:hover,
+.ant-layout-sider .ant-menu-submenu-title:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--color-white) !important;
+}
+
+.ant-layout-sider .ant-menu-item .anticon,
+.ant-layout-sider .ant-menu-submenu-title .anticon {
+  color: inherit !important;
+}
+
+.ant-card {
+  border-radius: 16px !important;
+  border-color: var(--color-border) !important;
+  box-shadow: var(--shadow-card);
+}
+
+.ant-table-wrapper {
+  background: var(--color-white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.ant-btn-primary {
+  box-shadow: var(--shadow-button);
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-input-number {
+  border-radius: 10px !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector {
+  box-shadow: 0 0 0 3px rgba(26, 122, 154, 0.12) !important;
+}
+
+/* Status chips */
+.ls-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.ls-chip--draft {
+  background: transparent;
+  color: var(--color-slate);
+  border: 1px solid var(--color-border);
+}
+
+.ls-chip--approved {
+  background: var(--color-deep-teal);
+  color: var(--color-white);
+}
+
+.ls-chip--active,
+.ls-chip--success {
+  background: var(--color-sage-light);
+  color: var(--color-sage);
+}
+
+.ls-chip--warning {
+  background: var(--color-amber-light);
+  color: var(--color-amber);
+}
+
+.ls-chip--declined,
+.ls-chip--danger {
+  background: var(--color-coral-light);
+  color: var(--color-coral);
+}
+
+.ls-chip--info {
+  background: var(--color-light-teal);
+  color: var(--color-deep-teal);
+}
+
+.ls-chip--inactive {
+  background: var(--color-cream);
+  color: var(--color-mist);
+  border: 1px solid var(--color-border);
+}
+
+/* Login: cream canvas + teal brand */
+.ls-login {
+  min-height: 100vh;
+  background: var(--color-cream);
+}
+
+.ls-login .ant-card {
+  border-radius: 16px;
+}
+
+.ls-login-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--color-deep-teal);
+  font-weight: 400;
+}
+
+.ls-login-subtitle {
+  margin-top: 4px;
+  font-size: 15px;
+  color: var(--color-slate);
+}
+
+.ls-unauthorized {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--color-cream);
+}
+
+/* Spacing helpers used by existing screens (no Tailwind in this app) */
+.mb-3 {
+  margin-bottom: 12px;
+}
+.mb-4 {
+  margin-bottom: 16px;
+}
+.mt-4 {
+  margin-top: 16px;
+}
+.py-8 {
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+.py-12 {
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+.text-center {
+  text-align: center;
+}
+.w-full {
+  width: 100%;
+}

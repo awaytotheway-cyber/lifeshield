@@ -23,6 +23,7 @@ type InterventionCardProps = {
   category?: keyof typeof CATEGORY_ICONS;
   status: Extract<StatusChipKind, "approved" | "draft" | "critical">;
   statusLabel: string;
+  onPress?: () => void;
 };
 
 /**
@@ -35,12 +36,19 @@ export function InterventionCard({
   category = "lifestyle",
   status,
   statusLabel,
+  onPress,
 }: InterventionCardProps) {
   const [open, setOpen] = useState(false);
   const icon = CATEGORY_ICONS[category];
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      accessibilityRole={onPress ? "button" : undefined}
+      accessibilityLabel={title}
+      onPress={onPress}
+      disabled={!onPress}
+      style={styles.card}
+    >
       <View style={styles.top}>
         <Feather name={icon} size={20} color={colors.deepTeal} />
         <View style={styles.topText}>
@@ -63,7 +71,7 @@ export function InterventionCard({
       {open && clinicalBasis ? (
         <Text style={styles.basis}>{clinicalBasis}</Text>
       ) : null}
-    </View>
+    </Pressable>
   );
 }
 

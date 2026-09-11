@@ -72,7 +72,8 @@
     "test:notifications": "npx --yes tsx --tsconfig tsconfig.json lib/notification-routing.test.ts && npx --yes tsx --tsconfig tsconfig.json lib/push-events.test.ts",
     "test:push": "npx --yes tsx --tsconfig tsconfig.json lib/push-events.test.ts",
     "test:lab-provider": "npx --yes tsx --tsconfig tsconfig.json lib/lab-provider.test.ts",
-    "build:apk": "npx eas-cli build --platform android --profile preview"
+    "build:apk": "npx eas-cli build --platform android --profile preview",
+    "build:ios": "npx eas-cli build --platform ios --profile preview"
   },
   "private": true,
   "overrides": {

@@ -3,45 +3,107 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { colors, spacing } from "@/lib/design-tokens";
+
 type ScreenProps = {
   children: ReactNode;
   scroll?: boolean;
-  /** Horizontal padding. Default 24. Triage uses 20 to match the design file. */
+  /** Horizontal padding. Design system default is 20. */
   contentPadding?: number;
+  /** Stays pinned (questionnaire stepper, back row). */
+  header?: ReactNode;
+  /** Stays pinned (Save & continue). Keyboard-aware via KeyboardAvoidingView. */
+  footer?: ReactNode;
+  /** Vertically centre non-scrolling content. Default: only when there is no header/footer. */
+  centered?: boolean;
 };
 
 export function Screen({
   children,
   scroll = false,
-  contentPadding = 24,
+  contentPadding = spacing.screenX,
+  header,
+  footer,
+  centered,
 }: ScreenProps) {
-  const inner = scroll ? (
-    <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
-      <View style={{ paddingHorizontal: contentPadding, paddingVertical: 32 }}>
-        {children}
-      </View>
+  const shouldCenter = centered ?? (!scroll && !header && !footer);
+  const pad = { paddingHorizontal: contentPadding };
+
+  const body = scroll ? (
+    <ScrollView
+      style={styles.flex}
+      contentContainerStyle={[
+        styles.scrollContent,
+        pad,
+        footer ? styles.scrollWithFooter : null,
+      ]}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+    >
+      {children}
     </ScrollView>
   ) : (
     <View
-      className="flex-1 justify-center"
-      style={{ paddingHorizontal: contentPadding, paddingVertical: 32 }}
+      style={[
+        styles.flex,
+        pad,
+        styles.paddedY,
+        shouldCenter ? styles.center : null,
+      ]}
     >
       {children}
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-cream">
+    <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
       <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {inner}
+        {header ? <View style={pad}>{header}</View> : null}
+        {body}
+        {footer ? (
+          <SafeAreaView edges={["bottom"]} style={[styles.footer, pad]}>
+            {footer}
+          </SafeAreaView>
+        ) : null}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: colors.cream,
+  },
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingTop: 16,
+    paddingBottom: 32,
+  },
+  scrollWithFooter: {
+    paddingBottom: 16,
+  },
+  paddedY: {
+    paddingVertical: 32,
+  },
+  center: {
+    justifyContent: "center",
+  },
+  footer: {
+    backgroundColor: colors.cream,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+});

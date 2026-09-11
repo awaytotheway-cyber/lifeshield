@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "LifeShield",
+    "slug": "LifeShield",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "lifeshield",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/icon.png",
+      "bundleIdentifier": "com.lifeshield.app",
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleDisplayName": "LifeShield",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserNotificationsUsageDescription": "LifeShield can send follow-up reminders and let you know when a reviewed plan is ready. You can turn notifications off in iPhone Settings."
+      }
+    },
+    "android": {
+      "label": "LifeShield",
+      "package": "com.lifeshield.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#FAF8F5",
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundImage": "./assets/images/android-icon-background.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "router": {
+        "root": "./app"
+      },
+      "eas": {
+        "projectId": "33d89dae-96b5-4054-8f78-1c6c40a31d91"
+      }
+    },
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "./app"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FAF8F5",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200
+        }
+      ],
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.lifeshield",
+          "enableGooglePay": false
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

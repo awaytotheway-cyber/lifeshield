@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import { LabelRow } from "@/components/ui/WhyAskSheet";
 import { colors, radius } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
@@ -17,6 +18,10 @@ type RadioGroupProps = {
   color?: string;
   /** If false, tapping a selected option does not clear it (used on triage). */
   allowClear?: boolean;
+  /** Optional “Why do we ask this?” sheet for intrusive questions. */
+  whyAsk?: string;
+  /** When this option is selected, use coral styling (symptom Yes only). */
+  dangerValue?: string;
 };
 
 /**
@@ -29,13 +34,16 @@ export function RadioGroup({
   onChange,
   error,
   allowClear = true,
+  whyAsk,
+  dangerValue,
 }: RadioGroupProps) {
   return (
     <View style={styles.wrap}>
-      {label ? <Text style={styles.label}>{label}</Text> : null}
+      {label ? <LabelRow label={label} whyAsk={whyAsk} /> : null}
       <View style={styles.list}>
         {options.map((option) => {
           const selected = value === option.value;
+          const dangerSelected = selected && dangerValue === option.value;
           return (
             <Pressable
               key={option.value}
@@ -45,7 +53,11 @@ export function RadioGroup({
               onPress={() => {
                 onChange(selected && allowClear ? "" : option.value);
               }}
-              style={[styles.card, selected ? styles.cardSelected : styles.cardIdle]}
+              style={[
+                styles.card,
+                selected ? styles.cardSelected : styles.cardIdle,
+                dangerSelected ? styles.cardDanger : null,
+              ]}
             >
               <View style={styles.cardText}>
                 <Text style={styles.optionLabel}>{option.label}</Text>
@@ -54,7 +66,11 @@ export function RadioGroup({
                 ) : null}
               </View>
               {selected ? (
-                <Feather name="check" size={20} color={colors.midTeal} />
+                <Feather
+                  name="check"
+                  size={20}
+                  color={dangerSelected ? colors.coral : colors.midTeal}
+                />
               ) : null}
             </Pressable>
           );
@@ -68,13 +84,6 @@ export function RadioGroup({
 const styles = StyleSheet.create({
   wrap: {
     marginTop: 16,
-  },
-  label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
   },
   list: {
     gap: 8,
@@ -97,6 +106,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightTeal,
     borderWidth: 2,
     borderColor: colors.midTeal,
+  },
+  cardDanger: {
+    backgroundColor: colors.coralLight,
+    borderWidth: 2,
+    borderColor: colors.coral,
   },
   cardText: {
     flex: 1,

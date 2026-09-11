@@ -1,0 +1,13 @@
+# Local / CLI config. The mobile app does not read this file.
+# verify_jwt = true means anonymous callers are rejected before the function runs.
+# The function still checks the JWT and the admin email list itself.
+
+[functions.save-reviewed-result]
+verify_jwt = true
+
+[functions.create-payment-intent]
+verify_jwt = true
+
+# Stripe calls this URL directly — no Supabase JWT on the request.
+[functions.stripe-webhook]
+verify_jwt = false

@@ -1,0 +1,334 @@
+0. THE PRODUCT INTENTION (applies to every screen in every phase)
+
+This is the guiding principle. Cursor: hold this above all styling decisions.
+
+Plain language on the surface. Full clinical accuracy underneath.
+
+The user is never shown jargon without a plain explanation right next to it.
+Every test, finding, and recommendation gets a one-line "what it is / what it does" in everyday words.
+BUT the exact clinical term from the source document is always kept too — shown as a secondary label, tooltip, or "medical name" line. We never omit or dumb down the real specification; we translate it.
+The dashboard and navigation must be simple enough for someone who has never used a health app. One clear action per screen. No dead ends. No confusing menus.
+
+Concrete pattern to use everywhere a clinical term appears:
+
+Gut health check                      ← plain name (big, primary)
+Looks at how your gut bacteria and    ← one-line plain explanation
+digestion may affect hormone balance
+Medical name: Stool beta-glucuronidase & microbial diversity   ← exact term kept, smaller/secondary
+
+Build a reusable <ClinicalTerm> component that takes plainName, plainExplanation, and medicalName, and renders exactly this pattern. Use it every single time a Tier test, gene, or finding is displayed. This one component is how we keep the promise: simple on top, accurate underneath.
+
+1. WHAT PHASE 2 ADDS (scope)
+
+Phase 1 ended at: user completes questionnaire → rules engine recommends tests → a simple list. Phase 2 makes it a real closed loop:
+
+IN scope for Phase 2:
+
+Lab results storage & upload — a way for results to enter the app (manual entry / clinician upload / CSV — no live lab API yet).
+Results dashboard — plain-language display of what each result means, with the exact clinical marker kept underneath.
+The full rules engine, activated — now that lab data can exist, the Tier 4 triggers and the results→intervention map from the document actually fire.
+Personalised plan screen — the intervention list generated from results, every item in plain language + exact clinical basis, clearly marked "pending practitioner review."
+Follow-up & re-test tracking — reminders, and the recurring symptom re-check from the document.
+First Edge Function — one server-side function for anything that must not run on the phone (e.g. writing clinician-reviewed results securely). Introduced gently, with full explanation.
+
+STILL OUT of scope (save for Phase 3): AI coaching chat, supplement e-commerce/payments, live lab-ordering APIs, B2B/practitioner portal, push-notification infrastructure beyond simple local reminders.
+
+2. NEW SUPABASE TABLES (paste into SQL Editor — NOT the Edge Functions editor)
+
+Reminder for the non-coder: SQL goes in Dashboard → SQL Editor. TypeScript (anything starting with import or Deno.serve) goes in Dashboard → Edge Functions. Never mix them — pasting a function into the SQL box is the syntax error at or near "import" error.
+
+sql
+-- ========== TEST RESULTS ==========
+CREATE TABLE public.test_results (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  test_order_id UUID REFERENCES public.test_orders(id),
+  test_name TEXT NOT NULL,          -- exact clinical marker name
+  plain_name TEXT,                  -- everyday name shown to user
+  result_value TEXT,
+  result_unit TEXT,
+  reference_range TEXT,
+  flag TEXT CHECK (flag IN ('normal','low','high','critical','positive','negative')),
+  lab_report_url TEXT,              -- optional PDF in Supabase Storage
+  clinician_reviewed BOOLEAN DEFAULT FALSE,
+  reviewed_by TEXT,
+  reviewed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.test_results ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own_results" ON public.test_results
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- ========== INTERVENTIONS (the personalised plan) ==========
+CREATE TABLE public.interventions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  trigger_finding TEXT NOT NULL,    -- which result/answer triggered this (exact term)
+  plain_reason TEXT,                -- plain-language "why you're seeing this"
+  category TEXT NOT NULL CHECK (category IN (
+    'supplement','diet','lifestyle','therapy','referral','coaching'
+  )),
+  title TEXT NOT NULL,              -- plain-language action title
+  description TEXT,
+  clinical_basis TEXT,              -- exact intervention text from the protocol
+  status TEXT DEFAULT 'draft' CHECK (status IN (
+    'draft','clinician_approved','active','paused','completed','declined'
+  )),
+  approved_by TEXT,
+  approved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.interventions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own_interventions" ON public.interventions
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- ========== FOLLOW-UPS ==========
+CREATE TABLE public.follow_ups (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('retest','review','symptom_check','coaching')),
+  title TEXT NOT NULL,
+  plain_note TEXT,
+  due_date DATE NOT NULL,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending','completed','missed','rescheduled')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.follow_ups ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own_followups" ON public.follow_ups
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+Manage all three later from Table Editor, no code — same as Phase 1.
+
+3. PLAIN-LANGUAGE DICTIONARY (the translation layer)
+
+Create lib/plain-language.ts — the single place mapping every clinical term to its plain name + explanation. This is what powers <ClinicalTerm> and keeps the whole app readable while never losing the exact spec. Cursor: build this as a lookup object; it's easy for the founder to edit later (one entry = one term).
+
+ts
+// lib/plain-language.ts
+// Every clinical term from the source document, translated.
+// plainName = what the user sees big. medicalName = exact term, kept underneath.
+export const TERMS = {
+  // ---- Tier 1 ----
+  brca: {
+    plainName: "Inherited risk gene check",
+    plainExplanation: "Looks for two inherited gene changes that can raise breast and ovarian cancer risk.",
+    medicalName: "BRCA1/2 genetic testing",
+  },
+  ctc: {
+    plainName: "Early cell check (blood test)",
+    plainExplanation: "A blood test that looks for rare cancer-type cells circulating in the body.",
+    medicalName: "Circulating tumour cell (CTC) test — liquid biopsy",
+  },
+  // ---- Tier 2 ----
+  snp: {
+    plainName: "Personal genetics panel",
+    plainExplanation: "Reads small gene variations that affect how your body handles hormones and toxins.",
+    medicalName: "SNP risk-modification panel (buccal/saliva swab)",
+  },
+  // ---- Tier 3 baseline ----
+  thyroid: {
+    plainName: "Thyroid check",
+    plainExplanation: "Checks the gland that controls your energy and metabolism, including immune markers.",
+    medicalName: "Thyroid function (TSH, Free T3, Free T4) + antibodies (TPOAb, TgAb)",
+  },
+  fastingInsulin: {
+    plainName: "Blood sugar handling",
+    plainExplanation: "Shows how well your body manages blood sugar, measured after fasting.",
+    medicalName: "Fasting insulin",
+  },
+  salivaryCortisol: {
+    plainName: "Stress hormone rhythm",
+    plainExplanation: "Measures your stress hormone across the day to gauge how your body copes with stress.",
+    medicalName: "Salivary cortisol (adrenal reserve)",
+  },
+  b12FolateFerritin: {
+    plainName: "Energy & iron levels",
+    plainExplanation: "Key vitamins and iron stores that affect energy and cell health.",
+    medicalName: "Active B12, folate, ferritin",
+  },
+  // ---- Tier 4 ----
+  dutch: {
+    plainName: "Detailed hormone map",
+    plainExplanation: "A urine test showing how your body makes and clears hormones over a full cycle.",
+    medicalName: "DUTCH — Dried Urine Test for Comprehensive Hormones",
+  },
+  stool: {
+    plainName: "Gut health check",
+    plainExplanation: "Looks at gut bacteria balance and digestion, which affect hormone clearance.",
+    medicalName: "Stool beta-glucuronidase, microbial diversity & zonulin",
+  },
+  urinaryIodine: {
+    plainName: "Iodine level",
+    plainExplanation: "Checks iodine, a mineral your thyroid needs. Only tested when it's safe to.",
+    medicalName: "Urinary iodine",
+  },
+  heavyMetals: {
+    plainName: "Toxic metal exposure",
+    plainExplanation: "Checks for build-up of metals like lead or mercury from environment or work.",
+    medicalName: "Heavy metal exposure panel",
+  },
+  cyp450: {
+    plainName: "Detox pathway reading",
+    plainExplanation: "Shows how well your liver processes substances, flagged for the clinician.",
+    medicalName: "CYP450 liver-enzyme functional assessment",
+  },
+  // ---- genes (shown when explaining why a Tier 4 test fired) ----
+  comt: { plainName: "COMT gene", plainExplanation: "Affects how you break down stress hormones and oestrogen.", medicalName: "COMT" },
+  mthfr: { plainName: "MTHFR gene", plainExplanation: "Affects a process called methylation used in detox and repair.", medicalName: "MTHFR" },
+  cyp1a1: { plainName: "CYP1A1 gene", plainExplanation: "Involved in how oestrogen is processed.", medicalName: "CYP1A1" },
+  cyp1b1: { plainName: "CYP1B1 gene", plainExplanation: "Involved in how oestrogen is processed.", medicalName: "CYP1B1" },
+} as const;
+
+If a term isn't in this dictionary yet, <ClinicalTerm> falls back to showing the medical name only, with a small "plain explanation coming soon" — never a crash, never a blank.
+
+4. RESULTS → INTERVENTION MAP (now activated, full accuracy)
+
+Extend lib/rules-engine.ts with mapResultsToInterventions(). Every pairing below is verbatim from the source document's intervention table — do not drop, merge, or soften any. Each generated intervention row stores BOTH the plain reason and the exact clinical_basis.
+
+Finding (exact, from doc)	Intervention (exact, from doc)
+Dysbiosis on stool analysis	Correct dysbiosis; improve vagal tone
+Raised stool beta-glucuronidase	Calcium-D-glucarate
+Impaired liver detox / barrier dysfunction	Liver-support and gut-barrier-repair supplementation
+Positive zonulin (barrier breakage)	Vitamin D correction; vitamin A
+Undigested protein/fat	Digestive enzyme supplementation
+Raised fasting insulin	Cardiometabolic diet; insulin-resistance management
+Abnormal thyroid function	Thyroxine replacement and/or thyroid autoimmunity correction
+Impaired adrenal resilience (cortisol)	Adaptogens; sleep-improvement strategies
+Medium/high self-rated stress	Structured stress-coping support (challenge-framing + social connection)
+Elevated toxin exposure	Sauna therapy; magnesium salt baths; glutathione support
+Low urinary iodine (antibodies NEGATIVE)	Iodine supplementation (blocked if antibodies positive)
+Methylation-pathway SNP issues	Methyl-donor supplementation
+General inflammatory / oxidative burden	Resveratrol, turmeric, high-dose algal omega-3, Glutathione/NAC
+Impaired oestrogen-detoxification (SNP/DUTCH)	Soy isoflavones and DIM/I3C
+
+Safety cross-checks that must run before any intervention is shown (from the doc's guardrails):
+
+Iodine intervention is hard-blocked if thyroid antibodies positive — reuse the Phase 1 hard-stop.
+Before showing DIM/I3C or high-dose omega-3, flag a clinician_interaction_check if the user reported hormone therapy or blood thinners (questionnaire) — the app shows the item as "needs practitioner check" rather than a plain go-ahead.
+Every intervention row is created with status: 'draft' and displays a persistent "pending practitioner review" banner. The app never presents an intervention as an instruction.
+
+5. NEW SCREENS (each one: plain surface, accurate underneath, one clear action)
+
+Screen A — Results Dashboard app/(main)/(results)/index.tsx
+
+Top: one calm summary line ("Your results are in. Here's what they mean in plain language.")
+List of results, each rendered with <ClinicalTerm>: plain name big, one-line meaning, exact marker underneath, and a colour-coded status chip (within range / worth watching / needs attention — never raw scary numbers as the headline).
+Each result opens a detail view with the reference range and the exact value (accuracy kept, just not leading).
+One primary button: "See my plan."
+
+Screen B — Result Detail app/(main)/(results)/result-detail.tsx
+
+Full <ClinicalTerm> block, the actual value + unit + reference range, the lab PDF if present, and a plain "what this means for you" paragraph.
+Clear "this is information, not a diagnosis" line.
+
+Screen C — Personalised Plan app/(main)/(plan)/index.tsx
+
+Persistent banner: "Draft plan — your practitioner reviews this before anything is confirmed."
+Interventions grouped by plain category (Food / Supplements / Daily habits / Follow-up tests / Referrals).
+Each card: plain action title, plain "why you're seeing this," and an expandable "clinical basis" showing the exact protocol wording. Nothing omitted, nothing un-sourced.
+Items needing the interaction check show a clear amber "needs practitioner check" tag.
+
+Screen D — Plan Item Detail app/(main)/(plan)/intervention.tsx
+
+The one intervention in full: what to do, why, the exact finding that triggered it, and its review status.
+
+Screen E — Follow-Up Hub app/(main)/(followup)/index.tsx
+
+Simple upcoming list: re-tests, reviews, and the recurring symptom re-check from the document.
+The symptom re-check reuses the Phase 1 SymptomInterrupt component — any "yes" still routes to Pathway B, at every follow-up, exactly as the document requires.
+Local reminders only (expo-notifications), no server push yet.
+
+Screen F — Results Entry (interim, until live lab API) app/(main)/(results)/enter-results.tsx
+
+A simple form (or CSV import) for a clinician/admin to enter results, writing to test_results.
+Gate this so a regular user can't fake results — writes go through the Edge Function in Section 6, not directly from the app.
+
+Update the Home dashboard so its journey tracker now shows the full loop: Questionnaire → Tests → Results → Plan → Follow-up, with the user's current step highlighted. Keep it to one glance, one primary action.
+
+6. FIRST EDGE FUNCTION (gentle intro for the non-coder)
+
+Phase 2 needs one server-side function: writing clinician-reviewed results so they can't be forged on the phone. Here's exactly what to do — this is TypeScript, it goes in Edge Functions, not the SQL editor.
+
+Cursor: scaffold with the CLI, use the current Deno.serve + jsr:@supabase/supabase-js@2 pattern (this is the current stable pattern as of 2026), and explain each step to me in plain English.
+
+ts
+// supabase/functions/save-reviewed-result/index.ts
+import { createClient } from "jsr:@supabase/supabase-js@2";
+
+Deno.serve(async (req) => {
+  try {
+    const { record } = await req.json();
+
+    // Service-role client stays server-side ONLY — never in the app.
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Basic validation so bad data can't land in the table.
+    if (!record?.user_id || !record?.test_name) {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const { data, error } = await supabase
+      .from("test_results")
+      .insert({ ...record, clinician_reviewed: true, reviewed_at: new Date().toISOString() })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return new Response(JSON.stringify({ data }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500, headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+
+Deploy: supabase functions deploy save-reviewed-result. Set the secret once: supabase secrets set SUPABASE_SERVICE_ROLE_KEY=... (find it in Dashboard → Settings → API). The service-role key NEVER goes in the app — only here, server-side. This is the one rule that keeps results trustworthy.
+
+7. BUILD ORDER (keep app runnable after each step)
+
+Day 1 — Run the Section 2 SQL. Build lib/plain-language.ts and the <ClinicalTerm> component. Verify it renders the plain/accurate pattern with one sample term before wiring anything else.
+
+Day 2 — Extend rules-engine.ts with mapResultsToInterventions() using the full Section 4 table + safety cross-checks. Unit-test it with a few fake result sets.
+
+Day 3 — Results Entry form + the save-reviewed-result Edge Function. Confirm a result can be entered and appears in test_results.
+
+Day 4 — Results Dashboard + Result Detail, all via <ClinicalTerm>. Status chips lead, raw numbers sit underneath.
+
+Day 5 — Personalised Plan + Plan Item Detail, with the pending-review banner and expandable clinical basis.
+
+Day 6 — Follow-Up Hub, reusing the SymptomInterrupt for the recurring re-check; local reminders.
+
+Day 7 — Update Home journey tracker to the full loop. End-to-end test: enter results → dashboard → plan → follow-up. Run npx expo-doctor, fix all warnings, confirm no crashes and no blank screens.
+
+8. PHASE 2 ERROR-PROOFING ADDITIONS (on top of Phase 1's checklist)
+ <ClinicalTerm> never blanks — missing dictionary entry falls back to medical name + "plain explanation coming soon."
+ No result screen ever leads with a raw scary number; status chip first, value on detail.
+ Every intervention shows its "pending practitioner review" state; none reads as an instruction.
+ Iodine hard-stop and interaction cross-checks run before the plan renders.
+ The service-role key exists ONLY in the Edge Function secret, never in app code or .env shipped to device.
+ Symptom re-check in Follow-Up still routes to Pathway B on any "yes."
+ SQL went in the SQL editor, function TypeScript went in Edge Functions — no cross-paste.
+
+9. FIRST MESSAGE TO PASTE INTO CURSOR
+Read both .cursorrules (Phase 1) and .cursorrules-phase2 (this file). Phase 1 is
+already built — do not rebuild it. Hold the Product Intention in Section 0 above
+all else: plain language on the surface, exact clinical terms kept underneath,
+simple navigation, one clear action per screen.
+
+Start with Phase 2 Day 1 from Section 7:
+1. I'll run the Section 2 SQL in the Supabase SQL editor myself — give it to me
+   and confirm it's SQL (not an Edge Function).
+2. Build lib/plain-language.ts and a reusable <ClinicalTerm> component that shows
+   plainName (big), plainExplanation (one line), and medicalName (secondary).
+3. Show me <ClinicalTerm> rendering one sample term so I can approve the pattern
+   before we use it everywhere.
+
+Explain each step in plain English and stop for my confirmation before Day 2.

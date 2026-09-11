@@ -14,6 +14,8 @@ type UiProductCardProps = {
   checkReason?: string;
   onAdd?: () => void;
   adding?: boolean;
+  layout?: "row" | "grid";
+  onOpen?: () => void;
 };
 
 /**
@@ -30,17 +32,26 @@ export function ProductCard({
   checkReason,
   onAdd,
   adding,
+  layout = "row",
+  onOpen,
 }: UiProductCardProps) {
   const showAdd = !blocked && !needsCheck;
+  const isGrid = layout === "grid";
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={name}
+      onPress={onOpen}
+      disabled={!onOpen}
+      style={[styles.card, isGrid ? styles.cardGrid : styles.cardRow]}
+    >
       {imageUri ? (
-        <Image source={{ uri: imageUri }} style={styles.image} />
+        <Image source={{ uri: imageUri }} style={isGrid ? styles.imageGrid : styles.image} />
       ) : (
-        <View style={styles.image} />
+        <View style={isGrid ? styles.imageGrid : styles.image} />
       )}
-      <View style={styles.right}>
+      <View style={isGrid ? styles.gridBody : styles.right}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.price}>{priceLabel}</Text>
         <Text style={styles.desc}>{description}</Text>
@@ -52,7 +63,10 @@ export function ProductCard({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Add ${name}`}
-            onPress={onAdd}
+            onPress={(event) => {
+              event.stopPropagation();
+              onAdd?.();
+            }}
             disabled={adding}
             style={styles.add}
           >
@@ -60,7 +74,7 @@ export function ProductCard({
           </Pressable>
         ) : null}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -69,15 +83,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: radius.radioCard,
     padding: spacing.base,
+    ...shadows.card,
+  },
+  cardRow: {
     flexDirection: "row",
     gap: 12,
-    ...shadows.card,
+  },
+  cardGrid: {
+    flex: 1,
+    margin: 4,
   },
   image: {
     width: 80,
     height: 80,
     borderRadius: 10,
     backgroundColor: colors.lightTeal,
+  },
+  imageGrid: {
+    width: "100%",
+    height: 80,
+    borderRadius: 10,
+    backgroundColor: colors.lightTeal,
+    marginBottom: 8,
+  },
+  gridBody: {
+    flex: 1,
   },
   right: {
     flex: 1,

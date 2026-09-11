@@ -1,0 +1,278 @@
+# CURSOR PROJECT RULES — LifeShield Phase 3 (Intervention Store & Fulfilment)
+
+> **This extends Phases 1 & 2. Do not rebuild them.** Keep the existing
+> `.cursorrules` and `.cursorrules-phase2`; add this as `.cursorrules-phase3`
+> and tell Cursor to read all three. Phase 1's Golden Rules, version pins,
+> error-proofing, and the Phase 2 Product Intention (plain language on the
+> surface, exact clinical terms underneath) all still apply unchanged.
+
+---
+
+## 0. A NOTE ON WHAT THIS PHASE IS — AND ISN'T
+
+Phase 3 turns the **personalised plan** (built in Phase 2) into something a user
+can act on: order the recommended supplements and tests, pay for them, and track
+the order. Every product in the store comes directly from the source clinical
+document's intervention protocol and testing tiers — nothing invented.
+
+**Deliberately NOT in Phase 3 — and why:**
+- **No AI coaching chat.** The source document contains no conversational
+  assistant, AI companion, or lifestyle-coaching feature. Its "automation" is
+  deterministic workflow logic (triage, test triggers, reminders), not a chatbot.
+  Per the intent to include only what the document specifies, AI coaching is
+  excluded from this build. If you later want it, it's a separate decision with
+  its own safety review — not part of the documented protocol.
+- **No live lab-ordering API, no push-notification server, no admin/practitioner
+  portal** — those are Phase 4 (operational layer).
+
+So Phase 3 = the commerce layer over the plan. That's it. Focused and shippable.
+
+---
+
+## 1. WHAT PHASE 3 ADDS (scope)
+
+1. **Product catalog** — supplements and tests from the document, stored so they're manageable, each shown in plain language with the exact clinical basis kept underneath.
+2. **Personalised store** — the plan's recommended interventions become buyable items, pre-filtered to what THIS user's results triggered.
+3. **Cart & checkout** — add items, review, pay.
+4. **Payments** — Stripe (Expo-supported, crash-safe). Razorpay noted as the India-preferred swap for later.
+5. **Orders & order tracking** — the user sees status from paid → fulfilled.
+6. **Safety gates carried into commerce** — the document's contraindication and interaction rules block or flag items at the point of purchase, not just on the plan screen.
+
+---
+
+## 2. NEW SUPABASE TABLES (SQL Editor — not Edge Functions)
+
+```sql
+-- ========== PRODUCT CATALOG ==========
+-- Supplements AND tests both live here, distinguished by product_type.
+CREATE TABLE public.products (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_type TEXT NOT NULL CHECK (product_type IN ('supplement','test')),
+  plain_name TEXT NOT NULL,          -- what the user sees
+  plain_description TEXT,             -- one-line "what it does"
+  clinical_name TEXT NOT NULL,       -- exact term from the document
+  linked_finding TEXT,               -- which finding/intervention this maps to
+  test_tier INTEGER CHECK (test_tier IN (1,2,3,4)),  -- for tests only
+  price NUMERIC NOT NULL,
+  currency TEXT DEFAULT 'INR',
+  requires_consent BOOLEAN DEFAULT FALSE,   -- BRCA/CTC/SNP = true
+  interaction_flags TEXT[],          -- e.g. {'hormone_therapy','blood_thinners'}
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+-- Everyone can READ the catalog; only admin writes (admin role added in Phase 4).
+CREATE POLICY "read_products" ON public.products FOR SELECT USING (true);
+
+-- ========== CART ==========
+CREATE TABLE public.cart_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES public.products(id),
+  quantity INTEGER DEFAULT 1 CHECK (quantity > 0),
+  added_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, product_id)
+);
+ALTER TABLE public.cart_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own_cart" ON public.cart_items
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- ========== ORDERS ==========
+CREATE TABLE public.orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  total_amount NUMERIC NOT NULL,
+  currency TEXT DEFAULT 'INR',
+  payment_status TEXT DEFAULT 'pending' CHECK (payment_status IN (
+    'pending','paid','failed','refunded'
+  )),
+  payment_provider TEXT,             -- 'stripe' (or 'razorpay' later)
+  payment_ref TEXT,                  -- provider's transaction id
+  fulfilment_status TEXT DEFAULT 'awaiting_payment' CHECK (fulfilment_status IN (
+    'awaiting_payment','processing','shipped','delivered','sample_collected','cancelled'
+  )),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own_orders" ON public.orders
+  FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- ========== ORDER LINE ITEMS ==========
+CREATE TABLE public.order_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id UUID REFERENCES public.orders(id) ON DELETE CASCADE,
+  product_id UUID REFERENCES public.products(id),
+  product_name TEXT NOT NULL,        -- snapshot at purchase time
+  unit_price NUMERIC NOT NULL,
+  quantity INTEGER NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own_order_items" ON public.order_items
+  FOR ALL USING (
+    auth.uid() = (SELECT user_id FROM public.orders WHERE id = order_id)
+  );
+```
+
+Seed the `products` table with the document's items (do this once from the SQL editor or Table Editor):
+- **Supplements:** calcium-D-glucarate, liver-support/gut-repair, vitamin D, vitamin A, digestive enzymes, adaptogens, glutathione, iodine, methyl-donors, resveratrol, turmeric, algal omega-3, NAC, soy isoflavones, DIM/I3C
+- **Tests:** BRCA1/2, CTC, SNP panel, routine bloods, thyroid + antibodies, B12/folate/ferritin, fasting insulin, salivary cortisol, urinary iodine, stool analysis, heavy metals, DUTCH, CYP450
+
+For each, set `interaction_flags` where the document requires it (DIM/I3C and high-dose omega-3 get `{'hormone_therapy','blood_thinners'}`), and `requires_consent = true` for BRCA/CTC/SNP.
+
+---
+
+## 3. PAYMENTS — CRASH-SAFE CHOICE
+
+**Use Stripe.** Reason: `@stripe/stripe-react-native` has official Expo support and works in a normal Expo build — the safe path for a non-coder. Razorpay's React Native SDK is a native module that does NOT work in Expo Go and needs a custom dev build; it's often preferred for Indian UPI, so treat it as a later swap, not the Phase 3 default.
+
+```bash
+npx expo install @stripe/stripe-react-native
+```
+
+**Golden payment rule (never break this):** the app NEVER creates a charge directly. The amount is always calculated and the payment intent always created **server-side in an Edge Function**, then confirmed on the device with Stripe's Payment Sheet. This stops anyone tampering with prices on the phone.
+
+Flow:
+1. User taps "Pay" → app calls Edge Function `create-payment-intent` with the cart.
+2. Edge Function re-reads product prices from the DB (never trusts prices sent from the app), sums the total, creates the Stripe PaymentIntent, returns its `clientSecret`.
+3. App opens Stripe Payment Sheet with that `clientSecret`.
+4. On success, a Stripe webhook (second Edge Function) marks the order `paid`. The app also optimistically shows success, but the webhook is the source of truth.
+
+Edge Function skeleton (goes in **Edge Functions**, TypeScript — not the SQL editor):
+```ts
+// supabase/functions/create-payment-intent/index.ts
+import { createClient } from "jsr:@supabase/supabase-js@2";
+import Stripe from "npm:stripe";
+
+Deno.serve(async (req) => {
+  try {
+    const { cartItemIds, userId } = await req.json();
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Re-read real prices server-side — never trust amounts from the app.
+    const { data: items, error } = await supabase
+      .from("cart_items")
+      .select("quantity, products(price, plain_name, interaction_flags, requires_consent)")
+      .eq("user_id", userId)
+      .in("id", cartItemIds);
+    if (error) throw error;
+
+    const total = items.reduce((s, it) => s + it.products.price * it.quantity, 0);
+
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!);
+    const intent = await stripe.paymentIntents.create({
+      amount: Math.round(total * 100), // paise
+      currency: "inr",
+    });
+
+    return new Response(JSON.stringify({ clientSecret: intent.client_secret, total }), {
+      status: 200, headers: { "Content-Type": "application/json" },
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500, headers: { "Content-Type": "application/json" },
+    });
+  }
+});
+```
+Set secrets once: `supabase secrets set STRIPE_SECRET_KEY=sk_test_...`. The Stripe secret key lives ONLY here, never in the app. In the app, use only the Stripe publishable key.
+
+---
+
+## 4. SAFETY GATES AT PURCHASE (from the document — do not skip)
+
+The document's contraindication and interaction rules must fire again at the store, not just on the plan screen:
+
+- **Consent gate:** any product with `requires_consent = true` (BRCA/CTC/SNP) cannot be added to cart until the matching consent row exists in `consent_records`. If missing, route the user to the relevant Phase 1 consent screen first.
+- **Iodine hard-stop:** the iodine supplement is blocked from cart if the user's thyroid antibodies are positive (reuse the Phase 1/2 hard-stop). Show the plain reason, not a raw error.
+- **Interaction flag:** if a product's `interaction_flags` overlap with what the user reported (hormone therapy, blood thinners), the item is not a one-tap buy — it shows an amber "needs practitioner check before ordering" state and routes to review rather than straight to cart.
+- **Draft-plan gate:** interventions still in `status = 'draft'` (not yet practitioner-approved from Phase 2) show as "pending review" and are not purchasable until approved. Commerce never front-runs clinician sign-off.
+
+Build these as a single reusable `canPurchase(product, userContext)` function in `lib/purchase-gates.ts` returning `{ allowed, blockReason, needsCheck }`, so every "Add to cart" button checks the same logic.
+
+---
+
+## 5. NEW SCREENS (plain surface, accurate underneath, one clear action)
+
+**Screen A — Store / Recommended for You** `app/(main)/(store)/index.tsx`
+- Top section: "Recommended from your plan" — only items whose `linked_finding` matches this user's triggered interventions. This is the personalised, high-relevance part.
+- Below: "Full catalog" — browsable, still each via `<ClinicalTerm>` (plain name big, clinical name underneath).
+- Every card shows price and an "Add" button that runs `canPurchase()` first.
+
+**Screen B — Product Detail** `app/(main)/(store)/product.tsx`
+- Full `<ClinicalTerm>` block, plain description, the exact clinical basis, price, and any safety state (consent needed / interaction check / iodine block) shown in plain language.
+- "Add to cart" or the appropriate blocked/needs-check state.
+
+**Screen C — Cart** `app/(main)/(store)/cart.tsx`
+- Line items, quantities, running total (display only — real total comes from the Edge Function).
+- Re-runs `canPurchase()` on each item at load in case the user's status changed.
+- "Checkout" button.
+
+**Screen D — Checkout & Payment** `app/(main)/(store)/checkout.tsx`
+- Calls `create-payment-intent`, opens Stripe Payment Sheet.
+- Clear states: processing, success, failure — never a blank screen. On failure, the cart is preserved.
+
+**Screen E — Orders / Tracking** `app/(main)/(orders)/index.tsx`
+- List of past orders with payment + fulfilment status in plain words ("Paid — being prepared", "Shipped", "Sample kit on the way").
+- Tap into an order for its line items and status timeline.
+
+Update Home so the journey tracker now ends at: Questionnaire → Tests → Results → Plan → **Order & track** → Follow-up.
+
+---
+
+## 6. BUILD ORDER (keep app runnable after each step)
+
+**Day 1** — Run Section 2 SQL. Seed the `products` table with the document's supplements and tests. Build `lib/purchase-gates.ts` (`canPurchase`) and unit-test it against the safety cases.
+
+**Day 2** — Store screen + Product Detail, reusing `<ClinicalTerm>`. "Recommended for you" filtered to the user's triggered interventions.
+
+**Day 3** — Cart: add/remove/quantity, `canPurchase` re-check on load, running total.
+
+**Day 4** — `create-payment-intent` Edge Function + Stripe secret setup. Test it returns a correct server-side total.
+
+**Day 5** — Checkout screen + Stripe Payment Sheet. Handle success/failure/processing cleanly. Write the order + order_items on success.
+
+**Day 6** — Stripe webhook Edge Function to mark orders `paid` (source of truth). Orders/Tracking screen.
+
+**Day 7** — Wire the safety gates end-to-end (consent, iodine, interaction, draft-plan). Update Home tracker. Full test: plan → add recommended item → cart → pay (Stripe test card) → see order. Run `npx expo-doctor`, fix all warnings, confirm no crashes.
+
+---
+
+## 7. PHASE 3 ERROR-PROOFING ADDITIONS
+
+- [ ] Prices are ALWAYS computed server-side; the app never sends an amount to charge.
+- [ ] Stripe secret key is only in the Edge Function secret; app holds only the publishable key.
+- [ ] Payment failure preserves the cart and shows a friendly retry, never a blank screen.
+- [ ] `canPurchase()` runs on every add-to-cart AND again at cart load (status can change between).
+- [ ] Consent-required products cannot be bought without the consent row.
+- [ ] Iodine hard-stop and interaction flags block/flag at purchase, in plain language.
+- [ ] Draft (un-reviewed) interventions are not purchasable.
+- [ ] Order totals are snapshotted into `order_items` so later price changes don't rewrite history.
+- [ ] SQL went in the SQL editor; Edge Function TypeScript went in Edge Functions.
+
+---
+
+## 8. FIRST MESSAGE TO PASTE INTO CURSOR
+
+```
+Read all three: .cursorrules (Phase 1), .cursorrules-phase2, .cursorrules-phase3
+(this file). Phases 1 and 2 are already built — do not rebuild them. Hold the
+Product Intention from Phase 2 Section 0 (plain language on top, exact clinical
+terms underneath, one clear action per screen).
+
+Note: there is no AI coaching in this app — it is not in the source document, so
+do not add any chatbot or coaching feature.
+
+Start with Phase 3 Day 1 from Section 6:
+1. Give me the Section 2 SQL to run in the Supabase SQL editor (confirm it's SQL,
+   not an Edge Function), plus the seed rows for the products table from the
+   document's supplement and test lists.
+2. Build lib/purchase-gates.ts with a canPurchase() function covering the consent
+   gate, iodine hard-stop, interaction flags, and draft-plan gate.
+3. Unit-test canPurchase() against those safety cases and show me the results.
+
+Explain each step in plain English and stop for my confirmation before Day 2.
+```
