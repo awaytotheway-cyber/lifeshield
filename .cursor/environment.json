@@ -1,0 +1,14 @@
+{
+  "name": "LifeShield",
+  "install": "./.cursor/install.sh",
+  "terminals": [
+    {
+      "name": "expo-web",
+      "command": "CI=1 npx expo start --web --port 8081"
+    },
+    {
+      "name": "admin",
+      "command": "cd admin && npm run dev -- --host 127.0.0.1"
+    }
+  ]
+}
