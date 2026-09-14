@@ -1,6 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { StyleSheet, Text } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -8,6 +7,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { SectionComplete } from "@/components/illustrations";
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
@@ -52,9 +52,7 @@ export function SectionCompleteCard({
 
   return (
     <Animated.View style={[styles.card, motionStyle]}>
-      <View style={styles.iconCircle}>
-        <Feather name="check" size={20} color={colors.white} />
-      </View>
+      <SectionComplete width={80} height={80} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
     </Animated.View>
@@ -68,16 +66,8 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     alignItems: "center",
   },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.sage,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
   title: {
+    marginTop: 12,
     fontFamily: fontFamily.display,
     fontSize: 20,
     color: colors.sage,

@@ -204,7 +204,7 @@ Phase 1–3 patient policies (`own_profile`, `own_orders`, `own_results_select`,
 
 ## What to do in Supabase (step by step)
 
-1. Open [supabase.com](https://supabase.com) → your LifeShield project → **SQL Editor** → **New query**.
+1. Open [supabase.com](https://supabase.com) → your PRESCOPE project → **SQL Editor** → **New query**.
 2. Open the file `supabase/phase4-schema.sql` from this project in a text editor.
 3. Copy **the entire file** and paste it into the SQL Editor.
 4. Click **Run**. You should see “Success” with no red errors.

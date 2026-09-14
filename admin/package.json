@@ -2,7 +2,7 @@
   "name": "lifeshield-admin",
   "private": true,
   "version": "1.0.0",
-  "description": "LifeShield back-office admin (Refine + Supabase)",
+  "description": "PRESCOPE back-office admin (Refine + Supabase)",
   "type": "module",
   "scripts": {
     "dev": "vite",

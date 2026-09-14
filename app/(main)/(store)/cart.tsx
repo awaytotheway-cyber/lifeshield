@@ -2,6 +2,7 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
+import { EmptyBox } from "@/components/illustrations";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
 import { Button } from "@/components/ui/Button";
@@ -204,7 +205,10 @@ export default function CartScreen() {
       ) : null}
 
       {!loading && !message && lines.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.cartEmpty}</Text>
+        <View className="mt-6 items-center">
+          <EmptyBox width={100} height={100} />
+          <Text className="mt-4 text-center text-charcoal">{COPY.cartEmpty}</Text>
+        </View>
       ) : null}
 
       {!loading && !message

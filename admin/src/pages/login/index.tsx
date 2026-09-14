@@ -16,7 +16,7 @@ export function AdminLoginPage() {
         type="login"
         title={
           <div>
-            <div className="ls-login-title">LifeShield</div>
+            <div className="ls-login-title">PRESCOPE</div>
             <div className="ls-login-subtitle">Admin — clinician and ops</div>
           </div>
         }

@@ -2,7 +2,11 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
+import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
+import { TrustBanner } from "@/components/ui/TrustBanner";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
@@ -82,6 +86,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const loading = useAuthStore((state) => state.loading);
   const session = useAuthStore((state) => state.session);
+  const termsPrivacyAccepted = useAuthStore((state) => state.termsPrivacyAccepted);
   const onboardingCompleted = useAuthStore((state) => state.onboardingCompleted);
   const triageStatus = useTriageStore((state) => state.status);
   const agreed = useConsentStore((state) => state.agreed);
@@ -164,6 +169,10 @@ export default function HomeScreen() {
     return <Redirect href={routes.login} />;
   }
 
+  if (!termsPrivacyAccepted) {
+    return <Redirect href={routes.consentPrivacy} />;
+  }
+
   if (!onboardingCompleted) {
     return <Redirect href={routes.welcome} />;
   }
@@ -244,11 +253,49 @@ export default function HomeScreen() {
     }),
   ];
 
+  const consentCount = (agreed.brca ? 1 : 0) + (agreed.ctc ? 1 : 0) + (agreed.snp ? 1 : 0);
+
+  const milestoneStats: [
+    { id: string; value: string | number; label: string },
+    { id: string; value: string | number; label: string },
+    { id: string; value: string | number; label: string },
+  ] = [
+    { id: "sections", value: `${questionnaireCount}/10`, label: "Questionnaire" },
+    { id: "consents", value: `${consentCount}/3`, label: "Consents" },
+    {
+      id: "tests",
+      value: hasRecommendations ? "Ready" : "Soon",
+      label: "Test plan",
+    },
+  ];
+
+  const homeFeatures = [
+    { id: "science", label: "Science-backed rules", icon: "cpu" as const },
+    { id: "private", label: "Private by default", icon: "lock" as const },
+    { id: "calm", label: "Calm, clear next steps", icon: "heart" as const },
+    { id: "track", label: "Track your journey", icon: "map" as const },
+  ];
+
   return (
     <Screen scroll contentPadding={spacing.screenX}>
-      <Text style={styles.brand}>{COPY.appName}</Text>
+      <View style={styles.menuRow}>
+        <MenuButton />
+        <Text style={styles.brand}>{COPY.appName}</Text>
+      </View>
       <Text style={styles.tagline}>{COPY.tagline}</Text>
       <Text style={styles.headline}>{headlineFor(current)}</Text>
+
+      <View style={styles.trust}>
+        <TrustBanner />
+      </View>
+
+      <View style={styles.stats}>
+        <MilestoneStatStrip stats={milestoneStats} />
+      </View>
+
+      <View style={styles.features}>
+        <PillFeatureGrid features={homeFeatures} />
+      </View>
 
       <Text style={styles.section}>{COPY.homeJourneyTitle}</Text>
       <View style={styles.timeline}>
@@ -362,13 +409,28 @@ const styles = StyleSheet.create({
     color: colors.charcoal,
     textAlign: "center",
   },
+  menuRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   brand: {
+    flex: 1,
     fontFamily: fontFamily.display,
-    fontSize: 32,
-    lineHeight: 38,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
-    textAlign: "center",
+    fontSize: 34,
+    lineHeight: 40,
+    letterSpacing: -0.6,
+    color: colors.primaryBlue,
+    textAlign: "left",
+  },
+  trust: {
+    marginTop: 20,
+  },
+  stats: {
+    marginTop: 16,
+  },
+  features: {
+    marginTop: 16,
   },
   tagline: {
     marginTop: 12,
@@ -376,7 +438,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 24,
     color: colors.slate,
-    textAlign: "center",
+    textAlign: "left",
   },
   headline: {
     marginTop: 16,
@@ -384,15 +446,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 24,
     color: colors.charcoal,
-    textAlign: "center",
+    textAlign: "left",
   },
   section: {
     marginTop: 24,
     marginBottom: 12,
     fontFamily: fontFamily.bodySemi,
     fontSize: 20,
-    color: colors.deepTeal,
-    textAlign: "center",
+    color: colors.primaryBlue,
+    textAlign: "left",
   },
   timeline: {
     marginBottom: 8,
@@ -402,21 +464,21 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     color: colors.coral,
-    textAlign: "center",
+    textAlign: "left",
   },
   hint: {
     marginTop: 16,
     fontFamily: fontFamily.body,
     fontSize: 15,
     color: colors.slate,
-    textAlign: "center",
+    textAlign: "left",
   },
   also: {
     marginTop: 24,
     fontFamily: fontFamily.body,
     fontSize: 13,
     color: colors.slate,
-    textAlign: "center",
+    textAlign: "left",
   },
 });
 

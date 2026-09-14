@@ -1,6 +1,6 @@
 # Phase 4 Day 5 — Lab orders after checkout (plain English)
 
-When a patient pays for a **test** in the store, LifeShield creates a `lab_orders` row so your team can fulfil it manually until a live lab API is connected.
+When a patient pays for a **test** in the store, PRESCOPE creates a `lab_orders` row so your team can fulfil it manually until a live lab API is connected.
 
 ## What you run in Supabase
 

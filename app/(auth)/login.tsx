@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { PostAuthRedirect } from "@/components/journey/PostAuthRedirect";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TextField } from "@/components/ui/TextField";
@@ -111,6 +112,7 @@ export default function LoginScreen() {
 
       <SetupBanners />
 
+      <Card>
       <Controller
         control={control}
         name="email"
@@ -144,6 +146,7 @@ export default function LoginScreen() {
           />
         )}
       />
+      </Card>
 
       <TextButton
         title={COPY.forgotPassword}

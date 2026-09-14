@@ -29,6 +29,8 @@ type AuthState = {
   configured: boolean;
   errorMessage: string | null;
   onboardingCompleted: boolean;
+  /** True only after terms_privacy is saved. Blocks every other screen. */
+  termsPrivacyAccepted: boolean;
   setupMessage: string | null;
   initialize: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<ActionResult>;
@@ -41,15 +43,18 @@ type AuthState = {
   requestPasswordReset: (email: string) => Promise<ActionResult>;
   refreshOnboarding: () => Promise<void>;
   saveTermsConsent: () => Promise<ActionResult>;
+  completeOnboarding: () => Promise<ActionResult>;
 };
 
 async function readOnboarding(userId: string): Promise<{
   completed: boolean;
+  termsPrivacyAccepted: boolean;
   setupMessage: string | null;
 }> {
   const ensured = await ensureProfileRow(userId);
   const profileWarning = ensured.ok ? null : ensured.message ?? COPY.missingProfile;
 
+  let termsPrivacyAccepted = false;
   try {
     const { data: consent, error: consentError } = await supabase
       .from("consent_records")
@@ -62,12 +67,11 @@ async function readOnboarding(userId: string): Promise<{
     if (consentError) {
       throw consentError;
     }
-    if (consent) {
-      return { completed: true, setupMessage: profileWarning };
-    }
+    termsPrivacyAccepted = Boolean(consent);
   } catch (error) {
     return {
       completed: false,
+      termsPrivacyAccepted: false,
       setupMessage: messageFromUnknown(error, profileWarning ?? COPY.setupTables),
     };
   }
@@ -85,12 +89,14 @@ async function readOnboarding(userId: string): Promise<{
 
     return {
       completed: Boolean(profile?.onboarding_completed),
+      termsPrivacyAccepted,
       // Missing row after upsert = trigger/SQL issue, not a white screen.
       setupMessage: profile ? profileWarning : profileWarning ?? COPY.missingProfile,
     };
   } catch (error) {
     return {
       completed: false,
+      termsPrivacyAccepted,
       setupMessage: messageFromUnknown(error, profileWarning ?? COPY.setupTables),
     };
   }
@@ -102,6 +108,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   configured: isSupabaseConfigured,
   errorMessage: null,
   onboardingCompleted: false,
+  termsPrivacyAccepted: false,
   setupMessage: null,
 
   initialize: async () => {
@@ -110,6 +117,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         session: null,
         loading: false,
         onboardingCompleted: false,
+        termsPrivacyAccepted: false,
         errorMessage: null,
         setupMessage: COPY.missingKeys,
       });
@@ -123,10 +131,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       const session = data.session ?? null;
       let onboardingCompleted = false;
+      let termsPrivacyAccepted = false;
       let setupMessage: string | null = null;
       if (session?.user.id) {
         const status = await readOnboarding(session.user.id);
         onboardingCompleted = status.completed;
+        termsPrivacyAccepted = status.termsPrivacyAccepted;
         setupMessage = status.setupMessage;
       }
       set({
@@ -134,6 +144,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         loading: false,
         errorMessage: null,
         onboardingCompleted,
+        termsPrivacyAccepted,
         setupMessage,
       });
     } catch (error) {
@@ -141,6 +152,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         session: null,
         loading: false,
         onboardingCompleted: false,
+        termsPrivacyAccepted: false,
         errorMessage: classifyError(error).message,
       });
     }
@@ -151,18 +163,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         supabase.auth.onAuthStateChange((_event, nextSession) => {
           void (async () => {
             let onboardingCompleted = get().onboardingCompleted;
+            let termsPrivacyAccepted = get().termsPrivacyAccepted;
             let setupMessage = get().setupMessage;
             if (nextSession?.user.id) {
               const status = await readOnboarding(nextSession.user.id);
               onboardingCompleted = status.completed;
+              termsPrivacyAccepted = status.termsPrivacyAccepted;
               setupMessage = status.setupMessage;
             } else {
               onboardingCompleted = false;
+              termsPrivacyAccepted = false;
               setupMessage = null;
             }
             set({
               session: nextSession,
               onboardingCompleted,
+              termsPrivacyAccepted,
               setupMessage,
             });
           })();
@@ -187,6 +203,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       const session = data.session ?? null;
       let onboardingCompleted = false;
+      let termsPrivacyAccepted = false;
       let setupMessage: string | null = null;
       if (session?.user.id) {
         const metaName =
@@ -196,6 +213,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const ensured = await ensureProfileRow(session.user.id, metaName);
         const status = await readOnboarding(session.user.id);
         onboardingCompleted = status.completed;
+        termsPrivacyAccepted = status.termsPrivacyAccepted;
         setupMessage = ensured.ok
           ? status.setupMessage
           : ensured.message ?? status.setupMessage;
@@ -204,6 +222,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         session,
         errorMessage: null,
         onboardingCompleted,
+        termsPrivacyAccepted,
         setupMessage,
       });
       return { ok: true };
@@ -230,7 +249,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         },
       });
       if (error) {
-        console.warn("LifeShield sign-up error:", registerFailureMessage(error));
+        console.warn("PRESCOPE sign-up error:", registerFailureMessage(error));
         return { ok: false, message: registerFailureMessage(error) };
       }
 
@@ -251,7 +270,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const ensured = await ensureProfileRow(session.user.id, fullName.trim());
         if (!ensured.ok) {
           const setupMessage = ensured.message ?? COPY.missingProfile;
-          set({ session, setupMessage, onboardingCompleted: false });
+          set({
+            session,
+            setupMessage,
+            onboardingCompleted: false,
+            termsPrivacyAccepted: false,
+          });
           return { ok: true, message: setupMessage };
         }
         const status = await readOnboarding(session.user.id);
@@ -259,6 +283,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           session,
           errorMessage: null,
           onboardingCompleted: status.completed,
+          termsPrivacyAccepted: status.termsPrivacyAccepted,
           setupMessage: status.setupMessage,
         });
         return { ok: true };
@@ -271,7 +296,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         message: COPY.registerEmailConfirm,
       };
     } catch (error) {
-      console.warn("LifeShield sign-up exception:", registerFailureMessage(error));
+      console.warn("PRESCOPE sign-up exception:", registerFailureMessage(error));
       return {
         ok: false,
         message: registerFailureMessage(error),
@@ -313,6 +338,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({
         session: null,
         onboardingCompleted: false,
+        termsPrivacyAccepted: false,
         errorMessage: null,
         setupMessage: null,
       });
@@ -321,6 +347,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({
         session: null,
         onboardingCompleted: false,
+        termsPrivacyAccepted: false,
       });
       return {
         ok: false,
@@ -332,12 +359,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   refreshOnboarding: async () => {
     const userId = get().session?.user.id;
     if (!userId) {
-      set({ onboardingCompleted: false });
+      set({ onboardingCompleted: false, termsPrivacyAccepted: false });
       return;
     }
     const status = await readOnboarding(userId);
     set({
       onboardingCompleted: status.completed,
+      termsPrivacyAccepted: status.termsPrivacyAccepted,
       setupMessage: status.setupMessage,
     });
   },
@@ -378,8 +406,32 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         if (insertError) {
           throw insertError;
         }
+      } else if (existing) {
+        const { error: updateError } = await supabase
+          .from("consent_records")
+          .update({ consented: true })
+          .eq("id", existing.id);
+        if (updateError) {
+          throw updateError;
+        }
       }
 
+      set({ termsPrivacyAccepted: true, setupMessage: null });
+      return { ok: true };
+    } catch (error) {
+      return {
+        ok: false,
+        message: messageFromUnknown(error, COPY.setupTables),
+      };
+    }
+  },
+
+  completeOnboarding: async () => {
+    const userId = get().session?.user.id;
+    if (!userId) {
+      return { ok: false, message: "Please log in first." };
+    }
+    try {
       const { error: profileError } = await supabase
         .from("profiles")
         .update({ onboarding_completed: true })

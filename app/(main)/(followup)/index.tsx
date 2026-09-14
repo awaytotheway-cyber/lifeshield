@@ -2,6 +2,7 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
+import { CalendarCheck, FollowUpCalendar } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
@@ -198,6 +199,9 @@ export default function FollowUpHubScreen() {
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.followUpBackHome}
       />
+      <View style={styles.calendar}>
+        <FollowUpCalendar width={100} height={80} />
+      </View>
       <Text style={styles.body}>{COPY.followUpBody}</Text>
 
       {loading ? <StaticSkeleton rows={3} /> : null}
@@ -215,6 +219,7 @@ export default function FollowUpHubScreen() {
             icon="check-circle"
             heading={COPY.followUpEmptyHeading}
             explanation={COPY.followUpEmpty}
+            illustration={<CalendarCheck width={100} height={100} />}
           />
           <PrimaryButton
             title={COPY.followUpSeedNow}
@@ -287,6 +292,10 @@ export default function FollowUpHubScreen() {
 }
 
 const styles = StyleSheet.create({
+  calendar: {
+    alignItems: "center",
+    marginTop: 8,
+  },
   body: {
     marginTop: 8,
     fontFamily: fontFamily.body,

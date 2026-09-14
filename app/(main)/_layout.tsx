@@ -1,7 +1,11 @@
 import { Redirect, Tabs, usePathname } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { StyleSheet, View } from "react-native";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
+import { AppDrawer } from "@/components/navigation/AppDrawer";
+import { DrawerProvider } from "@/components/navigation/DrawerContext";
+import { GlassCard } from "@/components/ui/GlassCard";
 import {
   allConsentsAgreed,
   firstIncompleteConsent,
@@ -32,9 +36,11 @@ function consentScreenFromPath(pathname: string): SequentialConsent | null {
 /**
  * Home / Questionnaire / More. Symptom check and consents live here too
  * but are hidden from the tab bar. Locked users never see these tabs.
+ * Side drawer overlays the tabs without replacing journey safety gates.
  */
 export default function MainLayout() {
   const session = useAuthStore((state) => state.session);
+  const termsPrivacyAccepted = useAuthStore((state) => state.termsPrivacyAccepted);
   const onboardingCompleted = useAuthStore((state) => state.onboardingCompleted);
   const authLoading = useAuthStore((state) => state.loading);
   const triageLoading = useTriageStore((state) => state.loading);
@@ -60,6 +66,10 @@ export default function MainLayout() {
     return <Redirect href={routes.login} />;
   }
 
+  if (!termsPrivacyAccepted) {
+    return <Redirect href={routes.consentPrivacy} />;
+  }
+
   if (!onboardingCompleted) {
     return <Redirect href={routes.welcome} />;
   }
@@ -76,6 +86,12 @@ export default function MainLayout() {
   const onStore = pathname.includes("/(store)") || pathname.includes("/store");
   const onOrders = pathname.includes("/(orders)") || pathname.includes("/orders");
   const onTermPreview = pathname.includes("clinical-term-preview");
+  const onSettingsDeep =
+    pathname.includes("(settings)") &&
+    !pathname.endsWith("(settings)") &&
+    !pathname.endsWith("/settings") &&
+    pathname !== "/(main)/(settings)" &&
+    !pathname.endsWith("/(settings)/");
   const questionnaireHub =
     pathname === "/questionnaire" || pathname.endsWith("/questionnaire");
   const onQuestionnaireSection = onQuestionnaire && !questionnaireHub;
@@ -121,110 +137,128 @@ export default function MainLayout() {
     onFollowup ||
     onStore ||
     onOrders ||
-    onTermPreview;
+    onTermPreview ||
+    onSettingsDeep;
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.deepTeal,
-        tabBarInactiveTintColor: colors.slate,
-        tabBarLabelStyle: {
-          fontFamily: fontFamily.body,
-          fontSize: 13,
-        },
-        tabBarStyle: hideTabBar
-          ? { display: "none" }
-          : {
-              backgroundColor: colors.white,
-              borderTopColor: colors.border,
-              borderTopWidth: 1,
+    <DrawerProvider>
+      <View style={styles.shell}>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarActiveTintColor: colors.primaryBlue,
+            tabBarInactiveTintColor: colors.slate,
+            tabBarLabelStyle: {
+              fontFamily: fontFamily.body,
+              fontSize: 13,
             },
-      }}
-    >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <Feather name="home" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="questionnaire"
-        options={{
-          title: "Questionnaire",
-          tabBarIcon: ({ color }) => (
-            <Feather name="clipboard" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(settings)"
-        options={{
-          title: "More",
-          tabBarIcon: ({ color }) => (
-            <Feather name="menu" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(triage)"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="(consent)"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="(results)"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="(plan)"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="(followup)"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="(store)"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="(orders)"
-        options={{
-          href: null,
-          tabBarStyle: { display: "none" },
-        }}
-      />
-      <Tabs.Screen
-        name="clinical-term-preview"
-        options={{
-          href: null,
-          title: "Preview",
-        }}
-      />
-    </Tabs>
+            tabBarBackground: () =>
+              hideTabBar ? null : (
+                <GlassCard intensity="chrome" style={StyleSheet.absoluteFill} />
+              ),
+            tabBarStyle: hideTabBar
+              ? { display: "none" }
+              : {
+                  backgroundColor: "transparent",
+                  borderTopWidth: StyleSheet.hairlineWidth,
+                  borderTopColor: colors.glassBorder,
+                  elevation: 0,
+                  minHeight: 52,
+                },
+          }}
+        >
+          <Tabs.Screen
+            name="home"
+            options={{
+              title: "Home",
+              tabBarIcon: ({ color }) => (
+                <Feather name="home" size={24} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="questionnaire"
+            options={{
+              title: "Questionnaire",
+              tabBarIcon: ({ color }) => (
+                <Feather name="clipboard" size={24} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="(settings)"
+            options={{
+              title: "More",
+              tabBarIcon: ({ color }) => (
+                <Feather name="menu" size={24} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="(triage)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(consent)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(results)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(plan)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(followup)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(store)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(orders)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="clinical-term-preview"
+            options={{
+              href: null,
+              title: "Preview",
+            }}
+          />
+        </Tabs>
+        <AppDrawer unreadCount={0} />
+      </View>
+    </DrawerProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  shell: {
+    flex: 1,
+  },
+});

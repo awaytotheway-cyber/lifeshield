@@ -1,4 +1,4 @@
-/* NativeWind v5 + Tailwind CSS v4: import layers instead of @tailwind directives. */
+﻿/* NativeWind v5 + Tailwind CSS v4: import layers instead of @tailwind directives. */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css";
@@ -12,20 +12,27 @@
   v5 reads these CSS variables to create classes like text-coral and bg-cream.
 */
 @theme {
-  --color-deepTeal: #0d4a5c;
-  --color-midTeal: #1a7a9a;
-  --color-lightTeal: #d6eef5;
-  --color-sage: #6b9e7a;
-  --color-sageLight: #e8f3eb;
-  --color-coral: #e8634a;
-  --color-coralLight: #fdecea;
-  --color-amber: #d4873a;
-  --color-amberLight: #fdf3e4;
-  --color-cream: #faf8f5;
+  --color-primaryBlue: #2b5fe0;
+  --color-deepNavy: #0b1e4d;
+  --color-skyBlue: #6fa8f5;
+  --color-iceBlue: #eaf1ff;
+  --color-riskLow: #2fb8a6;
+  --color-riskModerate: #f5a623;
+  --color-riskHigh: #f26d6d;
+  --color-deepTeal: #2b5fe0;
+  --color-midTeal: #6fa8f5;
+  --color-lightTeal: #d6e4ff;
+  --color-sage: #2fb8a6;
+  --color-sageLight: #e6f8f5;
+  --color-coral: #f26d6d;
+  --color-coralLight: #fdecec;
+  --color-amber: #f5a623;
+  --color-amberLight: #fef4e3;
+  --color-cream: #eaf1ff;
   --color-white: #ffffff;
-  --color-charcoal: #1c2329;
+  --color-charcoal: #0b1e4d;
   --color-slate: #4a5568;
   --color-mist: #9aa5b4;
-  --color-border: #e2e8f0;
-  --color-teal: #0d4a5c;
+  --color-border: #d4e0f5;
+  --color-teal: #2b5fe0;
 }

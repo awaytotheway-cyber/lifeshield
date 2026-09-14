@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy & Terms of Use — Prescope</title>
+<meta name="description" content="Prescope Privacy Policy and Terms of Use. How we collect, use, protect, and share your personal and health information.">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0D4A5C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:        #0D4A5C;
+    --teal-mid:    #1A7A9A;
+    --teal-light:  #D6EEF5;
+    --sage:        #6B9E7A;
+    --sage-light:  #E8F3EB;
+    --cream:       #FAF8F5;
+    --white:       #FFFFFF;
+    --charcoal:    #1C2329;
+    --slate:       #4A5568;
+    --mist:        #9AA5B4;
+    --border:      #E2E8F0;
+    --coral:       #E8634A;
+    --amber:       #D4873A;
+    --serif:       'DM Serif Display', Georgia, serif;
+    --sans:        'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--charcoal);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Header ─────────────────────────────────── */
+  header {
+    background: var(--teal);
+    padding: 0 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    box-shadow: 0 2px 16px rgba(13,74,92,0.22);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: #FAF8F5;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18);
+  }
+
+  .logo-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .header-close {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.10);
+    color: #FFFFFF;
+    border-radius: 12px;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-close:hover { background: rgba(255,255,255,0.18); }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .agree-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 90;
+    background: #FAF8F5;
+    border-top: 1px solid #E2E8F0;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 -8px 24px rgba(13,74,92,0.08);
+  }
+
+  .agree-btn {
+    width: min(420px, 100%);
+    min-height: 56px;
+    border: none;
+    border-radius: 16px;
+    background: #0D4A5C;
+    color: #FFFFFF;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(13,74,92,0.16);
+  }
+
+  .agree-btn:hover { background: #0B3E4E; }
+
+  .closed-hint {
+    display: none;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 13px;
+    color: #4A5568;
+  }
+
+  .closed-hint.visible { display: block; }
+
+  .logo-text {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .header-meta {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+  }
+
+  /* ── Layout ──────────────────────────────────── */
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 20px;
+    min-height: 100vh;
+    gap: 0;
+  }
+
+  /* ── Sidebar nav ─────────────────────────────── */
+  .sidebar {
+    padding: 48px 24px 48px 0;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--mist);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .nav-list { list-style: none; }
+  .nav-list li { margin-bottom: 2px; }
+
+  .nav-list a {
+    display: block;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--slate);
+    text-decoration: none;
+    border-radius: 7px;
+    transition: background 140ms, color 140ms;
+    line-height: 1.4;
+  }
+
+  .nav-list a:hover,
+  .nav-list a.active {
+    background: var(--teal-light);
+    color: var(--teal);
+  }
+
+  .nav-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0 16px 12px;
+  }
+
+  /* ── Main content ────────────────────────────── */
+  .content {
+    padding: 56px 0 80px 56px;
+    max-width: 680px;
+  }
+
+  /* ── Tab switcher ───────────────────────────── */
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 40px;
+    background: var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    width: fit-content;
+  }
+
+  .tab-btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 7px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms, color 150ms, box-shadow 150ms;
+    background: transparent;
+    color: var(--slate);
+  }
+
+  .tab-btn.active {
+    background: var(--white);
+    color: var(--teal);
+    box-shadow: 0 1px 4px rgba(13,74,92,0.10);
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--teal); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Page header ─────────────────────────────── */
+  .page-header { margin-bottom: 48px; }
+
+  .page-header h1 {
+    font-family: var(--serif);
+    font-size: 36px;
+    color: var(--teal);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .page-header .meta {
+    font-size: 13px;
+    color: var(--mist);
+    font-weight: 500;
+  }
+
+  .page-header .meta strong { color: var(--slate); font-weight: 600; }
+
+  .intro-box {
+    background: var(--teal-light);
+    border-left: 3px solid var(--teal-mid);
+    border-radius: 0 10px 10px 0;
+    padding: 18px 20px;
+    margin: 28px 0 0;
+    font-size: 14px;
+    color: var(--teal);
+    line-height: 1.65;
+  }
+
+  .intro-box strong { font-weight: 600; }
+
+  /* ── Sections ────────────────────────────────── */
+  .section {
+    margin-bottom: 56px;
+    scroll-margin-top: 88px;
+  }
+
+  .section h2 {
+    font-family: var(--serif);
+    font-size: 24px;
+    color: var(--teal);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin: 24px 0 8px;
+  }
+
+  .section p {
+    font-size: 15px;
+    color: var(--slate);
+    margin-bottom: 14px;
+    line-height: 1.75;
+  }
+
+  .section p:last-child { margin-bottom: 0; }
+
+  .section ul, .section ol {
+    padding-left: 0;
+    margin-bottom: 14px;
+    list-style: none;
+  }
+
+  .section ul li, .section ol li {
+    font-size: 15px;
+    color: var(--slate);
+    margin-bottom: 8px;
+    line-height: 1.65;
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .section ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal-mid);
+  }
+
+  /* ── Data table ──────────────────────────────── */
+  .data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 20px 0;
+    font-size: 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(13,74,92,0.06);
+  }
+
+  .data-table th {
+    background: var(--teal);
+    color: var(--white);
+    text-align: left;
+    padding: 11px 16px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+
+  .data-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--slate);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:nth-child(even) td { background: var(--cream); }
+  .data-table tr:nth-child(odd) td  { background: var(--white); }
+
+  /* ── Highlight boxes ─────────────────────────── */
+  .highlight {
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .highlight.sage {
+    background: var(--sage-light);
+    border-left: 3px solid var(--sage);
+    color: #2d5a3d;
+  }
+
+  .highlight.teal {
+    background: var(--teal-light);
+    border-left: 3px solid var(--teal-mid);
+    color: var(--teal);
+  }
+
+  .highlight.warning {
+    background: #FDF3E4;
+    border-left: 3px solid var(--amber);
+    color: #7a4e1a;
+  }
+
+  .highlight p { margin-bottom: 0; font-size: 14px; color: inherit; }
+  .highlight strong { color: inherit; font-weight: 600; }
+
+  /* ── Contact card ────────────────────────────── */
+  .contact-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 20px;
+    box-shadow: 0 1px 6px rgba(13,74,92,0.04);
+  }
+
+  .contact-card h3 {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--teal);
+    margin: 0 0 14px;
+  }
+
+  .contact-card p {
+    font-size: 14px;
+    color: var(--slate);
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+
+  .contact-card a {
+    color: var(--teal-mid);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .contact-card a:hover { text-decoration: underline; }
+
+  /* ── Footer ──────────────────────────────────── */
+  footer {
+    background: var(--teal);
+    padding: 36px 40px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  footer p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+  }
+
+  footer a {
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    transition: color 150ms;
+  }
+
+  footer a:hover { color: white; }
+
+  .footer-disclaimer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── Responsive ──────────────────────────────── */
+  @media (max-width: 768px) {
+    .layout {
+      grid-template-columns: 1fr;
+      padding: 0 16px;
+    }
+
+    .sidebar {
+      position: static;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-list {
+      display: inline-flex;
+      gap: 4px;
+    }
+
+    .nav-list li { margin-bottom: 0; }
+
+    .nav-list a {
+      white-space: nowrap;
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .nav-divider { display: none; }
+    .sidebar-label { display: none; }
+
+    .content {
+      padding: 32px 0 56px;
+    }
+
+    .page-header h1 { font-size: 28px; }
+    .section h2 { font-size: 21px; }
+
+    header { padding: 0 20px; }
+    .agree-bar { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+
+    .data-table { font-size: 13px; }
+    .data-table th, .data-table td { padding: 9px 10px; }
+
+    .tab-bar { width: 100%; }
+    .tab-btn { flex: 1; text-align: center; font-size: 13px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+
+  /* ── Print ───────────────────────────────────── */
+  @media print {
+    header, .sidebar, .tab-bar, footer, .agree-bar { display: none; }
+    .layout { display: block; }
+    .content { padding: 0; max-width: 100%; }
+    .tab-content { display: block !important; }
+    .section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="logo">
+    <div class="logo-icon">
+      <img src="prescope-logo.png" alt="Prescope logo" width="40" height="40">
+    </div>
+    <span class="logo-text">Prescope</span>
+  </a>
+  <div class="header-actions">
+    <span class="header-meta">Legal</span>
+    <button type="button" class="header-close" id="close-page" aria-label="Close">×</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <nav class="sidebar" aria-label="Page navigation">
+    <span class="sidebar-label">Navigate</span>
+    <ul class="nav-list" id="nav-list">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#data-we-collect">Data we collect</a></li>
+      <li><a href="#how-we-use">How we use it</a></li>
+      <li><a href="#sharing">Sharing</a></li>
+      <li><a href="#genetic-data">Genetic data</a></li>
+      <li><a href="#storage">Storage & retention</a></li>
+      <li><a href="#your-rights">Your rights</a></li>
+      <li><a href="#children">Children</a></li>
+      <li><a href="#cookies">Cookies</a></li>
+      <li><a href="#changes">Changes</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <div class="nav-divider"></div>
+      <li><a href="#terms" onclick="switchTab('terms',document.querySelectorAll('.tab-btn')[1])">Terms of use</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+
+    <div class="tab-bar" role="tablist">
+      <button class="tab-btn active" role="tab" aria-selected="true"
+              onclick="switchTab('privacy', this)">Privacy Policy</button>
+      <button class="tab-btn" role="tab" aria-selected="false"
+              onclick="switchTab('terms', this)">Terms of Use</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- PRIVACY POLICY                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="privacy" class="tab-content active">
+
+      <div class="page-header">
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+          Effective date: <strong>12 October 2026</strong> &nbsp;·&nbsp;
+          Version: <strong>1.0</strong>
+        </p>
+        <div class="intro-box">
+          <strong>Plain-language summary:</strong> Prescope collects health and lifestyle information to help you understand your personal risk profile and connect you with appropriate screening. We never sell your data. Your health and genetic information is encrypted, stored securely, and only shared when you explicitly consent or when required for your care. You can request deletion at any time.
+        </div>
+      </div>
+
+      <section class="section" id="overview">
+        <h2>1. Who we are</h2>
+        <p>Prescope ("we", "our", "us") operates the Prescope mobile application and associated website (collectively, the "Service"). We are based at Gev Wada, District Palghar, 421 303, Maharashtra, India.</p>
+        <p>This Privacy Policy explains what personal information we collect when you use Prescope, how we use it, who we share it with, and the rights you have over it.</p>
+        <p>This policy applies to all users of the Prescope app (available on Google Play and Apple App Store) and the Prescope website. By using our Service, you agree to the practices described here.</p>
+        <p>We operate in compliance with:</p>
+        <ul>
+          <li>India's Digital Personal Data Protection (DPDP) Act, 2023</li>
+          <li>India's Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011</li>
+          <li>The General Data Protection Regulation (GDPR), where applicable to users in the European Economic Area</li>
+        </ul>
+      </section>
+
+      <section class="section" id="data-we-collect">
+        <h2>2. Data we collect</h2>
+        <p>We collect only what is necessary to provide the Service. Below is a complete list.</p>
+
+        <h3>Account information</h3>
+        <ul>
+          <li>Email address — for account creation and communication</li>
+          <li>Full name — for personalisation and records</li>
+          <li>Password — stored as a secure cryptographic hash; we never see your actual password</li>
+        </ul>
+
+        <h3>Health and lifestyle information (sensitive personal data)</h3>
+        <p>This is the information you provide through the screening questionnaire. It is classified as sensitive personal data under Indian law and handled with the highest level of protection.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>Category</th><th>Examples</th><th>Why collected</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Demographics</td><td>Age, sex, height, weight, BMI, ethnicity, country of origin</td><td>Risk profile calculation</td></tr>
+            <tr><td>Reproductive history</td><td>Menstrual history, pregnancies, contraceptive use, HRT use</td><td>Hormonal risk factor assessment</td></tr>
+            <tr><td>Medical history</td><td>Thyroid disease, diabetes, gallstones, chronic infections</td><td>Comorbidity-based test triggering</td></tr>
+            <tr><td>Family history</td><td>Cancer history in relatives (breast, ovarian, colon, melanoma)</td><td>Inherited risk assessment</td></tr>
+            <tr><td>Lifestyle</td><td>Sleep, stress, exercise, alcohol, smoking, diet, cosmetics, environmental exposures</td><td>Lifestyle risk modification</td></tr>
+            <tr><td>Prior screening</td><td>Previous mammogram dates and findings</td><td>Screening history and gap analysis</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Genetic and genomic information</h3>
+        <p>If you consent to genetic testing (BRCA1/2, SNP panel), we collect and process your genetic data. This is the most sensitive category of data we handle. See Section 5 for full details.</p>
+
+        <h3>Test results and clinical data</h3>
+        <ul>
+          <li>Laboratory test results (blood panels, hormone tests, stool analysis, and others)</li>
+          <li>Lab reports (PDF documents, if uploaded)</li>
+          <li>Clinician review notes and approved intervention plans</li>
+        </ul>
+
+        <h3>Order and payment information</h3>
+        <ul>
+          <li>Products ordered (supplements and screening tests)</li>
+          <li>Order status and fulfilment tracking</li>
+          <li>Payment is processed by Stripe — we never see or store your card number, CVV, or banking credentials</li>
+        </ul>
+
+        <h3>Technical information</h3>
+        <ul>
+          <li>Device type, operating system, and app version</li>
+          <li>Crash and error logs (anonymised)</li>
+          <li>Push notification tokens (to send you reminders)</li>
+          <li>App usage timestamps (for session management only)</li>
+        </ul>
+
+        <div class="highlight sage">
+          <p><strong>What we do not collect:</strong> We do not collect your precise GPS location. We do not access your camera, microphone, contacts, or photo library. We do not collect social media profile data. We do not build advertising profiles. We do not use your data for targeted advertising.</p>
+        </div>
+      </section>
+
+      <section class="section" id="how-we-use">
+        <h2>3. How we use your information</h2>
+        <p>We use your information for six specific purposes, each with a clear legal basis.</p>
+
+        <table class="data-table">
+          <thead>
+            <tr><th>Purpose</th><th>What it means</th><th>Legal basis</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Providing the Service</td><td>Running the risk questionnaire, generating test recommendations, displaying your results and personalised plan</td><td>Contract performance; explicit consent</td></tr>
+            <tr><td>Clinical safety</td><td>Applying safety rules (e.g. blocking iodine supplementation where contraindicated), routing symptomatic users to appropriate medical care</td><td>Vital interests; explicit consent</td></tr>
+            <tr><td>Practitioner review</td><td>Sharing your results and draft plan with the assigned clinician who reviews and approves before you receive it</td><td>Explicit consent obtained at onboarding</td></tr>
+            <tr><td>Order fulfilment</td><td>Processing your supplement and test orders, coordinating with lab partners for sample collection and results</td><td>Contract performance</td></tr>
+            <tr><td>Service communications</td><td>Sending result notifications, retest reminders, and the recurring symptom safety check</td><td>Legitimate interest; consent for push notifications</td></tr>
+            <tr><td>Service improvement</td><td>Aggregated, anonymised analytics to improve the questionnaire, rules engine, and user experience</td><td>Legitimate interest (anonymised — no individual is identifiable)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight warning">
+          <p><strong>We never use your health or genetic data for advertising.</strong> We do not sell, rent, or trade your personal data to any third party for their marketing purposes. Not now, not ever.</p>
+        </div>
+      </section>
+
+      <section class="section" id="sharing">
+        <h2>4. Sharing and third parties</h2>
+        <p>We share your data with a limited set of third parties, each under a data processing agreement that requires them to protect your information to the same standard we hold ourselves to.</p>
+
+        <h3>Service providers</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>Provider</th><th>Role</th><th>Data shared</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Supabase Inc.</td><td>Database, authentication, file storage</td><td>All app data (encrypted at rest with AES-256)</td></tr>
+            <tr><td>Stripe Inc.</td><td>Payment processing</td><td>Order amount and email only — never your health data</td></tr>
+            <tr><td>Expo / EAS</td><td>App delivery and push notifications</td><td>Push token and anonymised device info</td></tr>
+            <tr><td>Partner laboratories</td><td>Test fulfilment and result reporting</td><td>Name, contact details, and test ordered — only after your explicit consent and order placement</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Clinicians and practitioners</h3>
+        <p>Your results and draft plan are shared with the assigned practitioner for review and clinical sign-off. This is a core part of the Service and is covered by the consent you provide at onboarding. Practitioners are bound by medical confidentiality obligations and a data processing agreement with Prescope.</p>
+
+        <h3>Legal disclosure</h3>
+        <p>We may disclose your information if required by law, court order, or to protect the safety of you or others — and only to the minimum extent required.</p>
+
+        <h3>Business transfers</h3>
+        <p>If Prescope is acquired or merges with another entity, your data may be transferred as part of that transaction. We will notify you in advance and your rights under this policy will continue to apply.</p>
+      </section>
+
+      <section class="section" id="genetic-data">
+        <h2>5. Genetic and health data — special protections</h2>
+
+        <div class="highlight teal">
+          <p>Genetic data (BRCA1/2 test results, SNP panel results) and detailed health data are treated as our most sensitive category. They receive additional protections beyond those described elsewhere in this policy.</p>
+        </div>
+
+        <h3>Separate, explicit consent</h3>
+        <p>We obtain a separate, specific, informed consent for each category of genetic and specialised testing: BRCA1/2 genetic testing, circulating tumour cell (CTC) testing, and SNP risk-modification panel. You may decline any or all of these without affecting your access to the rest of the Service. Each consent decision is documented with a timestamp.</p>
+
+        <h3>Access restrictions</h3>
+        <p>Genetic results are accessible only to you and the specific clinician assigned to your care. No other staff member, administrator, or third party can access them without your explicit written authorisation. Genetic data is never included in anonymised analytics or research datasets without a separate research consent that you voluntarily opt into.</p>
+
+        <h3>No secondary use</h3>
+        <p>We will never use your genetic data for insurance profiling, employment screening, risk scoring for third parties, or any purpose beyond the clinical service you enrolled for. We will never share genetic data with insurance companies, employers, or government agencies except as required by applicable law.</p>
+
+        <h3>Withdrawal and deletion</h3>
+        <p>You may withdraw consent for genetic data processing at any time by emailing prescopehealth@gmail.com. Upon withdrawal, we will delete your genetic data within 30 days, subject to any retention required by applicable medical records law. Withdrawing genetic consent does not affect the lawfulness of processing that occurred before the withdrawal.</p>
+      </section>
+
+      <section class="section" id="storage">
+        <h2>6. How we store and protect your data</h2>
+
+        <h3>Security measures</h3>
+        <ul>
+          <li>All data is encrypted in transit (TLS 1.3) and at rest (AES-256)</li>
+          <li>Database access uses Row Level Security — each user can only read and write their own records; this is enforced at the database level, not just the application level</li>
+          <li>Server-side API keys and secrets are stored as encrypted environment variables, never in app code or client-side bundles</li>
+          <li>Authentication sessions are stored in encrypted on-device storage</li>
+          <li>Clinician access to results requires authenticated sign-in and is restricted by role-based access controls</li>
+          <li>We conduct regular security reviews of our infrastructure and dependencies</li>
+        </ul>
+
+        <h3>Data retention</h3>
+        <table class="data-table">
+          <thead>
+            <tr><th>Data type</th><th>Retained for</th><th>Reason</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Account and profile data</td><td>Duration of account + 2 years after deletion</td><td>Dispute resolution, legal requirement</td></tr>
+            <tr><td>Health questionnaire responses</td><td>Duration of account + 7 years after deletion</td><td>Medical records obligation under Indian law</td></tr>
+            <tr><td>Laboratory test results</td><td>7 years from date of result</td><td>Clinical best practice and medical records retention</td></tr>
+            <tr><td>Genetic data</td><td>Until consent is withdrawn, then deleted within 30 days</td><td>Consent-based retention only</td></tr>
+            <tr><td>Payment records</td><td>7 years from transaction date</td><td>Tax and financial records law</td></tr>
+            <tr><td>Technical and error logs</td><td>90 days</td><td>Security monitoring only</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Where your data is stored</h3>
+        <p>Your data is stored on Supabase infrastructure. Servers may be located in India or internationally. Where data is stored outside India, we ensure appropriate safeguards are in place consistent with the DPDP Act 2023 and applicable cross-border data transfer provisions.</p>
+      </section>
+
+      <section class="section" id="your-rights">
+        <h2>7. Your rights</h2>
+        <p>Under the Digital Personal Data Protection Act 2023 and related laws, you have the following rights. You can exercise any of them by contacting us at prescopehealth@gmail.com.</p>
+
+        <h3>Right to access</h3>
+        <p>You can request a copy of all personal data we hold about you. We will provide it in a structured, commonly used, machine-readable format within 30 days.</p>
+
+        <h3>Right to correct</h3>
+        <p>You can update or correct your profile and questionnaire responses at any time within the app. For corrections to clinical or genetic data, contact us and we will coordinate with the relevant clinician.</p>
+
+        <h3>Right to erasure</h3>
+        <p>You can request deletion of your account and all associated data. We will delete non-medically-retained data within 30 days. Health and clinical records we are legally required to retain (see retention table above) will be deleted when the applicable retention period ends.</p>
+
+        <h3>Right to withdraw consent</h3>
+        <p>Where processing is based on your consent (especially genetic data and specialised testing), you can withdraw that consent at any time. This will not affect processing that has already occurred.</p>
+
+        <h3>Right to nominate</h3>
+        <p>Under the DPDP Act 2023, you may nominate another person to exercise your data rights on your behalf in the event of your death or incapacity. Contact us at prescopehealth@gmail.com to register a nominee.</p>
+
+        <h3>Right to lodge a complaint</h3>
+        <p>If you are not satisfied with our response, you may lodge a complaint with India's Data Protection Board (as established under the DPDP Act) or another competent supervisory authority in your jurisdiction.</p>
+
+        <div class="highlight sage">
+          <p><strong>How to exercise your rights:</strong> Email prescopehealth@gmail.com with the subject line "Data Rights Request" and the email address registered to your account. We will respond within 30 days. We may need to verify your identity before processing the request.</p>
+        </div>
+      </section>
+
+      <section class="section" id="children">
+        <h2>8. Children and age restriction</h2>
+        <p>Prescope is intended for adults aged 18 and over. We do not knowingly collect personal data from anyone under the age of 18.</p>
+        <p>If you are under 18, do not use this Service or provide any information to us. If we become aware that we have collected personal data from a person under 18 without appropriate parental consent, we will delete it promptly.</p>
+        <p>If you believe a person under 18 has provided us with their data, contact us at prescopehealth@gmail.com and we will take immediate action.</p>
+      </section>
+
+      <section class="section" id="cookies">
+        <h2>9. Cookies and tracking</h2>
+        <p>The Prescope mobile app does not use browser cookies. The app uses the following local storage mechanisms:</p>
+        <ul>
+          <li><strong>Secure device storage</strong> for your authentication session token</li>
+          <li><strong>Local app state</strong> for saving questionnaire progress between sessions</li>
+        </ul>
+        <p>The Prescope website (this page and any future pages) does not use analytics cookies, advertising trackers, or any third-party tracking scripts. The only external resource loaded is Google Fonts for typography.</p>
+      </section>
+
+      <section class="section" id="changes">
+        <h2>10. Changes to this policy</h2>
+        <p>We may update this Privacy Policy from time to time. When we make a significant change (such as collecting a new category of data, or sharing data with a new type of third party), we will:</p>
+        <ul>
+          <li>Update the "Effective date" at the top of this page</li>
+          <li>Notify you through the app</li>
+          <li>Where required by law, obtain your fresh consent before the change takes effect</li>
+        </ul>
+        <p>Continued use of the Service after a change is notified constitutes acceptance of the updated policy, except where the law requires explicit re-consent.</p>
+        <p>Prior versions of this policy will be kept archived and made available upon request.</p>
+      </section>
+
+      <section class="section" id="contact">
+        <h2>11. Contact and grievance redressal</h2>
+        <p>For any questions, concerns, or requests relating to your personal data or this Privacy Policy:</p>
+
+        <div class="contact-card">
+          <h3>Data Protection Contact</h3>
+          <p><strong>Prescope</strong></p>
+          <p>Gev Wada, District Palghar, 421 303, Maharashtra, India</p>
+          <p>Email: <a href="mailto:prescopehealth@gmail.com">prescopehealth@gmail.com</a></p>
+          <p><strong>Response time:</strong> We aim to respond within 30 days of receiving a request.</p>
+        </div>
+
+        <div class="contact-card" style="margin-top:16px;">
+          <h3>Grievance Officer</h3>
+          <p>As required under the Digital Personal Data Protection Act 2023 and the Information Technology Act 2000.</p>
+          <p><strong>Name:</strong> Pratik (Founder, Prescope)</p>
+          <p><strong>Email:</strong> <a href="mailto:prescopehealth@gmail.com">prescopehealth@gmail.com</a></p>
+          <p><strong>Available:</strong> Monday–Friday, 10:00–17:00 IST</p>
+          <p style="margin-top:10px;font-size:13px;color:var(--mist);">
+            The Grievance Officer will acknowledge your complaint within 48 hours and resolve it within 30 days, as required by applicable law.
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TERMS OF USE                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="terms" class="tab-content">
+
+      <div class="page-header">
+        <h1>Terms of Use</h1>
+        <p class="meta">
+          Effective date: <strong>12 October 2026</strong> &nbsp;·&nbsp;
+          Version: <strong>1.0</strong>
+        </p>
+        <div class="intro-box">
+          <strong>Plain-language summary:</strong> Prescope is a lifestyle risk-awareness tool. It is not a medical device and does not diagnose, treat, or cure any condition. You must be 18 or over to use it. All recommendations are reviewed by a qualified practitioner before you receive them. Always consult a doctor for medical decisions.
+        </div>
+      </div>
+
+      <section class="section">
+        <h2>1. About Prescope</h2>
+        <p>Prescope is a lifestyle risk-awareness and wellness optimisation tool. It helps users understand lifestyle and genetic factors that may be relevant to their breast health risk profile, and connects them with appropriate screening tests and personalised lifestyle recommendations.</p>
+
+        <div class="highlight warning">
+          <p><strong>Prescope is not a medical device.</strong> It does not diagnose any condition, disease, or illness. It does not provide medical advice. It does not replace a consultation with a qualified healthcare professional. All recommendations generated by the app are reviewed by a licensed practitioner before being presented to you, but they remain lifestyle guidance — not a medical prescription, diagnosis, or treatment plan.</p>
+        </div>
+
+        <p>If you have any breast symptoms including pain, discomfort, or a lump, do not use this screening service. Contact your primary care physician immediately for urgent medical assessment.</p>
+      </section>
+
+      <section class="section">
+        <h2>2. Eligibility</h2>
+        <ul>
+          <li>You must be 18 years of age or older to use Prescope</li>
+          <li>You must be free of active breast symptoms (pain, discomfort, or a known lump) at the time of entering the screening questionnaire — the app will ask you to confirm this before proceeding</li>
+          <li>You must provide accurate and truthful information — the risk assessment and recommendations are only as reliable as the information you provide</li>
+          <li>You must have the legal capacity to enter into a binding agreement in your jurisdiction</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>3. The Service</h2>
+
+        <h3>What Prescope does</h3>
+        <ul>
+          <li>Guides you through a structured risk and lifestyle questionnaire based on an established clinical screening protocol</li>
+          <li>Uses a deterministic rules-based engine to recommend appropriate screening tests based on your answers and, where available, your prior test results</li>
+          <li>Facilitates ordering of those tests through partner laboratories</li>
+          <li>Presents your results with plain-language explanations alongside exact clinical terminology</li>
+          <li>Generates a personalised lifestyle and supplement plan, which is reviewed and approved by a licensed practitioner before you receive it</li>
+          <li>Sends reminders for follow-up tests and a recurring symptom safety check</li>
+        </ul>
+
+        <h3>What Prescope does not do</h3>
+        <ul>
+          <li>Diagnose any medical condition</li>
+          <li>Provide a medical opinion, medical advice, or a treatment plan</li>
+          <li>Replace a consultation with a qualified doctor or specialist</li>
+          <li>Guarantee any specific health outcome or risk reduction</li>
+          <li>Provide emergency medical care — if you have a medical emergency, call 112 (India) or your local emergency number</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>4. Consent to genetic and specialised testing</h2>
+        <p>Where you choose to undergo BRCA1/2 genetic testing, circulating tumour cell (CTC) testing, or the SNP risk-modification panel, you will be asked to provide separate, explicit, informed consent for each test type.</p>
+        <p>These tests sit outside standard national breast-screening guidelines. Their current evidence status, implications of positive and negative results, and what happens after testing will be explained to you in plain language before you are asked to consent.</p>
+        <p>You may decline any test without losing access to the rest of the Service. Declining does not affect your ability to complete the questionnaire, receive lifestyle recommendations, or order other tests.</p>
+      </section>
+
+      <section class="section">
+        <h2>5. Payments, orders, and refunds</h2>
+        <p>Prices for tests and supplements are displayed in Indian Rupees (INR) inclusive of applicable taxes unless otherwise stated. Prices are subject to change; the price displayed at the time you place your order is the price you pay.</p>
+        <p>Payment is processed securely by Stripe. By placing an order you agree to Stripe's terms of service. We do not store your payment card details at any point.</p>
+        <p>Orders for at-home test kits are fulfilled by our partner laboratories. Dispatch and turnaround times are estimates and may vary. We are not liable for delays caused by third-party logistics providers or laboratory processing schedules.</p>
+        <p>Refund policy:</p>
+        <ul>
+          <li>Test kits that have not been dispatched: full refund on request</li>
+          <li>Test kits that have been dispatched but not used: refund minus shipping cost</li>
+          <li>Test kits where the sample has been collected: no refund (lab processing has begun)</li>
+          <li>Supplements that are sealed and unused: full refund within 14 days of delivery</li>
+          <li>Supplements that have been opened: no refund unless the product is defective</li>
+          <li>Defective products: full refund or replacement at your choice</li>
+        </ul>
+        <p>To request a refund, email prescopehealth@gmail.com with your order number. We will process approved refunds within 10 business days.</p>
+      </section>
+
+      <section class="section">
+        <h2>6. Limitation of liability</h2>
+        <p>To the fullest extent permitted by applicable law:</p>
+        <ul>
+          <li>Prescope is provided "as is" and "as available" without warranties of any kind, whether express, implied, or statutory, including implied warranties of merchantability, fitness for a particular purpose, and non-infringement</li>
+          <li>We are not liable for any clinical outcome, health decision, or consequence arising from your use of the Service, your reliance on the Service, or any delay in using the Service</li>
+          <li>Our total aggregate liability to you for any and all claims arising from or related to the Service shall not exceed the total amount you have paid to Prescope in the three (3) months immediately preceding the event giving rise to the claim</li>
+          <li>We are not liable for the acts, omissions, negligence, or misconduct of third-party laboratories, supplement suppliers, logistics providers, or practitioners</li>
+        </ul>
+        <p>Nothing in these Terms excludes or limits our liability for fraud, death or personal injury caused by our negligence, or any other liability that cannot be excluded or limited by applicable Indian law.</p>
+      </section>
+
+      <section class="section">
+        <h2>7. Intellectual property</h2>
+        <p>All content in the Prescope app and website — including the questionnaire design, rules engine logic, clinical decision algorithms, plain-language explanations, user interface design, and visual identity — is owned by or licensed to Prescope.</p>
+        <p>You may not copy, reproduce, modify, distribute, reverse-engineer, or create derivative works from any part of the Service without our prior written permission.</p>
+        <p>The underlying clinical protocol this Service is based on is used under appropriate clinical authorisation. The software implementation is proprietary.</p>
+      </section>
+
+      <section class="section">
+        <h2>8. Account termination</h2>
+        <p>You may delete your account at any time from the app settings or by emailing prescopehealth@gmail.com. Upon account deletion, we will process data removal in accordance with the retention schedule in our Privacy Policy.</p>
+        <p>We reserve the right to suspend or terminate your account if you violate these Terms, provide materially false information, or use the Service in a manner that endangers yourself or others. We will notify you of any termination and the reason for it.</p>
+      </section>
+
+      <section class="section">
+        <h2>9. Governing law and disputes</h2>
+        <p>These Terms are governed by and construed in accordance with the laws of India. Any dispute arising from or relating to these Terms or your use of the Service will be subject to the exclusive jurisdiction of the courts of Palghar, Maharashtra, India.</p>
+        <p>Before initiating any legal proceedings, we ask that you first contact us at prescopehealth@gmail.com to attempt informal resolution. We commit to responding to dispute notices within 14 days.</p>
+      </section>
+
+      <section class="section">
+        <h2>10. Changes to these terms</h2>
+        <p>We may update these Terms from time to time. We will give you at least 14 days' notice of any material change through the app. Continued use of the Service after that notice period constitutes your acceptance of the updated Terms.</p>
+      </section>
+
+      <section class="section">
+        <h2>11. Contact</h2>
+        <div class="contact-card">
+          <h3>Prescope</h3>
+          <p>Gev Wada, District Palghar, 421 303, Maharashtra, India</p>
+          <p>Email: <a href="mailto:prescopehealth@gmail.com">prescopehealth@gmail.com</a></p>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-logo">Prescope</div>
+  <p>
+    <a href="#overview" onclick="switchTab('privacy',document.querySelectorAll('.tab-btn')[0])">Privacy Policy</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="#terms" onclick="switchTab('terms',document.querySelectorAll('.tab-btn')[1])">Terms of Use</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="mailto:prescopehealth@gmail.com">prescopehealth@gmail.com</a>
+  </p>
+  <p class="footer-disclaimer">
+    Prescope is not a medical device and does not diagnose any condition. All recommendations are reviewed by a licensed practitioner. Always consult a qualified healthcare professional for medical decisions. &copy; 2026 Prescope. All rights reserved.
+  </p>
+</footer>
+
+<div class="agree-bar">
+  <div style="width:min(420px,100%)">
+    <button type="button" class="agree-btn" id="agree-page">I agree — return to the app</button>
+    <p class="closed-hint" id="closed-hint">You can close this tab and return to Prescope. Tick both boxes in the app to continue.</p>
+  </div>
+</div>
+
+<script>
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => {
+      el.classList.remove('active');
+      el.setAttribute('aria-selected', 'false');
+    });
+    const panel = document.getElementById(tab);
+    if (panel) panel.classList.add('active');
+    if (btn) {
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function applyHash() {
+    const hash = (location.hash || '').replace('#', '');
+    const params = new URLSearchParams(location.search);
+    const section = params.get('section') || hash;
+    const buttons = document.querySelectorAll('.tab-btn');
+    if (section === 'terms') {
+      switchTab('terms', buttons[1]);
+    } else if (section && section !== 'privacy' && section !== 'overview') {
+      switchTab('privacy', buttons[0]);
+    }
+  }
+
+  function closeLegalPage() {
+    try { window.close(); } catch (e) {}
+    const hint = document.getElementById('closed-hint');
+    if (hint) hint.classList.add('visible');
+  }
+
+  document.getElementById('close-page')?.addEventListener('click', closeLegalPage);
+  document.getElementById('agree-page')?.addEventListener('click', closeLegalPage);
+  window.addEventListener('hashchange', applyHash);
+  applyHash();
+
+  const sections = document.querySelectorAll('.section[id]');
+  const navLinks = document.querySelectorAll('.nav-list a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`.nav-list a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

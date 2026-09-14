@@ -9,10 +9,12 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import { GlassCard } from "@/components/ui/GlassCard";
 import { PressScale } from "@/components/ui/PressScale";
 import {
   colors,
   primaryButtonHeight,
+  radius,
   secondaryButtonHeight,
   shadows,
   tapTarget,
@@ -37,12 +39,12 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   style?: StyleProp<ViewStyle>;
 };
 
-function darkerTeal(pressed: boolean) {
-  return pressed ? "#0B3E4E" : colors.deepTeal;
+function darkerPrimary(pressed: boolean) {
+  return pressed ? "#234FBF" : colors.primaryBlue;
 }
 
 function darkerCoral(pressed: boolean) {
-  return pressed ? "#D15540" : colors.coral;
+  return pressed ? "#E05555" : colors.riskHigh;
 }
 
 /**
@@ -72,7 +74,7 @@ export function Button({
         disabled={isDisabled}
         style={[styles.iconBtn, isDisabled && styles.iconDisabled, style]}
       >
-        <Feather name={icon ?? "more-horizontal"} size={20} color={colors.deepTeal} />
+        <Feather name={icon ?? "more-horizontal"} size={20} color={colors.primaryBlue} />
       </PressScale>
     );
   }
@@ -88,7 +90,7 @@ export function Button({
       >
         {({ pressed }) =>
           loading ? (
-            <ActivityIndicator color={colors.midTeal} />
+            <ActivityIndicator color={colors.skyBlue} />
           ) : (
             <Text
               style={[
@@ -113,19 +115,21 @@ export function Button({
         accessibilityLabel={label}
         disabled={isDisabled}
         style={({ pressed }) => [
-          styles.secondary,
+          styles.secondaryWrap,
           pressed && !isDisabled ? styles.secondaryPressed : null,
           isDisabled && styles.disabledWrap,
           style,
         ]}
       >
-        {loading ? (
-          <ActivityIndicator color={colors.deepTeal} />
-        ) : (
-          <Text style={[styles.secondaryLabel, isDisabled && styles.disabledText]}>
-            {title}
-          </Text>
-        )}
+        <GlassCard intensity="button" style={styles.secondaryGlass}>
+          {loading ? (
+            <ActivityIndicator color={colors.primaryBlue} />
+          ) : (
+            <Text style={[styles.secondaryLabel, isDisabled && styles.disabledText]}>
+              {title}
+            </Text>
+          )}
+        </GlassCard>
       </PressScale>
     );
   }
@@ -140,7 +144,7 @@ export function Button({
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.primary,
-        { backgroundColor: isDanger ? darkerCoral(pressed) : darkerTeal(pressed) },
+        { backgroundColor: isDanger ? darkerCoral(pressed) : darkerPrimary(pressed) },
         !isDisabled ? shadows.button : null,
         isDisabled && styles.primaryDisabled,
         style,
@@ -191,7 +195,7 @@ const styles = StyleSheet.create({
   primary: {
     marginTop: 16,
     minHeight: primaryButtonHeight,
-    borderRadius: 12,
+    borderRadius: radius.button,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
@@ -207,25 +211,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.white,
   },
-  secondary: {
+  secondaryWrap: {
     marginTop: 16,
+    width: "100%",
+    borderRadius: radius.button,
+    overflow: "hidden",
+  },
+  secondaryGlass: {
     minHeight: secondaryButtonHeight,
-    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
     width: "100%",
-    backgroundColor: "transparent",
-    borderWidth: 1.5,
-    borderColor: colors.deepTeal,
   },
   secondaryPressed: {
-    backgroundColor: colors.lightTeal,
+    opacity: 0.85,
   },
   secondaryLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 15,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   textBtn: {
     marginTop: 8,
@@ -237,7 +242,7 @@ const styles = StyleSheet.create({
   textLabel: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.skyBlue,
   },
   textLabelPressed: {
     textDecorationLine: "underline",

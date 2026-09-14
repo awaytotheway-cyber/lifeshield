@@ -1,5 +1,5 @@
 /**
- * LifeShield entry file.
+ * PRESCOPE entry file.
  *
  * Expo web looks for this file first. We immediately hand off to Expo Router
  * so the real screens in the /app folder are shown (splash, login, onboarding,

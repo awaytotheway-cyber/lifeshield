@@ -177,7 +177,7 @@ export default function App() {
               warnWhenUnsavedChanges: true,
               projectId: "lifeshield-admin",
               title: {
-                text: "LifeShield Admin",
+                text: "PRESCOPE Admin",
               },
             }}
           >
@@ -269,7 +269,7 @@ export default function App() {
             </Routes>
 
             <UnsavedChangesNotifier />
-            <DocumentTitleHandler handler={(title) => `${title} | LifeShield Admin`} />
+            <DocumentTitleHandler handler={(title) => `${title} | PRESCOPE Admin`} />
           </Refine>
         </AntdApp>
       </ConfigProvider>

@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { PostAuthRedirect } from "@/components/journey/PostAuthRedirect";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TextField } from "@/components/ui/TextField";
@@ -91,6 +92,7 @@ export default function RegisterScreen() {
 
       <SetupBanners />
 
+      <Card>
       <Controller
         control={control}
         name="fullName"
@@ -158,6 +160,7 @@ export default function RegisterScreen() {
           />
         )}
       />
+      </Card>
 
       {errors.root?.message ? (
         <Text style={styles.error}>{errors.root.message}</Text>

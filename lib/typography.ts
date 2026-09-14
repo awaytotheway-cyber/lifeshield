@@ -1,13 +1,19 @@
-/**
- * Type styles for LifeShield. Font names match the files loaded in app/_layout.tsx.
+﻿/**
+ * Type styles for PRESCOPE. Font names match the files loaded in app/_layout.tsx.
+ * Headings: Manrope. Body: Inter. Hero stats: oversized Manrope display.
  * If fonts are still loading, React Native falls back to the system font.
  */
 
 export const fontFamily = {
-  display: "DMSerifDisplay_400Regular",
+  /** Screen titles and section headings. */
+  display: "Manrope_700Bold",
+  displaySemi: "Manrope_600SemiBold",
+  /** Oversized hero numbers (risk score, days-until-check). */
+  heroStat: "Manrope_800ExtraBold",
   body: "Inter_400Regular",
   bodyMedium: "Inter_500Medium",
   bodySemi: "Inter_600SemiBold",
+  /** Lab / medical names — keep mono for scanability. */
   medical: "DMMono_400Regular",
 } as const;
 
@@ -19,6 +25,13 @@ export const typography = {
     letterSpacing: -0.5,
     color: undefined as string | undefined,
   },
+  /** Big calm numbers for milestone strips and risk scores. */
+  heroStat: {
+    fontFamily: fontFamily.heroStat,
+    fontSize: 40,
+    lineHeight: 44,
+    letterSpacing: -1,
+  },
   h1: {
     fontFamily: fontFamily.display,
     fontSize: 26,
@@ -26,7 +39,7 @@ export const typography = {
     letterSpacing: -0.5,
   },
   h2: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: fontFamily.displaySemi,
     fontSize: 20,
     lineHeight: 26,
   },

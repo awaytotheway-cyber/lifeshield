@@ -1,7 +1,8 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
+import { GlassSurface } from "@/components/ui/GlassSurface";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 type UiProductCardProps = {
@@ -44,8 +45,11 @@ export function ProductCard({
       accessibilityLabel={name}
       onPress={onOpen}
       disabled={!onOpen}
-      style={[styles.card, isGrid ? styles.cardGrid : styles.cardRow]}
     >
+      <GlassSurface
+        intensity="card"
+        style={[styles.card, isGrid ? styles.cardGrid : styles.cardRow]}
+      >
       {imageUri ? (
         <Image source={{ uri: imageUri }} style={isGrid ? styles.imageGrid : styles.image} />
       ) : (
@@ -74,16 +78,14 @@ export function ProductCard({
           </Pressable>
         ) : null}
       </View>
+      </GlassSurface>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
     padding: spacing.base,
-    ...shadows.card,
   },
   cardRow: {
     flexDirection: "row",

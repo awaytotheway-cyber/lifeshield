@@ -19,6 +19,7 @@ import { useTriageStore } from "@/stores/triage-store";
  */
 export default function PathwayBScreen() {
   const session = useAuthStore((state) => state.session);
+  const termsPrivacyAccepted = useAuthStore((state) => state.termsPrivacyAccepted);
   const signOut = useAuthStore((state) => state.signOut);
   const triageStatus = useTriageStore((state) => state.status);
   const triageLoading = useTriageStore((state) => state.loading);
@@ -34,6 +35,10 @@ export default function PathwayBScreen() {
 
   if (!session) {
     return <Redirect href={routes.login} />;
+  }
+
+  if (!termsPrivacyAccepted) {
+    return <Redirect href={routes.consentPrivacy} />;
   }
 
   if (!triageLoading && triageStatus !== "locked") {

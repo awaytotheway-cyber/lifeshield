@@ -2,7 +2,7 @@ import type { ThemeConfig } from "antd";
 
 import { colors, fonts, radii, shadows } from "./tokens";
 
-/** Ant Design token theme — primary is deep teal, never generic Material blue. */
+/** Ant Design token theme — primary is PRESCOPE blue (shared with mobile tokens). */
 export const lifeShieldAntdTheme: ThemeConfig = {
   token: {
     colorPrimary: colors.deepTeal,
@@ -24,7 +24,7 @@ export const lifeShieldAntdTheme: ThemeConfig = {
     borderRadiusLG: radii.card,
     fontFamily: fonts.ui,
     controlHeight: 40,
-    controlOutline: "rgba(26, 122, 154, 0.12)",
+    controlOutline: "rgba(43, 95, 224, 0.12)",
     boxShadow: shadows.card,
     boxShadowSecondary: shadows.button,
   },
@@ -33,7 +33,7 @@ export const lifeShieldAntdTheme: ThemeConfig = {
       bodyBg: colors.cream,
       headerBg: colors.white,
       siderBg: colors.deepTeal,
-      triggerBg: "#0A3A48",
+      triggerBg: "#0B1E4D",
       triggerColor: colors.white,
     },
     Menu: {

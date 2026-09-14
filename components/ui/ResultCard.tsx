@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 type ResultCardProps = {
@@ -14,7 +15,8 @@ type ResultCardProps = {
 };
 
 /**
- * Results list row. Chip first — never lead with a raw lab number.
+ * Results list row — polished glass card with risk-color accent.
+ * Teal = calm/normal, amber = discuss, coral = genuine high-risk only.
  */
 export function ResultCard({
   plainName,
@@ -26,10 +28,17 @@ export function ResultCard({
 }: ResultCardProps) {
   const barColor =
     status === "critical"
-      ? colors.coral
+      ? colors.riskHigh
       : status === "attention"
-        ? colors.amber
-        : colors.sage;
+        ? colors.riskModerate
+        : colors.riskLow;
+
+  const tintWash =
+    status === "critical"
+      ? "rgba(242,109,109,0.12)"
+      : status === "attention"
+        ? "rgba(245,166,35,0.12)"
+        : "rgba(47,184,166,0.12)";
 
   return (
     <Pressable
@@ -37,32 +46,37 @@ export function ResultCard({
       accessibilityLabel={plainName}
       onPress={onPress}
       disabled={!onPress}
-      style={styles.card}
     >
-      <View style={[styles.bar, { backgroundColor: barColor }]} />
-      <View style={styles.body}>
-        <Text style={styles.name}>{plainName}</Text>
-        <View style={styles.row2}>
-          <StatusChip kind={status} label={statusLabel} />
-          <Text style={styles.meaning}>{meaning}</Text>
+      <GlassCard intensity="card" style={styles.card}>
+        <View
+          pointerEvents="none"
+          style={[styles.wash, { backgroundColor: tintWash }]}
+        />
+        <View style={[styles.bar, { backgroundColor: barColor }]} />
+        <View style={styles.body}>
+          <Text style={styles.name}>{plainName}</Text>
+          <View style={styles.row2}>
+            <StatusChip kind={status} label={statusLabel} />
+            <Text style={styles.meaning}>{meaning}</Text>
+          </View>
+          <Text style={styles.medicalLabel}>
+            Medical name: <Text style={styles.medical}>{medicalName}</Text>
+          </Text>
         </View>
-        <Text style={styles.medicalLabel}>
-          Medical name: <Text style={styles.medical}>{medicalName}</Text>
-        </Text>
-      </View>
+      </GlassCard>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
     borderRadius: radius.radioCard,
     padding: spacing.base,
     paddingLeft: spacing.base + 4,
-    flexDirection: "row",
     overflow: "hidden",
-    ...shadows.card,
+  },
+  wash: {
+    ...StyleSheet.absoluteFill,
   },
   bar: {
     position: "absolute",
@@ -70,14 +84,18 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 4,
+    zIndex: 2,
+    borderTopLeftRadius: radius.radioCard,
+    borderBottomLeftRadius: radius.radioCard,
   },
   body: {
-    flex: 1,
+    position: "relative",
+    zIndex: 1,
   },
   name: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.charcoal,
+    color: colors.deepNavy,
   },
   row2: {
     marginTop: 8,

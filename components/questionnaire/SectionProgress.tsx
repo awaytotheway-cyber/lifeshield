@@ -1,9 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
 import { QUESTIONNAIRE_HUB_SECTIONS, type HubSectionKey } from "@/lib/constants";
-import { colors, radius, shadows, spacing, tapTarget } from "@/lib/design-tokens";
+import { colors, spacing, tapTarget } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 type SectionProgressProps = {
@@ -28,8 +29,8 @@ export function SectionProgress({
             accessibilityRole="button"
             accessibilityLabel={`${section.title}. ${done ? COPY.hubStatusDone : COPY.hubStatusNotStarted}`}
             onPress={() => onPressSection(section.key)}
-            style={styles.row}
           >
+            <GlassSurface intensity="card" style={styles.row}>
             <View
               style={[
                 styles.dot,
@@ -43,6 +44,7 @@ export function SectionProgress({
               </Text>
             </View>
             <Feather name="chevron-right" size={20} color={colors.midTeal} />
+            </GlassSurface>
           </Pressable>
         );
       })}
@@ -57,13 +59,10 @@ const styles = StyleSheet.create({
   },
   row: {
     minHeight: tapTarget,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
     paddingHorizontal: spacing.base,
     paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
-    ...shadows.card,
   },
   dot: {
     width: 12,

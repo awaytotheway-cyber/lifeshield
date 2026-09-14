@@ -7,7 +7,7 @@ type AdminTitleProps = {
   wrapperStyles?: CSSProperties;
 };
 
-/** Sidebar / header mark: LifeShield Admin (serif wordmark when expanded). */
+/** Sidebar / header mark: PRESCOPE Admin (serif wordmark when expanded). */
 export function AdminTitle({
   collapsed,
   text: textFromProps,
@@ -33,7 +33,7 @@ export function AdminTitle({
           LS
         </span>
         {!collapsed ? (
-          <span className="ls-brand-text">{text ?? "LifeShield Admin"}</span>
+          <span className="ls-brand-text">{text ?? "PRESCOPE Admin"}</span>
         ) : null}
       </span>
     </Link>

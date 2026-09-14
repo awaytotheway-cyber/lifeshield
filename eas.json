@@ -34,12 +34,39 @@
     },
     "production": {
       "environment": "production",
+      "autoIncrement": true,
+      "ios": {
+        "distribution": "store"
+      },
       "android": {
         "buildType": "app-bundle"
+      }
+    },
+    "testflight": {
+      "environment": "preview",
+      "distribution": "store",
+      "autoIncrement": true,
+      "ios": {
+        "simulator": false
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6811139791",
+        "ascApiKeyIssuerId": "228762df-bf96-4708-a24d-b10111b7812e",
+        "ascApiKeyId": "6ATAX427V4",
+        "ascApiKeyPath": "./AuthKey.p8"
+      }
+    },
+    "testflight": {
+      "ios": {
+        "ascAppId": "6811139791",
+        "ascApiKeyIssuerId": "228762df-bf96-4708-a24d-b10111b7812e",
+        "ascApiKeyId": "6ATAX427V4",
+        "ascApiKeyPath": "./AuthKey.p8"
+      }
+    }
   }
 }

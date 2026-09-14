@@ -134,7 +134,7 @@ export async function registerForPushNotifications(
 
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
-        name: "LifeShield",
+        name: "PRESCOPE",
         importance: Notifications.AndroidImportance.DEFAULT,
       });
     }

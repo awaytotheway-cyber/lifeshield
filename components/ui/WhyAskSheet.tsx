@@ -3,8 +3,9 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, tapTarget } from "@/lib/design-tokens";
+import { colors, tapTarget } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 type WhyAskButtonProps = {
@@ -37,7 +38,8 @@ export function WhyAskButton({
         onRequestClose={() => setOpen(false)}
       >
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => undefined}>
+          <Pressable onPress={() => undefined}>
+            <GlassSurface intensity="sheet" style={styles.sheet}>
             <SafeAreaView edges={["bottom"]}>
               <Text style={styles.title}>{COPY.whyWeAsk}</Text>
               <Text style={styles.body}>{explanation}</Text>
@@ -50,6 +52,7 @@ export function WhyAskButton({
                 <Text style={styles.closeText}>{COPY.whyWeAskClose}</Text>
               </Pressable>
             </SafeAreaView>
+            </GlassSurface>
           </Pressable>
         </Pressable>
       </Modal>
@@ -96,11 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(13,74,92,0.28)",
   },
   sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
     padding: 20,
-    ...shadows.modal,
   },
   title: {
     fontFamily: fontFamily.bodySemi,

@@ -5,8 +5,9 @@
  * Never say the app diagnoses, detects, or treats anything.
  */
 export const COPY = {
-  appName: "LifeShield",
+  appName: "PRESCOPE",
   tagline: "A lifestyle awareness tool — not a diagnostic or medical app.",
+  loadingApp: "Loading PRESCOPE…",
 
   missingKeys:
     "Add your Supabase Project URL and anon public key to the .env file, then restart the app. For a standalone APK built in the cloud, set the same values as EAS secrets (see docs/BUILD-APK.md).",
@@ -14,7 +15,7 @@ export const COPY = {
   splashSubtitle: "Lifestyle awareness, made simple.",
 
   loginTitle: "Welcome back",
-  loginSubtitle: "Sign in to continue your LifeShield journey.",
+  loginSubtitle: "Sign in to continue your PRESCOPE journey.",
   loginButton: "Log in",
   loginToRegister: "New here? Create an account",
   forgotPassword: "Forgot password",
@@ -43,20 +44,59 @@ export const COPY = {
 
   welcomeTitle: "Understand your lifestyle picture",
   welcomeBody:
-    "You’ll answer a few questions about health and lifestyle. LifeShield then shows tests that may be worth discussing with a practitioner.",
+    "You’ll answer a few questions about health and lifestyle. PRESCOPE then shows tests that may be worth discussing with a practitioner.",
   welcomeContinue: "Continue",
 
   disclaimerTitle: "This is not medical advice",
   disclaimerBody:
-    "LifeShield is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition, and it does not replace a qualified health professional.\n\nIf you have new symptoms, pain, or anything that worries you, speak to a clinician or local urgent care. In an emergency, use your local emergency number.",
+    "PRESCOPE is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition, and it does not replace a qualified health professional.\n\nIf you have new symptoms, pain, or anything that worries you, speak to a clinician or local urgent care. In an emergency, use your local emergency number.",
   disclaimerButton: "I understand",
 
   termsTitle: "Your answers stay private",
   termsBody:
-    "By continuing you agree that:\n\n• Your answers are stored in your LifeShield account so you can pick up later.\n• Only you can see your own data (privacy rules are on by default).\n• LifeShield is a lifestyle awareness tool, not a medical service.\n• You can ask us to delete your account later.\n\nThis is a Phase 1 summary. A fuller legal document can replace this text later.",
+    "By continuing you agree that:\n\n• Your answers are stored in your PRESCOPE account so you can pick up later.\n• Only you can see your own data (privacy rules are on by default).\n• PRESCOPE is a lifestyle awareness tool, not a medical service.\n• You can ask us to delete your account later.\n\nThis is a Phase 1 summary. A fuller legal document can replace this text later.",
   termsCheckbox: "I agree to the terms and privacy summary",
   termsButton: "Get started",
   termsNeedCheck: "Tick the box to continue.",
+
+  consentGateTitle: "Before we begin, we need your agreement",
+  consentGateCollectsTitle: "What Prescope collects and why",
+  consentGateCollectsIntro:
+    "Prescope asks questions about your health, lifestyle, family history, and habits to help you understand your personal risk profile. Here is what we collect and how we handle it:",
+  consentGateAnswersTitle: "Your answers",
+  consentGateAnswersBody:
+    "We store your questionnaire responses securely so we can generate personalised screening recommendations. Your answers are encrypted and only you and your assigned practitioner can see them.",
+  consentGateResultsTitle: "Test results",
+  consentGateResultsBody:
+    "If you order screening tests, your results are stored securely and reviewed by a licensed practitioner before you receive your plan.",
+  consentGateGeneticTitle: "Genetic data (only if you consent separately)",
+  consentGateGeneticBody:
+    "If you choose to undergo BRCA1/2 or SNP genetic testing, we will ask for your separate consent at that stage. Genetic data receives the highest level of protection and is never shared with insurers or employers.",
+  consentGatePaymentTitle: "Payment information",
+  consentGatePaymentBody:
+    "Payments are processed by Stripe. We never see or store your card number.",
+  consentGateNeverTitle: "What we never do",
+  consentGateNeverBody:
+    "We never sell your data. We never use your health information for advertising. We never share your data with third parties for their marketing purposes.",
+  consentGateControlTitle: "Your control",
+  consentGateControlBody:
+    "You can view, correct, export, or delete your data at any time from the app settings. You can withdraw consent for genetic data processing at any time.",
+  consentGateReadPrivacy: "Read the complete Privacy Policy",
+  consentGateReadTerms: "Read the complete Terms of Use",
+  consentGateCheckPolicy:
+    "I have read and agree to Prescope's Privacy Policy and Terms of Use",
+  consentGateCheckHealth:
+    "I understand that Prescope collects sensitive health data including medical history, lifestyle information, and (if I separately consent) genetic data, as described above",
+  consentGateContinue: "Continue",
+  consentGateDecline: "Decline",
+  consentGateNeedBoth: "Tick both boxes to continue.",
+  consentGateDeclineTitle: "We understand.",
+  consentGateDeclineBody:
+    "Prescope requires your agreement to collect and process health data in order to function. Without it, the app cannot provide screening recommendations.\n\nYou can close the app now and return anytime to accept.",
+  consentGateCloseApp: "Close app",
+  consentGateGoBack: "Go back",
+  consentGateLegalError:
+    "We couldn't open the full document. Check your connection and try again.",
 
   homeSignedIn:
     "You’re in. After the safety check, you’ll see three short consent screens, then the questionnaire.",
@@ -106,13 +146,13 @@ export const COPY = {
   setupTables:
     "Your login worked, but the database tables are not set up yet. In Supabase, open SQL Editor, paste the contents of supabase/schema.sql, and click Run.",
   missingProfile:
-    "Your login worked, but your profile row is missing. LifeShield tried to create it. If this keeps happening, paste supabase/schema.sql into the SQL Editor and Run it (that also recreates the signup trigger).",
+    "Your login worked, but your profile row is missing. PRESCOPE tried to create it. If this keeps happening, paste supabase/schema.sql into the SQL Editor and Run it (that also recreates the signup trigger).",
 
   triageTitle: "Before we begin",
   triageBody:
     "We need to ask one important question to make sure this service is right for you right now.",
   triageAwareness:
-    "LifeShield is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition. If you are unsure, choose Yes.",
+    "PRESCOPE is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition. If you are unsure, choose Yes.",
   triageNeedAll: "Answer Yes or No to all three questions to continue.",
   triageContinue: "Save answers",
   triageSaveFailed:
@@ -124,13 +164,13 @@ export const COPY = {
   pathwayBBody:
     "Based on your answers, seeing a doctor soon is the right next step. This app will be here when you're ready to return.\n\nContact a doctor, nurse, or local urgent care. If this feels like an emergency, use your local emergency number.",
   pathwayBLockedNote:
-    "The questionnaire is paused on purpose. You can’t go back to change these answers. This screen stays after you close and reopen LifeShield.",
+    "The questionnaire is paused on purpose. You can’t go back to change these answers. This screen stays after you close and reopen PRESCOPE.",
   pathwayBFindDoctor: "Find a doctor",
   pathwayBSavePlace: "Save my place",
   pathwayBSaved:
-    "Your answers are already saved. You can close LifeShield and come back to this screen.",
+    "Your answers are already saved. You can close PRESCOPE and come back to this screen.",
   pathwayBFindDoctorHint:
-    "Use your usual clinic, GP, or local urgent care. LifeShield cannot book an appointment.",
+    "Use your usual clinic, GP, or local urgent care. PRESCOPE cannot book an appointment.",
 
   questionnaireStubTitle: "Questionnaire",
   questionnaireStubBody:
@@ -138,11 +178,11 @@ export const COPY = {
 
   consentTitle: "A short consent before you continue",
   consentIntro:
-    "LifeShield is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition. Agreeing here only means you are comfortable continuing. It does not book or run a test.",
+    "PRESCOPE is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition. Agreeing here only means you are comfortable continuing. It does not book or run a test.",
   consentAgree: "I agree — continue",
   consentDecline: "I don’t agree",
   consentDeclined:
-    "That’s okay. Without this agreement, LifeShield cannot open the questionnaire.",
+    "That’s okay. Without this agreement, PRESCOPE cannot open the questionnaire.",
   consentDeclinedHint:
     "You can stay here, go to Home, or sign out from More. You can agree later if you change your mind.",
   consentGoHome: "Go to Home",
@@ -221,7 +261,7 @@ export const COPY = {
   interruptQuestion:
     "Have you recently noticed any nipple discharge, breast skin changes, or a new lump?",
   interruptBody:
-    "This is not a diagnosis. If you answer Yes, LifeShield will pause so you can speak to a clinician in person.",
+    "This is not a diagnosis. If you answer Yes, PRESCOPE will pause so you can speak to a clinician in person.",
   interruptYes: "Yes — pause and get in-person advice",
   interruptNo: "No — continue",
   interruptNeedAnswer: "Please choose Yes or No to continue.",
@@ -283,7 +323,7 @@ export const COPY = {
   resultsOpenQuestionnaire: "Open questionnaire",
   resultsOpenLabResults: "View my results",
   resultsActionDiscuss:
-    "One next step: take this list to a qualified practitioner. LifeShield does not book, run, or interpret tests.",
+    "One next step: take this list to a qualified practitioner. PRESCOPE does not book, run, or interpret tests.",
   resultsGroupWatching: "Worth watching",
   resultsGroupRange: "Within range",
   resultsChipDiscuss: "Worth discussing",
@@ -315,7 +355,7 @@ export const COPY = {
   labResultPdfFailed:
     "We couldn’t open that file. Ask your clinician for another copy.",
   labResultNotDiagnosis:
-    "This is information, not a diagnosis. LifeShield does not detect or treat any condition.",
+    "This is information, not a diagnosis. PRESCOPE does not detect or treat any condition.",
   labResultBack: "Back to my results",
   labMeaningNormal:
     "What this means for you: this reading sits in the usual range the lab listed. A practitioner can still talk it through with you. This is information, not a diagnosis.",
@@ -402,13 +442,13 @@ export const COPY = {
   followUpDueToday: "Due today",
   followUpDueOn: "Due",
   followUpSymptomNote:
-    "Same safety question as before. Yes still pauses LifeShield so you can speak to a clinician. This is not a diagnosis.",
+    "Same safety question as before. Yes still pauses PRESCOPE so you can speak to a clinician. This is not a diagnosis.",
   followUpReviewNote:
     "A reminder to look at your draft plan with a practitioner. The plan is not an instruction.",
   followUpRetestNote:
     "A reminder that a suggested test may be worth discussing again later. This does not book a test.",
   followUpRemindersAsk:
-    "LifeShield can remind you on this phone. No messages are sent from a server. You can say no — the list still works.",
+    "PRESCOPE can remind you on this phone. No messages are sent from a server. You can say no — the list still works.",
   followUpRemindersAllow: "Allow reminders on this phone",
   followUpRemindersOn:
     "Phone reminders are on for upcoming items. This is a local reminder only, not a diagnosis.",
@@ -416,15 +456,15 @@ export const COPY = {
     "Reminders are off. Your list still works — nothing is lost.",
   followUpRemindersUnavailable:
     "Phone reminders are not available on this device. Your list still works.",
-  followUpReminderTitle: "LifeShield follow-up",
+  followUpReminderTitle: "PRESCOPE follow-up",
   followUpReminderBody:
     "This is a reminder only — not a diagnosis, and not medical advice.",
-  followUpSymptomReminderTitle: "LifeShield safety check-in",
+  followUpSymptomReminderTitle: "PRESCOPE safety check-in",
   followUpSymptomReminderBody:
     "A reminder to do the symptom check-in. This is not a diagnosis.",
   followUpPushExpoGo:
     "Push messages need a development build. Expo Go can still use on-phone reminders.",
-  followUpPushRegistered: "This phone can receive LifeShield reminders.",
+  followUpPushRegistered: "This phone can receive PRESCOPE reminders.",
   followUpPushDenied:
     "Notification permission is off. On-phone reminders and your list still work.",
   followUpPushUnavailable:
@@ -479,19 +519,136 @@ export const COPY = {
 
   moreTitle: "More",
   moreBody:
-    "Profile and settings come later. You can sign out here. The questionnaire stays closed until you agree to all three consents.",
-  profileTitle: "Your profile",
+    "Your profile, privacy tools, and account options. The questionnaire stays closed until you agree to all three consents.",
+  drawerSubtitle: "Jump to a section of your journey",
+  drawerClose: "Close menu",
+  drawerCurrent: "Here",
+  drawerReorder: "Reorder menu",
+  drawerReorderDone: "Done reordering",
+  profileTitle: "My profile",
   profileBody:
-    "This is your LifeShield account. Signing out does not delete your saved answers.",
+    "Only your name and email are required. Everything else is optional and helps clinicians understand your context — PRESCOPE does not diagnose or treat.",
   profileNameLabel: "Name",
   profileEmailLabel: "Email",
+  profileEmailReadonly: "Email comes from your login and cannot be changed here.",
+  profilePhoneLabel: "Phone (optional)",
+  profileDobLabel: "Date of birth",
+  profileAgeLabel: "Age",
+  profileGenderLabel: "Gender",
+  profileBloodLabel: "Blood type (optional)",
+  profileHeightLabel: "Height (cm)",
+  profileWeightLabel: "Weight (kg)",
+  profileBmiLabel: "BMI (calculated)",
+  profileEmergencyHeading: "Emergency contact (optional)",
+  profileEmergencyName: "Contact name",
+  profileEmergencyPhone: "Contact phone",
+  profileEmergencyRelationship: "Relationship",
+  profileConditionsLabel: "Health conditions (optional)",
+  profileAllergiesLabel: "Allergies (optional)",
+  profilePhotoAdd: "Add photo",
+  profilePhotoChange: "Change photo",
+  profilePhotoRemove: "Remove photo",
+  profilePhotoDenied: "Photo access was not granted. You can still save your profile without a photo.",
+  profilePhotoFailed: "We couldn’t open the photo picker. Try again, or skip the photo.",
+  profileSave: "Save changes",
+  profileSavedToast: "Profile saved",
+  profileNameRequired: "Please enter your name before saving.",
+  profileNeedsMigration:
+    "Some newer profile fields need a one-time database update. In Supabase → SQL Editor, paste supabase/migrations/20260913_profile_settings_fields.sql and Run. Name and basic details still save.",
   profileNameEmpty:
-    "No name saved yet. You can add one in the first questionnaire section (about you).",
+    "No name saved yet. Add your name below and tap Save.",
   profileEmailEmpty: "No email on this session. Try signing in again.",
   profileAdminBadge: "Admin",
   profileLoadFailed:
     "We couldn’t load your profile. You can still sign out from here.",
+  profileSaveFailed: "We couldn’t save your profile. Please try again.",
   profileSignOutFailed: "We couldn’t sign you out. Please try again.",
+  settingsTitle: "Settings",
+  settingsBody: "Notifications, privacy, help, and about PRESCOPE.",
+  settingsOpenProfile: "My profile",
+  settingsOpenNotifications: "Notifications",
+  settingsOpenPrivacy: "Data & privacy",
+  settingsOpenHelp: "Help & support",
+  settingsOpenAbout: "About",
+  settingsOpenMenu: "Open main menu",
+  settingsNotifyTitle: "Notifications",
+  settingsNotifyBody:
+    "Choose what PRESCOPE may remind you about. Remote push needs a development or store build; on-phone reminders still work when permission is on.",
+  settingsNotifyReminders: "Follow-up reminders",
+  settingsNotifyResults: "When reviewed results are ready",
+  settingsNotifyPlan: "When a plan is reviewed",
+  settingsNotifyMarketing: "Product tips (optional)",
+  settingsNotifyTime: "Preferred reminder time",
+  settingsNotifyTimeHint: "Used for on-device follow-up reminders when possible.",
+  settingsNotifyTimeInvalid: "Pick a valid time (HH:MM).",
+  settingsNotifySave: "Save notification preferences",
+  settingsNotifySaved: "Notification preferences saved",
+  settingsNotifySaveFailed:
+    "We couldn’t save notification preferences. Please try again.",
+  settingsNotifySystem: "Open system notification settings",
+  settingsNotifySystemFailed:
+    "We couldn’t open system settings. Change notification permission in your phone Settings app.",
+  privacyTitle: "Data & privacy",
+  privacyBody:
+    "Your data travels over HTTPS. Each person only sees their own rows (Row Level Security). We do not claim device-level encryption beyond what your phone and Supabase already provide.",
+  privacyExport: "Export my data (JSON)",
+  privacyExportShareTitle: "Share PRESCOPE export",
+  privacyExportDone: "Export ready — use the share sheet or Downloads.",
+  privacyExportFailed: "We couldn’t export your data. Please try again.",
+  privacyConsents: "View my consents",
+  privacyRetention:
+    "We keep account data while your account is active. After a deletion request is completed, Auth and related rows are removed by an admin.",
+  privacyPolicyLink: "Open privacy policy",
+  privacyTermsLink: "Open terms of use",
+  privacyDelete: "Request account deletion",
+  privacyDeleteNeedsSql:
+    "Account deletion requests need a one-time SQL setup. Paste supabase/migrations/20260913_profile_settings_fields.sql in the Supabase SQL Editor and Run, then try again.",
+  privacyDeleteFailed: "We couldn’t submit your deletion request. Please try again.",
+  privacyDeleteTitle: "Request account deletion",
+  privacyDeleteBody:
+    "This sends a deletion request to your PRESCOPE project. An admin must finish removing the Auth user in the Supabase dashboard — the app cannot do that alone (no service-role key on the device). Export your data first if you want a copy.",
+  privacyDeleteReason: "Optional reason",
+  privacyDeleteConfirm: "Submit deletion request",
+  privacyDeleteSubmitted:
+    "Request submitted. An admin will complete removal in Supabase → Authentication → Users. You can sign out now.",
+  privacyDeleteWarning: "This cannot be undone once an admin completes it.",
+  helpTitle: "Help & support",
+  helpBody: "Short answers and how to reach us. PRESCOPE is not an emergency service.",
+  helpContact: "Contact support",
+  helpContactBody: "Email support@prescope.app with your account email. We aim to reply within a few business days.",
+  helpTutorials: "Quick tips",
+  helpTutorialsBody:
+    "1) Finish consents before the questionnaire.\n2) Save each section as you go.\n3) Suggested tests appear on Results after the last section.\n4) New symptoms mid-journey open Pathway B — follow local urgent care.",
+  helpFeedback: "Send feedback",
+  helpFeedbackBody: "Tell us what felt confusing or helpful. Email feedback@prescope.app.",
+  aboutTitle: "About PRESCOPE",
+  aboutBody:
+    "PRESCOPE is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition.",
+  aboutVersion: "Version",
+  aboutWhatsNew: "What’s new",
+  aboutWhatsNewBody:
+    "Profile & settings hub, side menu, data export, and clearer privacy wording. Blue glass design system.",
+  aboutCompany: "Prescope",
+  aboutOss: "Open-source notices",
+  aboutOssBody:
+    "Built with Expo, React Native, NativeWind, Supabase JS, and other open-source libraries. Full license texts ship with each package in node_modules.",
+  appointmentsTitle: "Appointments",
+  appointmentsEmptyHeading: "No appointments yet",
+  appointmentsEmptyBody:
+    "Clinic booking is not connected in this build. Use your usual clinic or GP to book. When booking is added, appointments will show up here.",
+  prescriptionsTitle: "Prescriptions",
+  prescriptionsEmptyHeading: "No prescriptions here",
+  prescriptionsEmptyBody:
+    "PRESCOPE does not prescribe medicines. This screen is ready for future clinician-shared lists. Ask your clinician about any medicines you take.",
+  notifInboxTitle: "Notifications",
+  notifInboxEmptyHeading: "You’re all caught up",
+  notifInboxEmptyBody:
+    "Reminders and status updates will appear here when available. You can change preferences under Settings → Notifications.",
+  consentsSettingsTitle: "Your consents",
+  consentsSettingsBody:
+    "These are the consent ticks stored for your account. You can re-read the wording from onboarding and the sequential consent screens.",
+  consentsSettingsEmpty: "No consent rows yet. Finish onboarding to record them.",
+  consentsSettingsLoadFailed: "We couldn’t load consents. Please try again.",
   hubOpenResults: "View suggested tests",
 
   storeTitle: "Store",

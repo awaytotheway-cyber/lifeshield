@@ -2,8 +2,10 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
+import { EmptyHourglass, InsightLens } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
 import { ResultCard } from "@/components/ui/ResultCard";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -97,6 +99,30 @@ export default function ResultsScreen() {
       />
       <Text style={styles.body}>{COPY.resultsBody}</Text>
 
+      {!loading && !message && orders.length > 0 ? (
+        <View style={styles.stats}>
+          <MilestoneStatStrip
+            stats={[
+              {
+                id: "count",
+                value: orders.length,
+                label: "Suggested tests",
+              },
+              {
+                id: "tiers",
+                value: new Set(orders.map((o) => o.test_tier)).size,
+                label: "Focus areas",
+              },
+              {
+                id: "next",
+                value: "Discuss",
+                label: "With clinician",
+              },
+            ]}
+          />
+        </View>
+      ) : null}
+
       {loading ? <StaticSkeleton rows={4} /> : null}
 
       {message ? (
@@ -112,6 +138,7 @@ export default function ResultsScreen() {
             icon="bar-chart-2"
             heading={COPY.resultsEmptyHeading}
             explanation={COPY.resultsEmpty}
+            illustration={<EmptyHourglass width={100} height={100} />}
           />
           <PrimaryButton
             title={COPY.resultsOpenQuestionnaire}
@@ -127,6 +154,11 @@ export default function ResultsScreen() {
           data={listData}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          ListHeaderComponent={
+            <View style={styles.insight}>
+              <InsightLens width={120} height={100} />
+            </View>
+          }
           renderItem={({ item }) => {
             if (item.kind === "heading") {
               return <Text style={styles.group}>{item.title}</Text>;
@@ -182,8 +214,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 24,
     color: colors.slate,
-    textAlign: "center",
+    textAlign: "left",
     marginBottom: 8,
+  },
+  stats: {
+    marginBottom: 12,
   },
   error: {
     marginTop: 12,
@@ -191,6 +226,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.coral,
     textAlign: "center",
+  },
+  insight: {
+    alignItems: "center",
+    marginBottom: 8,
   },
   list: {
     paddingBottom: 32,
@@ -200,7 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fontFamily.bodySemi,
     fontSize: 20,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   cardGap: {
     marginBottom: 12,

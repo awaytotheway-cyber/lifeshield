@@ -1,4 +1,4 @@
-# Build a LifeShield Android APK (user app)
+# Build a PRESCOPE Android APK (user app)
 
 Plain-English guide for building the **patient mobile app** — register, questionnaire, results.  
 This is **not** the admin website in the `admin/` folder (that runs in a browser only).
@@ -64,7 +64,7 @@ Say **yes** if it asks to create a project on expo.dev. This may add a project i
 
 Your `.env` file is **not** uploaded to Expo’s build servers. Store the same values as **EAS environment variables** (this replaced the old `eas secret:create` command).
 
-**Easiest (no terminal):** open [expo.dev](https://expo.dev) → your **LifeShield** project → **Project settings** → **Environment variables** → **Add variable**. Create:
+**Easiest (no terminal):** open [expo.dev](https://expo.dev) → your **PRESCOPE** Expo project (slug may still say LifeShield) → **Project settings** → **Environment variables** → **Add variable**. Create:
 
 | Name | Value | Environments | Visibility |
 |------|--------|--------------|------------|
@@ -117,7 +117,7 @@ npm run build:apk
 
 1. Copy the `.apk` to the phone (email, USB, Google Drive, etc.).
 2. Open the file on the phone. If Android blocks “unknown apps”, go to **Settings → Security** (or **Install unknown apps**) and allow your file manager or browser to install apps.
-3. Open **LifeShield**, tap **Create account**, and sign up with **any email** and password (8+ characters).
+3. Open **PRESCOPE**, tap **Create account**, and sign up with **any email** and password (8+ characters).
 
 ---
 
@@ -144,7 +144,7 @@ The mobile app does **not** check `ADMIN_EMAILS` at login. That list only unlock
 | `production` | AAB (App Bundle) | Google Play Store submission |
 
 App package id: `com.lifeshield.app`  
-Display name: **LifeShield**
+Display name: **PRESCOPE**
 
 ### Expo Go vs standalone APK
 

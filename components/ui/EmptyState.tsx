@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import { GlassCard } from "@/components/ui/GlassCard";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
@@ -8,6 +10,8 @@ type EmptyStateProps = {
   icon?: keyof typeof Feather.glyphMap;
   heading: string;
   explanation: string;
+  /** Optional drawing. When set, the Feather icon is not shown. */
+  illustration?: ReactNode;
 };
 
 /** Designed empty state — never “No data found”. */
@@ -15,13 +19,16 @@ export function EmptyState({
   icon = "inbox",
   heading,
   explanation,
+  illustration,
 }: EmptyStateProps) {
   return (
-    <View style={styles.wrap}>
-      <Feather name={icon} size={32} color={colors.deepTeal} />
+    <GlassCard intensity="card" style={styles.wrap}>
+      {illustration ?? (
+        <Feather name={icon} size={32} color={colors.primaryBlue} />
+      )}
       <Text style={styles.heading}>{heading}</Text>
       <Text style={styles.body}>{explanation}</Text>
-    </View>
+    </GlassCard>
   );
 }
 
@@ -30,6 +37,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     alignItems: "center",
     paddingHorizontal: spacing.base,
+    paddingVertical: spacing.md,
   },
   heading: {
     marginTop: 16,
@@ -37,7 +45,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
     textAlign: "center",
   },
   body: {

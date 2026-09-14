@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import { GlassSurface } from "@/components/ui/GlassSurface";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 const CATEGORY_ICONS = {
@@ -47,8 +48,8 @@ export function InterventionCard({
       accessibilityLabel={title}
       onPress={onPress}
       disabled={!onPress}
-      style={styles.card}
     >
+      <GlassSurface intensity="card" style={styles.card}>
       <View style={styles.top}>
         <Feather name={icon} size={20} color={colors.deepTeal} />
         <View style={styles.topText}>
@@ -71,16 +72,14 @@ export function InterventionCard({
       {open && clinicalBasis ? (
         <Text style={styles.basis}>{clinicalBasis}</Text>
       ) : null}
+      </GlassSurface>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
     padding: spacing.base,
-    ...shadows.card,
   },
   top: {
     flexDirection: "row",

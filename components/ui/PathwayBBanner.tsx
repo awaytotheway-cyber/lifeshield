@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
+import { PathwayBHandoff } from "@/components/illustrations";
 import { DangerButton, TextButton } from "@/components/ui/Button";
+import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
@@ -16,9 +17,9 @@ type PathwayBBannerProps = {
  */
 export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProps) {
   return (
-    <View style={styles.wrap}>
-      <View style={styles.iconCircle}>
-        <Feather name="phone" size={24} color={colors.deepTeal} />
+    <GlassSurface intensity="card" style={styles.wrap}>
+      <View style={styles.illustration}>
+        <PathwayBHandoff width={160} height={140} />
       </View>
       <Text style={styles.title}>{COPY.pathwayBTitle}</Text>
       <Text style={styles.body}>{COPY.pathwayBBody}</Text>
@@ -28,22 +29,16 @@ export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProp
       {onSavePlace ? (
         <TextButton title={COPY.pathwayBSavePlace} onPress={onSavePlace} />
       ) : null}
-    </View>
+    </GlassSurface>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    backgroundColor: colors.cream,
-    paddingVertical: spacing.base,
+    padding: spacing.md,
   },
-  iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.lightTeal,
+  illustration: {
     alignItems: "center",
-    justifyContent: "center",
     marginBottom: 16,
   },
   title: {

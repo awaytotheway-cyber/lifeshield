@@ -17,6 +17,7 @@ type StatusChipProps = {
 
 /**
  * Small status pill. Use a calm phrase — never a raw number as the headline.
+ * Coral only for genuine high-risk (critical).
  */
 export function StatusChip({ kind, label }: StatusChipProps) {
   const palette = palettes[kind];
@@ -37,10 +38,18 @@ export function StatusChip({ kind, label }: StatusChipProps) {
 }
 
 const palettes = {
-  normal: { bg: colors.sageLight, text: colors.sage, border: undefined },
-  attention: { bg: colors.amberLight, text: colors.amber, border: undefined },
-  critical: { bg: colors.coralLight, text: colors.coral, border: undefined },
-  approved: { bg: colors.deepTeal, text: colors.white, border: undefined },
+  normal: { bg: colors.riskLowLight, text: colors.riskLow, border: undefined },
+  attention: {
+    bg: colors.riskModerateLight,
+    text: colors.riskModerate,
+    border: undefined,
+  },
+  critical: {
+    bg: colors.riskHighLight,
+    text: colors.riskHigh,
+    border: undefined,
+  },
+  approved: { bg: colors.primaryBlue, text: colors.white, border: undefined },
   draft: { bg: "transparent", text: colors.slate, border: colors.border },
 } as const;
 

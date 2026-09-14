@@ -1,4 +1,4 @@
-# LifeShield (Expo mobile app)
+# PRESCOPE (Expo mobile app)
 
 Patient-facing mobile app for lifestyle awareness, questionnaire, and test recommendations.  
 **Admin panel** is separate — see `admin/README.md` (browser only, not an APK).
@@ -14,6 +14,15 @@ Patient-facing mobile app for lifestyle awareness, questionnaire, and test recom
 See **[docs/BUILD-APK.md](./docs/BUILD-APK.md)** for step-by-step instructions (Expo account, EAS secrets, `eas build`, install on phone).
 
 **Summary:** Any email can register/login on the mobile app. Run `eas build --platform android --profile preview` and download the APK from the Expo dashboard.
+
+## Web app (Vercel)
+
+The same app runs in the browser. See **[docs/DEPLOY-WEB.md](./docs/DEPLOY-WEB.md)** for Vercel deployment.
+
+```powershell
+npm run web          # local dev
+npm run build:web    # static export to dist/ (what Vercel uses)
+```
 
 ## Learn more
 

@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
 
+import { WelcomeFigure } from "@/components/illustrations";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
+import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
 import { fontFamily, typography } from "@/lib/typography";
@@ -42,8 +44,11 @@ export default function SplashScreen() {
   if (!minTimeDone) {
     return (
       <Animated.View style={[styles.wrap, { opacity }]}>
-        <Text style={styles.brand}>{COPY.appName}</Text>
-        <Text style={styles.tagline}>{COPY.splashSubtitle}</Text>
+        <GlassSurface intensity="card" style={styles.panel}>
+          <WelcomeFigure width={200} height={180} />
+          <Text style={styles.brand}>{COPY.appName}</Text>
+          <Text style={styles.tagline}>{COPY.splashSubtitle}</Text>
+        </GlassSurface>
       </Animated.View>
     );
   }
@@ -63,8 +68,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cream,
     paddingHorizontal: 20,
   },
+  panel: {
+    paddingHorizontal: 28,
+    paddingVertical: 32,
+    alignItems: "center",
+    minWidth: "86%",
+  },
   brand: {
+    marginTop: 16,
     ...typography.display,
+    fontSize: 36,
+    lineHeight: 42,
     color: colors.deepTeal,
     textAlign: "center",
   },

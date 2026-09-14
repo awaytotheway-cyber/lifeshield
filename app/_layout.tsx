@@ -2,12 +2,16 @@
 import "../global.css";
 
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
-import { DMSerifDisplay_400Regular } from "@expo-google-fonts/dm-serif-display";
 import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
 } from "@expo-google-fonts/inter";
+import {
+  Manrope_600SemiBold,
+  Manrope_700Bold,
+  Manrope_800ExtraBold,
+} from "@expo-google-fonts/manrope";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -20,6 +24,7 @@ import {
 } from "@/components/ErrorBoundary";
 import { NotificationBootstrap } from "@/components/NotificationBootstrap";
 import { StripeRoot } from "@/components/StripeRoot";
+import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
 import { SessionProvider } from "@/lib/session";
 import { fontFamily } from "@/lib/typography";
@@ -27,17 +32,17 @@ import { useAuthStore } from "@/stores/auth-store";
 
 export { ExpoRouterErrorBoundary as ErrorBoundary };
 
-function CreamSplash({ message }: { message: string }) {
+function BrandSplash({ message }: { message: string }) {
   return (
     <View
       style={{
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.cream,
+        backgroundColor: colors.iceBlue,
       }}
     >
-      <ActivityIndicator color={colors.deepTeal} />
+      <ActivityIndicator color={colors.primaryBlue} />
       <Text
         style={{
           marginTop: 16,
@@ -56,7 +61,7 @@ function AuthGate() {
   const loading = useAuthStore((state) => state.loading);
 
   if (loading) {
-    return <CreamSplash message="Loading LifeShield…" />;
+    return <BrandSplash message={COPY.loadingApp} />;
   }
 
   return (
@@ -82,7 +87,9 @@ function AuthGate() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    DMSerifDisplay_400Regular,
+    Manrope_600SemiBold,
+    Manrope_700Bold,
+    Manrope_800ExtraBold,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -96,7 +103,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ErrorBoundary>
         {!fontsReady ? (
-          <CreamSplash message="Loading LifeShield…" />
+          <BrandSplash message={COPY.loadingApp} />
         ) : (
           <StripeRoot>
             <SessionProvider>

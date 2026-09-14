@@ -3,7 +3,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { TextButton } from "@/components/ui/Button";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { Screen } from "@/components/ui/Screen";
+import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
@@ -16,12 +18,16 @@ type OnboardingShellProps = {
   body: string;
   /** Shown from screen 2 onward. Does not skip the terms agreement. */
   onSkip?: () => void;
+  /** Optional drawing above the title. Replaces the small icon when set. */
+  illustration?: ReactNode;
   children?: ReactNode;
   footer: ReactNode;
+  /** Show solid trust banner (welcome). */
+  showTrustBanner?: boolean;
 };
 
 /**
- * Shared look for welcome, disclaimer, and terms: one idea, one icon, dots.
+ * Shared look for welcome, disclaimer, and terms: one idea, glass panel, dots.
  */
 export function OnboardingShell({
   step,
@@ -29,8 +35,10 @@ export function OnboardingShell({
   title,
   body,
   onSkip,
+  illustration,
   children,
   footer,
+  showTrustBanner = false,
 }: OnboardingShellProps) {
   return (
     <Screen scroll contentPadding={spacing.screenX}>
@@ -47,16 +55,32 @@ export function OnboardingShell({
         <View style={styles.skipSpacer} />
       )}
 
-      <View style={styles.iconCircle}>
-        <Feather name={icon} size={24} color={colors.deepTeal} />
-      </View>
+      {showTrustBanner ? (
+        <View style={styles.trust}>
+          <TrustBanner />
+        </View>
+      ) : null}
 
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.body}>{body}</Text>
+      <GlassCard intensity="card" style={styles.panel}>
+        {illustration ? (
+          <View style={styles.illustration}>{illustration}</View>
+        ) : (
+          <View style={styles.iconCircle}>
+            <Feather name={icon} size={24} color={colors.primaryBlue} />
+          </View>
+        )}
 
-      {children}
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.body}>{body}</Text>
 
-      <View style={styles.dots} accessibilityRole="text" accessibilityLabel={`Step ${step} of 3`}>
+        {children}
+      </GlassCard>
+
+      <View
+        style={styles.dots}
+        accessibilityRole="text"
+        accessibilityLabel={`Step ${step} of 3`}
+      >
         {[1, 2, 3].map((dot) => (
           <View
             key={dot}
@@ -81,6 +105,19 @@ const styles = StyleSheet.create({
   skipSpacer: {
     minHeight: 44,
   },
+  trust: {
+    marginBottom: spacing.base,
+  },
+  panel: {
+    padding: spacing.md,
+    marginBottom: 8,
+  },
+  illustration: {
+    alignSelf: "center",
+    alignItems: "center",
+    marginTop: 8,
+    marginBottom: 24,
+  },
   iconCircle: {
     width: 56,
     height: 56,
@@ -96,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   body: {
     marginTop: 12,
@@ -118,7 +155,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   dotActive: {
-    backgroundColor: colors.deepTeal,
+    backgroundColor: colors.primaryBlue,
   },
   dotIdle: {
     backgroundColor: colors.border,

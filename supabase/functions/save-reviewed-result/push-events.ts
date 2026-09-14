@@ -29,13 +29,13 @@ const PUSH_COPY: Record<
   results_ready: {
     title: "Your lab results are ready",
     body:
-      "A clinician has reviewed your results. Open LifeShield to read them. This is information only — not a diagnosis.",
+      "A clinician has reviewed your results. Open PRESCOPE to read them. This is information only — not a diagnosis.",
     href: "/(main)/(results)/lab-results",
   },
   plan_approved: {
     title: "Your plan is ready",
     body:
-      "Your practitioner has finalised your plan. Open LifeShield to see what you can do next.",
+      "Your practitioner has finalised your plan. Open PRESCOPE to see what you can do next.",
     href: "/(main)/(plan)",
   },
 };

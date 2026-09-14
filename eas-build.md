@@ -1,4 +1,4 @@
-# Build a LifeShield Android APK (user app)
+# Build a PRESCOPE Android APK (user app)
 
 > **Canonical guide:** [docs/BUILD-APK.md](./docs/BUILD-APK.md) — this file is kept as a short link from the repo root.
 
@@ -91,7 +91,7 @@ You can also use `--profile apk` — both profiles build an **APK** (not a Play 
 
 1. Copy the `.apk` to the phone (email, USB, Google Drive, etc.).
 2. On the phone, open the file. If Android blocks “unknown apps”, go to **Settings → Security** (or **Install unknown apps**) and allow your file manager or browser to install apps.
-3. Open **LifeShield**, tap **Create account**, and sign up with **any email** and password (8+ characters).
+3. Open **PRESCOPE**, tap **Create account**, and sign up with **any email** and password (8+ characters).
 
 ---
 
@@ -118,7 +118,7 @@ The mobile app does **not** check `ADMIN_EMAILS` at login. That list only unlock
 | `production` | AAB (App Bundle) | Google Play Store submission |
 
 App id: `com.lifeshield.app`  
-Display name: **LifeShield**
+Display name: **PRESCOPE**
 
 ---
 

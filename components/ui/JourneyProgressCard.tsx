@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 export type JourneyStepState = "complete" | "current" | "upcoming";
@@ -43,17 +44,17 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
   });
 
   return (
-    <View style={styles.card}>
+    <GlassCard intensity="card" style={styles.card}>
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
         const color =
           step.state === "complete"
-            ? colors.sage
+            ? colors.riskLow
             : step.state === "current"
-              ? colors.deepTeal
+              ? colors.primaryBlue
               : colors.border;
         const textColor =
-          step.state === "upcoming" ? colors.mist : colors.charcoal;
+          step.state === "upcoming" ? colors.mist : colors.deepNavy;
         const weight = step.state === "current" ? fontFamily.bodySemi : fontFamily.body;
 
         return (
@@ -78,23 +79,20 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
                   style={styles.chip}
                 >
                   <Text style={styles.chipText}>Continue</Text>
-                  <Feather name="chevron-right" size={14} color={colors.deepTeal} />
+                  <Feather name="chevron-right" size={14} color={colors.primaryBlue} />
                 </Pressable>
               ) : null}
             </View>
           </View>
         );
       })}
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
     padding: spacing.base,
-    ...shadows.card,
   },
   row: {
     flexDirection: "row",
@@ -139,6 +137,6 @@ const styles = StyleSheet.create({
   chipText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
 });

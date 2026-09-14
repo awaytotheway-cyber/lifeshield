@@ -1,4 +1,4 @@
-# LifeShield Admin Panel (Phase 4 Day 2–4)
+# PRESCOPE Admin Panel (Phase 4 Day 2–4)
 
 This folder is a **separate browser app** for back-office staff. It does **not** run inside the Expo mobile app. Admins open it on a laptop in Chrome or Edge.
 

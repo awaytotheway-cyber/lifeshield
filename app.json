@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "LifeShield",
+    "name": "PRESCOPE",
     "slug": "LifeShield",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,26 +12,31 @@
       "bundleIdentifier": "com.lifeshield.app",
       "supportsTablet": true,
       "infoPlist": {
-        "CFBundleDisplayName": "LifeShield",
+        "CFBundleDisplayName": "PRESCOPE",
         "ITSAppUsesNonExemptEncryption": false,
-        "NSUserNotificationsUsageDescription": "LifeShield can send follow-up reminders and let you know when a reviewed plan is ready. You can turn notifications off in iPhone Settings."
+        "NSUserNotificationsUsageDescription": "PRESCOPE can send follow-up reminders and let you know when a reviewed plan is ready. You can turn notifications off in iPhone Settings.",
+        "NSCameraUsageDescription": "PRESCOPE can use the camera to scan a payment card at checkout or to take an optional profile picture. We do not use the camera for health records.",
+        "NSPhotoLibraryUsageDescription": "PRESCOPE can use your photo library so you can set an optional profile picture. Photos stay on this device unless you later connect cloud storage."
       }
     },
     "android": {
-      "label": "LifeShield",
+      "label": "PRESCOPE",
       "package": "com.lifeshield.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#FAF8F5",
+        "backgroundColor": "#EAF1FF",
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundImage": "./assets/images/android-icon-background.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/prescope-favicon.png"
     },
     "extra": {
       "router": {
@@ -51,7 +56,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FAF8F5",
+          "backgroundColor": "#EAF1FF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200
         }
@@ -70,11 +75,20 @@
           "enableGooglePay": false
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "PRESCOPE can use your photo library so you can set an optional profile picture. Photos stay on this device unless you later connect cloud storage.",
+          "cameraPermission": "PRESCOPE can use the camera for an optional profile picture or to scan a payment card at checkout."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "owner": "pratiknaragude"
   }
 }
