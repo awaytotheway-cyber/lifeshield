@@ -1,0 +1,757 @@
+# CURSOR PROJECT RULES — PRESCOPE Phase 5 (Companion & Commerce)
+
+> **This extends Phases 1–4. Do not rebuild them.** Keep `.cursorrules`,
+> `.cursorrules-design`, `.cursorrules-phase2`, `.cursorrules-phase3`,
+> `.cursorrules-phase4`; add this as `.cursorrules-phase5` and tell Cursor to
+> read all of them. Every earlier rule still applies unchanged — Golden Rules,
+> the exact version pins, try/catch on every async call, no blank screens,
+> no secrets in app code, plain language on top with the exact clinical term
+> underneath, and **PRESCOPE is a lifestyle awareness tool, never a
+> diagnostic or medical app.**
+>
+> `.cursorrules-design` governs UI/UX. This file governs feature specs and
+> user flow. Where they disagree about how something *looks*, the design file
+> wins.
+
+---
+
+## 0. WHAT PHASE 5 IS
+
+Phases 1–4 built the loop: safety check → questionnaire → recommended tests →
+results → plan → store → order → follow-up, with an admin and practitioner
+back-office behind it.
+
+Phase 5 turns that loop into a **companion**. The user stops being someone who
+completes a questionnaire once and starts being someone the app walks beside
+for months: booking the tests we recommended, acting on advice they understand,
+setting a goal they chose, hitting a barrier and getting past it, and seeing
+one page that shows the whole journey moving.
+
+Fourteen feature areas, grouped into four shippable waves (Section 2).
+
+### 0.1 The three rules that decide every judgement call in Phase 5
+
+1. **No AI coaching, no generated medical content.** Every recommendation,
+   rationale, dosage, barrier tip and supplement claim is *content authored
+   and reviewed by a clinician*, stored in a table, and selected by the
+   deterministic rules engine (`lib/rules-engine.ts` pattern). The chatbot in
+   Section 8 is a **scripted check-in**, not an LLM. If a feature needs a
+   sentence we cannot source to a reviewed row, we do not ship that sentence.
+2. **Nothing user-visible ships unreviewed.** Every new content table gets
+   `reviewed_by` (→ `doctors.id`), `reviewed_at`, and `status` in
+   (`draft`,`in_review`,`approved`,`retired`). The app **only ever reads
+   `status = 'approved'`.** Enforce it in RLS, not just in the query.
+3. **Encouragement is never pressure.** We celebrate streaks; we never shame a
+   break. Copy for a missed goal is neutral and forward-looking. A risk score
+   that has not improved is never framed as the user's failure.
+
+---
+
+## 1. WHAT ALREADY EXISTS (build on these — do not duplicate)
+
+| You need | It already exists as |
+| --- | --- |
+| User-facing sentences | `lib/copy.ts` — **all new strings go here, nowhere else** |
+| Colours / spacing / type | `lib/design-tokens.ts`, `lib/typography.ts`, `tailwind.config.js` |
+| Named routes | `lib/routes.ts` — add every new screen here, no magic strings |
+| Journey / home progress | `lib/journey.ts`, `components/ui/JourneyProgressCard.tsx` |
+| Deterministic recommendations | `lib/rules-engine.ts`, `lib/rules-facts.ts`, `lib/clinical-thresholds.ts` |
+| Plan + interventions | `lib/plan.ts`, `lib/plan-groups.ts`, `app/(main)/(plan)/` |
+| Lab ordering | `lib/lab-orders.ts`, `lib/lab-provider.ts`, `supabase/functions/create-lab-order/` |
+| Results + plain language | `lib/test-results.ts`, `lib/plain-language.ts`, `components/ClinicalTerm.tsx` |
+| Store / cart / Stripe | `lib/store.ts`, `lib/orders.ts`, `app/(main)/(store)/`, `supabase/functions/stripe-webhook/` |
+| Push + inbox | `lib/push-notifications.ts`, `lib/push-events.ts`, `lib/notification-routing.ts`, `app/(main)/(settings)/notifications-inbox.tsx` |
+| Follow-up reminders | `lib/follow-ups.ts`, `lib/follow-up-reminders.ts` |
+| Back-office | `/admin` (Refine + Supabase), practitioner review queue |
+| Genetic consent screens | `app/(main)/(consent)/snp.tsx`, `brca.tsx`, `ctc.tsx` |
+
+**Pattern to follow for every new feature:** pure logic in a `lib/*.ts` module
+with a sibling `lib/*.test.ts` run by `tsx` (see `package.json` scripts) →
+Supabase table with RLS → screen under `app/(main)/` using existing `components/ui`.
+Logic that can be tested without a device **must** be, and gets a `test:*` script.
+
+---
+
+## 2. ROLLOUT WAVES (ship in this order)
+
+Do not start a wave until the previous one is live with real users.
+
+- **Wave A — Finish the loop we already promise.**
+  §3 Wording pass · §4 Guided test booking · §15 Journey overview dashboard ·
+  §16 Internal progress tracking.
+  *Why first:* these need no new commercial partner. Booking is the single
+  biggest drop-off in the current funnel — we recommend tests and then leave
+  the user to arrange them alone.
+- **Wave B — Make the plan actionable.**
+  §5 Personalised lifestyle advice · §9 Reminders & check-ins ·
+  §10 Weekly goals · §11 Overcoming barriers.
+  *Why second:* this is the retention engine, and it is all first-party content.
+- **Wave C — Commerce.**
+  §6 Supplements · §14 Healthy-home store.
+  *Why third:* extends the Phase 3 store; needs supplier contracts, fulfilment
+  and customer service standing up before code.
+- **Wave D — Partnerships.**
+  §7 SNP genetic testing · §12 Meditation & fitness integrations ·
+  §13 Recipes · §11.4 Buddy system.
+  *Why last:* each is blocked on a signed partner or on moderation capacity.
+  **Do not write integration code before the contract exists** — build against
+  the adapter interface in §7.3 and ship a clearly-labelled "coming soon" state.
+
+**Gate between waves:** the metrics in §16 must show the previous wave being
+used. A feature nobody opened does not get a sequel.
+
+---
+
+## 3. FEATURE 1 — WORDING PASS ACROSS THE APP
+
+All copy already lives in `lib/copy.ts`. This is a rewrite of that file's
+values, not a new system.
+
+**Voice:** warm, plain, specific, calm. Second person. Short sentences.
+We are a knowledgeable friend who happens to understand lab reports.
+
+**Rules:**
+1. **Plain first, clinical second.** Keep the `ClinicalTerm` pattern: the
+   sentence reads in plain English, the exact term is available underneath.
+   Never lead with jargon.
+2. **Never imply diagnosis.** Banned verbs in user copy: *diagnose, detect,
+   screen for cancer, rule out, confirm, treat, cure, prevent*. Use
+   *understand, look at, keep an eye on, lower your risk factors, support*.
+3. **Explain every number.** A value with no reference range and no sentence
+   of meaning is a source of fear, not information.
+4. **Own the action.** Every screen ends with one obvious next step, phrased
+   as a verb the user does: "Book this test", not "Test booking available".
+5. **Celebrate specifically.** "Third week running" beats "Great job!".
+6. **Neutral on setbacks.** "Let's pick it back up" — never "You missed".
+7. **Say what happens to their data** at the moment we ask for it, in one
+   sentence, not by link alone.
+
+**Deliverable:** a full pass over `lib/copy.ts` plus a `docs/tone-guide.md`
+holding these rules with before/after examples taken from the real file.
+Add `COPY` keys for every new Phase 5 screen in the same file.
+
+---
+
+## 4. FEATURE 2 — GUIDED TEST BOOKING
+
+Today the rules engine produces recommended tests and the user is left to sort
+it out. Phase 5 carries them from recommendation to a booked appointment
+without leaving the app.
+
+### 4.1 Flow
+`(results)` recommendations → **Book these tests** → location → choose
+**lab visit** or **home kit** → pick provider → pick slot (or kit delivery
+date) → confirm (payment via existing Stripe flow) → preparation instructions
+→ reminders at T-24h and T-2h → sample taken → result lands in the existing
+results screens with its plain-language explanation.
+
+### 4.2 Rules
+- **Location:** ask for a postcode/city **by text entry first**; device GPS is
+  optional and must explain why before the OS prompt fires. Never block
+  booking on a denied location permission — fall back to postcode.
+- Show **distance, next available slot, price, and whether home collection is
+  offered** on every provider card. Price is never hidden until checkout.
+- **Home kit is an equal citizen**, not a fallback. Some users will not enter
+  a clinic; present both options side by side with honest trade-offs.
+- Slot availability is **live at the moment of booking** — re-validate the
+  slot server-side before taking payment, and show a clear, non-blaming
+  message if it went while the user was deciding.
+- **Preparation instructions are safety-critical.** Fasting, medication
+  timing, and cycle-day requirements come from the test catalog row, are
+  shown before payment, repeated in the confirmation, and repeated in the
+  T-24h reminder. Respect the existing `IodineHardStop` pattern for tests
+  with absolute contraindications.
+- Cancellation and rescheduling must be self-serve in-app.
+
+### 4.3 Data
+```sql
+-- Bookable appointment inventory, synced from each provider
+CREATE TABLE IF NOT EXISTS public.lab_slots (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  clinic_id UUID REFERENCES public.clinics(id) ON DELETE CASCADE,
+  starts_at TIMESTAMPTZ NOT NULL,
+  duration_minutes INT NOT NULL DEFAULT 15,
+  capacity INT NOT NULL DEFAULT 1,
+  booked_count INT NOT NULL DEFAULT 0,
+  price_cents INT,
+  currency TEXT NOT NULL DEFAULT 'GBP',
+  external_ref TEXT,               -- provider's own slot id
+  synced_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.bookings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  lab_order_id UUID REFERENCES public.lab_orders(id),
+  slot_id UUID REFERENCES public.lab_slots(id),
+  kind TEXT NOT NULL CHECK (kind IN ('clinic','home_kit')),
+  status TEXT NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending','confirmed','sample_taken','cancelled','no_show','expired')),
+  scheduled_for TIMESTAMPTZ,
+  address_line TEXT,               -- home kit delivery only
+  postcode TEXT,
+  prep_ack_at TIMESTAMPTZ,         -- user confirmed they read the prep steps
+  external_ref TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+RLS: a user reads and writes only their own `bookings`; `lab_slots` is
+world-readable to authenticated users, writable only by service role.
+Extend `products` (the test catalog) with `prep_instructions TEXT`,
+`fasting_required BOOLEAN`, `cycle_day_window TEXT`.
+
+### 4.4 Integration
+One adapter per provider behind a single interface, extending the existing
+`lib/lab-provider.ts` shape:
+`searchProviders(postcode, testCodes) → listSlots(providerId, dateRange) →
+hold(slotId) → confirm(holdId, patient) → cancel(bookingRef)`.
+Provider credentials live in Edge Function secrets, **never in the app**.
+Slot sync runs as a scheduled Edge Function writing `lab_slots`; the app never
+calls a provider API directly.
+
+### 4.5 Screens
+`app/(main)/(booking)/index.tsx` (location + modality) ·
+`providers.tsx` · `slots.tsx` · `prep.tsx` · `confirm.tsx` ·
+`app/(main)/(settings)/appointments.tsx` (already exists — extend it to list
+and manage real bookings).
+
+---
+
+## 5. FEATURE 3 — PERSONALISED LIFESTYLE ADVICE
+
+An extension of the existing plan/interventions model, not a parallel system.
+
+### 5.1 How a recommendation is chosen
+Deterministically, by the rules engine, from three inputs already in the
+database: questionnaire answers (`questionnaire_responses`), test results
+(`test_results`), and — once Wave D lands — genetic results. Each candidate
+recommendation carries trigger conditions; the engine evaluates them, ranks by
+`impact_weight`, and returns the top N. **No model generates this list.**
+
+### 5.2 What every recommendation must carry
+- **Why this matters to you** — the rationale, tied to the specific fact that
+  triggered it ("because your fasting insulin was 14 and you told us you sit
+  most of the day"), in plain language.
+- **What to actually do** — concrete steps with numbers ("a 20-minute walk
+  after your largest meal, five days a week"), never "exercise more".
+- **How we know** — links to the sources behind it.
+- **Make it a habit** — one tap to create a goal (§10) or a reminder (§9).
+- **Barriers** — the tips from §11, inline.
+
+### 5.3 Prioritisation
+Rank by `impact_weight` (clinician-set, 1–10) × `user_gap` (how far the user
+is from target) × `feasibility` (user's own self-reported capacity). Show
+**at most three at a time.** A list of fourteen things to change is a list
+nobody starts. When one is going well, surface the next.
+
+### 5.4 Data
+```sql
+CREATE TABLE IF NOT EXISTS public.lifestyle_recommendations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  category TEXT NOT NULL
+    CHECK (category IN ('nutrition','movement','sleep','stress','alcohol','smoking','weight','environment')),
+  title TEXT NOT NULL,
+  plain_summary TEXT NOT NULL,
+  rationale TEXT NOT NULL,
+  action_steps JSONB NOT NULL DEFAULT '[]',
+  evidence_links JSONB NOT NULL DEFAULT '[]',
+  trigger_conditions JSONB NOT NULL DEFAULT '{}',  -- read by the rules engine
+  impact_weight INT NOT NULL DEFAULT 5,
+  contraindications TEXT,
+  status TEXT NOT NULL DEFAULT 'draft'
+    CHECK (status IN ('draft','in_review','approved','retired')),
+  reviewed_by UUID REFERENCES public.doctors(id),
+  reviewed_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.user_recommendations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  recommendation_id UUID NOT NULL REFERENCES public.lifestyle_recommendations(id),
+  triggered_by JSONB NOT NULL DEFAULT '{}',   -- the facts that fired it: shown to the user
+  state TEXT NOT NULL DEFAULT 'suggested'
+    CHECK (state IN ('suggested','active','paused','done','dismissed')),
+  priority_score NUMERIC,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (user_id, recommendation_id)
+);
+```
+Clinician review of this table is a queue in `/admin`, reusing the Phase 4
+sign-off pattern.
+
+---
+
+## 6. FEATURE 4 — SUPPLEMENT RECOMMENDATIONS
+
+Extends the Phase 3 store. **The highest-risk feature in Phase 5**, because we
+both recommend and sell. Treat the conflict of interest as a design problem.
+
+### 6.1 Non-negotiable rules
+- A supplement is recommended **only** on a clinician-approved rule tied to a
+  measured result or a documented risk factor. Never on a browsing pattern,
+  never on a margin target.
+- **Interaction and contraindication checks run before anything is shown.**
+  The existing `components/ui/InteractionFlag.tsx` and the medication list in
+  the profile are the inputs. A hard contraindication blocks purchase — it
+  does not warn-and-allow.
+- **Dosage, form, and timing** come from the catalog row, with the upper
+  tolerable intake shown.
+- **Pregnancy, breastfeeding, and anticoagulant flags** gate the entire
+  category.
+- **Evidence is linked, and strength is stated honestly.** Where evidence is
+  thin we say so; we never imply a supplement prevents cancer. Banned claims
+  are enforced in review, and the ban list lives in `docs/supplement-claims.md`.
+- **"Why am I seeing this?"** is on every supplement card and opens the
+  triggering result.
+- **Subscriptions:** cancel in-app in one screen, no phone call, no retention
+  maze. Email before every renewal charge.
+
+### 6.2 Data
+Extend `products` with `kind` (`test`,`supplement`,`home`), `dosage`,
+`form`, `active_ingredients JSONB`, `upper_limit`, `contraindications JSONB`,
+`evidence_links JSONB`, `supplier_id`, plus the `status`/`reviewed_by` pair.
+```sql
+CREATE TABLE IF NOT EXISTS public.supplement_rules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  trigger_conditions JSONB NOT NULL DEFAULT '{}',
+  rationale TEXT NOT NULL,
+  blocks_if JSONB NOT NULL DEFAULT '{}',   -- meds, conditions, pregnancy
+  status TEXT NOT NULL DEFAULT 'draft',
+  reviewed_by UUID REFERENCES public.doctors(id),
+  reviewed_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS public.subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  product_id UUID NOT NULL REFERENCES public.products(id),
+  interval_days INT NOT NULL DEFAULT 30,
+  next_charge_at TIMESTAMPTZ,
+  stripe_subscription_id TEXT,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active','paused','cancelled')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+Reuse the existing `create-payment-intent` / `stripe-webhook` functions; add
+Stripe subscription handling to the webhook rather than a second payment path.
+
+---
+
+## 7. FEATURE 5 — SNP GENETIC TESTING
+
+`app/(main)/(consent)/snp.tsx` already exists. Phase 5 makes it real.
+
+### 7.1 Education comes before ordering — always
+A user cannot reach the order screen without passing an explainer that states,
+in plain language:
+- what a SNP panel is and what it is **not** (it is **not** BRCA1/2 clinical
+  testing, and it is not a diagnosis);
+- that results are **probabilistic and population-based**, and that a polygenic
+  score shifts a risk estimate, it does not decide an outcome;
+- that results **cannot be unlearned** and may be emotionally difficult;
+- what it means for blood relatives, who share this information whether or
+  not they consented;
+- insurance and disclosure implications in the user's jurisdiction;
+- exactly how the sample and data are stored, and how to have them deleted.
+
+### 7.2 Rules
+- Genetic counselling is **offered before ordering and again on delivery of
+  results**, not buried in a help article. A user may decline; the offer is
+  logged either way.
+- Results are **never delivered by push notification alone.** The push says
+  results are ready; the content opens behind an explicit tap, after a short
+  "ready when you are" screen.
+- Genetic data is the most sensitive row in the database: separate table,
+  its own RLS, never included in the standard `lib/data-export.ts` bundle
+  without a second confirmation, and deleted properly on account deletion.
+- Recommendations may be **modulated** by genetic results, never driven by
+  them alone. A high polygenic score changes emphasis and surveillance
+  cadence; it does not unlock new claims.
+- A **variant of uncertain significance is reported as uncertainty**, with
+  what we will do when the classification changes.
+
+### 7.3 Adapter
+```ts
+// lib/genetics-provider.ts — same shape as lib/lab-provider.ts
+export interface GeneticsProvider {
+  orderKit(input: OrderKitInput): Promise<{ orderRef: string; trackingUrl?: string }>;
+  getKitStatus(orderRef: string): Promise<KitStatus>;   // shipped → received → processing → ready
+  fetchReport(orderRef: string): Promise<GeneticReport>; // structured, never a PDF blob alone
+  cancel(orderRef: string): Promise<void>;
+}
+```
+Ship the interface plus a mock provider and a "coming soon" state; wire a real
+provider only once the lab contract is signed.
+
+### 7.4 Data
+```sql
+CREATE TABLE IF NOT EXISTS public.genetic_orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  order_ref TEXT,
+  status TEXT NOT NULL DEFAULT 'ordered'
+    CHECK (status IN ('ordered','shipped','returned','processing','ready','cancelled','failed')),
+  consent_record_id UUID REFERENCES public.consent_records(id),
+  counselling_offered_at TIMESTAMPTZ,
+  counselling_accepted BOOLEAN,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.genetic_results (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  order_id UUID NOT NULL REFERENCES public.genetic_orders(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  panel TEXT NOT NULL,
+  markers JSONB NOT NULL DEFAULT '[]',
+  polygenic_score NUMERIC,
+  score_percentile NUMERIC,
+  interpretation TEXT,             -- clinician-reviewed plain language
+  reviewed_by UUID REFERENCES public.doctors(id),
+  reviewed_at TIMESTAMPTZ,
+  released_to_user_at TIMESTAMPTZ, -- NULL until a clinician releases it
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+**The app reads `genetic_results` only where `released_to_user_at IS NOT NULL`.**
+Enforce in RLS.
+
+---
+
+## 8. FEATURE 6 — REMINDERS AND CHECK-INS
+
+Push, tokens, routing and the in-app inbox already exist (Phase 4). Phase 5
+adds *what* we send and the scripted check-in.
+
+### 8.1 Rules
+- **Every reminder has a default the user never has to configure**, and every
+  default is editable in one screen.
+- **Quiet hours are absolute.** Nothing fires 21:00–08:00 local except a
+  user-set alarm-style reminder they explicitly placed there.
+- **Daily cap.** At most 2 push notifications a day, at most 5 a week, except
+  transactional messages (booking confirmed, results ready, order shipped),
+  which are uncapped but must still be genuinely transactional.
+- **Every push has an in-app twin** in the existing inbox. A user who disabled
+  push loses nothing.
+- **Dismissal is a signal.** Three ignored reminders of one kind → the app
+  asks, once, whether to change the timing or stop them.
+- **One-tap snooze and one-tap stop** on every reminder.
+
+### 8.2 The check-in "chatbot" — read this carefully
+It is a **scripted, branching, clinician-authored dialogue**. A finite state
+machine over a `check_in_scripts` table. It is **not** an LLM, it does not
+free-text generate, and it must never appear to give medical advice.
+
+- Questions are closed-form (buttons, scales, yes/no) with an optional free
+  text box whose content is **stored and shown to a human, never parsed for
+  advice**.
+- Any red-flag answer (a symptom from the existing triage list, a suspected
+  adverse reaction to a supplement) **exits the script immediately** into the
+  existing symptom-triage safe-exit path. This is the single most important
+  branch in the feature — test it first.
+- Adverse-event answers create a row a clinician sees in the admin queue
+  within the working day.
+- Check-ins are short: three questions, under thirty seconds.
+
+### 8.3 Data
+```sql
+CREATE TABLE IF NOT EXISTS public.reminders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL
+    CHECK (kind IN ('habit','supplement','goal','booking_prep','retest','check_in')),
+  ref_id UUID,                     -- the goal / recommendation / booking it belongs to
+  label TEXT NOT NULL,
+  schedule JSONB NOT NULL,         -- {days:[1,2,3], time:"08:30", tz:"Europe/London"}
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  snoozed_until TIMESTAMPTZ,
+  last_fired_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.check_in_responses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  script_slug TEXT NOT NULL,
+  answers JSONB NOT NULL DEFAULT '{}',
+  flagged BOOLEAN NOT NULL DEFAULT FALSE,   -- red flag → clinician queue
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+---
+
+## 9. FEATURE 7 — WEEKLY GOAL SETTING
+
+### 9.1 Rules
+- A goal is **always chosen by the user.** We propose from their active
+  recommendations; we never assign.
+- Goals are SMART by construction: the template forces a measurable target and
+  a week-long window, so "eat better" cannot be saved.
+- **One to three active goals.** A fourth requires retiring one.
+- The week is **fixed length and forgiving**: a missed day never fails a week,
+  and partial completion is shown as progress, not failure.
+- **Week-end review** is a single screen: what happened, what the user wants
+  to do next week (repeat / adjust / swap / rest). A rest week is a legitimate
+  choice offered in the UI, not a lapse.
+- Streaks count **weeks with any progress**, not perfect weeks.
+
+### 9.2 Data
+```sql
+CREATE TABLE IF NOT EXISTS public.goals (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  recommendation_id UUID REFERENCES public.lifestyle_recommendations(id),
+  category TEXT NOT NULL,
+  title TEXT NOT NULL,
+  target_count INT NOT NULL,       -- e.g. 5 (times this week)
+  unit TEXT NOT NULL,              -- 'walks', 'servings', 'sessions'
+  week_start DATE NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active','completed','partial','rested','abandoned')),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.goal_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  goal_id UUID NOT NULL REFERENCES public.goals(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  logged_for DATE NOT NULL,
+  count INT NOT NULL DEFAULT 1,
+  note TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (goal_id, logged_for)
+);
+```
+Logic in `lib/goals.ts` (week maths, streaks, progress) with `lib/goals.test.ts`
+and a `test:goals` script. Logging a goal must be **one tap from the home
+screen** — if it takes three taps, nobody logs anything.
+
+---
+
+## 10. FEATURE 8 — OVERCOMING BARRIERS
+
+Barriers are content attached to recommendations, surfaced at the moment of
+friction rather than filed in a help centre.
+
+- Each `lifestyle_recommendations` row has barrier rows: barrier text,
+  strategy, optional resource link, optional recipe/product link.
+- Surface them **when the user stalls** — two missed check-ins, a paused goal,
+  or an explicit "this is hard" tap that is always visible on a goal card.
+- **Normalise first, solve second.** "Most people find the first fortnight
+  hardest" before "try this".
+- Expert referral (nutritionist, trainer, therapist) is a **vetted directory
+  with stated credentials and prices**, and we state plainly whether we take a
+  commission.
+- **Community and the buddy system (§11) are moderation-gated.** Do not ship
+  any user-to-user feature until Section 11.4's requirements are met in full.
+
+```sql
+CREATE TABLE IF NOT EXISTS public.barriers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  recommendation_id UUID REFERENCES public.lifestyle_recommendations(id) ON DELETE CASCADE,
+  category TEXT NOT NULL,          -- 'time','cost','motivation','confidence','access','family'
+  barrier_text TEXT NOT NULL,
+  strategy_text TEXT NOT NULL,
+  resource_url TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  reviewed_by UUID REFERENCES public.doctors(id),
+  reviewed_at TIMESTAMPTZ
+);
+```
+
+---
+
+## 11. FEATURE 9 — BUDDY SYSTEM  *(Wave D — gated)*
+
+A health app where users discuss cancer risk with strangers is a safeguarding
+responsibility, not a social feature.
+
+### 11.4 Ship gates — all required before any user-to-user code goes live
+1. A named human moderator with defined hours and an escalation path.
+2. Report and block on every surface, reachable in one tap.
+3. A written safeguarding policy covering self-harm disclosure, medical
+   misinformation between users, and harassment.
+4. Automated filtering for crisis language, routing to human review with a
+   stated response time and crisis-line signposting.
+5. Age verification consistent with the app's terms.
+6. **No health data is ever shared automatically.** A buddy sees a display
+   name, a chosen goal category, and progress the user explicitly shares.
+   Risk scores, results, and genetic data are never buddy-visible — enforce
+   in RLS, not in the UI layer.
+7. Opt-in, mutual, and leaveable without explanation or friction.
+
+Matching: shared goal category and timezone first; never match on health
+status. Provide conversation starters, since most pairs stall at hello.
+
+---
+
+## 12. FEATURE 10 — HEALTHY RECIPES  *(Wave D)*
+
+- Attached to nutrition recommendations — a recipe is the answer to "what do I
+  actually cook", so surface it from the recommendation, not only from a
+  library tab.
+- Full nutrition facts per serving, honest prep time, common ingredients.
+- Filter by the dietary preferences and allergies already captured in the
+  questionnaire — **allergen filtering is a safety feature**, and allergens
+  are displayed on every recipe regardless of filter state.
+- Save, note, and shopping-list generation. Shopping list may link to the
+  store (§13) but must work fully without buying anything.
+- Never claim a food prevents cancer. Ever.
+
+```sql
+CREATE TABLE IF NOT EXISTS public.recipes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  prep_minutes INT, cook_minutes INT, servings INT,
+  ingredients JSONB NOT NULL DEFAULT '[]',
+  steps JSONB NOT NULL DEFAULT '[]',
+  nutrition JSONB NOT NULL DEFAULT '{}',
+  allergens JSONB NOT NULL DEFAULT '[]',
+  tags JSONB NOT NULL DEFAULT '[]',
+  image_url TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  reviewed_by UUID REFERENCES public.doctors(id),
+  reviewed_at TIMESTAMPTZ
+);
+```
+
+---
+
+## 13. FEATURES 11 & 12 — INTEGRATIONS AND THE HEALTHY-HOME STORE  *(Waves C/D)*
+
+### 13.1 Meditation and fitness
+- Behind adapters (`lib/wellbeing-provider.ts`) exactly as §7.3. No partner, no
+  integration code.
+- **Health data import is read-only, scoped, and revocable in one tap.** Ask
+  for the narrowest scope that works (steps and workouts — not location, not
+  heart rate, unless a feature genuinely uses it).
+- If a partner is not signed, ship manual logging. Manual logging is better
+  than a broken integration and must exist anyway as the fallback.
+- Meditation content for **health anxiety specifically** — this is the
+  differentiator, and it is the cohort most likely to need it.
+
+### 13.2 Healthy-home store
+- Extends the Phase 3 store with `kind = 'home'` and categories kitchen /
+  pantry / bathroom / bedding.
+- **Every claim on a product page is sourced or removed.** "Non-toxic" is a
+  marketing word, not a fact; state the specific thing ("no added phthalates,
+  tested to X") or say nothing.
+- Vetting criteria are written down in `docs/product-vetting.md` and applied
+  by a named person before a product is listed.
+- Commercial relationships are disclosed on the page.
+- Fulfilment, returns and customer service must be staffed **before** the
+  category opens. A health brand's first bad unboxing is expensive.
+
+---
+
+## 14. FEATURE 13 — SINGLE-PAGE JOURNEY OVERVIEW
+
+The home screen becomes the dashboard. Extend `lib/journey.ts` and
+`components/ui/JourneyProgressCard.tsx` rather than building a second home.
+
+**Contents, in this order:**
+1. **Where you are now** — current risk band with the date it was calculated,
+   and a sparkline of how it has moved. Bands, not false precision. If it has
+   not moved, say so plainly and kindly.
+2. **Your next step** — exactly one action (the existing `JourneyAction`
+   pattern), the largest tap target on the screen.
+3. **This week** — active goals with one-tap logging.
+4. **Coming up** — appointments, retests due, shipments in transit.
+5. **Your progress** — per-area rings (nutrition, movement, stress,
+   supplements, screening).
+6. **Milestones** — what the user has actually achieved, stated specifically.
+
+**Rules:**
+- Loads in one round trip. Build a `journey_overview` Postgres view or RPC;
+  do not fan out six queries from the client.
+- **Renders something useful on day one**, before any results exist — the
+  empty state is the most-seen state.
+- **Printable / shareable for a clinician:** a clean one-page export
+  (extend `lib/data-export.ts`) with results, dates, current plan and
+  adherence — no marketing, no product placement, clinician-legible.
+- Never show a risk score without the sentence explaining what it means and
+  what it does not.
+
+---
+
+## 15. FEATURE 14 — INTERNAL PROGRESS TRACKING
+
+A `/admin` section (Refine, Phase 4 stack), not a new app.
+
+### 15.1 Rules
+- **Aggregates only.** The analytics views expose counts and distributions,
+  never individual health rows. Identifiable data stays in the clinical
+  screens, behind the existing role checks.
+- Cohort minimum: **no cell smaller than 10 users** is displayed.
+- Build on Postgres views with `security_invoker`, restricted to the
+  `analytics` staff role.
+- Qualitative feedback is reviewed by a human weekly — free text is where the
+  real signal is.
+- **Never use the effectiveness data to claim clinical outcomes.** Internal
+  learning is not evidence; publishing anything requires a study design.
+
+### 15.2 Measure
+Funnel step-through (register → triage → questionnaire → results → **booking**
+→ plan → goal set → week 4 retained), drop-off points, goal completion by
+category, reminder engagement and opt-outs, adherence vs. measured change,
+order and subscription health, support themes.
+
+The **booking step is the number that matters in Wave A**, and week-4 retention
+is the number that matters in Wave B.
+
+---
+
+## 16. CROSS-CUTTING REQUIREMENTS (apply to every section above)
+
+1. **Privacy.** Each new table gets explicit RLS before it gets a screen.
+   Genetic, buddy-message and free-text check-in data get their own review.
+   `lib/data-export.ts` and account deletion must cover every new table —
+   add them in the same commit that creates the table.
+2. **Consent.** New data categories (location, genetic, health-app import,
+   buddy visibility) each need their own consent record via the existing
+   `lib/consent-flow.ts`. No bundling.
+3. **Offline and failure.** Goal logging works offline and syncs. Every new
+   screen has a loading, empty, error and offline state. No blank screens.
+4. **Accessibility.** Dynamic type, 44pt targets, VoiceOver labels, and no
+   meaning carried by colour alone — risk bands need a label as well as a hue.
+5. **Testing.** Pure logic in `lib/`, with a sibling test and a `test:*`
+   script. Red-flag branches in the check-in script and contraindication
+   blocks in the supplement flow are **tested first**, not last.
+6. **Copy.** Every string in `lib/copy.ts`. No inline literals in screens.
+7. **Feature flags.** Every Phase 5 feature ships behind a flag in
+   `lib/constants.ts` so a wave can be switched off without a release.
+8. **Regulatory.** Adding booking, supplements and genetics moves the product
+   closer to the line between a wellness tool and a regulated medical device.
+   **Get a regulatory opinion before Wave C, not after.** If positioning must
+   change, the copy rules in §3 change with it.
+
+---
+
+## 17. DEFINITION OF DONE (per feature)
+
+1. User flow and screens designed against `.cursorrules-design`.
+2. Copy drafted in `lib/copy.ts` and read by someone who is not a developer.
+3. Clinical content reviewed and `status = 'approved'` by a named clinician.
+4. Table + RLS + export + deletion, in one commit.
+5. Logic module + tests + `test:*` script, passing.
+6. Screens with all four states, behind a feature flag.
+7. End-to-end run on a real device with real data.
+8. Analytics events landing in §15.
+9. Ten real users through the flow, feedback captured, iterate once.
+10. Post-launch: adoption watched for a fortnight against the §2 gate.
+
+---
+
+## 18. THE POINT
+
+Every feature here exists to answer one question a user is actually asking:
+*"I know I'm worried — what do I do on Monday morning?"*
+
+A feature that adds something to look at but nothing to do on Monday is not
+ready. When in doubt, cut the feature and improve the next step.

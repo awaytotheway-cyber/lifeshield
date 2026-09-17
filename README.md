@@ -27,4 +27,6 @@ npm run build:web    # static export to dist/ (what Vercel uses)
 ## Learn more
 
 - [Expo documentation](https://docs.expo.dev/)
-- Project rules: `.cursorrules`
+- Project rules: `.cursorrules` (Phase 1), `.cursorrules-design` (UI/UX),
+  `.cursorrules-phase2`, `.cursorrules-phase3`, `.cursorrules-phase4`,
+  `.cursorrules-phase5` (companion & commerce roadmap — read all of them together)
