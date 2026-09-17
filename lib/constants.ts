@@ -409,3 +409,26 @@ export function isAdminEmail(email: string | null | undefined): boolean {
   const normalised = email.trim().toLowerCase();
   return ADMIN_EMAILS.some((allowed) => allowed.toLowerCase() === normalised);
 }
+
+/**
+ * Phase 5 feature flags. Each wave ships behind one of these so a feature can
+ * be switched off without releasing a new build.
+ *
+ * Set EXPO_PUBLIC_FEATURE_BOOKING=off in .env (or as an EAS secret) to hide
+ * guided test booking everywhere it appears.
+ */
+function flagEnabled(value: string | undefined, fallback: boolean): boolean {
+  const raw = (value ?? "").trim().toLowerCase();
+  if (raw === "off" || raw === "false" || raw === "0") {
+    return false;
+  }
+  if (raw === "on" || raw === "true" || raw === "1") {
+    return true;
+  }
+  return fallback;
+}
+
+export const FEATURES = {
+  /** Phase 5 Wave A — guided test booking (labs + home kits). */
+  guidedBooking: flagEnabled(process.env.EXPO_PUBLIC_FEATURE_BOOKING, true),
+} as const;

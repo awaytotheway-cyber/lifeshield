@@ -82,7 +82,8 @@
     "test:push": "npx --yes tsx --tsconfig tsconfig.json lib/push-events.test.ts",
     "test:lab-provider": "npx --yes tsx --tsconfig tsconfig.json lib/lab-provider.test.ts",
     "build:apk": "npx eas-cli build --platform android --profile preview",
-    "build:ios": "npx eas-cli build --platform ios --profile preview"
+    "build:ios": "npx eas-cli build --platform ios --profile preview",
+    "test:booking": "npx --yes tsx --tsconfig tsconfig.json lib/booking.test.ts"
   },
   "private": true,
   "overrides": {

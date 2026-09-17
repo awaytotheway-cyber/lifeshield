@@ -32,6 +32,11 @@ export const routes = {
   planItem: "/(main)/(plan)/intervention" as Href,
   followUp: "/(main)/(followup)" as Href,
   followUpSymptomRecheck: "/(main)/(followup)/symptom-recheck" as Href,
+  booking: "/(main)/(booking)" as Href,
+  bookingProviders: "/(main)/(booking)/providers" as Href,
+  bookingSlots: "/(main)/(booking)/slots" as Href,
+  bookingPrep: "/(main)/(booking)/prep" as Href,
+  bookingConfirmed: "/(main)/(booking)/confirmed" as Href,
   store: "/(main)/(store)" as Href,
   storeProduct: "/(main)/(store)/product" as Href,
   storeCart: "/(main)/(store)/cart" as Href,
@@ -79,4 +84,33 @@ export function orderPlacedHref(orderId: string): Href {
 
 export function orderDetailHref(orderId: string): Href {
   return `/(main)/(orders)/order?id=${encodeURIComponent(orderId)}` as Href;
+}
+
+/** Carry the chosen lab into the "pick a time" screen. */
+export function bookingSlotsHref(clinicId: string, clinicName: string): Href {
+  return `/(main)/(booking)/slots?clinicId=${encodeURIComponent(clinicId)}&clinicName=${encodeURIComponent(clinicName)}` as Href;
+}
+
+/** Carry the chosen slot (or a home-kit request) into the prep screen. */
+export function bookingPrepHref(params: {
+  kind: "clinic" | "home_kit";
+  slotId?: string;
+  clinicName?: string;
+  startsAt?: string;
+  postcode?: string;
+}): Href {
+  const query = new URLSearchParams({ kind: params.kind });
+  if (params.slotId) query.set("slotId", params.slotId);
+  if (params.clinicName) query.set("clinicName", params.clinicName);
+  if (params.startsAt) query.set("startsAt", params.startsAt);
+  if (params.postcode) query.set("postcode", params.postcode);
+  return `/(main)/(booking)/prep?${query.toString()}` as Href;
+}
+
+export function bookingProvidersHref(postcode: string): Href {
+  return `/(main)/(booking)/providers?postcode=${encodeURIComponent(postcode)}` as Href;
+}
+
+export function bookingConfirmedHref(bookingId: string, kind: string): Href {
+  return `/(main)/(booking)/confirmed?id=${encodeURIComponent(bookingId)}&kind=${encodeURIComponent(kind)}` as Href;
 }

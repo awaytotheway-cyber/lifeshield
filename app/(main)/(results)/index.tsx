@@ -10,6 +10,7 @@ import { ResultCard } from "@/components/ui/ResultCard";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
+import { FEATURES } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { getTerm } from "@/lib/plain-language";
@@ -182,7 +183,15 @@ export default function ResultsScreen() {
           ListFooterComponent={
             <View>
               <Text style={styles.discuss}>{COPY.resultsActionDiscuss}</Text>
-              <PrimaryButton
+              {FEATURES.guidedBooking ? (
+                <PrimaryButton
+                  title={COPY.resultsBookTests}
+                  onPress={() => {
+                    router.push(routes.booking);
+                  }}
+                />
+              ) : null}
+              <TextButton
                 title={COPY.resultsOpenLabResults}
                 onPress={() => {
                   router.push(routes.labResults);

@@ -817,4 +817,113 @@ export const COPY = {
   orderBackOrders: "Back to orders",
   orderBackStore: "Back to store",
   orderBackHome: "Back to Home",
+
+  // ——— Phase 5 Wave A: guided test booking ———
+  // Warm, specific, one clear next step. Never implies the test diagnoses
+  // anything — it is information the user and their clinician look at together.
+  bookingStartTitle: "Book your tests",
+  bookingStartBody:
+    "You have tests worth doing. Let\u2019s get them in the diary \u2014 it takes about two minutes, and you can change the time later.",
+  bookingWhereLabel: "Where are you?",
+  bookingPostcodeLabel: "Your postcode",
+  bookingPostcodeHint:
+    "We use this only to find labs near you. It is not shared with anyone.",
+  bookingPostcodeInvalid:
+    "That does not look like a postcode yet. Check it and try again \u2014 or carry on and we will show you every lab we work with.",
+  bookingModalityLabel: "How would you like to do it?",
+  bookingModalityClinic: "Visit a lab",
+  bookingModalityClinicDetail:
+    "A nurse takes the sample. Usually quicker to get results, and better if you would rather someone else did it.",
+  bookingModalityHomeKit: "Home test kit",
+  bookingModalityHomeKitDetail:
+    "Posted to you, done in your own time, posted back. No appointment, no travelling.",
+  bookingModalityHomeKitUnavailable:
+    "One of your tests needs a nurse to take the sample, so this set is lab-only.",
+  bookingContinue: "Find labs near me",
+  bookingTestsHeading: "What you are booking",
+
+  bookingProvidersTitle: "Choose a lab",
+  bookingProvidersBody:
+    "Prices and next available times are live. Nothing is charged until you confirm.",
+  bookingProvidersEmptyHeading: "No labs near that postcode yet",
+  bookingProvidersEmptyBody:
+    "We are still adding partners in your area. Try a nearby postcode, or order a home kit instead \u2014 it works anywhere we post to.",
+  bookingProviderNoSlots: "No free times in the next three weeks",
+  bookingProviderNextSlot: "Next free",
+  bookingProviderHomeCollection: "Home collection available",
+  bookingProviderChoose: "See times",
+  bookingClinicsFailed:
+    "We could not load the labs just now. Check your connection and try again.",
+
+  bookingSlotsTitle: "Pick a time",
+  bookingSlotsBody:
+    "Times are in your own timezone. You can move or cancel this later without calling anyone.",
+  bookingSlotsEmptyHeading: "Nothing free in the next three weeks",
+  bookingSlotsEmptyBody:
+    "This lab is fully booked for now. Try another lab, or a home kit.",
+  bookingSlotsFailed:
+    "We could not load the times just now. Check your connection and try again.",
+  bookingSlotsRetry: "Try again",
+
+  bookingPrepTitle: "Before your test",
+  bookingPrepBody:
+    "Getting these right means the sample works first time. We will remind you the day before too.",
+  bookingPrepCriticalHeading: "Please read \u2014 these ones matter",
+  bookingPrepAckLabel: "I have read how to prepare",
+  bookingPrepAckRequired:
+    "Have a read of the steps above and tick the box, then we can confirm.",
+  bookingPrepConfirm: "Confirm booking",
+
+  bookingKitTitle: "Where shall we send it?",
+  bookingKitBody:
+    "Your kit arrives in a plain box with everything you need, including a prepaid return envelope.",
+  bookingKitAddressLabel: "Address",
+  bookingKitAddressHint: "House or flat number, street, and town.",
+  bookingKitConfirm: "Send me a kit",
+  bookingAddressNeeded:
+    "We need an address and a postcode to post the kit to you.",
+  bookingKitFailed:
+    "We could not order the kit just now. Nothing has been charged \u2014 please try again.",
+
+  bookingConfirmedTitle: "You are booked",
+  bookingConfirmedBody:
+    "It is in your diary. We will remind you the day before, and again a couple of hours before.",
+  bookingConfirmedKitBody:
+    "Your kit is on its way. We will let you know when it has been posted.",
+  bookingConfirmedPrepHeading: "Remember",
+  bookingConfirmedDone: "Back to Home",
+  bookingConfirmedSeeAppointments: "See my appointments",
+
+  bookingFailed:
+    "We could not confirm that booking. Nothing has been charged \u2014 please try again.",
+  bookingSlotTaken:
+    "Someone took that time while you were deciding \u2014 that happens. Pick another one and we will get you booked.",
+  bookingSlotPast: "That time has already passed. Pick another one.",
+  bookingSlotGone:
+    "That time is no longer being offered. Pick another one and we will get you booked.",
+  bookingNotSignedIn: "Please sign in again, then pick your time.",
+  bookingNeedSql:
+    "Booking is not set up on this database yet. Run supabase/phase5-booking.sql in the Supabase SQL Editor, then try again.",
+
+  bookingsLoadFailed:
+    "We could not load your appointments just now. Check your connection and try again.",
+  bookingCancelTitle: "Cancel this appointment?",
+  bookingCancel: "Cancel appointment",
+  bookingCancelConfirm: "Yes, cancel it",
+  bookingCancelKeep: "Keep it",
+  bookingCancelled: "Cancelled. You can book again whenever you are ready.",
+  bookingCancelFailed:
+    "We could not cancel that just now. Please try again, or contact us if it keeps failing.",
+  bookingNotCancellable:
+    "This one is too close to the time to cancel in the app. Contact the lab directly and they will sort it out.",
+  bookingUpcomingHeading: "Coming up",
+  bookingPastHeading: "Earlier",
+  bookingKindClinic: "Lab visit",
+  bookingKindHomeKit: "Home kit",
+  bookingOpenBooking: "Book a test",
+
+  bookingPrepLoadFailed:
+    "We could not load the preparation steps just now. Please try again \u2014 it is worth getting these right before you book.",
+
+  resultsBookTests: "Book these tests",
 } as const;
