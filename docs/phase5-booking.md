@@ -9,7 +9,32 @@ how to prepare, confirm, and manage or cancel it later.
 Supabase Dashboard → **SQL Editor** → New query → paste the whole of
 `supabase/phase5-booking.sql` → Run.
 
-It is safe to run more than once. It adds:
+**If you get a syntax error mentioning `RETURN`,** your paste dropped part of
+the file — some browsers/editors silently truncate a large clipboard paste,
+which jams two unrelated lines together (for example, a table column
+definition right next to a `RETURN` line from a function near the end). The
+file itself is verified clean (see below), so this is always a paste issue,
+never a real syntax problem in the file.
+
+**Fix:** run it in 7 smaller pieces instead, one at a time, in order, each in
+its own query:
+
+```
+supabase/phase5-booking-parts/part1.sql   -- clinics + products columns
+supabase/phase5-booking-parts/part2.sql   -- lab_slots table
+supabase/phase5-booking-parts/part3.sql   -- bookings table + RLS
+supabase/phase5-booking-parts/part4.sql   -- book_lab_slot() function
+supabase/phase5-booking-parts/part5.sql   -- cancel_booking() function
+supabase/phase5-booking-parts/part6.sql   -- clinics_with_next_slot() function
+supabase/phase5-booking-parts/part7.sql   -- updated_at trigger
+```
+
+Paste one part, click Run, wait for it to say Success, then move to the next.
+Never paste two parts in the same query box. This is exactly the same SQL as
+the combined file, just in clipboard-sized pieces — verified to produce an
+identical result running against a real Postgres 16 database.
+
+It is safe to run more than once (whole file or parts). It adds:
 
 | Thing | What it is |
 | --- | --- |
