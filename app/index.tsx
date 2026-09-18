@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
 
-import { WelcomeFigure } from "@/components/illustrations";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
 import { GlassSurface } from "@/components/ui/GlassSurface";
+import { LogoMark } from "@/components/ui/LogoMark";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
 import { fontFamily, typography } from "@/lib/typography";
@@ -45,7 +45,7 @@ export default function SplashScreen() {
     return (
       <Animated.View style={[styles.wrap, { opacity }]}>
         <GlassSurface intensity="card" style={styles.panel}>
-          <WelcomeFigure width={200} height={180} />
+          <LogoMark size={140} />
           <Text style={styles.brand}>{COPY.appName}</Text>
           <Text style={styles.tagline}>{COPY.splashSubtitle}</Text>
         </GlassSurface>

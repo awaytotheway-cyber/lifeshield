@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.charcoal,
   },
   badge: {
     marginTop: 12,

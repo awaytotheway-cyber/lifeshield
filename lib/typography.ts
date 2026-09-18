@@ -1,18 +1,18 @@
 ﻿/**
  * Type styles for LifeShield. Font names match the files loaded in app/_layout.tsx.
  * Brand system is Clash Display (headings) + Manrope (body). Clash Display isn't
- * available as an installable Google Font, so headings use Manrope ExtraBold/Bold
- * as the closest geometric substitute — body/labels use lighter Manrope weights.
- * Hero stats: oversized Manrope display. If fonts are still loading, React Native
- * falls back to the system font.
+ * available as an installable Google Font, so headings use Plus Jakarta Sans —
+ * a modern, stylized geometric display face — with Manrope for body/labels.
+ * Hero stats: oversized Plus Jakarta Sans display. If fonts are still loading,
+ * React Native falls back to the system font.
  */
 
 export const fontFamily = {
   /** Screen titles and section headings. */
-  display: "Manrope_800ExtraBold",
-  displaySemi: "Manrope_700Bold",
+  display: "PlusJakartaSans_800ExtraBold",
+  displaySemi: "PlusJakartaSans_700Bold",
   /** Oversized hero numbers (risk score, days-until-check). */
-  heroStat: "Manrope_800ExtraBold",
+  heroStat: "PlusJakartaSans_800ExtraBold",
   body: "Manrope_400Regular",
   bodyMedium: "Manrope_500Medium",
   bodySemi: "Manrope_600SemiBold",

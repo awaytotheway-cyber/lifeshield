@@ -11,4 +11,3 @@ export { PathwayBHandoff } from "./PathwayBHandoff";
 export { PlanRoadmap } from "./PlanRoadmap";
 export { SectionComplete } from "./SectionComplete";
 export { ShieldTrust } from "./ShieldTrust";
-export { WelcomeFigure } from "./WelcomeFigure";

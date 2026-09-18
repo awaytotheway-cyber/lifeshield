@@ -1,8 +1,8 @@
 import { useRouter } from "expo-router";
 
-import { WelcomeFigure } from "@/components/illustrations";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { PrimaryButton } from "@/components/ui/Button";
+import { LogoMark } from "@/components/ui/LogoMark";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { COPY } from "@/lib/copy";
 import { routes } from "@/lib/routes";
@@ -15,7 +15,7 @@ export default function WelcomeScreen() {
       step={1}
       icon="sun"
       showTrustBanner
-      illustration={<WelcomeFigure width={200} height={180} />}
+      illustration={<LogoMark size={140} />}
       title={COPY.welcomeTitle}
       body={COPY.welcomeBody}
       footer={

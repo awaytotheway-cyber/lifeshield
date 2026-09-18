@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 11,
-    color: colors.deepNavy,
+    color: colors.inkOnLight,
   },
   reorder: {
     flexDirection: "column",

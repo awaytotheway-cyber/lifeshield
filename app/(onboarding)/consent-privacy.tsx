@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useState } from "react";
@@ -18,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ShieldTrust } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { GlassSurface } from "@/components/ui/GlassSurface";
+import { LogoMark } from "@/components/ui/LogoMark";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
 import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
@@ -144,12 +144,7 @@ export default function ConsentPrivacyScreen() {
       }
     >
       <View style={styles.logoWrap}>
-        <Image
-          source={require("../../assets/images/prescope-logo.png")}
-          style={styles.logo}
-          contentFit="contain"
-          accessibilityLabel="Prescope logo"
-        />
+        <LogoMark size={72} />
       </View>
       <View style={styles.shieldWrap}>
         <ShieldTrust width={120} height={120} />
@@ -242,10 +237,6 @@ const styles = StyleSheet.create({
   logoWrap: {
     alignItems: "center",
     marginBottom: spacing.sm,
-  },
-  logo: {
-    width: 72,
-    height: 72,
   },
   shieldWrap: {
     alignItems: "center",

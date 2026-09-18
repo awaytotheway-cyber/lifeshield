@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   q: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 17,
-    color: colors.deepNavy,
+    color: colors.charcoal,
   },
   a: {
     marginTop: 8,

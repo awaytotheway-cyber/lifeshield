@@ -54,7 +54,7 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
               ? colors.primaryBlue
               : colors.border;
         const textColor =
-          step.state === "upcoming" ? colors.mist : colors.deepNavy;
+          step.state === "upcoming" ? colors.mist : colors.charcoal;
         const weight = step.state === "current" ? fontFamily.bodySemi : fontFamily.body;
 
         return (

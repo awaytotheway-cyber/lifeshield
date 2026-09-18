@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.deepNavy,
+    color: colors.charcoal,
   },
   row2: {
     marginTop: 8,

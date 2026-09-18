@@ -58,6 +58,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
     lineHeight: 18,
-    color: colors.deepNavy,
+    color: colors.charcoal,
   },
 });
