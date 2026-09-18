@@ -351,7 +351,7 @@ export default function EnterResultsScreen() {
           {COPY.enterResultsCsvHint}
         </Text>
         <TextInput
-          className="mt-3 min-h-[120px] rounded-xl border border-sage bg-white/6 px-4 py-3 text-charcoal"
+          className="mt-3 min-h-[120px] rounded-xl border border-sage bg-white px-4 py-3 text-charcoal"
           placeholderTextColor="#8C878199"
           multiline
           textAlignVertical="top"

@@ -1,5 +1,5 @@
 /**
- * LifeShield design tokens — dark orange/purple glassmorphism system.
+ * LifeShield design tokens — white/orange glassmorphism system.
  * Change a value here (and in tailwind.config.js + global.css if it is a colour)
  * instead of hunting through screens for hex codes.
  *
@@ -11,56 +11,56 @@
 export const colors = {
   /** Brand primary — buttons, active tabs, key accents. */
   primaryBlue: "#FF6000",
-  /** Dark text / chrome tint base (near-black, used for heavy chrome overlays). */
-  deepNavy: "#0E0E0E",
+  /** Dark text / navy glass tint base. */
+  deepNavy: "#242424",
   /** Secondary accent for highlights and secondary actions. */
-  skyBlue: "#9C90E8",
-  /** Default screen atmosphere (never plain white behind glass — now the dark canvas). */
-  iceBlue: "#141414",
+  skyBlue: "#6C5BD4",
+  /** Default screen atmosphere (never plain white behind glass). */
+  iceBlue: "#FFFFFF",
 
-  /** Glass fills — frosted panels over the dark canvas / heavier chrome overlays. */
-  glassFill: "rgba(255,255,255,0.045)",
-  glassFillDark: "rgba(0,0,0,0.4)",
-  glassChrome: "rgba(255,255,255,0.06)",
-  glassBorder: "rgba(255,255,255,0.09)",
+  /** Glass fills — light cards / dark chrome overlays. */
+  glassFill: "rgba(255,255,255,0.6)",
+  glassFillDark: "rgba(36,28,21,0.45)",
+  glassChrome: "rgba(255,255,255,0.7)",
+  glassBorder: "rgba(36,28,21,0.1)",
 
-  /** Risk semantics ONLY — never decorative orange/purple. */
-  riskLow: "#34D399",
-  riskLowLight: "rgba(52,211,153,0.16)",
-  riskModerate: "#FFC24B",
-  riskModerateLight: "rgba(255,194,75,0.16)",
-  riskHigh: "#F2545D",
-  riskHighLight: "rgba(242,84,93,0.16)",
+  /** Risk semantics ONLY — never decorative orange. */
+  riskLow: "#1F9D74",
+  riskLowLight: "#E3F7EF",
+  riskModerate: "#E08A00",
+  riskModerateLight: "#FFF1DC",
+  riskHigh: "#E1445A",
+  riskHighLight: "#FDE8EB",
 
   white: "#FFFFFF",
-  charcoal: "#F5F3F0",
-  slate: "#B7B3AE",
-  mist: "#8C8781",
-  border: "rgba(255,255,255,0.1)",
-  shadow: "rgba(255,96,0,0.25)",
+  charcoal: "#241C14",
+  slate: "#6B6560",
+  mist: "#A39C94",
+  border: "rgba(36,28,21,0.12)",
+  shadow: "rgba(255,96,0,0.16)",
 
   /**
    * Text/icons/dividers for content drawn on a literal white surface (form
-   * inputs, bottom sheets, question cards) — these stay white by design for
-   * data-entry legibility, so their ink needs to stay dark regardless of the
-   * dark theme around them.
+   * inputs, bottom sheets, question cards). The whole app is light now, so
+   * these match charcoal/slate/border — kept as separate names because
+   * several components already reference them explicitly.
    */
-  inkOnLight: "#1A1A1A",
+  inkOnLight: "#241C14",
   inkOnLightMuted: "#6B6560",
-  borderOnLight: "rgba(14,14,14,0.12)",
+  borderOnLight: "rgba(36,28,21,0.12)",
 
-  // ——— Legacy aliases (map old teal/cream system → orange/purple glass) ———
+  // ——— Legacy aliases (map old teal/cream system → white/orange glass) ———
   deepTeal: "#FF6000",
-  midTeal: "#9C90E8",
-  /** Soft selected/highlight wash — opaque pale peach, stays light on a white card or a dark screen. */
-  lightTeal: "#FFDCC0",
-  sage: "#34D399",
-  sageLight: "rgba(52,211,153,0.16)",
-  coral: "#F2545D",
-  coralLight: "rgba(242,84,93,0.16)",
-  amber: "#FFC24B",
-  amberLight: "rgba(255,194,75,0.16)",
-  cream: "#141414",
+  midTeal: "#6C5BD4",
+  /** Soft selected/highlight wash — pale peach, reads on any light surface. */
+  lightTeal: "#FFE4D1",
+  sage: "#1F9D74",
+  sageLight: "#E3F7EF",
+  coral: "#E1445A",
+  coralLight: "#FDE8EB",
+  amber: "#E08A00",
+  amberLight: "#FFF1DC",
+  cream: "#FFFFFF",
   teal: "#FF6000",
 } as const;
 
@@ -78,7 +78,7 @@ export const semantic = {
 
 /** Soft gradient stops for Screen backgrounds. */
 export const gradients = {
-  screen: ["#141414", "#1B1B1B", "#141414"] as const,
+  screen: ["#FFFFFF", "#FFF3EA", "#FFFFFF"] as const,
   screenLocations: [0, 0.55, 1] as const,
 } as const;
 
@@ -96,43 +96,43 @@ export const spacing = {
 } as const;
 
 export const radius = {
-  input: 12,
-  button: 16,
-  alert: 16,
-  card: 24,
-  radioCard: 20,
-  chip: 20,
-  sheet: 28,
+  input: 14,
+  button: 18,
+  alert: 18,
+  card: 28,
+  radioCard: 22,
+  chip: 22,
+  sheet: 30,
   /** Tailwind rounded-2xl ≈ 16; glass cards use a slightly fuller corner. */
-  glass: 16,
+  glass: 18,
 } as const;
 
 export const shadows = {
   card: {
     shadowColor: colors.primaryBlue,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.28,
-    shadowRadius: 24,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 3,
   },
   button: {
     shadowColor: colors.primaryBlue,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
+    shadowOpacity: 0.22,
+    shadowRadius: 14,
     elevation: 4,
   },
   modal: {
-    shadowColor: "#000000",
+    shadowColor: colors.charcoal,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.45,
-    shadowRadius: 32,
+    shadowOpacity: 0.18,
+    shadowRadius: 28,
     elevation: 8,
   },
   focusGlow: {
     shadowColor: colors.skyBlue,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.28,
+    shadowOpacity: 0.18,
     shadowRadius: 4,
     elevation: 2,
   },

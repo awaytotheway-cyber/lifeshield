@@ -42,9 +42,9 @@ export function TimePicker({
           borderRadius: 12,
           borderWidth: 1,
           borderStyle: "solid",
-          borderColor: "rgba(255,255,255,0.14)",
-          backgroundColor: "#242424",
-          color: "#F5F3F0",
+          borderColor: "rgba(36,28,21,0.14)",
+          backgroundColor: "#FFFFFF",
+          color: "#241C14",
           fontSize: 16,
         }}
       />

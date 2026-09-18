@@ -1,4 +1,4 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 // LifeShield brand colours — keep in sync with lib/design-tokens.ts and global.css.
 // NativeWind v5 also repeats these in global.css (@theme) because v5 is CSS-first.
 module.exports = {
@@ -7,28 +7,28 @@ module.exports = {
     extend: {
       colors: {
         primaryBlue: "#FF6000",
-        deepNavy: "#0E0E0E",
-        skyBlue: "#9C90E8",
-        iceBlue: "#141414",
-        riskLow: "#34D399",
-        riskModerate: "#FFC24B",
-        riskHigh: "#F2545D",
-        // Legacy aliases → LifeShield dark orange/purple glass system
+        deepNavy: "#242424",
+        skyBlue: "#6C5BD4",
+        iceBlue: "#FFFFFF",
+        riskLow: "#1F9D74",
+        riskModerate: "#E08A00",
+        riskHigh: "#E1445A",
+        // Legacy aliases → LifeShield white/orange glass system
         deepTeal: "#FF6000",
-        midTeal: "#9C90E8",
-        lightTeal: "#FFDCC0",
-        sage: "#34D399",
-        sageLight: "rgba(52,211,153,0.16)",
-        coral: "#F2545D",
-        coralLight: "rgba(242,84,93,0.16)",
-        amber: "#FFC24B",
-        amberLight: "rgba(255,194,75,0.16)",
-        cream: "#141414",
+        midTeal: "#6C5BD4",
+        lightTeal: "#FFE4D1",
+        sage: "#1F9D74",
+        sageLight: "#E3F7EF",
+        coral: "#E1445A",
+        coralLight: "#FDE8EB",
+        amber: "#E08A00",
+        amberLight: "#FFF1DC",
+        cream: "#FFFFFF",
         white: "#FFFFFF",
-        charcoal: "#F5F3F0",
-        slate: "#B7B3AE",
-        mist: "#8C8781",
-        border: "rgba(255,255,255,0.1)",
+        charcoal: "#241C14",
+        slate: "#6B6560",
+        mist: "#A39C94",
+        border: "rgba(36,28,21,0.12)",
         teal: "#FF6000",
       },
     },

@@ -46,7 +46,7 @@ export function TimePicker({
         accessibilityRole="button"
         accessibilityLabel={label}
         onPress={() => setOpen((current) => !current)}
-        className="mt-2 rounded-xl border border-sage bg-white/6 px-4 py-3"
+        className="mt-2 rounded-xl border border-sage bg-white px-4 py-3"
       >
         <Text className="text-charcoal">
           {isHHmm(value)
@@ -60,7 +60,7 @@ export function TimePicker({
         </Text>
       ) : null}
       {open ? (
-        <View className="mt-2 items-center rounded-xl border border-white/10 bg-white/6 px-2 py-2">
+        <View className="mt-2 items-center rounded-xl bg-white px-2 py-2">
           <DateTimePicker
             value={selected}
             mode="time"
@@ -68,7 +68,7 @@ export function TimePicker({
             is24Hour
             minuteInterval={5}
             onChange={onPickerChange}
-            themeVariant="dark"
+            themeVariant="light"
             accentColor="#FF6000"
           />
           {Platform.OS === "ios" ? (

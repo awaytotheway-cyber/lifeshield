@@ -107,7 +107,7 @@ export default function RootLayout() {
         ) : (
           <StripeRoot>
             <SessionProvider>
-              <StatusBar style="light" />
+              <StatusBar style="dark" />
               <AuthGate />
             </SessionProvider>
           </StripeRoot>

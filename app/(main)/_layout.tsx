@@ -159,7 +159,11 @@ export default function MainLayout() {
             tabBarStyle: hideTabBar
               ? { display: "none" }
               : {
-                  backgroundColor: "transparent",
+                  // A real backgroundColor under the GlassCard blur layer —
+                  // native BlurView tinting isn't reliable on web, so this
+                  // guarantees contrast for the inactive tab icons/labels
+                  // even where the blur renders as a plain light box.
+                  backgroundColor: "rgba(255,255,255,0.92)",
                   borderTopWidth: StyleSheet.hairlineWidth,
                   borderTopColor: colors.glassBorder,
                   elevation: 0,

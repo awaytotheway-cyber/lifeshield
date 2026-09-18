@@ -5,7 +5,6 @@ export { EmptyBox } from "./EmptyBox";
 export { EmptyHourglass } from "./EmptyHourglass";
 export { FollowUpCalendar } from "./FollowUpCalendar";
 export { InsightLens } from "./InsightLens";
-export { JourneyTrail } from "./JourneyTrail";
 export { MolecularStructure } from "./MolecularStructure";
 export { PathwayBHandoff } from "./PathwayBHandoff";
 export { PlanRoadmap } from "./PlanRoadmap";

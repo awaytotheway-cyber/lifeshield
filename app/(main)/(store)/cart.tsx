@@ -216,7 +216,7 @@ export default function CartScreen() {
             const busy = updatingId === line.id;
             const lineTotal = line.product.price * line.quantity;
             return (
-              <View key={line.id} className="mt-4 rounded-xl border border-white/10 bg-white/6 px-4 py-4">
+              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
                 <ClinicalTerm
                   plainName={line.product.plain_name}
                   plainExplanation={
@@ -273,7 +273,7 @@ export default function CartScreen() {
         : null}
 
       {!loading && !message && lines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white/6 px-4 py-4">
+        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
           <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
           <Text className="mt-2 text-center text-2xl text-teal">
             ₹{total.toLocaleString("en-IN")}

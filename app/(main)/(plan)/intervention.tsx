@@ -90,7 +90,7 @@ export default function PlanItemScreen() {
       <Text className="text-center text-2xl text-charcoal">
         {COPY.planDetailTitle}
       </Text>
-      <View className="mt-4 rounded-xl border border-teal bg-white/6 px-4 py-3">
+      <View className="mt-4 rounded-xl border border-teal bg-white px-4 py-3">
         <Text className="text-center text-charcoal">{bannerText}</Text>
       </View>
 

@@ -1,11 +1,11 @@
 import { Redirect, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { JourneyTrail } from "@/components/illustrations";
 import { SectionProgress } from "@/components/questionnaire/SectionProgress";
 import { PrimaryButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LogoMark } from "@/components/ui/LogoMark";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
@@ -76,8 +76,6 @@ export default function QuestionnaireHubScreen() {
   );
   const session = useAuthStore((state) => state.session);
   const [hint, setHint] = useState<string | null>(null);
-  const windowWidth = useWindowDimensions().width;
-  const trailWidth = Math.max(160, windowWidth - spacing.screenX * 2);
 
   useEffect(() => {
     if (!session?.user.id || hubHydrated || hubLoading) {
@@ -149,7 +147,7 @@ export default function QuestionnaireHubScreen() {
         ListHeaderComponent={
           <View>
             <View style={styles.trail}>
-              <JourneyTrail width={trailWidth} height={140} />
+              <LogoMark size={72} />
             </View>
             <Text style={styles.title} accessibilityRole="header">
               {COPY.hubTitle}
