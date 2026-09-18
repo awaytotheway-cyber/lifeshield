@@ -90,12 +90,12 @@ export default function PlanItemScreen() {
       <Text className="text-center text-2xl text-charcoal">
         {COPY.planDetailTitle}
       </Text>
-      <View className="mt-4 rounded-xl border border-teal bg-white px-4 py-3">
+      <View className="mt-4 rounded-xl border border-teal bg-white/6 px-4 py-3">
         <Text className="text-center text-charcoal">{bannerText}</Text>
       </View>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <ActivityIndicator className="mt-6" color="#FF6000" />
       ) : null}
 
       {message ? (
@@ -130,7 +130,7 @@ export default function PlanItemScreen() {
           {row.clinician_interaction_check ? (
             <View
               className="mt-3 self-start rounded-full px-3 py-1"
-              style={{ backgroundColor: "#FDE68A" }}
+              style={{ backgroundColor: "rgba(255,194,75,0.18)" }}
             >
               <Text className="text-sm text-charcoal">{COPY.planNeedsCheck}</Text>
             </View>

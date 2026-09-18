@@ -1,6 +1,8 @@
 /**
  * Colours for on/off switches and Yes/No toggles.
- * Blue-primary brand; coral only for genuine attention / safety questions.
+ * Orange-primary LifeShield brand; coral (risk red) only for genuine attention / safety questions.
+ * idleFill/idleText stay a light pill (white bg, dark ink) by design — a small,
+ * self-contained legibility affordance that doesn't need to track the dark theme.
  */
 export type SwitchColor = "primary" | "secondary" | "warning" | "default";
 
@@ -19,47 +21,47 @@ export const SWITCH_PALETTE: Record<
   }
 > = {
   primary: {
-    thumbOn: "#2B5FE0",
-    trackOn: "rgba(43, 95, 224, 0.45)",
+    thumbOn: "#FF6000",
+    trackOn: "rgba(255, 96, 0, 0.45)",
     thumbOff: "#FAFAFA",
-    trackOff: "#E0E0E0",
-    selectedFill: "#2B5FE0",
+    trackOff: "#3A3A3A",
+    selectedFill: "#FF6000",
     selectedText: "#FFFFFF",
     idleFill: "#FFFFFF",
-    idleText: "#0B1E4D",
-    idleBorder: "#6FA8F5",
+    idleText: "#0E0E0E",
+    idleBorder: "#9C90E8",
   },
   secondary: {
-    thumbOn: "#2FB8A6",
-    trackOn: "rgba(47, 184, 166, 0.7)",
+    thumbOn: "#34D399",
+    trackOn: "rgba(52, 211, 153, 0.7)",
     thumbOff: "#FAFAFA",
-    trackOff: "#E0E0E0",
-    selectedFill: "#2FB8A6",
-    selectedText: "#0B1E4D",
+    trackOff: "#3A3A3A",
+    selectedFill: "#34D399",
+    selectedText: "#0E0E0E",
     idleFill: "#FFFFFF",
-    idleText: "#0B1E4D",
-    idleBorder: "#2FB8A6",
+    idleText: "#0E0E0E",
+    idleBorder: "#34D399",
   },
   warning: {
-    thumbOn: "#F26D6D",
-    trackOn: "rgba(242, 109, 109, 0.5)",
+    thumbOn: "#F2545D",
+    trackOn: "rgba(242, 84, 93, 0.5)",
     thumbOff: "#FAFAFA",
-    trackOff: "#E0E0E0",
-    selectedFill: "#F26D6D",
+    trackOff: "#3A3A3A",
+    selectedFill: "#F2545D",
     selectedText: "#FFFFFF",
     idleFill: "#FFFFFF",
-    idleText: "#0B1E4D",
-    idleBorder: "#6FA8F5",
+    idleText: "#0E0E0E",
+    idleBorder: "#9C90E8",
   },
   default: {
-    thumbOn: "#0B1E4D",
-    trackOn: "rgba(11, 30, 77, 0.38)",
+    thumbOn: "#242424",
+    trackOn: "rgba(36, 36, 36, 0.6)",
     thumbOff: "#FAFAFA",
-    trackOff: "#E0E0E0",
-    selectedFill: "#0B1E4D",
+    trackOff: "#3A3A3A",
+    selectedFill: "#242424",
     selectedText: "#FFFFFF",
     idleFill: "#FFFFFF",
-    idleText: "#0B1E4D",
-    idleBorder: "#6FA8F5",
+    idleText: "#0E0E0E",
+    idleBorder: "#9C90E8",
   },
 };

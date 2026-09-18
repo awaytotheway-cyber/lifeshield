@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
     paddingRight: 12,
   },
   error: {

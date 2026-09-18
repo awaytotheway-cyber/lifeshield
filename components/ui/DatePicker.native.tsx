@@ -59,7 +59,7 @@ export function DatePicker({
         <Text style={hasCalendarValue ? styles.value : styles.placeholder}>
           {hasCalendarValue ? formatDisplayDate(value) : COPY.pickDate}
         </Text>
-        <Feather name="calendar" size={18} color={colors.slate} />
+        <Feather name="calendar" size={18} color={colors.inkOnLightMuted} />
       </Pressable>
       {leftoverText ? (
         <Text style={styles.warn}>
@@ -149,13 +149,13 @@ const styles = StyleSheet.create({
   value: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
     flex: 1,
   },
   placeholder: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.mist,
+    color: colors.inkOnLightMuted,
     flex: 1,
   },
   warn: {

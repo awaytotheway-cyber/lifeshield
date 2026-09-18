@@ -53,13 +53,13 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkOnLightMuted,
     marginBottom: 8,
   },
   track: {
     height: 4,
     width: "100%",
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderOnLight,
     borderRadius: 2,
     overflow: "hidden",
   },

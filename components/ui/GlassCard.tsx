@@ -35,7 +35,7 @@ const radiusFor: Record<GlassIntensity, number> = {
 /**
  * Frosted glass panel — BlurView + semi-transparent fill.
  * Prefer this public API on new screens. GlassSurface re-exports the same look.
- * Never place on a plain white background; Screen provides ice-blue atmosphere.
+ * Never place on a plain white background; Screen provides the dark LifeShield atmosphere.
  *
  * Children sit above the blur layers so padding / alignItems on `style` still work.
  */
@@ -47,7 +47,9 @@ export function GlassCard({
 }: GlassCardProps) {
   const isDark = tint === "dark";
   const fill = isDark ? colors.glassFillDark : colors.glassFill;
-  const blurTint = isDark ? "dark" : "light";
+  // The whole app now sits on a dark canvas, so the native blur always wants
+  // the "dark" iOS tint; `tint` here only swaps how heavy the overlay fill is.
+  const blurTint = "dark";
   const corner = radiusFor[intensity];
 
   const shape: ViewStyle = {

@@ -1,58 +1,70 @@
-﻿/**
- * PRESCOPE design tokens — blue-primary glassmorphism system.
+/**
+ * LifeShield design tokens — dark orange/purple glassmorphism system.
  * Change a value here (and in tailwind.config.js + global.css if it is a colour)
  * instead of hunting through screens for hex codes.
  *
  * Legacy aliases (deepTeal, cream, sage…) keep older screens working while
- * they gradually adopt the new names (primaryBlue, iceBlue, riskLow…).
+ * they gradually adopt the new names (primaryBlue, iceBlue, riskLow…) — the
+ * *names* are historical, the *values* below are the current LifeShield brand.
  */
 
 export const colors = {
   /** Brand primary — buttons, active tabs, key accents. */
-  primaryBlue: "#2B5FE0",
-  /** Dark text / navy glass tint base. */
-  deepNavy: "#0B1E4D",
-  /** Softer blue for secondary actions and highlights. */
-  skyBlue: "#6FA8F5",
-  /** Default screen atmosphere (never plain white behind glass). */
-  iceBlue: "#EAF1FF",
+  primaryBlue: "#FF6000",
+  /** Dark text / chrome tint base (near-black, used for heavy chrome overlays). */
+  deepNavy: "#0E0E0E",
+  /** Secondary accent for highlights and secondary actions. */
+  skyBlue: "#9C90E8",
+  /** Default screen atmosphere (never plain white behind glass — now the dark canvas). */
+  iceBlue: "#141414",
 
-  /** Glass fills — light cards / dark chrome overlays. */
-  glassFill: "rgba(255,255,255,0.55)",
-  glassFillDark: "rgba(11,30,77,0.45)",
-  glassChrome: "rgba(255,255,255,0.42)",
-  glassBorder: "rgba(255,255,255,0.3)",
+  /** Glass fills — frosted panels over the dark canvas / heavier chrome overlays. */
+  glassFill: "rgba(255,255,255,0.045)",
+  glassFillDark: "rgba(0,0,0,0.4)",
+  glassChrome: "rgba(255,255,255,0.06)",
+  glassBorder: "rgba(255,255,255,0.09)",
 
-  /** Risk semantics ONLY — never decorative coral. */
-  riskLow: "#2FB8A6",
-  riskLowLight: "#E6F8F5",
-  riskModerate: "#F5A623",
-  riskModerateLight: "#FEF4E3",
-  riskHigh: "#F26D6D",
-  riskHighLight: "#FDECEC",
+  /** Risk semantics ONLY — never decorative orange/purple. */
+  riskLow: "#34D399",
+  riskLowLight: "rgba(52,211,153,0.16)",
+  riskModerate: "#FFC24B",
+  riskModerateLight: "rgba(255,194,75,0.16)",
+  riskHigh: "#F2545D",
+  riskHighLight: "rgba(242,84,93,0.16)",
 
   white: "#FFFFFF",
-  charcoal: "#0B1E4D",
-  slate: "#4A5568",
-  mist: "#9AA5B4",
-  border: "#D4E0F5",
-  shadow: "rgba(43,95,224,0.12)",
+  charcoal: "#F5F3F0",
+  slate: "#B7B3AE",
+  mist: "#8C8781",
+  border: "rgba(255,255,255,0.1)",
+  shadow: "rgba(255,96,0,0.25)",
 
-  // ——— Legacy aliases (map old teal/cream system → blue glass) ———
-  deepTeal: "#2B5FE0",
-  midTeal: "#6FA8F5",
-  lightTeal: "#D6E4FF",
-  sage: "#2FB8A6",
-  sageLight: "#E6F8F5",
-  coral: "#F26D6D",
-  coralLight: "#FDECEC",
-  amber: "#F5A623",
-  amberLight: "#FEF4E3",
-  cream: "#EAF1FF",
-  teal: "#2B5FE0",
+  /**
+   * Text/icons/dividers for content drawn on a literal white surface (form
+   * inputs, bottom sheets, question cards) — these stay white by design for
+   * data-entry legibility, so their ink needs to stay dark regardless of the
+   * dark theme around them.
+   */
+  inkOnLight: "#1A1A1A",
+  inkOnLightMuted: "#6B6560",
+  borderOnLight: "rgba(14,14,14,0.12)",
+
+  // ——— Legacy aliases (map old teal/cream system → orange/purple glass) ———
+  deepTeal: "#FF6000",
+  midTeal: "#9C90E8",
+  /** Soft selected/highlight wash — opaque pale peach, stays light on a white card or a dark screen. */
+  lightTeal: "#FFDCC0",
+  sage: "#34D399",
+  sageLight: "rgba(52,211,153,0.16)",
+  coral: "#F2545D",
+  coralLight: "rgba(242,84,93,0.16)",
+  amber: "#FFC24B",
+  amberLight: "rgba(255,194,75,0.16)",
+  cream: "#141414",
+  teal: "#FF6000",
 } as const;
 
-/** Everyday names so screens do not guess which blue to use. */
+/** Everyday names so screens do not guess which accent to use. */
 export const semantic = {
   actionPrimary: colors.primaryBlue,
   actionSecondary: colors.skyBlue,
@@ -66,7 +78,7 @@ export const semantic = {
 
 /** Soft gradient stops for Screen backgrounds. */
 export const gradients = {
-  screen: ["#EAF1FF", "#D6E4FF", "#C8DBFF"] as const,
+  screen: ["#141414", "#1B1B1B", "#141414"] as const,
   screenLocations: [0, 0.55, 1] as const,
 } as const;
 
@@ -99,28 +111,28 @@ export const shadows = {
   card: {
     shadowColor: colors.primaryBlue,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.28,
     shadowRadius: 24,
     elevation: 4,
   },
   button: {
     shadowColor: colors.primaryBlue,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.22,
+    shadowOpacity: 0.35,
     shadowRadius: 16,
     elevation: 4,
   },
   modal: {
-    shadowColor: colors.deepNavy,
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.45,
     shadowRadius: 32,
     elevation: 8,
   },
   focusGlow: {
     shadowColor: colors.skyBlue,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.28,
     shadowRadius: 4,
     elevation: 2,
   },

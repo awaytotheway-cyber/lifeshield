@@ -170,7 +170,7 @@ export default function PriorScreeningScreen() {
             </Text>
           ) : null}
           {fields.map((field, index) => (
-            <View key={field.id} className="mt-3 rounded-xl bg-white px-4 py-3">
+            <View key={field.id} className="mt-3 rounded-xl border border-white/10 bg-white/6 px-4 py-3">
               <Text className="text-charcoal">Mammogram {index + 1}</Text>
               <Controller
                 control={control}

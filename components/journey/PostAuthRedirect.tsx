@@ -7,7 +7,7 @@ import { useJourney } from "@/lib/use-journey";
 function GateLoading() {
   return (
     <View className="flex-1 items-center justify-center bg-cream">
-      <ActivityIndicator color="#1A535C" />
+      <ActivityIndicator color="#FF6000" />
       <Text className="mt-3 text-charcoal">Loading…</Text>
     </View>
   );

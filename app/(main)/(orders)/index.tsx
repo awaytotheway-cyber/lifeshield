@@ -32,7 +32,7 @@ function OrderListCard({
   return (
     <Pressable
       onPress={onPress}
-      className="mt-3 rounded-xl bg-white px-4 py-4 active:opacity-80"
+      className="mt-3 rounded-xl border border-white/10 bg-white/6 px-4 py-4 active:opacity-80"
     >
       <Text className="text-charcoal">
         {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
@@ -162,7 +162,7 @@ export default function OrdersScreen() {
         </Text>
       )}
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <ActivityIndicator className="mt-6" color="#FF6000" /> : null}
 
       {message ? (
         <>
@@ -176,7 +176,7 @@ export default function OrdersScreen() {
           onPress={() => {
             openOrder(showHighlight.id);
           }}
-          className="mt-6 rounded-xl border border-teal bg-white px-4 py-4 active:opacity-80"
+          className="mt-6 rounded-xl border border-teal bg-white/6 px-4 py-4 active:opacity-80"
         >
           <Text className="text-center text-lg text-charcoal">
             {formatPaymentTotalForDisplay(

@@ -3,11 +3,8 @@ import "../global.css";
 
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-} from "@expo-google-fonts/inter";
-import {
+  Manrope_400Regular,
+  Manrope_500Medium,
   Manrope_600SemiBold,
   Manrope_700Bold,
   Manrope_800ExtraBold,
@@ -87,12 +84,11 @@ function AuthGate() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    Manrope_400Regular,
+    Manrope_500Medium,
     Manrope_600SemiBold,
     Manrope_700Bold,
     Manrope_800ExtraBold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
     DMMono_400Regular,
   });
 
@@ -107,7 +103,7 @@ export default function RootLayout() {
         ) : (
           <StripeRoot>
             <SessionProvider>
-              <StatusBar style="dark" />
+              <StatusBar style="light" />
               <AuthGate />
             </SessionProvider>
           </StripeRoot>

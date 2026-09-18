@@ -345,18 +345,18 @@ const styles = StyleSheet.create({
   type: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkOnLightMuted,
   },
   cardTitle: {
     marginTop: 4,
     fontFamily: fontFamily.bodySemi,
     fontSize: 16,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
   due: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
 });

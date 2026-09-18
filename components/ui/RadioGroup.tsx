@@ -119,13 +119,13 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
   optionDesc: {
     marginTop: 4,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkOnLightMuted,
   },
   error: {
     marginTop: 8,

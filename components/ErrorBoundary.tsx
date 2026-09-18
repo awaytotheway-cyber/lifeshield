@@ -40,7 +40,7 @@ function ErrorFallback({ onRetry, hint }: FallbackProps) {
           accessibilityRole="button"
           accessibilityLabel="Retry"
         >
-          <Text className="text-cream">Tap to retry</Text>
+          <Text className="text-white">Tap to retry</Text>
         </Pressable>
       </GlassSurface>
     </View>

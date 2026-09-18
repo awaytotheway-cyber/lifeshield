@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
   checkEmpty: {
     width: 20,

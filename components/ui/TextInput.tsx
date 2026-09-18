@@ -42,7 +42,7 @@ export function TextInput({
       <View>
         <RNTextInput
           accessibilityLabel={label}
-          placeholderTextColor={colors.mist}
+          placeholderTextColor={colors.inkOnLightMuted}
           autoCapitalize="none"
           autoCorrect={false}
           secureTextEntry={showEye ? passwordHidden : false}
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
   inputWithEye: {
     paddingRight: 52,

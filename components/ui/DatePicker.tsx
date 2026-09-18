@@ -49,9 +49,9 @@ export function DatePicker({
           borderStyle: "solid",
           borderColor: colors.border,
           backgroundColor: colors.white,
-          color: colors.charcoal,
+          color: colors.inkOnLight,
           fontSize: 15,
-          fontFamily: "Inter, system-ui, sans-serif",
+          fontFamily: "Manrope, system-ui, sans-serif",
         }}
       />
       {leftoverText ? (

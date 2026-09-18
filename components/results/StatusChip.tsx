@@ -12,8 +12,10 @@ export function StatusChip({ chip }: { chip: ResultStatusChip }) {
       : chip.tone === "worth_watching"
         ? "bg-charcoal"
         : "bg-sage";
+  // bg-charcoal is now a pale chip (contrast needs dark ink); coral/sage are
+  // saturated enough that white text reads clearly on both.
   const textClass =
-    chip.tone === "within_range" ? "text-teal" : "text-cream";
+    chip.tone === "worth_watching" ? "text-[#1A1A1A]" : "text-white";
 
   return (
     <View className={`self-start rounded-full px-3 py-1 ${toneClass}`}>

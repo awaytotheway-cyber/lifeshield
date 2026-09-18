@@ -40,11 +40,11 @@ type ButtonProps = Omit<PressableProps, "style"> & {
 };
 
 function darkerPrimary(pressed: boolean) {
-  return pressed ? "#234FBF" : colors.primaryBlue;
+  return pressed ? "#D94E00" : colors.primaryBlue;
 }
 
 function darkerCoral(pressed: boolean) {
-  return pressed ? "#E05555" : colors.riskHigh;
+  return pressed ? "#D9404A" : colors.riskHigh;
 }
 
 /**

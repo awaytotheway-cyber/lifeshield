@@ -54,7 +54,7 @@ export function SelectPicker({
         <Text style={selected ? styles.value : styles.placeholder}>
           {selected?.label ?? placeholder ?? COPY.pickOption}
         </Text>
-        <Feather name="chevron-down" size={20} color={colors.slate} />
+        <Feather name="chevron-down" size={20} color={colors.inkOnLightMuted} />
       </Pressable>
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -124,13 +124,13 @@ const styles = StyleSheet.create({
   value: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
     flex: 1,
   },
   placeholder: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.mist,
+    color: colors.inkOnLightMuted,
     flex: 1,
   },
   error: {
@@ -158,13 +158,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderOnLight,
     marginBottom: 12,
   },
   sheetTitle: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
     marginBottom: 8,
   },
   sheetScroll: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.borderOnLight,
   },
   rowOn: {
     backgroundColor: colors.lightTeal,
@@ -186,6 +186,6 @@ const styles = StyleSheet.create({
   rowLabel: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
 });

@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
     lineHeight: 22,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
   infoHit: {
     minWidth: 44,
@@ -128,23 +128,23 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 14,
     lineHeight: 22,
-    color: colors.slate,
+    color: colors.inkOnLightMuted,
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderOnLight,
     marginVertical: 12,
   },
   clinicalLabel: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 11,
-    color: colors.mist,
+    color: colors.inkOnLightMuted,
   },
   medical: {
     marginTop: 4,
     fontFamily: fontFamily.medical,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkOnLightMuted,
   },
   backdrop: {
     flex: 1,

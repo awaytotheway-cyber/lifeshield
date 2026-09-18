@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.bodySemi,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.inkOnLight,
   },
 });

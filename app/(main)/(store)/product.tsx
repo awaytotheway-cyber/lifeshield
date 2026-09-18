@@ -136,7 +136,7 @@ export default function ProductDetailScreen() {
 
   return (
     <Screen scroll>
-      {loading ? <ActivityIndicator color="#1A535C" /> : null}
+      {loading ? <ActivityIndicator color="#FF6000" /> : null}
 
       {message ? (
         <>
@@ -162,7 +162,7 @@ export default function ProductDetailScreen() {
             medicalName={product.clinical_name}
           />
 
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
+          <View className="mt-4 rounded-xl border border-white/10 bg-white/6 px-4 py-4">
             <Text className="text-sm text-teal">{COPY.productClinicalBasis}</Text>
             <Text className="mt-2 text-charcoal">
               {product.linked_finding?.trim() ||

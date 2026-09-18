@@ -1,18 +1,21 @@
 ﻿/**
- * Type styles for PRESCOPE. Font names match the files loaded in app/_layout.tsx.
- * Headings: Manrope. Body: Inter. Hero stats: oversized Manrope display.
- * If fonts are still loading, React Native falls back to the system font.
+ * Type styles for LifeShield. Font names match the files loaded in app/_layout.tsx.
+ * Brand system is Clash Display (headings) + Manrope (body). Clash Display isn't
+ * available as an installable Google Font, so headings use Manrope ExtraBold/Bold
+ * as the closest geometric substitute — body/labels use lighter Manrope weights.
+ * Hero stats: oversized Manrope display. If fonts are still loading, React Native
+ * falls back to the system font.
  */
 
 export const fontFamily = {
   /** Screen titles and section headings. */
-  display: "Manrope_700Bold",
-  displaySemi: "Manrope_600SemiBold",
+  display: "Manrope_800ExtraBold",
+  displaySemi: "Manrope_700Bold",
   /** Oversized hero numbers (risk score, days-until-check). */
   heroStat: "Manrope_800ExtraBold",
-  body: "Inter_400Regular",
-  bodyMedium: "Inter_500Medium",
-  bodySemi: "Inter_600SemiBold",
+  body: "Manrope_400Regular",
+  bodyMedium: "Manrope_500Medium",
+  bodySemi: "Manrope_600SemiBold",
   /** Lab / medical names — keep mono for scanability. */
   medical: "DMMono_400Regular",
 } as const;

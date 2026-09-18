@@ -12,27 +12,27 @@
   v5 reads these CSS variables to create classes like text-coral and bg-cream.
 */
 @theme {
-  --color-primaryBlue: #2b5fe0;
-  --color-deepNavy: #0b1e4d;
-  --color-skyBlue: #6fa8f5;
-  --color-iceBlue: #eaf1ff;
-  --color-riskLow: #2fb8a6;
-  --color-riskModerate: #f5a623;
-  --color-riskHigh: #f26d6d;
-  --color-deepTeal: #2b5fe0;
-  --color-midTeal: #6fa8f5;
-  --color-lightTeal: #d6e4ff;
-  --color-sage: #2fb8a6;
-  --color-sageLight: #e6f8f5;
-  --color-coral: #f26d6d;
-  --color-coralLight: #fdecec;
-  --color-amber: #f5a623;
-  --color-amberLight: #fef4e3;
-  --color-cream: #eaf1ff;
+  --color-primaryBlue: #ff6000;
+  --color-deepNavy: #0e0e0e;
+  --color-skyBlue: #9c90e8;
+  --color-iceBlue: #141414;
+  --color-riskLow: #34d399;
+  --color-riskModerate: #ffc24b;
+  --color-riskHigh: #f2545d;
+  --color-deepTeal: #ff6000;
+  --color-midTeal: #9c90e8;
+  --color-lightTeal: #ffdcc0;
+  --color-sage: #34d399;
+  --color-sageLight: rgba(52, 211, 153, 0.16);
+  --color-coral: #f2545d;
+  --color-coralLight: rgba(242, 84, 93, 0.16);
+  --color-amber: #ffc24b;
+  --color-amberLight: rgba(255, 194, 75, 0.16);
+  --color-cream: #141414;
   --color-white: #ffffff;
-  --color-charcoal: #0b1e4d;
-  --color-slate: #4a5568;
-  --color-mist: #9aa5b4;
-  --color-border: #d4e0f5;
-  --color-teal: #2b5fe0;
+  --color-charcoal: #f5f3f0;
+  --color-slate: #b7b3ae;
+  --color-mist: #8c8781;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-teal: #ff6000;
 }
