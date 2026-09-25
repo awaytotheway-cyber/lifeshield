@@ -19,6 +19,7 @@ export type MenuItemId =
   | "reminders"
   | "recipes"
   | "meal_plans"
+  | "book_test"
   | "notifications"
   | "profile"
   | "settings";
@@ -47,6 +48,7 @@ export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "shop",
   "recipes",
   "meal_plans",
+  "book_test",
   "goals",
   "reminders",
   "notifications",
@@ -128,6 +130,14 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     href: routes.mealPlans,
     match: ["/meal-plans", "(meal-plans)"],
     requiresFlag: "meal_planner_v1",
+  },
+  book_test: {
+    id: "book_test",
+    label: "Book a test",
+    icon: "clipboard",
+    href: routes.ordersBook,
+    match: ["/book", "orders/book"],
+    requiresFlag: "test_booking_v1",
   },
   notifications: {
     id: "notifications",
@@ -230,6 +240,9 @@ export function menuItemIsActive(item: MenuItem, pathname: string): boolean {
   }
   if (item.id === "meal_plans") {
     return path.includes("/meal-plans") || path.includes("(meal-plans)");
+  }
+  if (item.id === "book_test") {
+    return path.includes("orders/book") || path.endsWith("/book");
   }
   return item.match.some((snippet) => path.includes(snippet.toLowerCase()));
 }

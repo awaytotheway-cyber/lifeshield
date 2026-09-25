@@ -34,7 +34,13 @@ export type FeatureFlagName =
    * with slot-tag heuristic + avoid-tag filter, save and browse days/meals.
    * Ingredient → cart export deferred to its own slice.
    */
-  | "meal_planner_v1";
+  | "meal_planner_v1"
+  /**
+   * Phase D — book a test with a partner lab. Reads test_orders where
+   * status='recommended', filters labs by profile location, creates a
+   * pending_manual lab_orders row with the chosen slot.
+   */
+  | "test_booking_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
@@ -43,6 +49,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     plan_v2: false,
     recipes_v1: false,
     meal_planner_v1: false,
+    test_booking_v1: false,
   });
 
 /**

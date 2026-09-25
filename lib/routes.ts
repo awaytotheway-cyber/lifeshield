@@ -62,6 +62,7 @@ export const routes = {
   recipes: "/(main)/(recipes)" as Href,
   mealPlans: "/(main)/(meal-plans)" as Href,
   mealPlansNew: "/(main)/(meal-plans)/new" as Href,
+  ordersBook: "/(main)/(orders)/book" as Href,
 } as const;
 
 export function resultDetailHref(id: string): Href {
