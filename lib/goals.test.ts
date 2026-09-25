@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import {
   computeDailyStreak,
   computeProgress,
+  interventionToGoalPrefill,
   todayYmd,
   validateGoalDraft,
   type Goal,
@@ -215,6 +216,59 @@ assert.equal(todayYmd(new Date("2026-09-25T12:00:00Z")), (() => {
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 })());
+
+// ---------- interventionToGoalPrefill ----------
+
+// Supplement → daily 1 dose, linked back to the intervention row.
+{
+  const prefill = interventionToGoalPrefill({
+    id: "int-1",
+    category: "supplement",
+    title: "Vitamin D3 2000 IU",
+  });
+  assert.equal(prefill.goal_type, "supplement");
+  assert.equal(prefill.title, "Vitamin D3 2000 IU");
+  assert.equal(prefill.target.value, 1);
+  assert.equal(prefill.target.unit, "doses");
+  assert.equal(prefill.target.cadence, "daily");
+  assert.equal(prefill.source_kind, "intervention");
+  assert.equal(prefill.source_ref, "int-1");
+  // The draft it composes must be valid on the first render — no user edits
+  // required — otherwise the create screen shows red on open.
+  assert.deepEqual(
+    validateGoalDraft({
+      goal_type: prefill.goal_type,
+      title: prefill.title,
+      target: prefill.target,
+      start_date: todayYmd(),
+      end_date: null,
+    }),
+    [],
+  );
+}
+
+// Category casing shouldn't matter.
+{
+  const prefill = interventionToGoalPrefill({
+    id: "int-2",
+    category: "LIFESTYLE",
+    title: "Walk 20 minutes after dinner",
+  });
+  assert.equal(prefill.target.unit, "minutes");
+  assert.equal(prefill.target.cadence, "daily");
+}
+
+// Unknown categories fall back to a valid weekly one-off, not empty target.
+{
+  const prefill = interventionToGoalPrefill({
+    id: "int-3",
+    category: "mystery",
+    title: "Something new",
+  });
+  assert.equal(prefill.target.cadence, "weekly");
+  assert.equal(prefill.target.value > 0, true);
+  assert.equal(prefill.target.unit.length > 0, true);
+}
 
 // eslint-disable-next-line no-console
 console.log("goals.test.ts OK");

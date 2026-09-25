@@ -79,6 +79,29 @@ export function orderPlacedHref(orderId: string): Href {
   return `/(main)/(orders)?placed=1&orderId=${encodeURIComponent(orderId)}` as Href;
 }
 
+/**
+ * Deep-link to the New Goal screen with fields prefilled from an intervention.
+ * The screen validates on save, so if any param is missing or malformed the
+ * user simply sees the empty form.
+ */
+export function goalsNewFromInterventionHref(prefill: {
+  goal_type: string;
+  title: string;
+  target: { value: number; unit: string; cadence: "daily" | "weekly" | "once" };
+  source_ref: string;
+}): Href {
+  const params = new URLSearchParams({
+    goal_type: prefill.goal_type,
+    title: prefill.title,
+    target_value: String(prefill.target.value),
+    target_unit: prefill.target.unit,
+    cadence: prefill.target.cadence,
+    source_kind: "intervention",
+    source_ref: prefill.source_ref,
+  });
+  return `/(main)/(goals)/new?${params.toString()}` as Href;
+}
+
 export function orderDetailHref(orderId: string): Href {
   return `/(main)/(orders)/order?id=${encodeURIComponent(orderId)}` as Href;
 }

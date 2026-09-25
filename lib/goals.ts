@@ -248,3 +248,70 @@ function ymd(date: Date): string {
 export function todayYmd(now: Date = new Date()): string {
   return ymd(now);
 }
+
+// ---------- Intervention → goal draft prefill ----------
+
+/**
+ * Rows the intervention screen already has in state. Kept structural so
+ * this helper doesn't drag in the InterventionRow type — lib/goals.ts stays
+ * free of Supabase-shaped imports and lib/goals.test.ts can pass in fixtures.
+ */
+export type InterventionLike = {
+  id: string;
+  category: string;
+  title: string;
+};
+
+/**
+ * Sensible starting values for a goal seeded from an intervention. Users can
+ * always edit them on the new-goal screen — this is a prefill, not a lock.
+ *
+ * The category → cadence/unit table encodes what people usually track for
+ * each kind of recommendation:
+ *   supplement  → daily doses
+ *   diet        → daily servings
+ *   lifestyle   → daily minutes (walk / sleep / meditate)
+ *   therapy     → weekly sessions
+ *   coaching    → weekly sessions
+ *   referral    → a single visit
+ * An unknown category falls back to a weekly one-off.
+ */
+export function interventionToGoalPrefill(row: InterventionLike): {
+  goal_type: string;
+  title: string;
+  target: GoalTarget;
+  source_kind: GoalSourceKind;
+  source_ref: string;
+} {
+  const category = row.category.toLowerCase();
+  const preset = CATEGORY_PRESETS[category] ?? DEFAULT_PRESET;
+  return {
+    goal_type: category || "recommendation",
+    title: row.title,
+    target: {
+      value: preset.value,
+      unit: preset.unit,
+      cadence: preset.cadence,
+    },
+    source_kind: "intervention",
+    source_ref: row.id,
+  };
+}
+
+const CATEGORY_PRESETS: Record<
+  string,
+  { value: number; unit: string; cadence: GoalCadence }
+> = {
+  supplement: { value: 1, unit: "doses", cadence: "daily" },
+  diet: { value: 1, unit: "servings", cadence: "daily" },
+  lifestyle: { value: 10, unit: "minutes", cadence: "daily" },
+  therapy: { value: 1, unit: "sessions", cadence: "weekly" },
+  coaching: { value: 1, unit: "sessions", cadence: "weekly" },
+  referral: { value: 1, unit: "visits", cadence: "once" },
+};
+
+const DEFAULT_PRESET = {
+  value: 1,
+  unit: "times",
+  cadence: "weekly" as GoalCadence,
+};

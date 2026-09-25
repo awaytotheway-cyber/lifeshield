@@ -3,16 +3,23 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
-import { Button } from "@/components/ui/Button";
+import { Button, SecondaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
+import {
+  FEATURE_FLAG_DEFAULTS,
+  isFeatureEnabled,
+  type FeatureFlagProfile,
+} from "@/lib/feature-flags";
+import { interventionToGoalPrefill } from "@/lib/goals";
 import { termKeyForFinding } from "@/lib/plan-groups";
 import {
   loadOwnInterventionById,
   reviewStatusLabel,
   type InterventionRow,
 } from "@/lib/plan";
-import { routes } from "@/lib/routes";
+import { goalsNewFromInterventionHref, routes } from "@/lib/routes";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -24,6 +31,7 @@ export default function PlanItemScreen() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [row, setRow] = useState<InterventionRow | null>(null);
+  const [profile, setProfile] = useState<FeatureFlagProfile | null>(null);
 
   const refresh = useCallback(async () => {
     if (!session?.user.id) {
@@ -63,6 +71,34 @@ export default function PlanItemScreen() {
     }
     void refresh();
   }, [session?.user.id, refresh]);
+
+  // Read profile feature flags so the "Set a goal" CTA only shows when the
+  // account has goals_v1 enabled. A failed lookup keeps profile null so the
+  // flag falls back to its compile-time default (off).
+  useEffect(() => {
+    const userId = session?.user.id;
+    if (!userId || !isSupabaseConfigured) {
+      return;
+    }
+    let cancelled = false;
+    void supabase
+      .from("profiles")
+      .select("feature_flags")
+      .eq("id", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setProfile((data ?? { feature_flags: {} }) as FeatureFlagProfile);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user.id]);
+
+  const goalsEnabled =
+    profile === null
+      ? FEATURE_FLAG_DEFAULTS.goals_v1
+      : isFeatureEnabled(profile, "goals_v1");
 
   if (!session) {
     return <Redirect href={routes.login} />;
@@ -140,6 +176,22 @@ export default function PlanItemScreen() {
           <Text className="mt-1 text-charcoal">
             {reviewStatusLabel(row.status)}
           </Text>
+
+          {goalsEnabled ? (
+            <View className="mt-4">
+              <SecondaryButton
+                title="Set a goal for this"
+                onPress={() => {
+                  const prefill = interventionToGoalPrefill({
+                    id: row.id,
+                    category: String(row.category),
+                    title: row.title,
+                  });
+                  router.push(goalsNewFromInterventionHref(prefill));
+                }}
+              />
+            </View>
+          ) : null}
 
           <Text className="mt-4 text-sm text-teal">{COPY.planClinicalBasis}</Text>
           <Text className="mt-1 text-charcoal">
