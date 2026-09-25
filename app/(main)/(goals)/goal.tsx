@@ -230,8 +230,20 @@ function GoalBody({
           {goal.source_kind !== "self" ? (
             <Text style={styles.statusChip}>from {goal.source_kind}</Text>
           ) : null}
+          {goal.clinician_reviewed ? (
+            <Text style={[styles.statusChip, styles.reviewedChip]}>Reviewed</Text>
+          ) : null}
         </View>
       </GlassCard>
+
+      {goal.clinician_reviewed && goal.reviewer_note ? (
+        <GlassCard intensity="card" style={styles.reviewCard}>
+          <Text style={styles.reviewLabel}>
+            Reviewer note{goal.reviewed_by ? ` · ${goal.reviewed_by}` : ""}
+          </Text>
+          <Text style={styles.body}>{goal.reviewer_note}</Text>
+        </GlassCard>
+      ) : null}
 
       {goal.status === "active" ? (
         <GlassCard intensity="card" style={styles.formCard}>
@@ -437,6 +449,24 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.micro,
     borderRadius: radius.chip,
     overflow: "hidden",
+  },
+  reviewedChip: {
+    color: colors.white,
+    backgroundColor: colors.riskLow,
+  },
+  reviewCard: {
+    marginTop: spacing.sm,
+    padding: spacing.base,
+    borderRadius: radius.card,
+    ...shadows.card,
+  },
+  reviewLabel: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 12,
+    color: colors.primaryBlue,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: spacing.micro,
   },
   formCard: {
     marginTop: spacing.md,

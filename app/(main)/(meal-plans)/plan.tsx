@@ -358,7 +358,21 @@ function PlanBody({
           {summary.meal_count} meals · {summary.unique_recipe_count} recipes
         </Text>
         <Text style={styles.meta}>Status: {statusLabel(row.status)}</Text>
+        {row.clinician_reviewed ? (
+          <View style={styles.reviewedChip}>
+            <Text style={styles.reviewedChipText}>Reviewed</Text>
+          </View>
+        ) : null}
       </GlassCard>
+
+      {row.clinician_reviewed && row.reviewer_note ? (
+        <GlassCard intensity="card" style={styles.reviewCard}>
+          <Text style={styles.reviewLabel}>
+            Reviewer note{row.reviewed_by ? ` · ${row.reviewed_by}` : ""}
+          </Text>
+          <Text style={styles.reviewBody}>{row.reviewer_note}</Text>
+        </GlassCard>
+      ) : null}
 
       <View style={styles.actionRow}>
         <PrimaryButton
@@ -510,6 +524,38 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.slate,
     marginTop: spacing.micro,
+  },
+  reviewedChip: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.riskLow,
+    borderRadius: radius.chip,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    marginTop: spacing.sm,
+  },
+  reviewedChipText: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 11,
+    color: colors.white,
+  },
+  reviewCard: {
+    marginTop: spacing.sm,
+    padding: spacing.base,
+    borderRadius: radius.card,
+    ...shadows.card,
+  },
+  reviewLabel: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 12,
+    color: colors.primaryBlue,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: spacing.micro,
+  },
+  reviewBody: {
+    fontFamily: fontFamily.body,
+    fontSize: 14,
+    color: colors.charcoal,
   },
   actionRow: {
     flexDirection: "row",

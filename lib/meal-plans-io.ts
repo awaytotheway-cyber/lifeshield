@@ -22,12 +22,16 @@ export type MealPlanRow = {
   status: MealPlanStatus;
   source_kind: string;
   source_ref: string | null;
+  clinician_reviewed: boolean;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  reviewer_note: string | null;
   created_at: string;
   updated_at: string;
 };
 
 const COLUMNS =
-  "id, user_id, title, start_date, end_date, plan, preferences, status, source_kind, source_ref, created_at, updated_at";
+  "id, user_id, title, start_date, end_date, plan, preferences, status, source_kind, source_ref, clinician_reviewed, reviewed_by, reviewed_at, reviewer_note, created_at, updated_at";
 
 const REQUEST_TIMEOUT_MS = 15_000;
 
@@ -97,6 +101,10 @@ function toRow(raw: Record<string, unknown>): MealPlanRow {
     status: (raw.status as MealPlanStatus) ?? "active",
     source_kind: (raw.source_kind as string) ?? "self",
     source_ref: (raw.source_ref as string | null) ?? null,
+    clinician_reviewed: Boolean(raw.clinician_reviewed),
+    reviewed_by: (raw.reviewed_by as string | null) ?? null,
+    reviewed_at: (raw.reviewed_at as string | null) ?? null,
+    reviewer_note: (raw.reviewer_note as string | null) ?? null,
     created_at: raw.created_at as string,
     updated_at: raw.updated_at as string,
   };

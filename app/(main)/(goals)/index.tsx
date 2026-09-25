@@ -187,7 +187,14 @@ function GoalCard({
   const streak = computeDailyStreak(goal, [], new Date());
   return (
     <GlassCard intensity="card" style={[styles.card, muted ? styles.cardMuted : null]}>
-      <Text style={styles.cadence}>{cadenceLabel(goal.target.cadence)}</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.cadence}>{cadenceLabel(goal.target.cadence)}</Text>
+        {goal.clinician_reviewed ? (
+          <View style={styles.reviewedChip}>
+            <Text style={styles.reviewedChipText}>Reviewed</Text>
+          </View>
+        ) : null}
+      </View>
       <Text style={styles.cardTitle}>{goal.title}</Text>
       <Text style={styles.target}>
         Target: {goal.target.value} {goal.target.unit} · started {goal.start_date}
@@ -254,6 +261,23 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  reviewedChip: {
+    backgroundColor: colors.riskLow,
+    borderRadius: radius.chip,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    marginBottom: spacing.micro,
+  },
+  reviewedChipText: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 11,
+    color: colors.white,
   },
   cardTitle: {
     fontFamily: fontFamily.display,

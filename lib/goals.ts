@@ -33,6 +33,10 @@ export type Goal = {
   status: GoalStatus;
   source_kind: GoalSourceKind;
   source_ref: string | null;
+  clinician_reviewed: boolean;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  reviewer_note: string | null;
   created_at: string;
   updated_at: string;
 };

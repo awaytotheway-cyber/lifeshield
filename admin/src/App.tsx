@@ -8,8 +8,10 @@ import routerProvider, {
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
 import {
+  AimOutlined,
   BankOutlined,
   BookOutlined,
+  CalendarOutlined,
   CoffeeOutlined,
   EnvironmentOutlined,
   ExperimentOutlined,
@@ -77,6 +79,8 @@ import {
   RecipeList,
   RecipeShow,
 } from "./pages/recipes";
+import { GoalEdit, GoalList } from "./pages/goals";
+import { MealPlanEdit, MealPlanList } from "./pages/meal-plans";
 import { ProfileList } from "./pages/profiles";
 import { ReviewQueueList } from "./pages/review-queue";
 import { ReviewQueuePatient } from "./pages/review-queue/patient";
@@ -208,6 +212,21 @@ export default function App() {
                 meta: { label: "Patients", icon: <TeamOutlined /> },
               },
               {
+                name: "goals",
+                list: "/goals",
+                edit: "/goals/edit/:id",
+                meta: { label: "Goals (review)", icon: <AimOutlined /> },
+              },
+              {
+                name: "meal_plans",
+                list: "/meal-plans",
+                edit: "/meal-plans/edit/:id",
+                meta: {
+                  label: "Meal plans (review)",
+                  icon: <CalendarOutlined />,
+                },
+              },
+              {
                 name: "review_queue",
                 list: "/review-queue",
                 meta: {
@@ -317,6 +336,14 @@ export default function App() {
                 </Route>
                 <Route path="/profiles">
                   <Route index element={<ProfileList />} />
+                </Route>
+                <Route path="/goals">
+                  <Route index element={<GoalList />} />
+                  <Route path="edit/:id" element={<GoalEdit />} />
+                </Route>
+                <Route path="/meal-plans">
+                  <Route index element={<MealPlanList />} />
+                  <Route path="edit/:id" element={<MealPlanEdit />} />
                 </Route>
                 <Route path="/review-queue">
                   <Route index element={<ReviewQueueList />} />

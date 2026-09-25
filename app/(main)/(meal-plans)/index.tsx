@@ -184,9 +184,16 @@ function PlanCard({
       intensity="card"
       style={[styles.card, muted ? styles.cardMuted : null]}
     >
-      <Text style={styles.range}>
-        {row.start_date} → {row.end_date}
-      </Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.range}>
+          {row.start_date} → {row.end_date}
+        </Text>
+        {row.clinician_reviewed ? (
+          <View style={styles.reviewedChip}>
+            <Text style={styles.reviewedChipText}>Reviewed</Text>
+          </View>
+        ) : null}
+      </View>
       <Text style={styles.cardTitle}>{row.title}</Text>
       <Text style={styles.meta}>
         {summary.day_count} {summary.day_count === 1 ? "day" : "days"} ·{" "}
@@ -236,6 +243,23 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  reviewedChip: {
+    backgroundColor: colors.riskLow,
+    borderRadius: radius.chip,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    marginBottom: spacing.micro,
+  },
+  reviewedChipText: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 11,
+    color: colors.white,
   },
   cardTitle: {
     fontFamily: fontFamily.display,

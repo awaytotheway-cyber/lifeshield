@@ -45,7 +45,7 @@ function looksLikeMissingTable(error: unknown): boolean {
 }
 
 const GOAL_COLUMNS =
-  "id, user_id, goal_type, title, target, start_date, end_date, status, source_kind, source_ref, created_at, updated_at";
+  "id, user_id, goal_type, title, target, start_date, end_date, status, source_kind, source_ref, clinician_reviewed, reviewed_by, reviewed_at, reviewer_note, created_at, updated_at";
 const PROGRESS_COLUMNS =
   "id, goal_id, user_id, recorded_at, value, note";
 
