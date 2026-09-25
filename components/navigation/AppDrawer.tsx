@@ -18,11 +18,19 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { COPY } from "@/lib/copy";
 import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import {
+  FEATURE_FLAG_DEFAULTS,
+  isFeatureEnabled,
+  type FeatureFlagName,
+  type FeatureFlagProfile,
+} from "@/lib/feature-flags";
+import {
   DEFAULT_MENU_ORDER,
+  filterMenuItemsByFlags,
   menuItemIsActive,
   orderedMenuItems,
   type MenuItemId,
 } from "@/lib/menu";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -44,6 +52,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
   const session = useAuthStore((state) => state.session);
   const [order, setOrder] = useState<MenuItemId[]>(DEFAULT_MENU_ORDER);
   const [reorderMode, setReorderMode] = useState(false);
+  const [profile, setProfile] = useState<FeatureFlagProfile | null>(null);
   const slide = useRef(new Animated.Value(-320)).current;
 
   useEffect(() => {
@@ -79,7 +88,42 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
     }).start();
   }, [open, slide]);
 
-  const items = useMemo(() => orderedMenuItems(order), [order]);
+  // Read the profile's feature_flags once per sign-in so the drawer can hide
+  // rows the account isn't in the beta cohort for. A failed lookup leaves
+  // profile null; the flag helper then falls back to the compile-time default
+  // (off), which matches how other flag-gated surfaces behave.
+  useEffect(() => {
+    const userId = session?.user.id;
+    if (!userId || !isSupabaseConfigured) {
+      return;
+    }
+    let cancelled = false;
+    void supabase
+      .from("profiles")
+      .select("feature_flags")
+      .eq("id", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setProfile((data ?? { feature_flags: {} }) as FeatureFlagProfile);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user.id]);
+
+  const isFlagOn = useCallback(
+    (flag: FeatureFlagName) =>
+      profile === null
+        ? FEATURE_FLAG_DEFAULTS[flag]
+        : isFeatureEnabled(profile, flag),
+    [profile],
+  );
+
+  const items = useMemo(
+    () => filterMenuItemsByFlags(orderedMenuItems(order), isFlagOn),
+    [order, isFlagOn],
+  );
 
   const persistOrder = useCallback(
     async (next: MenuItemId[]) => {

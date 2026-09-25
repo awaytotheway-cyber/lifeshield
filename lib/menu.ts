@@ -5,6 +5,7 @@
 import type { Href } from "expo-router";
 import type { Feather } from "@expo/vector-icons";
 
+import type { FeatureFlagName } from "@/lib/feature-flags";
 import { routes } from "@/lib/routes";
 
 export type MenuItemId =
@@ -14,6 +15,7 @@ export type MenuItemId =
   | "results"
   | "prescriptions"
   | "shop"
+  | "goals"
   | "notifications"
   | "profile"
   | "settings";
@@ -25,6 +27,12 @@ export type MenuItem = {
   href: Href;
   /** Match pathname snippets to highlight the active row. */
   match: string[];
+  /**
+   * When set, the drawer hides this row unless the current user's feature
+   * flags have this one enabled. Keeps in-development features out of the
+   * drawer for accounts that aren't in the beta cohort.
+   */
+  requiresFlag?: FeatureFlagName;
 };
 
 export const DEFAULT_MENU_ORDER: MenuItemId[] = [
@@ -34,6 +42,7 @@ export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "results",
   "prescriptions",
   "shop",
+  "goals",
   "notifications",
   "profile",
   "settings",
@@ -82,6 +91,14 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     href: routes.store,
     match: ["/store", "(store)"],
   },
+  goals: {
+    id: "goals",
+    label: "Goals",
+    icon: "target",
+    href: routes.goals,
+    match: ["/goals", "(goals)"],
+    requiresFlag: "goals_v1",
+  },
   notifications: {
     id: "notifications",
     label: "Notifications",
@@ -122,6 +139,20 @@ export function orderedMenuItems(order: MenuItemId[]): MenuItem[] {
   return list;
 }
 
+/**
+ * Drop menu rows whose requiresFlag isn't on for the caller. Items without
+ * a requiresFlag pass through unchanged, so this is a no-op for the stable
+ * part of the menu.
+ */
+export function filterMenuItemsByFlags(
+  items: readonly MenuItem[],
+  isEnabled: (flag: FeatureFlagName) => boolean,
+): MenuItem[] {
+  return items.filter(
+    (item) => !item.requiresFlag || isEnabled(item.requiresFlag),
+  );
+}
+
 export function menuItemIsActive(item: MenuItem, pathname: string): boolean {
   const path = pathname.toLowerCase();
   if (item.id === "settings") {
@@ -157,6 +188,9 @@ export function menuItemIsActive(item: MenuItem, pathname: string): boolean {
   }
   if (item.id === "notifications") {
     return path.includes("notifications-inbox");
+  }
+  if (item.id === "goals") {
+    return path.includes("/goals") || path.includes("(goals)");
   }
   return item.match.some((snippet) => path.includes(snippet.toLowerCase()));
 }

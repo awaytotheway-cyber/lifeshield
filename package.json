@@ -83,6 +83,7 @@
     "test:lab-provider": "npx --yes tsx --tsconfig tsconfig.json lib/lab-provider.test.ts",
     "test:feature-flags": "npx --yes tsx --tsconfig tsconfig.json lib/feature-flags.test.ts",
     "test:goals": "npx --yes tsx --tsconfig tsconfig.json lib/goals.test.ts",
+    "test:menu": "npx --yes tsx --tsconfig tsconfig.json lib/menu.test.ts",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
   },
