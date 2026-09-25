@@ -12,6 +12,11 @@ import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import type { StatusChipKind } from "@/components/ui/StatusChip";
 import { COPY } from "@/lib/copy";
 import { colors, radius, spacing } from "@/lib/design-tokens";
+import {
+  FEATURE_FLAG_DEFAULTS,
+  isFeatureEnabled,
+  type FeatureFlagProfile,
+} from "@/lib/feature-flags";
 import { groupInterventions } from "@/lib/plan-groups";
 import {
   planBannerForState,
@@ -24,6 +29,7 @@ import {
   type InterventionRow,
 } from "@/lib/plan";
 import { planItemHref, routes } from "@/lib/routes";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -71,6 +77,35 @@ export default function PlanScreen() {
   const [rows, setRows] = useState<InterventionRow[]>([]);
   const windowWidth = useWindowDimensions().width;
   const roadmapWidth = Math.max(160, windowWidth - spacing.screenX * 2);
+  const [profile, setProfile] = useState<FeatureFlagProfile | null>(null);
+
+  useEffect(() => {
+    const userId = session?.user.id;
+    if (!userId || !isSupabaseConfigured) return;
+    let cancelled = false;
+    void supabase
+      .from("profiles")
+      .select("feature_flags")
+      .eq("id", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setProfile((data ?? { feature_flags: {} }) as FeatureFlagProfile);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user.id]);
+
+  const testBookingEnabled =
+    profile === null
+      ? FEATURE_FLAG_DEFAULTS.test_booking_v1
+      : isFeatureEnabled(profile, "test_booking_v1");
+  const hasReferral = useMemo(
+    () => rows.some((row) => String(row.category) === "referral"),
+    [rows],
+  );
+  const showBookCta = testBookingEnabled && hasReferral;
 
   const applyRows = useCallback((next: InterventionRow[]) => {
     setRows(next);
@@ -234,6 +269,20 @@ export default function PlanScreen() {
         />
       ) : null}
 
+      {/*
+        Phase D: when the user has a referral-category recommendation and
+        the booking flag is on, promote the book flow to a primary CTA
+        alongside "Browse store". Hidden otherwise — noise for users
+        without referrals or without the flag.
+      */}
+      {showBookCta ? (
+        <PrimaryButton
+          title="Book a test"
+          onPress={() => {
+            router.push(routes.ordersBook);
+          }}
+        />
+      ) : null}
       <PrimaryButton
         title={COPY.planBrowseStore}
         onPress={() => {

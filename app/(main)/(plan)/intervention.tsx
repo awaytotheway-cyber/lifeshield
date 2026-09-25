@@ -133,6 +133,10 @@ export default function PlanItemScreen() {
     profile === null
       ? FEATURE_FLAG_DEFAULTS.plan_v2
       : isFeatureEnabled(profile, "plan_v2");
+  const testBookingEnabled =
+    profile === null
+      ? FEATURE_FLAG_DEFAULTS.test_booking_v1
+      : isFeatureEnabled(profile, "test_booking_v1");
 
   // Phase B: look up the matching template for this intervention's finding
   // and the progress log. Only when plan_v2 is on — the pre-Phase-B render
@@ -293,6 +297,22 @@ export default function PlanItemScreen() {
                     title: row.title,
                   });
                   router.push(remindersNewFromInterventionHref(prefill));
+                }}
+              />
+            ) : null}
+            {/*
+              Book-a-test CTA — only shown for referral-category interventions,
+              since that's the class of recommendation the booking screen
+              covers. The screen itself lets the user pick which recommended
+              test to book; we deep-link with no test preselection because
+              interventions.trigger_finding and test_orders.test_name don't
+              have a stable mapping today.
+            */}
+            {testBookingEnabled && String(row.category) === "referral" ? (
+              <SecondaryButton
+                title="Book a test"
+                onPress={() => {
+                  router.push(routes.ordersBook);
                 }}
               />
             ) : null}
