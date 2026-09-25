@@ -49,6 +49,7 @@ type RecipeRecord = {
   instructions: unknown;
   nutrition: unknown;
   tags: string[] | null;
+  linked_findings: string[] | null;
   prep_minutes: number | null;
   cook_minutes: number | null;
   servings: number | null;
@@ -200,6 +201,14 @@ function RecipeFormFields() {
         label="Tags"
         name="tags"
         extra="Feed the filter-chip row in the mobile browse screen. Kept short and lowercase in general (breakfast, quick, vegan…)."
+      >
+        <Select mode="tags" tokenSeparators={[",", "\n"]} />
+      </Form.Item>
+
+      <Form.Item
+        label="Linked findings"
+        name="linked_findings"
+        extra='Exact rules-engine trigger findings this recipe supports (e.g. "Raised fasting insulin"). The mobile plan detail queries recipes.linked_findings @> ARRAY[intervention.trigger_finding], so match the string verbatim.'
       >
         <Select mode="tags" tokenSeparators={[",", "\n"]} />
       </Form.Item>
@@ -384,6 +393,7 @@ export function RecipeCreate() {
         initialValues={{
           active: true,
           tags: [],
+          linked_findings: [],
           ingredients: "[]",
           instructions: "[]",
           nutrition: "{}",
@@ -421,6 +431,8 @@ export function RecipeShow() {
       <TextField value={record?.description ?? ""} />
       <Typography.Title level={5}>Tags</Typography.Title>
       <TextField value={(record?.tags ?? []).join(", ")} />
+      <Typography.Title level={5}>Linked findings</Typography.Title>
+      <TextField value={(record?.linked_findings ?? []).join(", ")} />
       <Typography.Title level={5}>Prep / cook / servings</Typography.Title>
       <TextField
         value={`${record?.prep_minutes ?? "—"} min prep · ${

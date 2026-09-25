@@ -47,9 +47,9 @@ function looksLikeMissingTable(error: unknown): boolean {
 }
 
 const SUMMARY_COLUMNS =
-  "id, slug, name, description, tags, prep_minutes, cook_minutes, servings, image_url, active";
+  "id, slug, name, description, tags, linked_findings, prep_minutes, cook_minutes, servings, image_url, active";
 const FULL_COLUMNS =
-  "id, slug, name, description, ingredients, instructions, nutrition, tags, prep_minutes, cook_minutes, servings, image_url, active, created_at, updated_at";
+  "id, slug, name, description, ingredients, instructions, nutrition, tags, linked_findings, prep_minutes, cook_minutes, servings, image_url, active, created_at, updated_at";
 
 export type LoadSummariesOutcome =
   | { ok: true; rows: RecipeSummary[] }
@@ -133,6 +133,11 @@ export async function loadRecipeBySlug(
       tags: Array.isArray(raw.tags)
         ? (raw.tags.filter((t): t is string => typeof t === "string"))
         : [],
+      linked_findings: Array.isArray(raw.linked_findings)
+        ? (raw.linked_findings.filter(
+            (t): t is string => typeof t === "string",
+          ))
+        : [],
       prep_minutes: (raw.prep_minutes as number | null) ?? null,
       cook_minutes: (raw.cook_minutes as number | null) ?? null,
       servings: (raw.servings as number | null) ?? null,
@@ -189,6 +194,11 @@ export async function loadRecipesByIds(
         tags: Array.isArray(raw.tags)
           ? (raw.tags.filter((t): t is string => typeof t === "string"))
           : [],
+        linked_findings: Array.isArray(raw.linked_findings)
+          ? (raw.linked_findings.filter(
+              (t): t is string => typeof t === "string",
+            ))
+          : [],
         prep_minutes: (raw.prep_minutes as number | null) ?? null,
         cook_minutes: (raw.cook_minutes as number | null) ?? null,
         servings: (raw.servings as number | null) ?? null,
@@ -205,6 +215,53 @@ export async function loadRecipesByIds(
       if (recipe) rows.push(recipe);
     }
     return { ok: true, rows };
+  } catch (error) {
+    return {
+      ok: false,
+      rows: [],
+      message: messageFromUnknown(error, "Couldn't load recipes."),
+    };
+  }
+}
+
+export type LoadRecipesForFindingOutcome =
+  | { ok: true; rows: RecipeSummary[] }
+  | { ok: false; rows: []; message: string };
+
+/**
+ * Fetch active recipes whose linked_findings array contains the given
+ * rules-engine trigger finding. Case-sensitive on purpose — trigger findings
+ * are canonical clinical terms and any tag drift there is a bug worth
+ * fixing at the source (admin edit) rather than papering over here.
+ *
+ * Empty when nothing links to this finding — the plan detail hides the
+ * "Recipes that support this" section in that case.
+ */
+export async function loadRecipesForTriggerFinding(
+  triggerFinding: string,
+): Promise<LoadRecipesForFindingOutcome> {
+  const key = triggerFinding.trim();
+  if (!key) return { ok: true, rows: [] };
+  if (!isSupabaseConfigured) return { ok: true, rows: [] };
+  try {
+    const { data, error } = await withTimeout(
+      supabase
+        .from("recipes")
+        .select(SUMMARY_COLUMNS)
+        .eq("active", true)
+        .contains("linked_findings", [key])
+        .order("name", { ascending: true })
+        .limit(20),
+      "Loading recipes",
+    );
+    if (error) {
+      return {
+        ok: false,
+        rows: [],
+        message: messageFromUnknown(error, "Couldn't load recipes."),
+      };
+    }
+    return { ok: true, rows: (data ?? []) as RecipeSummary[] };
   } catch (error) {
     return {
       ok: false,

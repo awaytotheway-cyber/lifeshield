@@ -33,6 +33,11 @@ export type Recipe = {
   instructions: InstructionStep[];
   nutrition: Nutrition;
   tags: string[];
+  /**
+   * Rules-engine trigger findings this recipe supports. Empty for a generic
+   * library recipe; populated by admin to make the plan detail surface it.
+   */
+  linked_findings: string[];
   prep_minutes: number | null;
   cook_minutes: number | null;
   servings: number | null;
@@ -49,6 +54,7 @@ export type RecipeSummary = Pick<
   | "name"
   | "description"
   | "tags"
+  | "linked_findings"
   | "prep_minutes"
   | "cook_minutes"
   | "servings"

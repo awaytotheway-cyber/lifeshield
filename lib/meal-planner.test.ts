@@ -27,6 +27,7 @@ function recipe(
     name,
     description: null,
     tags,
+    linked_findings: [],
     prep_minutes: 5,
     cook_minutes: 10,
     servings: 2,

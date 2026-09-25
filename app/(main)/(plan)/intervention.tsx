@@ -12,6 +12,8 @@ import {
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { Button, SecondaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import type { RecipeSummary } from "@/lib/recipes";
+import { loadRecipesForTriggerFinding } from "@/lib/recipes-io";
 import { COPY } from "@/lib/copy";
 import {
   FEATURE_FLAG_DEFAULTS,
@@ -40,6 +42,7 @@ import {
 import { interventionToReminderPrefill } from "@/lib/reminders";
 import {
   goalsNewFromInterventionHref,
+  recipeHref,
   remindersNewFromInterventionHref,
   routes,
 } from "@/lib/routes";
@@ -58,6 +61,7 @@ export default function PlanItemScreen() {
   const [profile, setProfile] = useState<FeatureFlagProfile | null>(null);
   const [template, setTemplate] = useState<InterventionTemplate | null>(null);
   const [progress, setProgress] = useState<InterventionProgressEntry[]>([]);
+  const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [loggingDone, setLoggingDone] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -137,6 +141,10 @@ export default function PlanItemScreen() {
     profile === null
       ? FEATURE_FLAG_DEFAULTS.test_booking_v1
       : isFeatureEnabled(profile, "test_booking_v1");
+  const recipesEnabled =
+    profile === null
+      ? FEATURE_FLAG_DEFAULTS.recipes_v1
+      : isFeatureEnabled(profile, "recipes_v1");
 
   // Phase B: look up the matching template for this intervention's finding
   // and the progress log. Only when plan_v2 is on — the pre-Phase-B render
@@ -170,6 +178,24 @@ export default function PlanItemScreen() {
       cancelled = true;
     };
   }, [row, planV2Enabled]);
+
+  // Phase C ↔ Phase B bridge: surface recipes admin-linked to this
+  // intervention's trigger_finding. Only when both flags are on so a user
+  // on the recipes beta but not the plan-v2 beta doesn't see a stray section.
+  useEffect(() => {
+    if (!row || !recipesEnabled || !planV2Enabled) {
+      setRecipes([]);
+      return;
+    }
+    let cancelled = false;
+    void loadRecipesForTriggerFinding(row.trigger_finding).then((outcome) => {
+      if (cancelled) return;
+      if (outcome.ok) setRecipes(outcome.rows);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [row, recipesEnabled, planV2Enabled]);
 
   if (!session) {
     return <Redirect href={routes.login} />;
@@ -326,6 +352,13 @@ export default function PlanItemScreen() {
             />
           ) : null}
 
+          {recipesEnabled && recipes.length > 0 ? (
+            <RecipesForFindingSection
+              recipes={recipes}
+              onOpen={(slug) => router.push(recipeHref(slug))}
+            />
+          ) : null}
+
           <Text className="mt-4 text-sm text-teal">{COPY.planClinicalBasis}</Text>
           <Text className="mt-1 text-charcoal">
             {row.clinical_basis?.trim() || row.trigger_finding}
@@ -453,6 +486,41 @@ function ProgressSection({
           ))}
         </View>
       ) : null}
+    </View>
+  );
+}
+
+function RecipesForFindingSection({
+  recipes,
+  onOpen,
+}: {
+  recipes: RecipeSummary[];
+  onOpen: (slug: string) => void;
+}) {
+  const shown = recipes.slice(0, 5);
+  return (
+    <View className="mt-4">
+      <Text className="text-sm text-teal">Recipes that support this</Text>
+      <Text className="mt-1 text-xs text-charcoal">
+        Admin-curated recipes linked to this finding.
+      </Text>
+      <View className="mt-2">
+        {shown.map((recipe) => (
+          <Pressable
+            key={recipe.id}
+            onPress={() => onOpen(recipe.slug)}
+            accessibilityRole="link"
+            className="mt-2"
+          >
+            <Text className="text-charcoal underline">{recipe.name}</Text>
+            {recipe.description ? (
+              <Text className="text-xs text-teal" numberOfLines={2}>
+                {recipe.description}
+              </Text>
+            ) : null}
+          </Pressable>
+        ))}
+      </View>
     </View>
   );
 }

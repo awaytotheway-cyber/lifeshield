@@ -24,6 +24,7 @@ function summary(
     name: overrides.name,
     description: overrides.description ?? null,
     tags: overrides.tags ?? [],
+    linked_findings: overrides.linked_findings ?? [],
     prep_minutes: overrides.prep_minutes ?? null,
     cook_minutes: overrides.cook_minutes ?? null,
     servings: overrides.servings ?? null,
