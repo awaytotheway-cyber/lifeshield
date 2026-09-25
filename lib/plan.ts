@@ -7,9 +7,11 @@
  */
 import { COPY } from "@/lib/copy";
 import { seedFollowUpsIfNeeded } from "@/lib/follow-ups";
+import { loadLatestGeneticResults } from "@/lib/genetic-tests-io";
 import { loadTemplatesForEngine } from "@/lib/intervention-templates";
 import { loadClinicalThresholds } from "@/lib/load-thresholds";
 import { messageFromUnknown, rawErrorText } from "@/lib/friendly-errors";
+import { labsFromGeneticStructured } from "@/lib/labs-from-genetic";
 import { labsFromTestResults } from "@/lib/labs-from-results";
 import { factsFromSavedAnswers } from "@/lib/rules-facts";
 import {
@@ -300,9 +302,10 @@ export async function regenerateDraftPlan(
     return { ok: false, rows: [], message: COPY.missingKeys };
   }
   try {
-    const [engine, results] = await Promise.all([
+    const [engine, results, genetics] = await Promise.all([
       useQuestionnaireStore.getState().loadForEngine(userId),
       loadOwnTestResults(userId),
+      loadLatestGeneticResults(userId),
     ]);
     if (!engine.ok) {
       return {
@@ -320,6 +323,23 @@ export async function regenerateDraftPlan(
       sections: engine.sections,
     });
     const labs = labsFromTestResults(results.rows);
+    // Merge SNP flags from the caller's most recent genetic panel(s) on
+    // top of biochemistry-derived labs. Genetic results are returned
+    // newest-first; first non-undefined status per gene wins so the
+    // freshest genotype call takes precedence. A missing genetic_test_
+    // results table is a soft "no rows", not an error.
+    if (genetics.ok) {
+      for (const row of genetics.rows) {
+        const geneticLabs = labsFromGeneticStructured(row.structured);
+        for (const [key, value] of Object.entries(geneticLabs)) {
+          const field = key as keyof typeof labs;
+          if (value === undefined) continue;
+          if (labs[field] === null || labs[field] === undefined) {
+            (labs as Record<string, unknown>)[field] = value;
+          }
+        }
+      }
+    }
     const thresholds = await loadClinicalThresholds();
 
     // Phase B: read intervention text from the intervention_templates table

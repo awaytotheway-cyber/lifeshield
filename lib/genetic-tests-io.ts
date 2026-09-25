@@ -295,6 +295,86 @@ function validateShippingAddress(a: ShippingAddress): string | null {
   return null;
 }
 
+// ---------- Results ----------
+
+export type GeneticResultRow = {
+  id: string;
+  order_id: string;
+  user_id: string;
+  raw_report: Record<string, unknown>;
+  structured: Record<string, unknown>;
+  received_at: string;
+  created_at: string;
+};
+
+const RESULT_COLUMNS =
+  "id, order_id, user_id, raw_report, structured, received_at, created_at";
+
+function toResult(raw: Record<string, unknown>): GeneticResultRow {
+  return {
+    id: raw.id as string,
+    order_id: raw.order_id as string,
+    user_id: raw.user_id as string,
+    raw_report: (raw.raw_report as Record<string, unknown>) ?? {},
+    structured: (raw.structured as Record<string, unknown>) ?? {},
+    received_at: raw.received_at as string,
+    created_at: raw.created_at as string,
+  };
+}
+
+export type LoadLatestGeneticResultsOutcome =
+  | { ok: true; rows: GeneticResultRow[] }
+  | { ok: false; rows: []; message: string };
+
+/**
+ * Load the caller's most recent genetic results, newest-first. Used by
+ * lib/plan when synthesising LabInputs — a later partner panel supersedes
+ * an earlier one, so mergeing highest-priority-first with a "first wins"
+ * rule keeps the freshest genotype call for a given gene.
+ *
+ * `limit` defaults to 3 (three consecutive panels is already unusual);
+ * bump it if a user actually orders more.
+ */
+export async function loadLatestGeneticResults(
+  userId: string,
+  limit = 3,
+): Promise<LoadLatestGeneticResultsOutcome> {
+  if (!isSupabaseConfigured) return { ok: true, rows: [] };
+  try {
+    const { data, error } = await withTimeout(
+      supabase
+        .from("genetic_test_results")
+        .select(RESULT_COLUMNS)
+        .eq("user_id", userId)
+        .order("received_at", { ascending: false })
+        .limit(limit),
+      "Loading genetic results",
+    );
+    if (error) {
+      // Missing table is a soft failure — the plan still generates without
+      // genetics and Phase F may not be migrated yet in every project.
+      if (rawErrorText(error).toLowerCase().includes("genetic_test_results")) {
+        return { ok: true, rows: [] };
+      }
+      return {
+        ok: false,
+        rows: [],
+        message: messageFromUnknown(error, "Couldn't load genetic results."),
+      };
+    }
+    return {
+      ok: true,
+      rows: ((data ?? []) as Record<string, unknown>[]).map(toResult),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      rows: [],
+      message: messageFromUnknown(error, "Couldn't load genetic results."),
+    };
+  }
+}
+
 export function humanSampleType(sample: GeneticSampleType): string {
   switch (sample) {
     case "saliva":
