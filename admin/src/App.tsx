@@ -11,6 +11,7 @@ import {
   BankOutlined,
   BookOutlined,
   CoffeeOutlined,
+  EnvironmentOutlined,
   ExperimentOutlined,
   MedicineBoxOutlined,
   SettingOutlined,
@@ -64,6 +65,12 @@ import {
   ProductList,
   ProductShow,
 } from "./pages/products";
+import {
+  LabCreate,
+  LabEdit,
+  LabList,
+  LabShow,
+} from "./pages/labs";
 import {
   RecipeCreate,
   RecipeEdit,
@@ -132,6 +139,17 @@ export default function App() {
                 meta: {
                   label: "Recipes",
                   icon: <CoffeeOutlined />,
+                },
+              },
+              {
+                name: "labs",
+                list: "/labs",
+                create: "/labs/create",
+                edit: "/labs/edit/:id",
+                show: "/labs/show/:id",
+                meta: {
+                  label: "Labs",
+                  icon: <EnvironmentOutlined />,
                 },
               },
               {
@@ -258,6 +276,12 @@ export default function App() {
                   <Route path="create" element={<RecipeCreate />} />
                   <Route path="edit/:id" element={<RecipeEdit />} />
                   <Route path="show/:id" element={<RecipeShow />} />
+                </Route>
+                <Route path="/labs">
+                  <Route index element={<LabList />} />
+                  <Route path="create" element={<LabCreate />} />
+                  <Route path="edit/:id" element={<LabEdit />} />
+                  <Route path="show/:id" element={<LabShow />} />
                 </Route>
                 <Route path="/clinics">
                   <Route index element={<ClinicList />} />
