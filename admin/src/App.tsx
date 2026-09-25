@@ -9,6 +9,7 @@ import routerProvider, {
 } from "@refinedev/react-router";
 import {
   BankOutlined,
+  BookOutlined,
   ExperimentOutlined,
   MedicineBoxOutlined,
   SettingOutlined,
@@ -50,6 +51,12 @@ import {
   LabOrderShow,
 } from "./pages/lab-orders";
 import { OrderEdit, OrderList, OrderShow } from "./pages/orders";
+import {
+  InterventionTemplateCreate,
+  InterventionTemplateEdit,
+  InterventionTemplateList,
+  InterventionTemplateShow,
+} from "./pages/intervention-templates";
 import {
   ProductCreate,
   ProductEdit,
@@ -96,6 +103,17 @@ export default function App() {
                   label: "Clinical thresholds",
                   icon: <SettingOutlined />,
                   id: "key",
+                },
+              },
+              {
+                name: "intervention_templates",
+                list: "/intervention-templates",
+                create: "/intervention-templates/create",
+                edit: "/intervention-templates/edit/:id",
+                show: "/intervention-templates/show/:id",
+                meta: {
+                  label: "Intervention templates",
+                  icon: <BookOutlined />,
                 },
               },
               {
@@ -201,6 +219,21 @@ export default function App() {
                   <Route path="create" element={<ClinicalThresholdCreate />} />
                   <Route path="edit/:id" element={<ClinicalThresholdEdit />} />
                   <Route path="show/:id" element={<ClinicalThresholdShow />} />
+                </Route>
+                <Route path="/intervention-templates">
+                  <Route index element={<InterventionTemplateList />} />
+                  <Route
+                    path="create"
+                    element={<InterventionTemplateCreate />}
+                  />
+                  <Route
+                    path="edit/:id"
+                    element={<InterventionTemplateEdit />}
+                  />
+                  <Route
+                    path="show/:id"
+                    element={<InterventionTemplateShow />}
+                  />
                 </Route>
                 <Route path="/clinics">
                   <Route index element={<ClinicList />} />
