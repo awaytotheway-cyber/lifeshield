@@ -1,0 +1,76 @@
+/**
+ * Per-user feature flags. Defaults live here (in code); overrides live on
+ * profiles.feature_flags (jsonb). Read via isFeatureEnabled(profile, flag).
+ *
+ * Add a new flag by:
+ *   1. Extending FeatureFlagName below.
+ *   2. Adding a default to FEATURE_FLAG_DEFAULTS.
+ *   3. Wrapping the entry-point UI in isFeatureEnabled(...).
+ *
+ * Rollout mechanic:
+ *   - Ship new features with default = false.
+ *   - Enable per beta account by writing profiles.feature_flags = { <flag>: true }.
+ *   - Flip the default to true after monitoring shows no regressions.
+ */
+
+export type FeatureFlagName =
+  /** Phase A — user-defined SMART goals surface + create flow. */
+  | "goals_v1";
+
+export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
+  Object.freeze({
+    goals_v1: false,
+  });
+
+/**
+ * A profile-like shape. Kept structural so callers can pass the auth-store
+ * profile row without importing a Supabase type here.
+ */
+export type FeatureFlagProfile = {
+  feature_flags?: Record<string, unknown> | null;
+};
+
+/**
+ * Returns true when the flag is on for this profile.
+ *
+ * Precedence (highest first):
+ *   1. Per-user override (profile.feature_flags[flag])
+ *   2. FEATURE_FLAG_DEFAULTS[flag]
+ *
+ * A missing profile falls back to the default. A non-boolean override is
+ * ignored (treated as "not set"), so we never light up a feature based on
+ * accidental strings or numbers written into the jsonb column.
+ */
+export function isFeatureEnabled(
+  profile: FeatureFlagProfile | null | undefined,
+  flag: FeatureFlagName,
+): boolean {
+  const override = profile?.feature_flags?.[flag];
+  if (typeof override === "boolean") {
+    return override;
+  }
+  return FEATURE_FLAG_DEFAULTS[flag];
+}
+
+/**
+ * Returns the effective flag map for a profile, useful for debug screens
+ * or when several flags need to gate the same render pass.
+ */
+export function resolveFeatureFlags(
+  profile: FeatureFlagProfile | null | undefined,
+): Record<FeatureFlagName, boolean> {
+  const resolved = { ...FEATURE_FLAG_DEFAULTS } as Record<
+    FeatureFlagName,
+    boolean
+  >;
+  const overrides = profile?.feature_flags;
+  if (overrides && typeof overrides === "object") {
+    for (const key of Object.keys(resolved) as FeatureFlagName[]) {
+      const value = overrides[key];
+      if (typeof value === "boolean") {
+        resolved[key] = value;
+      }
+    }
+  }
+  return resolved;
+}
