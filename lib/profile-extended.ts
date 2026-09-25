@@ -39,6 +39,8 @@ export type ExtendedProfileRow = {
   notify_plan: boolean | null;
   notify_marketing: boolean | null;
   preferred_notify_time: string | null;
+  location_postcode: string | null;
+  location_country: string | null;
 };
 
 export type ExtendedProfileDraft = {
@@ -55,6 +57,8 @@ export type ExtendedProfileDraft = {
   conditions: string[];
   allergies: string[];
   avatar_url: string | null;
+  location_postcode: string | null;
+  location_country: string | null;
 };
 
 export type NotificationPrefsDraft = {
@@ -66,7 +70,7 @@ export type NotificationPrefsDraft = {
 };
 
 const PROFILE_SELECT =
-  "full_name, date_of_birth, sex, height_cm, weight_kg, bmi, phone, blood_type, emergency_contact_name, emergency_contact_phone, emergency_contact_relationship, conditions, allergies, avatar_url, notify_reminders, notify_results, notify_plan, notify_marketing, preferred_notify_time";
+  "full_name, date_of_birth, sex, height_cm, weight_kg, bmi, phone, blood_type, emergency_contact_name, emergency_contact_phone, emergency_contact_relationship, conditions, allergies, avatar_url, notify_reminders, notify_results, notify_plan, notify_marketing, preferred_notify_time, location_postcode, location_country";
 
 export const profileFormSchema = z.object({
   fullName: z
@@ -85,6 +89,18 @@ export const profileFormSchema = z.object({
   emergencyRelationship: z.string(),
   conditions: z.array(z.string()),
   allergies: z.array(z.string()),
+  // Phase D: location for lab-search proximity ranking. Country must match
+  // the DB CHECK (^[A-Z]{2}$) — normalised on submit.
+  locationCountry: z
+    .string()
+    .transform((v) => v.trim().toUpperCase())
+    .refine((v) => v === "" || /^[A-Z]{2}$/.test(v), {
+      message: "Two-letter ISO country code (e.g. IN, GB, US).",
+    }),
+  locationPostcode: z
+    .string()
+    .max(20, "Postcode is too long")
+    .transform((v) => v.trim()),
 });
 
 export type ProfileFormInput = {
@@ -100,6 +116,8 @@ export type ProfileFormInput = {
   emergencyRelationship: string;
   conditions: string[];
   allergies: string[];
+  locationCountry: string;
+  locationPostcode: string;
 };
 
 export type ProfileFormParsed = z.output<typeof profileFormSchema>;
@@ -118,6 +136,8 @@ export function emptyProfileForm(): ProfileFormInput {
     emergencyRelationship: "",
     conditions: [],
     allergies: [],
+    locationCountry: "",
+    locationPostcode: "",
   };
 }
 
@@ -148,6 +168,8 @@ export function profileRowToForm(
     emergencyRelationship: row?.emergency_contact_relationship ?? "",
     conditions: Array.isArray(row?.conditions) ? [...row.conditions] : [],
     allergies: Array.isArray(row?.allergies) ? [...row.allergies] : [],
+    locationCountry: row?.location_country ?? "",
+    locationPostcode: row?.location_postcode ?? "",
   };
 }
 
@@ -167,6 +189,10 @@ export function formToDraft(values: ProfileFormParsed): ExtendedProfileDraft {
     conditions: values.conditions,
     allergies: values.allergies,
     avatar_url: null,
+    // The schema transforms already uppercase / trim these; empty → null so
+    // the DB CHECK on location_country doesn't trip on empty strings.
+    location_country: values.locationCountry || null,
+    location_postcode: values.locationPostcode || null,
   };
 }
 
@@ -216,6 +242,14 @@ function normalizeRow(data: Record<string, unknown> | null): ExtendedProfileRow 
     conditions: asStringArray(data.conditions),
     allergies: asStringArray(data.allergies),
     avatar_url: typeof data.avatar_url === "string" ? data.avatar_url : null,
+    location_postcode:
+      typeof data.location_postcode === "string"
+        ? data.location_postcode
+        : null,
+    location_country:
+      typeof data.location_country === "string"
+        ? data.location_country
+        : null,
     notify_reminders:
       typeof data.notify_reminders === "boolean" ? data.notify_reminders : null,
     notify_results:
@@ -345,6 +379,8 @@ export async function saveExtendedProfile(
       emergency_contact_relationship: draft.emergency_contact_relationship,
       conditions: draft.conditions,
       allergies: draft.allergies,
+      location_country: draft.location_country,
+      location_postcode: draft.location_postcode,
     };
     if (options && "avatarUrl" in options) {
       payload.avatar_url = options.avatarUrl;

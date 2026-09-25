@@ -337,6 +337,42 @@ export default function ProfileScreen() {
               {COPY.profileBmiLabel}: {displayBmi(heightCm, weightKg)}
             </Text>
 
+            {/*
+              Phase D: location fields drive lab-search proximity ranking in
+              the book-a-test flow. The book screen still has an inline
+              editor for users who go there without visiting this screen —
+              this section is the durable place to set them.
+            */}
+            <Text style={styles.section}>Location</Text>
+            <Controller
+              control={control}
+              name="locationCountry"
+              render={({ field: { value, onChange } }) => (
+                <TextField
+                  label="Country (ISO)"
+                  placeholder="IN, GB, US…"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.locationCountry?.message}
+                  autoCapitalize="characters"
+                  maxLength={2}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="locationPostcode"
+              render={({ field: { value, onChange } }) => (
+                <TextField
+                  label="Postcode / ZIP"
+                  placeholder="400001 / SW1A 1AA"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.locationPostcode?.message}
+                />
+              )}
+            />
+
             <Text style={styles.section}>{COPY.profileEmergencyHeading}</Text>
             <Controller
               control={control}
