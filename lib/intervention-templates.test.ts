@@ -81,6 +81,8 @@ assert.deepEqual(parseResources(null), []);
   assert.equal(engine?.category, "supplement");
   assert.equal(engine?.needsInteractionCheck, false);
   assert.equal(engine?.clinical_basis, "Correct dysbiosis; improve vagal tone");
+  // Missing on the input row → empty array on the engine template.
+  assert.deepEqual(engine?.contraindication_codes, []);
 }
 
 // needs_interaction_check true carries through.
@@ -96,6 +98,26 @@ assert.deepEqual(parseResources(null), []);
     needs_interaction_check: true,
   });
   assert.equal(engine?.needsInteractionCheck, true);
+}
+
+// Phase E: contraindication_codes round-trip on the engine template.
+{
+  const engine = toEngineTemplate({
+    code: "inflammatory",
+    title: "Anti-inflammatory (draft)",
+    rationale_md: "Resveratrol, turmeric",
+    trigger_findings: ["General inflammatory / oxidative burden"],
+    plain_reason: "reason",
+    description: "d",
+    category: "supplement",
+    needs_interaction_check: true,
+    contraindication_codes: ["hormones", "blood_thinners", "", 42],
+  });
+  // Non-string / blank values dropped; the rest survives.
+  assert.deepEqual(engine?.contraindication_codes, [
+    "hormones",
+    "blood_thinners",
+  ]);
 }
 
 // Missing any required field → null (in-progress admin edit must not leak).

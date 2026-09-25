@@ -16,6 +16,7 @@ import {
 } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import {
+  Alert,
   Form,
   Input,
   InputNumber,
@@ -44,6 +45,11 @@ type ProductRecord = {
   requires_consent?: boolean;
   active?: boolean;
   created_at?: string;
+  // Phase E — supplement-only. Left optional so a "test"-typed product
+  // saves without touching these.
+  contraindication_codes?: string[];
+  subscription_options?: unknown;
+  supporting_studies?: unknown;
 };
 
 const PRODUCT_TYPES = [
@@ -165,19 +171,176 @@ function ProductFormFields() {
       <Form.Item label="Active in store" name="active" valuePropName="checked">
         <Switch />
       </Form.Item>
+
+      <Alert
+        type="info"
+        showIcon
+        style={{ marginTop: 16, marginBottom: 16 }}
+        message="Supplement-only fields (Phase E)"
+        description={
+          <>
+            <code>contraindication_codes</code> match against
+            public.medications so the mobile detail can flag interactions.
+            Common tags: <code>hormones</code>, <code>blood_thinners</code>.
+            <br />
+            <code>subscription_options</code>:{" "}
+            <code>{`{ "intervals": ["monthly","quarterly"], "discount_percent": 10 }`}</code>.
+            <br />
+            <code>supporting_studies</code>:{" "}
+            <code>{`[{ "title": "...", "url": "https://...", "source": "NEJM", "year": 2019 }]`}</code>.
+            <br />
+            Safe to leave empty on test-typed products — nothing renders.
+          </>
+        }
+      />
+
+      <Form.Item
+        label="Contraindication codes"
+        name="contraindication_codes"
+        extra="Free-form tags. Matched against the user's medications' contraindication_codes."
+      >
+        <Select mode="tags" tokenSeparators={[",", "\n"]} />
+      </Form.Item>
+
+      <Form.Item
+        label="Subscription options (JSON object)"
+        name="subscription_options"
+        getValueProps={(value) => ({ value: jsonToText(value) })}
+        normalize={(value) => value}
+        rules={[
+          {
+            validator: (_, value) => {
+              try {
+                const parsed = textToJson(value, {});
+                if (
+                  !parsed ||
+                  typeof parsed !== "object" ||
+                  Array.isArray(parsed)
+                ) {
+                  return Promise.reject(
+                    new Error("Subscription options must be a JSON object."),
+                  );
+                }
+                return Promise.resolve();
+              } catch (error) {
+                return Promise.reject(
+                  new Error(`Invalid JSON: ${(error as Error).message}`),
+                );
+              }
+            },
+          },
+        ]}
+      >
+        <Input.TextArea rows={4} style={{ fontFamily: "monospace" }} />
+      </Form.Item>
+
+      <Form.Item
+        label="Supporting studies (JSON array)"
+        name="supporting_studies"
+        getValueProps={(value) => ({ value: jsonToText(value) })}
+        normalize={(value) => value}
+        rules={[
+          {
+            validator: (_, value) => {
+              try {
+                const parsed = textToJson(value, []);
+                if (!Array.isArray(parsed)) {
+                  return Promise.reject(
+                    new Error("Supporting studies must be a JSON array."),
+                  );
+                }
+                return Promise.resolve();
+              } catch (error) {
+                return Promise.reject(
+                  new Error(`Invalid JSON: ${(error as Error).message}`),
+                );
+              }
+            },
+          },
+        ]}
+      >
+        <Input.TextArea rows={6} style={{ fontFamily: "monospace" }} />
+      </Form.Item>
     </>
   );
 }
 
+// Same helpers as lib/intervention-templates and lib/recipes admin pages.
+function jsonToText(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  if (typeof value === "string") return value;
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return "";
+  }
+}
+function textToJson(text: string, fallback: unknown): unknown {
+  const trimmed = (text ?? "").trim();
+  if (!trimmed) return fallback;
+  return JSON.parse(trimmed);
+}
+
+/**
+ * Wrap onFinish to parse the Phase E JSON textareas before submit. Validators
+ * above block a bad JSON string first, so the safe-fallback branches here
+ * only run for edge cases where the raw text still slipped through.
+ * Blanks / bad shapes normalise to safe defaults so the mobile detail can't
+ * crash on a partial edit.
+ */
+function useProductForm(mode: "create" | "edit") {
+  const form = useForm<ProductRecord>({ warnWhenUnsavedChanges: true });
+  const originalOnFinish = form.formProps.onFinish;
+  const wrappedOnFinish = async (values: Record<string, unknown>) => {
+    const next = { ...values };
+    try {
+      next.subscription_options = textToJson(
+        (values.subscription_options as string) ?? "",
+        {},
+      );
+    } catch {
+      next.subscription_options = {};
+    }
+    try {
+      next.supporting_studies = textToJson(
+        (values.supporting_studies as string) ?? "",
+        [],
+      );
+    } catch {
+      next.supporting_studies = [];
+    }
+    if (!Array.isArray(next.contraindication_codes)) {
+      next.contraindication_codes = [];
+    }
+    if (mode === "create" && next.active === undefined) {
+      next.active = true;
+    }
+    if (typeof originalOnFinish === "function") {
+      return originalOnFinish(next);
+    }
+    return undefined;
+  };
+  return {
+    ...form,
+    formProps: { ...form.formProps, onFinish: wrappedOnFinish },
+  };
+}
+
 export function ProductCreate() {
-  const { formProps, saveButtonProps } = useForm();
+  const { formProps, saveButtonProps } = useProductForm("create");
 
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form
         {...formProps}
         layout="vertical"
-        initialValues={{ active: true, currency: "INR" }}
+        initialValues={{
+          active: true,
+          currency: "INR",
+          contraindication_codes: [],
+          subscription_options: "{}",
+          supporting_studies: "[]",
+        }}
       >
         <ProductFormFields />
       </Form>
@@ -187,7 +350,7 @@ export function ProductCreate() {
 
 /** Edit price, names, and active flag — main Day 2 verification path. */
 export function ProductEdit() {
-  const { formProps, saveButtonProps } = useForm();
+  const { formProps, saveButtonProps } = useProductForm("edit");
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
@@ -224,6 +387,18 @@ export function ProductShow() {
       <BooleanField value={record?.requires_consent} />
       <Typography.Title level={5}>Active</Typography.Title>
       <BooleanField value={record?.active} />
+      <Typography.Title level={5}>Contraindication codes</Typography.Title>
+      <TextField
+        value={(record?.contraindication_codes ?? []).join(", ")}
+      />
+      <Typography.Title level={5}>Subscription options</Typography.Title>
+      <pre style={{ whiteSpace: "pre-wrap" }}>
+        {jsonToText(record?.subscription_options)}
+      </pre>
+      <Typography.Title level={5}>Supporting studies</Typography.Title>
+      <pre style={{ whiteSpace: "pre-wrap" }}>
+        {jsonToText(record?.supporting_studies)}
+      </pre>
       <Typography.Title level={5}>Created</Typography.Title>
       <DateField value={record?.created_at} />
     </Show>

@@ -664,6 +664,10 @@ function findingIsPresent(
  * (they carry a few extra fields the engine ignores); loadTemplatesForEngine
  * from lib/intervention-templates.ts also returns rows in this shape after
  * validation, so plan.ts can pass either source in.
+ *
+ * contraindication_codes is optional — the hard-coded array omits it, but
+ * templates from the DB fill it. When present, plan.ts's medication filter
+ * uses it to flip clinician_interaction_check.
  */
 export type EngineInterventionPair = {
   id: string;
@@ -674,14 +678,26 @@ export type EngineInterventionPair = {
   description: string;
   clinical_basis: string;
   needsInteractionCheck: boolean;
+  contraindication_codes?: readonly string[];
 };
 
 function toDraftRow(
   pair: EngineInterventionPair,
   facts: RulesFacts,
+  medicationCodes: Set<string>,
 ): DraftIntervention {
-  const interaction =
+  // Two paths to a clinician interaction flag:
+  //   1) Legacy questionnaire signal (contraceptives / HRT / blood thinners)
+  //      combined with the pair's needsInteractionCheck bit.
+  //   2) Phase E: the pair's contraindication codes overlap the user's
+  //      medication contraindication codes.
+  const questionnaireHit =
     pair.needsInteractionCheck && hormoneOrBloodThinnerInteraction(facts);
+  const codes = pair.contraindication_codes ?? [];
+  const medicationHit =
+    codes.length > 0 &&
+    medicationCodes.size > 0 &&
+    codes.some((code) => medicationCodes.has(code.toLowerCase()));
 
   return {
     trigger_finding: pair.trigger_finding,
@@ -691,7 +707,7 @@ function toDraftRow(
     description: pair.description,
     clinical_basis: pair.clinical_basis,
     status: "draft",
-    clinician_interaction_check: interaction,
+    clinician_interaction_check: questionnaireHit || medicationHit,
   };
 }
 
@@ -705,20 +721,32 @@ function toDraftRow(
  * once loadTemplatesForEngine succeeds; if a DB row has an id the engine's
  * findingIsPresent switch doesn't know about, it's silently skipped (default
  * false) — matches the hard-coded array's behaviour for the same case.
+ *
+ * `medicationCodes` (Phase E) is the union of the caller's active
+ * medications' contraindication_codes. When any pair's own codes overlap,
+ * that intervention's clinician_interaction_check flips on regardless of
+ * the questionnaire signals. Case-insensitive; plan.ts lower-cases before
+ * passing in.
  */
 export function mapResultsToInterventions(
   facts: RulesFacts,
   labs: LabInputs = PHASE1_LABS,
   thresholds: ClinicalThresholdValues = THRESHOLDS,
   pairs: readonly EngineInterventionPair[] = FINDING_INTERVENTION_TABLE,
+  medicationCodes: readonly string[] = [],
 ): DraftIntervention[] {
   const out: DraftIntervention[] = [];
+  const codeSet = new Set(
+    medicationCodes
+      .map((code) => code.toLowerCase().trim())
+      .filter((code) => code.length > 0),
+  );
 
   for (const pair of pairs) {
     if (!findingIsPresent(pair.id, facts, labs, thresholds)) {
       continue;
     }
-    out.push(toDraftRow(pair, facts));
+    out.push(toDraftRow(pair, facts, codeSet));
   }
 
   return out;

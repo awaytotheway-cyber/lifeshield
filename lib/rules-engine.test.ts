@@ -303,6 +303,78 @@ check(
   },
 );
 
+check(
+  "medication contraindication codes flip clinician_interaction_check",
+  () => {
+    // Simulate a template that carries contraindication_codes (the DB path).
+    const dbPair = {
+      id: "inflammatory",
+      trigger_finding: "General inflammatory / oxidative burden",
+      plain_reason: "reason",
+      category: "supplement" as const,
+      title: "T",
+      description: "d",
+      clinical_basis: "cb",
+      needsInteractionCheck: false,
+      contraindication_codes: ["hormones", "blood_thinners"],
+    };
+    const factsBundle = facts({});
+    const labsBundle = labs({ inflammatoryOxidativeBurden: true });
+
+    // No medications → interaction stays false (needsInteractionCheck is
+    // also false so the questionnaire path can't fire either).
+    const noMeds = mapResultsToInterventions(
+      factsBundle,
+      labsBundle,
+      THRESHOLDS,
+      [dbPair],
+    );
+    assert.equal(noMeds.length, 1);
+    assert.equal(noMeds[0].clinician_interaction_check, false);
+
+    // Medication with an unrelated code → still false.
+    const unrelated = mapResultsToInterventions(
+      factsBundle,
+      labsBundle,
+      THRESHOLDS,
+      [dbPair],
+      ["mystery"],
+    );
+    assert.equal(unrelated[0].clinician_interaction_check, false);
+
+    // Medication with an overlapping code → true. Case-insensitive.
+    const overlap = mapResultsToInterventions(
+      factsBundle,
+      labsBundle,
+      THRESHOLDS,
+      [dbPair],
+      ["HORMONES"],
+    );
+    assert.equal(overlap[0].clinician_interaction_check, true);
+  },
+);
+
+check(
+  "medication codes don't affect pairs without contraindication_codes",
+  () => {
+    // The hard-coded FINDING_INTERVENTION_TABLE entries carry no
+    // contraindication_codes today. Even with a matching medication code,
+    // clinician_interaction_check stays false unless the pair's own
+    // needsInteractionCheck (questionnaire path) fires.
+    const dysbiosis = FINDING_INTERVENTION_TABLE.find(
+      (p) => p.id === "dysbiosis",
+    )!;
+    const rows = mapResultsToInterventions(
+      facts({}),
+      labs({ stoolDysbiosis: true }),
+      THRESHOLDS,
+      [dysbiosis],
+      ["hormones", "blood_thinners"],
+    );
+    assert.equal(rows[0].clinician_interaction_check, false);
+  },
+);
+
 check("engine drops DB pairs whose id findingIsPresent doesn't know", () => {
   const unknownPair = {
     id: "future_finding_not_yet_in_engine",

@@ -17,6 +17,7 @@ import {
   type DraftIntervention,
   type InterventionCategory,
 } from "@/lib/rules-engine";
+import { loadOwnMedications } from "@/lib/supplements-io";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { loadOwnTestResults } from "@/lib/test-results";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
@@ -327,10 +328,40 @@ export async function regenerateDraftPlan(
     // isn't migrated yet, the DB is unreachable, or every row failed
     // validation — fall through to the engine's built-in
     // FINDING_INTERVENTION_TABLE so the plan still generates.
-    const templates = await loadTemplatesForEngine();
+    //
+    // Phase E: pull the caller's active medications and hand the union of
+    // their contraindication_codes to the engine. Any pair whose codes
+    // overlap gets clinician_interaction_check flipped on. A failed load
+    // is treated as "no medications" — no false-negative warnings, and
+    // the existing questionnaire-driven interaction path still fires.
+    const [templates, medsOutcome] = await Promise.all([
+      loadTemplatesForEngine(),
+      loadOwnMedications(userId),
+    ]);
+    const medicationCodes = medsOutcome.ok
+      ? Array.from(
+          new Set(
+            medsOutcome.rows
+              .filter((row) => row.active)
+              .flatMap((row) => row.contraindication_codes),
+          ),
+        )
+      : [];
     const drafts = templates
-      ? mapResultsToInterventions(facts, labs, thresholds, templates)
-      : mapResultsToInterventions(facts, labs, thresholds);
+      ? mapResultsToInterventions(
+          facts,
+          labs,
+          thresholds,
+          templates,
+          medicationCodes,
+        )
+      : mapResultsToInterventions(
+          facts,
+          labs,
+          thresholds,
+          undefined,
+          medicationCodes,
+        );
 
     await replaceDraftsInDatabase(userId, drafts);
     try {

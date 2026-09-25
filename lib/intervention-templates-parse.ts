@@ -97,6 +97,12 @@ export type EngineTemplate = {
   category: EngineTemplateCategory;
   clinical_basis: string;
   needsInteractionCheck: boolean;
+  /**
+   * Codes matched against the user's medications' contraindication_codes.
+   * Any overlap flips clinician_interaction_check on the resulting
+   * intervention row regardless of the questionnaire-driven signals.
+   */
+  contraindication_codes: string[];
 };
 
 const ENGINE_CATEGORIES: readonly EngineTemplateCategory[] = [
@@ -154,6 +160,12 @@ export function toEngineTemplate(row: unknown): EngineTemplate | null {
 
   const needsInteractionCheck = readBool(r.needs_interaction_check);
 
+  const contraindication_codes = Array.isArray(r.contraindication_codes)
+    ? (r.contraindication_codes.filter(
+        (v): v is string => typeof v === "string" && v.length > 0,
+      ) as string[])
+    : [];
+
   return {
     id: code,
     trigger_finding: triggerFinding,
@@ -163,6 +175,7 @@ export function toEngineTemplate(row: unknown): EngineTemplate | null {
     category: category as EngineTemplateCategory,
     clinical_basis: clinicalBasis,
     needsInteractionCheck,
+    contraindication_codes,
   };
 }
 

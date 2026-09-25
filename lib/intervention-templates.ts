@@ -137,7 +137,7 @@ export function __clearTemplateCacheForTests(): void {
 // ---------- Engine loader ----------
 
 const ENGINE_COLUMNS =
-  "code, title, rationale_md, trigger_findings, plain_reason, description, category, needs_interaction_check";
+  "code, title, rationale_md, trigger_findings, plain_reason, description, category, needs_interaction_check, contraindication_codes";
 
 /**
  * Fetch all templates the rules engine needs. Returns null on any error so
