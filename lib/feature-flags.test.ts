@@ -15,12 +15,14 @@ assert.equal(FEATURE_FLAG_DEFAULTS.goals_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.reminders_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.plan_v2, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.recipes_v1, false);
+assert.equal(FEATURE_FLAG_DEFAULTS.meal_planner_v1, false);
 assert.equal(isFeatureEnabled(null, "goals_v1"), false);
 assert.equal(isFeatureEnabled(undefined, "goals_v1"), false);
 assert.equal(isFeatureEnabled({}, "goals_v1"), false);
 assert.equal(isFeatureEnabled(null, "reminders_v1"), false);
 assert.equal(isFeatureEnabled(null, "plan_v2"), false);
 assert.equal(isFeatureEnabled(null, "recipes_v1"), false);
+assert.equal(isFeatureEnabled(null, "meal_planner_v1"), false);
 
 // A per-user boolean override wins over the default.
 assert.equal(
@@ -62,6 +64,7 @@ assert.deepEqual(fromUnknown, {
   reminders_v1: false,
   plan_v2: false,
   recipes_v1: false,
+  meal_planner_v1: false,
 });
 
 // eslint-disable-next-line no-console

@@ -28,7 +28,13 @@ export type FeatureFlagName =
    * Phase C — recipe library browse + favorite. Meal planning and the
    * ingredient → cart bridge are separate flags on a later slice.
    */
-  | "recipes_v1";
+  | "recipes_v1"
+  /**
+   * Phase C — weekly meal planner: generate a plan from the recipe library
+   * with slot-tag heuristic + avoid-tag filter, save and browse days/meals.
+   * Ingredient → cart export deferred to its own slice.
+   */
+  | "meal_planner_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
@@ -36,6 +42,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     reminders_v1: false,
     plan_v2: false,
     recipes_v1: false,
+    meal_planner_v1: false,
   });
 
 /**

@@ -89,6 +89,7 @@
     "test:intervention-templates-seed": "npx --yes tsx --tsconfig tsconfig.json lib/intervention-templates-seed.test.ts",
     "test:intervention-progress": "npx --yes tsx --tsconfig tsconfig.json lib/intervention-progress.test.ts",
     "test:recipes": "npx --yes tsx --tsconfig tsconfig.json lib/recipes.test.ts",
+    "test:meal-planner": "npx --yes tsx --tsconfig tsconfig.json lib/meal-planner.test.ts",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
   },

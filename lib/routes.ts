@@ -60,6 +60,8 @@ export const routes = {
   reminders: "/(main)/(reminders)" as Href,
   remindersNew: "/(main)/(reminders)/new" as Href,
   recipes: "/(main)/(recipes)" as Href,
+  mealPlans: "/(main)/(meal-plans)" as Href,
+  mealPlansNew: "/(main)/(meal-plans)/new" as Href,
 } as const;
 
 export function resultDetailHref(id: string): Href {
@@ -92,6 +94,10 @@ export function reminderHref(id: string): Href {
 
 export function recipeHref(slug: string): Href {
   return `/(main)/(recipes)/recipe?slug=${encodeURIComponent(slug)}` as Href;
+}
+
+export function mealPlanHref(id: string): Href {
+  return `/(main)/(meal-plans)/plan?id=${encodeURIComponent(id)}` as Href;
 }
 
 /**
