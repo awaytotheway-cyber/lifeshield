@@ -40,7 +40,13 @@ export type FeatureFlagName =
    * status='recommended', filters labs by profile location, creates a
    * pending_manual lab_orders row with the chosen slot.
    */
-  | "test_booking_v1";
+  | "test_booking_v1"
+  /**
+   * Phase E — richer supplement detail: contraindication warnings against
+   * the user's medications, supporting-studies list, subscription info.
+   * Cart-level subscription plumbing waits on Stripe Subscriptions.
+   */
+  | "supplements_v2";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
@@ -50,6 +56,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     recipes_v1: false,
     meal_planner_v1: false,
     test_booking_v1: false,
+    supplements_v2: false,
   });
 
 /**

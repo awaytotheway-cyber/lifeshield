@@ -92,6 +92,7 @@
     "test:meal-planner": "npx --yes tsx --tsconfig tsconfig.json lib/meal-planner.test.ts",
     "test:shopping-list": "npx --yes tsx --tsconfig tsconfig.json lib/shopping-list.test.ts",
     "test:lab-search": "npx --yes tsx --tsconfig tsconfig.json lib/lab-search.test.ts",
+    "test:supplements": "npx --yes tsx --tsconfig tsconfig.json lib/supplements.test.ts",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
   },
