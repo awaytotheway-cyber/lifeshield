@@ -238,3 +238,76 @@ function addDays(date: Date, days: number): Date {
   result.setDate(result.getDate() + days);
   return result;
 }
+
+// ---------- Intervention → reminder draft prefill (Phase B wiring) ----------
+
+/**
+ * Structural row the plan detail already has in state. Kept minimal so this
+ * helper doesn't drag in InterventionRow (avoids a circular import between
+ * lib/plan.ts and lib/reminders.ts).
+ */
+export type InterventionLike = {
+  id: string;
+  category: string;
+  title: string;
+};
+
+/**
+ * Sensible starting values for a reminder seeded from an intervention. Users
+ * always edit them on the create screen — this is a prefill, not a lock.
+ *
+ * The category → cadence table encodes what people usually want reminded of:
+ *   supplement / diet / lifestyle → daily at 09:00
+ *   therapy / coaching            → weekly at 10:00 (same weekday as today)
+ *   referral                      → once (defaulted to +7 days at 10:00)
+ * Unknown categories fall back to daily.
+ */
+export function interventionToReminderPrefill(row: InterventionLike): {
+  title: string;
+  body: string | null;
+  cadence: ReminderCadence;
+  /** ISO local timestamp string suitable for the create form's text field. */
+  start_at: string;
+  source_kind: ReminderSourceKind;
+  source_ref: string;
+} {
+  const category = row.category.toLowerCase();
+  const preset = CATEGORY_TO_REMINDER[category] ?? DEFAULT_REMINDER_PRESET;
+
+  const start = new Date();
+  start.setDate(start.getDate() + preset.daysFromNow);
+  start.setHours(preset.hour, 0, 0, 0);
+
+  return {
+    title: preset.titlePrefix
+      ? `${preset.titlePrefix}: ${row.title}`
+      : row.title,
+    body: null,
+    cadence: preset.cadence,
+    start_at: start.toISOString(),
+    source_kind: "intervention",
+    source_ref: row.id,
+  };
+}
+
+type ReminderPreset = {
+  cadence: ReminderCadence;
+  hour: number;
+  daysFromNow: number;
+  titlePrefix?: string;
+};
+
+const CATEGORY_TO_REMINDER: Record<string, ReminderPreset> = {
+  supplement: { cadence: "daily", hour: 9, daysFromNow: 1, titlePrefix: "Take" },
+  diet: { cadence: "daily", hour: 9, daysFromNow: 1, titlePrefix: "Meal" },
+  lifestyle: { cadence: "daily", hour: 9, daysFromNow: 1 },
+  therapy: { cadence: "weekly", hour: 10, daysFromNow: 7 },
+  coaching: { cadence: "weekly", hour: 10, daysFromNow: 7 },
+  referral: { cadence: "once", hour: 10, daysFromNow: 7 },
+};
+
+const DEFAULT_REMINDER_PRESET: ReminderPreset = {
+  cadence: "daily",
+  hour: 9,
+  daysFromNow: 1,
+};

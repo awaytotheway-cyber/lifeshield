@@ -1,6 +1,13 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { Button, SecondaryButton } from "@/components/ui/Button";
@@ -12,13 +19,30 @@ import {
   type FeatureFlagProfile,
 } from "@/lib/feature-flags";
 import { interventionToGoalPrefill } from "@/lib/goals";
+import {
+  countDoneInLast7Days,
+  loadInterventionProgress,
+  logInterventionProgress,
+  type InterventionProgressEntry,
+} from "@/lib/intervention-progress";
+import {
+  loadTemplateForTriggerFinding,
+  type ActionStep,
+  type InterventionTemplate,
+  type Resource,
+} from "@/lib/intervention-templates";
 import { termKeyForFinding } from "@/lib/plan-groups";
 import {
   loadOwnInterventionById,
   reviewStatusLabel,
   type InterventionRow,
 } from "@/lib/plan";
-import { goalsNewFromInterventionHref, routes } from "@/lib/routes";
+import { interventionToReminderPrefill } from "@/lib/reminders";
+import {
+  goalsNewFromInterventionHref,
+  remindersNewFromInterventionHref,
+  routes,
+} from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -32,6 +56,9 @@ export default function PlanItemScreen() {
   const [message, setMessage] = useState<string | null>(null);
   const [row, setRow] = useState<InterventionRow | null>(null);
   const [profile, setProfile] = useState<FeatureFlagProfile | null>(null);
+  const [template, setTemplate] = useState<InterventionTemplate | null>(null);
+  const [progress, setProgress] = useState<InterventionProgressEntry[]>([]);
+  const [loggingDone, setLoggingDone] = useState(false);
 
   const refresh = useCallback(async () => {
     if (!session?.user.id) {
@@ -72,9 +99,8 @@ export default function PlanItemScreen() {
     void refresh();
   }, [session?.user.id, refresh]);
 
-  // Read profile feature flags so the "Set a goal" CTA only shows when the
-  // account has goals_v1 enabled. A failed lookup keeps profile null so the
-  // flag falls back to its compile-time default (off).
+  // Feature flags — reads profile.feature_flags once per mount. The CTAs and
+  // Phase B sections stay hidden while this resolves (compile-time defaults).
   useEffect(() => {
     const userId = session?.user.id;
     if (!userId || !isSupabaseConfigured) {
@@ -99,6 +125,47 @@ export default function PlanItemScreen() {
     profile === null
       ? FEATURE_FLAG_DEFAULTS.goals_v1
       : isFeatureEnabled(profile, "goals_v1");
+  const remindersEnabled =
+    profile === null
+      ? FEATURE_FLAG_DEFAULTS.reminders_v1
+      : isFeatureEnabled(profile, "reminders_v1");
+  const planV2Enabled =
+    profile === null
+      ? FEATURE_FLAG_DEFAULTS.plan_v2
+      : isFeatureEnabled(profile, "plan_v2");
+
+  // Phase B: look up the matching template for this intervention's finding
+  // and the progress log. Only when plan_v2 is on — the pre-Phase-B render
+  // path is unchanged.
+  useEffect(() => {
+    if (!row || !planV2Enabled) {
+      setTemplate(null);
+      return;
+    }
+    let cancelled = false;
+    void loadTemplateForTriggerFinding(row.trigger_finding).then((outcome) => {
+      if (cancelled) return;
+      setTemplate(outcome.ok ? outcome.template : null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [row, planV2Enabled]);
+
+  useEffect(() => {
+    if (!row || !planV2Enabled) {
+      setProgress([]);
+      return;
+    }
+    let cancelled = false;
+    void loadInterventionProgress(row.id).then((outcome) => {
+      if (cancelled) return;
+      if (outcome.ok) setProgress(outcome.rows);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [row, planV2Enabled]);
 
   if (!session) {
     return <Redirect href={routes.login} />;
@@ -120,6 +187,23 @@ export default function PlanItemScreen() {
         ? COPY.planBannerApproved
         : COPY.planBanner
     : COPY.planBanner;
+
+  async function onLogDone() {
+    if (!row || !session?.user.id || loggingDone) return;
+    setLoggingDone(true);
+    const outcome = await logInterventionProgress(
+      row.id,
+      session.user.id,
+      { done: true },
+      null,
+    );
+    setLoggingDone(false);
+    if (!outcome.ok) {
+      Alert.alert("Couldn't log progress", outcome.message);
+      return;
+    }
+    setProgress((current) => [outcome.row, ...current]);
+  }
 
   return (
     <Screen scroll>
@@ -172,13 +256,21 @@ export default function PlanItemScreen() {
             </View>
           ) : null}
 
+          {planV2Enabled && template ? (
+            <TemplateSection template={template} />
+          ) : null}
+
           <Text className="mt-4 text-sm text-teal">{COPY.planDetailReview}</Text>
           <Text className="mt-1 text-charcoal">
             {reviewStatusLabel(row.status)}
           </Text>
 
-          {goalsEnabled ? (
-            <View className="mt-4">
+          {/*
+            Action row for the Phase A/B CTAs. Each is independently flag-gated
+            so an account can hold e.g. goals but not reminders.
+          */}
+          <View className="mt-4" style={{ gap: 8 }}>
+            {goalsEnabled ? (
               <SecondaryButton
                 title="Set a goal for this"
                 onPress={() => {
@@ -190,7 +282,28 @@ export default function PlanItemScreen() {
                   router.push(goalsNewFromInterventionHref(prefill));
                 }}
               />
-            </View>
+            ) : null}
+            {remindersEnabled ? (
+              <SecondaryButton
+                title="Remind me about this"
+                onPress={() => {
+                  const prefill = interventionToReminderPrefill({
+                    id: row.id,
+                    category: String(row.category),
+                    title: row.title,
+                  });
+                  router.push(remindersNewFromInterventionHref(prefill));
+                }}
+              />
+            ) : null}
+          </View>
+
+          {planV2Enabled ? (
+            <ProgressSection
+              entries={progress}
+              onLogDone={onLogDone}
+              busy={loggingDone}
+            />
           ) : null}
 
           <Text className="mt-4 text-sm text-teal">{COPY.planClinicalBasis}</Text>
@@ -221,5 +334,105 @@ export default function PlanItemScreen() {
         }}
       />
     </Screen>
+  );
+}
+
+function TemplateSection({ template }: { template: InterventionTemplate }) {
+  const steps: ActionStep[] = Array.isArray(template.action_steps)
+    ? (template.action_steps as ActionStep[])
+    : [];
+  const resources: Resource[] = Array.isArray(template.resources)
+    ? (template.resources as Resource[])
+    : [];
+
+  return (
+    <View className="mt-4">
+      {template.rationale_md ? (
+        <>
+          <Text className="text-sm text-teal">Why this helps</Text>
+          <Text className="mt-1 text-charcoal">{template.rationale_md}</Text>
+        </>
+      ) : null}
+
+      {steps.length > 0 ? (
+        <>
+          <Text className="mt-4 text-sm text-teal">Action steps</Text>
+          {steps.map((step, index) => (
+            <View key={index} className="mt-2">
+              <Text className="text-charcoal">• {step.text}</Text>
+              {step.dose || step.when ? (
+                <Text className="ml-3 text-sm text-teal">
+                  {[step.dose, step.when].filter(Boolean).join(" · ")}
+                </Text>
+              ) : null}
+              {step.why ? (
+                <Text className="ml-3 text-sm text-charcoal">{step.why}</Text>
+              ) : null}
+            </View>
+          ))}
+        </>
+      ) : null}
+
+      {resources.length > 0 ? (
+        <>
+          <Text className="mt-4 text-sm text-teal">Resources</Text>
+          {resources.map((resource, index) => (
+            <Pressable
+              key={index}
+              accessibilityRole="link"
+              onPress={() => {
+                void Linking.openURL(resource.url).catch(() => {
+                  // Silent — nothing crashes if the URL can't open.
+                });
+              }}
+              className="mt-2"
+            >
+              <Text className="text-charcoal underline">{resource.title}</Text>
+              <Text className="text-sm text-teal">{resource.kind}</Text>
+            </Pressable>
+          ))}
+        </>
+      ) : null}
+    </View>
+  );
+}
+
+function ProgressSection({
+  entries,
+  onLogDone,
+  busy,
+}: {
+  entries: InterventionProgressEntry[];
+  onLogDone: () => void;
+  busy: boolean;
+}) {
+  const done7 = countDoneInLast7Days(entries);
+  const recent = entries.slice(0, 5);
+  return (
+    <View className="mt-4">
+      <Text className="text-sm text-teal">Your progress</Text>
+      <Text className="mt-1 text-charcoal">
+        {done7 === 0
+          ? "No entries in the last 7 days."
+          : `${done7} ${done7 === 1 ? "day" : "days"} logged in the last 7.`}
+      </Text>
+      <View className="mt-3">
+        <SecondaryButton
+          title="Log done today"
+          loading={busy}
+          onPress={onLogDone}
+        />
+      </View>
+      {recent.length > 0 ? (
+        <View className="mt-3">
+          {recent.map((entry) => (
+            <Text key={entry.id} className="text-sm text-charcoal">
+              • {new Date(entry.recorded_at).toLocaleString()}
+              {entry.note ? ` — ${entry.note}` : ""}
+            </Text>
+          ))}
+        </View>
+      ) : null}
+    </View>
   );
 }

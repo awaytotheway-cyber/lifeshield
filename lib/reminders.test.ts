@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import {
   advanceAfterFire,
+  interventionToReminderPrefill,
   nextOccurrence,
   scheduleLabel,
   validateReminderDraft,
@@ -217,6 +218,55 @@ assert.equal(
     scheduleLabel(reminder("monthly", start)),
     "Monthly on day 25 at 09:05",
   );
+}
+
+// ---------- interventionToReminderPrefill ----------
+
+// Supplement → daily at 09:00, prefixed title, source pointing at the row.
+{
+  const prefill = interventionToReminderPrefill({
+    id: "int-1",
+    category: "supplement",
+    title: "Vitamin D3 2000 IU",
+  });
+  assert.equal(prefill.cadence, "daily");
+  assert.equal(prefill.title, "Take: Vitamin D3 2000 IU");
+  assert.equal(prefill.source_kind, "intervention");
+  assert.equal(prefill.source_ref, "int-1");
+  const start = new Date(prefill.start_at);
+  assert.equal(start.getHours(), 9);
+  // The composed draft must validate on the first render.
+  assert.deepEqual(
+    validateReminderDraft({
+      title: prefill.title,
+      body: prefill.body,
+      cadence: prefill.cadence,
+      start_at: prefill.start_at,
+    }),
+    [],
+  );
+}
+
+// Therapy → weekly at 10:00
+{
+  const prefill = interventionToReminderPrefill({
+    id: "int-2",
+    category: "therapy",
+    title: "CBT session",
+  });
+  assert.equal(prefill.cadence, "weekly");
+  assert.equal(new Date(prefill.start_at).getHours(), 10);
+}
+
+// Category casing is normalised, unknown categories fall back to daily.
+{
+  const prefill = interventionToReminderPrefill({
+    id: "int-3",
+    category: "MYSTERY",
+    title: "Something",
+  });
+  assert.equal(prefill.cadence, "daily");
+  assert.equal(prefill.title, "Something"); // no prefix for the default preset
 }
 
 // eslint-disable-next-line no-console

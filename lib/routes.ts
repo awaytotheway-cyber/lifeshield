@@ -112,6 +112,28 @@ export function goalsNewFromInterventionHref(prefill: {
   return `/(main)/(goals)/new?${params.toString()}` as Href;
 }
 
+/**
+ * Deep-link to New Reminder with fields prefilled from an intervention.
+ * Missing / malformed params fall back to the create screen's defaults.
+ */
+export function remindersNewFromInterventionHref(prefill: {
+  title: string;
+  body: string | null;
+  cadence: "once" | "daily" | "weekly" | "monthly";
+  start_at: string;
+  source_ref: string;
+}): Href {
+  const params = new URLSearchParams({
+    title: prefill.title,
+    cadence: prefill.cadence,
+    start_at: prefill.start_at,
+    source_kind: "intervention",
+    source_ref: prefill.source_ref,
+  });
+  if (prefill.body) params.set("body", prefill.body);
+  return `/(main)/(reminders)/new?${params.toString()}` as Href;
+}
+
 export function orderDetailHref(orderId: string): Href {
   return `/(main)/(orders)/order?id=${encodeURIComponent(orderId)}` as Href;
 }
