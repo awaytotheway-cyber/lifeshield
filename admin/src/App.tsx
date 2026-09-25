@@ -10,6 +10,7 @@ import routerProvider, {
 import {
   BankOutlined,
   BookOutlined,
+  CoffeeOutlined,
   ExperimentOutlined,
   MedicineBoxOutlined,
   SettingOutlined,
@@ -63,6 +64,12 @@ import {
   ProductList,
   ProductShow,
 } from "./pages/products";
+import {
+  RecipeCreate,
+  RecipeEdit,
+  RecipeList,
+  RecipeShow,
+} from "./pages/recipes";
 import { ProfileList } from "./pages/profiles";
 import { ReviewQueueList } from "./pages/review-queue";
 import { ReviewQueuePatient } from "./pages/review-queue/patient";
@@ -114,6 +121,17 @@ export default function App() {
                 meta: {
                   label: "Intervention templates",
                   icon: <BookOutlined />,
+                },
+              },
+              {
+                name: "recipes",
+                list: "/recipes",
+                create: "/recipes/create",
+                edit: "/recipes/edit/:id",
+                show: "/recipes/show/:id",
+                meta: {
+                  label: "Recipes",
+                  icon: <CoffeeOutlined />,
                 },
               },
               {
@@ -234,6 +252,12 @@ export default function App() {
                     path="show/:id"
                     element={<InterventionTemplateShow />}
                   />
+                </Route>
+                <Route path="/recipes">
+                  <Route index element={<RecipeList />} />
+                  <Route path="create" element={<RecipeCreate />} />
+                  <Route path="edit/:id" element={<RecipeEdit />} />
+                  <Route path="show/:id" element={<RecipeShow />} />
                 </Route>
                 <Route path="/clinics">
                   <Route index element={<ClinicList />} />
