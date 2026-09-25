@@ -7,6 +7,7 @@
  */
 import { COPY } from "@/lib/copy";
 import { seedFollowUpsIfNeeded } from "@/lib/follow-ups";
+import { loadTemplatesForEngine } from "@/lib/intervention-templates";
 import { loadClinicalThresholds } from "@/lib/load-thresholds";
 import { messageFromUnknown, rawErrorText } from "@/lib/friendly-errors";
 import { labsFromTestResults } from "@/lib/labs-from-results";
@@ -319,7 +320,17 @@ export async function regenerateDraftPlan(
     });
     const labs = labsFromTestResults(results.rows);
     const thresholds = await loadClinicalThresholds();
-    const drafts = mapResultsToInterventions(facts, labs, thresholds);
+
+    // Phase B: read intervention text from the intervention_templates table
+    // when available so admin edits (rationale wording, category, interaction
+    // flag) take effect without a redeploy. A null return means the table
+    // isn't migrated yet, the DB is unreachable, or every row failed
+    // validation — fall through to the engine's built-in
+    // FINDING_INTERVENTION_TABLE so the plan still generates.
+    const templates = await loadTemplatesForEngine();
+    const drafts = templates
+      ? mapResultsToInterventions(facts, labs, thresholds, templates)
+      : mapResultsToInterventions(facts, labs, thresholds);
 
     await replaceDraftsInDatabase(userId, drafts);
     try {

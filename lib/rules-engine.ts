@@ -658,8 +658,26 @@ function findingIsPresent(
   }
 }
 
+/**
+ * A minimal shape the engine needs to write a draft intervention row. The
+ * hard-coded FINDING_INTERVENTION_TABLE entries match this shape structurally
+ * (they carry a few extra fields the engine ignores); loadTemplatesForEngine
+ * from lib/intervention-templates.ts also returns rows in this shape after
+ * validation, so plan.ts can pass either source in.
+ */
+export type EngineInterventionPair = {
+  id: string;
+  trigger_finding: string;
+  plain_reason: string;
+  category: InterventionCategory;
+  title: string;
+  description: string;
+  clinical_basis: string;
+  needsInteractionCheck: boolean;
+};
+
 function toDraftRow(
-  pair: (typeof FINDING_INTERVENTION_TABLE)[number],
+  pair: EngineInterventionPair,
   facts: RulesFacts,
 ): DraftIntervention {
   const interaction =
@@ -681,15 +699,22 @@ function toDraftRow(
  * Turns questionnaire facts + lab / fake flags into draft intervention rows.
  * Every row stores both plain_reason and the exact clinical_basis.
  * Status is always 'draft'. Iodine is omitted when the Phase 1 hard-stop fires.
+ *
+ * `pairs` defaults to the hard-coded FINDING_INTERVENTION_TABLE so existing
+ * callers and tests keep working. plan.ts passes the DB-loaded templates in
+ * once loadTemplatesForEngine succeeds; if a DB row has an id the engine's
+ * findingIsPresent switch doesn't know about, it's silently skipped (default
+ * false) — matches the hard-coded array's behaviour for the same case.
  */
 export function mapResultsToInterventions(
   facts: RulesFacts,
   labs: LabInputs = PHASE1_LABS,
   thresholds: ClinicalThresholdValues = THRESHOLDS,
+  pairs: readonly EngineInterventionPair[] = FINDING_INTERVENTION_TABLE,
 ): DraftIntervention[] {
   const out: DraftIntervention[] = [];
 
-  for (const pair of FINDING_INTERVENTION_TABLE) {
+  for (const pair of pairs) {
     if (!findingIsPresent(pair.id, facts, labs, thresholds)) {
       continue;
     }

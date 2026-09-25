@@ -12,35 +12,80 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { FINDING_INTERVENTION_TABLE } from "./rules-engine";
 
-const SEED_PATH = resolve(
+const MIGRATIONS_DIR = resolve(
   __dirname,
   "..",
   "supabase",
   "migrations",
-  "20260925_seed_intervention_templates.sql",
 );
 
-const sql = readFileSync(SEED_PATH, "utf8");
+// Two migrations carry the template rows: the initial seed and the extension
+// that adds the engine-facing columns (plain_reason / description / category /
+// needs_interaction_check). Both are idempotent ON CONFLICT (code) DO UPDATE,
+// and the latter's re-insert becomes the effective content after both run.
+// The drift check validates against the extension migration since it's the
+// one plan.ts's engine flip depends on.
+const seedSql = readFileSync(
+  resolve(MIGRATIONS_DIR, "20260925_seed_intervention_templates.sql"),
+  "utf8",
+);
+const extendSql = readFileSync(
+  resolve(MIGRATIONS_DIR, "20260926_extend_intervention_templates_for_engine.sql"),
+  "utf8",
+);
 
 for (const entry of FINDING_INTERVENTION_TABLE) {
-  // The code must appear as the row's first quoted string. Match on a
-  // whole word between single quotes to avoid a false positive from a
-  // substring in a description.
   const codeRegex = new RegExp(`'${escapeRe(entry.id)}'`);
+  const findingRegex = new RegExp(`'${escapeRe(entry.trigger_finding)}'`);
+
+  // Original seed: every id + trigger_finding must be present.
   assert.equal(
-    codeRegex.test(sql),
+    codeRegex.test(seedSql),
     true,
-    `seed missing code for rules-engine id "${entry.id}"`,
+    `initial seed missing code for rules-engine id "${entry.id}"`,
+  );
+  assert.equal(
+    findingRegex.test(seedSql),
+    true,
+    `initial seed missing trigger_finding "${entry.trigger_finding}" for "${entry.id}"`,
   );
 
-  // The exact trigger_finding string must appear as an element in some
-  // ARRAY[...] literal so template lookup matches at runtime.
-  const findingRegex = new RegExp(`'${escapeRe(entry.trigger_finding)}'`);
+  // Extension seed: same fields must be present so plan.ts's DB read path
+  // matches all 14 findings. If either check fails, the engine will silently
+  // drop that intervention from users on the DB-backed path.
   assert.equal(
-    findingRegex.test(sql),
+    codeRegex.test(extendSql),
     true,
-    `seed missing trigger_finding "${entry.trigger_finding}" for "${entry.id}"`,
+    `extended seed missing code for rules-engine id "${entry.id}"`,
   );
+  assert.equal(
+    findingRegex.test(extendSql),
+    true,
+    `extended seed missing trigger_finding "${entry.trigger_finding}" for "${entry.id}"`,
+  );
+
+  // Category and plain_reason must also appear in the extended seed —
+  // toEngineTemplate drops any row missing either.
+  const categoryRegex = new RegExp(`'${escapeRe(entry.category)}'`);
+  assert.equal(
+    categoryRegex.test(extendSql),
+    true,
+    `extended seed missing category "${entry.category}" (needed for "${entry.id}")`,
+  );
+
+  const plainReasonRegex = new RegExp(
+    `'${escapeRe(entry.plain_reason.replace(/'/g, "''"))}'`,
+  );
+  // fasting_insulin's plain_reason interpolates a live threshold, so the
+  // seed carries a deliberately different generic string. Skip the exact
+  // check for that id — the extended seed still fills plain_reason.
+  if (entry.id !== "fasting_insulin") {
+    assert.equal(
+      plainReasonRegex.test(extendSql),
+      true,
+      `extended seed missing plain_reason for "${entry.id}"`,
+    );
+  }
 }
 
 function escapeRe(input: string): string {

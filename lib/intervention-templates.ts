@@ -16,8 +16,11 @@ import { messageFromUnknown, rawErrorText } from "@/lib/friendly-errors";
 import {
   parseActionSteps,
   parseResources,
+  toEngineTemplate,
   type ActionStep,
   type ActionStepKind,
+  type EngineTemplate,
+  type EngineTemplateCategory,
   type Resource,
   type ResourceKind,
 } from "@/lib/intervention-templates-parse";
@@ -26,8 +29,11 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 export {
   parseActionSteps,
   parseResources,
+  toEngineTemplate,
   type ActionStep,
   type ActionStepKind,
+  type EngineTemplate,
+  type EngineTemplateCategory,
   type Resource,
   type ResourceKind,
 };
@@ -126,4 +132,43 @@ export async function loadTemplateForTriggerFinding(
  */
 export function __clearTemplateCacheForTests(): void {
   cache.clear();
+}
+
+// ---------- Engine loader ----------
+
+const ENGINE_COLUMNS =
+  "code, title, rationale_md, trigger_findings, plain_reason, description, category, needs_interaction_check";
+
+/**
+ * Fetch all templates the rules engine needs. Returns null on any error so
+ * plan.ts falls back to lib/rules-engine.ts's hard-coded FINDING_INTERVENTION_TABLE.
+ *
+ * Rows that fail toEngineTemplate (missing plain_reason / description /
+ * category — typically an in-progress admin edit against the extended
+ * schema) are dropped from the returned array. The engine then simply
+ * won't emit that intervention; the next slice could layer per-id
+ * fallback onto the hard-coded array, but that's not needed until admin
+ * routinely edits templates.
+ */
+export async function loadTemplatesForEngine(): Promise<EngineTemplate[] | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const { data, error } = await supabase
+      .from("intervention_templates")
+      .select(ENGINE_COLUMNS)
+      .order("impact_score", { ascending: false });
+
+    if (error) {
+      return null;
+    }
+    const rows = Array.isArray(data) ? data : [];
+    const engineTemplates: EngineTemplate[] = [];
+    for (const row of rows) {
+      const template = toEngineTemplate(row);
+      if (template) engineTemplates.push(template);
+    }
+    return engineTemplates.length > 0 ? engineTemplates : null;
+  } catch {
+    return null;
+  }
 }

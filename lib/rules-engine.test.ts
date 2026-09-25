@@ -256,6 +256,73 @@ check("BMI stool rule respects a custom threshold override", () => {
   assert.equal(withDefault.recommended, false);
 });
 
+check(
+  "engine accepts DB-shaped pairs and produces equivalent rows",
+  () => {
+    // Simulate loadTemplatesForEngine returning the same 14 pairings via a
+    // different code path (would come from intervention_templates in prod).
+    const dbPairs = FINDING_INTERVENTION_TABLE.map((pair) => ({
+      id: pair.id,
+      trigger_finding: pair.trigger_finding,
+      plain_reason: pair.plain_reason,
+      category: pair.category,
+      title: pair.title,
+      description: pair.description,
+      clinical_basis: pair.clinical_basis,
+      needsInteractionCheck: pair.needsInteractionCheck,
+    }));
+
+    const factsBundle = facts({
+      stressMediumOrHigh: true,
+      dietaryIodineLow: true,
+      pollutantExposure: true,
+    });
+    const labsBundle = labs({
+      stoolDysbiosis: true,
+      stoolBetaGlucuronidaseRaised: true,
+      liverDetoxOrBarrierImpaired: true,
+      zonulinPositive: true,
+      undigestedProteinOrFat: true,
+      fastingInsulin: 12,
+      tsh: 5.2,
+      cortisolAbnormal: true,
+      snpMthfr: true,
+      inflammatoryOxidativeBurden: true,
+      oestrogenDetoxImpaired: true,
+      thyroidAntibodiesPositive: false,
+    });
+
+    const defaultRows = mapResultsToInterventions(factsBundle, labsBundle);
+    const dbRows = mapResultsToInterventions(
+      factsBundle,
+      labsBundle,
+      THRESHOLDS,
+      dbPairs,
+    );
+    assert.deepEqual(defaultRows, dbRows);
+  },
+);
+
+check("engine drops DB pairs whose id findingIsPresent doesn't know", () => {
+  const unknownPair = {
+    id: "future_finding_not_yet_in_engine",
+    trigger_finding: "Some future finding",
+    plain_reason: "reason",
+    category: "supplement" as const,
+    title: "Future",
+    description: "d",
+    clinical_basis: "cb",
+    needsInteractionCheck: false,
+  };
+  const rows = mapResultsToInterventions(
+    facts({}),
+    PHASE1_LABS,
+    THRESHOLDS,
+    [unknownPair],
+  );
+  assert.equal(rows.length, 0);
+});
+
 check("TSH iodine rule respects a custom threshold override", () => {
   const lowerTsh = { ...THRESHOLDS, tsh_subclinicalHypo: 4.0 };
   const withCustom = shouldOrderUrinaryIodine(
