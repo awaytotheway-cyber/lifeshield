@@ -16,9 +16,12 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
 import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import type { Goal } from "@/lib/goals";
+import { loadGoals } from "@/lib/goals-io";
 import {
   ALL_SLOTS,
   generateMealPlan,
+  goalToPreferTags,
   type MealPlanPayload,
   type MealPlanPreferences,
   type MealSlot,
@@ -59,6 +62,7 @@ export default function NewMealPlanScreen() {
   const [recipes, setRecipes] = useState<RecipeSummary[]>([]);
   const [recipesLoading, setRecipesLoading] = useState(true);
   const [recipesError, setRecipesError] = useState<string | null>(null);
+  const [activeGoals, setActiveGoals] = useState<Goal[]>([]);
 
   const [title, setTitle] = useState("This week");
   const [startDate, setStartDate] = useState(todayYmd());
@@ -90,7 +94,38 @@ export default function NewMealPlanScreen() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!userId) return;
+    let cancelled = false;
+    void loadGoals(userId).then((outcome) => {
+      if (cancelled) return;
+      if (outcome.ok) {
+        setActiveGoals(outcome.rows.filter((goal) => goal.status === "active"));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
   const availableTags = useMemo(() => uniqueTags(recipes), [recipes]);
+
+  // Goals with a mappable tag AND at least one recipe in the library carrying
+  // that tag — no point offering a chip that would filter to zero recipes.
+  const goalSuggestions = useMemo(() => {
+    if (activeGoals.length === 0 || availableTags.length === 0) return [];
+    const libraryTagsLower = new Set(
+      availableTags.map((tag) => tag.toLowerCase()),
+    );
+    return activeGoals
+      .map((goal) => {
+        const derived = goalToPreferTags(goal).filter((tag) =>
+          libraryTagsLower.has(tag.toLowerCase()),
+        );
+        return { goal, tags: derived };
+      })
+      .filter((entry) => entry.tags.length > 0);
+  }, [activeGoals, availableTags]);
 
   if (!session) return <Redirect href={routes.login} />;
 
@@ -129,6 +164,27 @@ export default function NewMealPlanScreen() {
     setAvoidTags((current) =>
       current.filter((t) => t.toLowerCase() !== tag.toLowerCase()),
     );
+    setPreview(null);
+  }
+
+  function applyGoalTags(tags: readonly string[]) {
+    if (tags.length === 0) return;
+    setPreferTags((current) => {
+      const lowered = new Set(current.map((t) => t.toLowerCase()));
+      const merged = [...current];
+      for (const tag of tags) {
+        if (!lowered.has(tag.toLowerCase())) {
+          merged.push(tag);
+          lowered.add(tag.toLowerCase());
+        }
+      }
+      return merged;
+    });
+    // A goal tag can't also be avoided.
+    setAvoidTags((current) => {
+      const suggested = new Set(tags.map((t) => t.toLowerCase()));
+      return current.filter((t) => !suggested.has(t.toLowerCase()));
+    });
     setPreview(null);
   }
 
@@ -261,6 +317,29 @@ export default function NewMealPlanScreen() {
               );
             })}
           </View>
+
+          {goalSuggestions.length > 0 ? (
+            <>
+              <Text style={styles.label}>From your goals</Text>
+              <Text style={styles.helper}>
+                Seed the prefer list from an active goal — one tap adds the
+                matching recipe tags.
+              </Text>
+              <View style={styles.chipRow}>
+                {goalSuggestions.map(({ goal, tags }) => (
+                  <Pressable
+                    key={`goal-${goal.id}`}
+                    onPress={() => applyGoalTags(tags)}
+                    style={[styles.chip, styles.chipGoal]}
+                  >
+                    <Text style={styles.chipLabel}>
+                      {goal.title} · {tags.join(", ")}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </>
+          ) : null}
 
           {availableTags.length > 0 ? (
             <>
@@ -424,6 +503,11 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: colors.primaryBlue },
   chipAvoidActive: { backgroundColor: colors.riskHigh },
   chipPreferActive: { backgroundColor: colors.riskLow },
+  chipGoal: {
+    backgroundColor: colors.glassChrome,
+    borderWidth: 1,
+    borderColor: colors.primaryBlue,
+  },
   chipLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,

@@ -361,3 +361,84 @@ function shiftYmd(source: string, days: number): string {
   parsed.setDate(parsed.getDate() + days);
   return ymd(parsed);
 }
+
+// ---------- Goal → prefer_tags mapping ----------
+
+/**
+ * Map a user goal's type/title into canonical recipe tags the meal-plan
+ * generator understands. Pure so the "new meal plan" screen can seed
+ * prefer_tags from active goals without an extra round-trip.
+ *
+ * The mapping keeps things concrete: only tags a seed recipe is likely to
+ * carry (see `supabase/migrations/20260926_recipes.sql`). An unknown goal
+ * type falls back to a normalised copy of itself — a goal called
+ * "mediterranean" seeds ["mediterranean"], which finds recipes carrying
+ * that tag literally, and matches nothing (harmless) otherwise.
+ *
+ * Kept close to the generator so both live in the same test file and the
+ * canonical-tag set has one owner.
+ */
+export function goalToPreferTags(
+  goal: { goal_type: string; title?: string | null },
+): string[] {
+  const raw = `${goal.goal_type ?? ""} ${goal.title ?? ""}`.toLowerCase();
+  const tags = new Set<string>();
+
+  const has = (needle: string) => raw.includes(needle);
+
+  if (has("high-protein") || has("high protein") || has("protein")) {
+    tags.add("high-protein");
+  }
+  if (has("vegan")) {
+    tags.add("vegan");
+  }
+  if (
+    has("vegetarian") ||
+    has("plant-based") ||
+    has("plant based") ||
+    /\bveg\b/.test(raw)
+  ) {
+    tags.add("vegetarian");
+  }
+  if (has("keto")) {
+    tags.add("keto");
+    tags.add("low-carb");
+  }
+  if (has("low-carb") || has("low carb")) {
+    tags.add("low-carb");
+  }
+  if (has("mediterranean")) {
+    tags.add("mediterranean");
+  }
+  if (has("quick") || has("fast") || has("busy")) {
+    tags.add("quick");
+  }
+  if (has("gluten-free") || has("gluten free")) {
+    tags.add("gluten-free");
+  }
+  if (has("dairy-free") || has("dairy free")) {
+    tags.add("dairy-free");
+  }
+  if (has("low-fodmap") || has("low fodmap") || has("fodmap")) {
+    tags.add("low-fodmap");
+  }
+  if (has("anti-inflammatory") || has("anti inflammatory") || has("inflammation")) {
+    tags.add("anti-inflammatory");
+  }
+
+  // Fallback: use the goal_type verbatim (kebab-cased). A goal type that
+  // already matches a canonical tag (e.g. "vegan") is caught above; this
+  // catches user-authored types like "paleo" or "whole30" that a recipe
+  // could plausibly carry.
+  if (tags.size === 0) {
+    const slug = (goal.goal_type ?? "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+    if (slug.length > 0 && slug !== "recommendation" && slug !== "self") {
+      tags.add(slug);
+    }
+  }
+
+  return Array.from(tags);
+}

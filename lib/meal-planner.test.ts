@@ -6,6 +6,7 @@ import {
   ALL_SLOTS,
   appendDay,
   generateMealPlan,
+  goalToPreferTags,
   removeLastDay,
   removeMeal,
   summarizePlan,
@@ -527,6 +528,66 @@ const samplePayload: MealPlanPayload = {
 
 assert.equal(removeLastDay(samplePayload).days.length, samplePayload.days.length - 1);
 assert.deepEqual(removeLastDay({ days: [] }), { days: [] });
+
+// ---------- goalToPreferTags ----------
+
+// Canonical mappings.
+assert.deepEqual(
+  goalToPreferTags({ goal_type: "high-protein", title: null }),
+  ["high-protein"],
+);
+assert.deepEqual(
+  goalToPreferTags({ goal_type: "protein", title: null }),
+  ["high-protein"],
+);
+assert.deepEqual(
+  goalToPreferTags({ goal_type: "vegan", title: null }),
+  ["vegan"],
+);
+// Vegetarian words include vegan-like intent; both tags come back so recipes
+// tagged either way surface.
+{
+  const tags = goalToPreferTags({
+    goal_type: "plant-based",
+    title: null,
+  });
+  assert.ok(tags.includes("vegetarian"), `expected vegetarian, got ${tags.join(",")}`);
+}
+// Keto seeds both keto and low-carb so early-adoption libraries still hit.
+{
+  const tags = goalToPreferTags({ goal_type: "keto", title: null });
+  assert.ok(tags.includes("keto"));
+  assert.ok(tags.includes("low-carb"));
+}
+// "low carb" (with space) normalises.
+{
+  const tags = goalToPreferTags({ goal_type: "low carb", title: null });
+  assert.ok(tags.includes("low-carb"));
+}
+// Quick + anti-inflammatory picked from goal title, even when goal_type is
+// generic ("diet").
+{
+  const tags = goalToPreferTags({
+    goal_type: "diet",
+    title: "Anti-inflammatory quick lunches",
+  });
+  assert.ok(tags.includes("anti-inflammatory"));
+  assert.ok(tags.includes("quick"));
+}
+// Unknown goal type falls back to a kebab-cased copy of itself.
+{
+  const tags = goalToPreferTags({ goal_type: "Whole 30", title: null });
+  assert.deepEqual(tags, ["whole-30"]);
+}
+// Non-informative fallback types ("recommendation" / "self") don't leak as
+// tags — they'd match nothing and clutter the chip row.
+assert.deepEqual(
+  goalToPreferTags({ goal_type: "recommendation", title: null }),
+  [],
+);
+assert.deepEqual(goalToPreferTags({ goal_type: "self", title: null }), []);
+// Empty in → empty out.
+assert.deepEqual(goalToPreferTags({ goal_type: "", title: "" }), []);
 
 // eslint-disable-next-line no-console
 console.log("meal-planner.test.ts OK");
