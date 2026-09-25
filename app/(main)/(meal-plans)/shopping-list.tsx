@@ -23,7 +23,9 @@ import { loadRecipesByIds } from "@/lib/recipes-io";
 import {
   aggregateIngredients,
   distinctProductIds,
+  formatAmountSummary,
   matchIngredientsToProducts,
+  summariseAmounts,
   type MatchedItem,
   type ProductLite,
   type ShoppingList,
@@ -307,9 +309,15 @@ function MatchedRow({
   added: boolean;
   onAdd: () => void;
 }) {
+  const amountLine = formatAmountSummary(
+    summariseAmounts(item.ingredient.amounts),
+  );
   return (
     <GlassCard intensity="card" style={styles.card}>
       <Text style={styles.ingredient}>{item.ingredient.display_name}</Text>
+      {amountLine ? (
+        <Text style={styles.quantity}>Need: {amountLine}</Text>
+      ) : null}
       <Text style={styles.productLine}>
         → {item.product.plain_name} · {item.product.currency}{" "}
         {item.product.price}
@@ -328,17 +336,18 @@ function MatchedRow({
 }
 
 function UnmatchedRow({ item }: { item: UnmatchedItem }) {
+  const amountLine = formatAmountSummary(
+    summariseAmounts(item.ingredient.amounts),
+  );
   return (
     <GlassCard intensity="card" style={styles.card}>
       <Text style={styles.ingredient}>{item.ingredient.display_name}</Text>
+      {amountLine ? (
+        <Text style={styles.quantity}>Need: {amountLine}</Text>
+      ) : null}
       <Text style={styles.meta}>
         used in {formatRecipeList(item.ingredient.used_in_recipes)}
       </Text>
-      {item.ingredient.amounts.length > 0 ? (
-        <Text style={styles.meta}>
-          amounts: {item.ingredient.amounts.join(", ")}
-        </Text>
-      ) : null}
     </GlassCard>
   );
 }
@@ -431,6 +440,12 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 14,
     color: colors.charcoal,
+    marginTop: spacing.micro,
+  },
+  quantity: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 13,
+    color: colors.primaryBlue,
     marginTop: spacing.micro,
   },
   meta: {

@@ -25,8 +25,9 @@ export type ProductLite = {
 
 /**
  * A single ingredient rolled up across every recipe in the plan that used it.
- * Free-form amounts are collected verbatim (we don't try to sum "1/2 cup"
- * with "a pinch") so the UI can display them as source hints.
+ * Free-form amounts are collected verbatim (we don't try to convert between
+ * cups and grams — see summariseAmounts for the per-unit totals the shopping
+ * list actually displays).
  */
 export type AggregatedIngredient = {
   /** Lowercased canonical name — used as the aggregation key. */
@@ -37,6 +38,17 @@ export type AggregatedIngredient = {
   used_in_recipes: string[];
   /** Free-form amount strings, first-seen order, one per occurrence. */
   amounts: string[];
+};
+
+/**
+ * Sum of parsed amount rows per unit ("cup" → 2.5, "tbsp" → 3) plus a
+ * count of amount strings we couldn't parse (a pinch, some, etc.).
+ * Rendered inline on the shopping list rows so a shopper knows how much
+ * to buy without cross-referencing every recipe.
+ */
+export type AmountSummary = {
+  by_unit: Record<string, number>;
+  unknown_count: number;
 };
 
 export type MatchedItem = {
@@ -206,4 +218,165 @@ export function distinctProductIds(matched: readonly MatchedItem[]): string[] {
     out.push(item.product.id);
   }
   return out;
+}
+
+// ---------- Amount parsing + per-unit summary ----------
+
+const UNIT_ALIASES: Record<string, string> = {
+  // volume
+  cup: "cup",
+  cups: "cup",
+  c: "cup",
+  tbsp: "tbsp",
+  tablespoon: "tbsp",
+  tablespoons: "tbsp",
+  tsp: "tsp",
+  teaspoon: "tsp",
+  teaspoons: "tsp",
+  ml: "ml",
+  milliliter: "ml",
+  milliliters: "ml",
+  millilitre: "ml",
+  millilitres: "ml",
+  l: "l",
+  liter: "l",
+  liters: "l",
+  litre: "l",
+  litres: "l",
+  // mass
+  g: "g",
+  gram: "g",
+  grams: "g",
+  gm: "g",
+  kg: "kg",
+  kilogram: "kg",
+  kilograms: "kg",
+  mg: "mg",
+  milligram: "mg",
+  milligrams: "mg",
+  oz: "oz",
+  ounce: "oz",
+  ounces: "oz",
+  lb: "lb",
+  lbs: "lb",
+  pound: "lb",
+  pounds: "lb",
+  // counts
+  clove: "clove",
+  cloves: "clove",
+  slice: "slice",
+  slices: "slice",
+  piece: "piece",
+  pieces: "piece",
+  can: "can",
+  cans: "can",
+  pinch: "pinch",
+  pinches: "pinch",
+};
+
+/**
+ * Parse a free-form amount string into a numeric value + normalised unit.
+ * Handles:
+ *   - plain numbers ("2")
+ *   - decimals ("1.5")
+ *   - fractions ("1/2")
+ *   - mixed numbers ("1 1/2")
+ *   - plain unit-less values ("2" alone → unit "")
+ *   - unit aliases via UNIT_ALIASES (cups → cup, tbsp/tablespoon → tbsp, …)
+ *
+ * Returns null when the string can't be parsed — the caller counts it in
+ * `unknown_count` rather than defaulting to 0 (which would mislead a
+ * shopper into thinking they need none of that ingredient).
+ */
+export function parseAmount(
+  raw: string,
+): { value: number; unit: string } | null {
+  const text = raw.trim().toLowerCase();
+  if (!text) return null;
+
+  // Extract the leading numeric portion (with fractions / mixed numbers).
+  // Order matters — a bare "1" would otherwise swallow the first digit of
+  // "1/2" via the plain-integer alternative, so mixed and fraction forms
+  // are tried first.
+  const match = text.match(
+    /^(?<value>\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)\s*(?<unit>[a-z]*)/,
+  );
+  if (!match || !match.groups) return null;
+  const valueRaw = match.groups.value.trim();
+  const unitRaw = match.groups.unit.trim();
+
+  const value = parseNumericAmount(valueRaw);
+  if (value === null) return null;
+
+  const normalisedUnit = unitRaw ? (UNIT_ALIASES[unitRaw] ?? unitRaw) : "";
+  return { value, unit: normalisedUnit };
+}
+
+function parseNumericAmount(text: string): number | null {
+  const parts = text.split(/\s+/);
+  let total = 0;
+  for (const part of parts) {
+    if (part.includes("/")) {
+      const [num, den] = part.split("/");
+      const n = Number(num);
+      const d = Number(den);
+      if (!Number.isFinite(n) || !Number.isFinite(d) || d === 0) return null;
+      total += n / d;
+    } else {
+      const n = Number(part);
+      if (!Number.isFinite(n)) return null;
+      total += n;
+    }
+  }
+  return Number.isFinite(total) ? total : null;
+}
+
+/**
+ * Sum the given amount strings per unit. Unparseable entries land in
+ * `unknown_count`. Values are rounded to 3 decimals to keep floating-point
+ * jitter out of the UI ("2.9999999999 cup").
+ */
+export function summariseAmounts(
+  amounts: readonly string[],
+): AmountSummary {
+  const by_unit: Record<string, number> = {};
+  let unknown_count = 0;
+  for (const raw of amounts) {
+    const parsed = parseAmount(raw);
+    if (!parsed) {
+      unknown_count += 1;
+      continue;
+    }
+    const prev = by_unit[parsed.unit] ?? 0;
+    by_unit[parsed.unit] = Number((prev + parsed.value).toFixed(3));
+  }
+  return { by_unit, unknown_count };
+}
+
+/**
+ * Human-readable summary line: "2 cup + 3 tbsp + 1 more".
+ * Empty-unit values render as bare counts ("2"). Returns an empty string
+ * when nothing was parseable AND no unknowns were logged (caller then
+ * hides the line).
+ */
+export function formatAmountSummary(summary: AmountSummary): string {
+  const parts: string[] = [];
+  const units = Object.keys(summary.by_unit).sort();
+  for (const unit of units) {
+    const value = summary.by_unit[unit];
+    parts.push(unit ? `${formatNumber(value)} ${unit}` : formatNumber(value));
+  }
+  if (summary.unknown_count > 0) {
+    parts.push(
+      `${summary.unknown_count} ${
+        summary.unknown_count === 1 ? "more" : "more amounts"
+      }`,
+    );
+  }
+  return parts.join(" + ");
+}
+
+function formatNumber(value: number): string {
+  if (Number.isInteger(value)) return String(value);
+  return value.toFixed(2).replace(/\.?0+$/, "");
 }

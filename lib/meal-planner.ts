@@ -34,6 +34,14 @@ export const ALL_SLOTS: readonly MealSlot[] = [
 export type MealPlanPreferences = {
   slots: readonly MealSlot[];
   avoid_tags: readonly string[];
+  /**
+   * Recipes tagged with any of these get first pick per slot, before the
+   * slot-tag bucket. Typical use: seed from an active goal
+   * (goal_type "high-protein" → prefer_tags ["high-protein"]).
+   *
+   * Optional to keep existing meal_plans rows loading without a migration.
+   */
+  prefer_tags?: readonly string[];
 };
 
 export type MealEntry = {
@@ -136,7 +144,28 @@ export function generateMealPlan(
     };
   }
 
+  const preferTagSet = new Set(
+    (preferences.prefer_tags ?? [])
+      .map((tag) => tag.trim().toLowerCase())
+      .filter((tag) => tag.length > 0),
+  );
+  // Preferred pool: filtered recipes carrying at least one prefer tag. Order
+  // is preserved from the input so callers that sort ahead of time get the
+  // rotation they expect.
+  const preferredPool =
+    preferTagSet.size > 0
+      ? filtered.filter((recipe) =>
+          recipe.tags.some((tag) => preferTagSet.has(tag.toLowerCase())),
+        )
+      : [];
+
   const buckets: Record<MealSlot, RecipeSummary[]> = {
+    breakfast: [],
+    lunch: [],
+    dinner: [],
+    snack: [],
+  };
+  const preferredBuckets: Record<MealSlot, RecipeSummary[]> = {
     breakfast: [],
     lunch: [],
     dinner: [],
@@ -144,8 +173,13 @@ export function generateMealPlan(
   };
   for (const recipe of filtered) {
     const tags = recipe.tags.map((t) => t.toLowerCase());
+    const isPreferred =
+      preferTagSet.size > 0 && tags.some((tag) => preferTagSet.has(tag));
     for (const slot of ALL_SLOTS) {
-      if (tags.includes(slot)) buckets[slot].push(recipe);
+      if (tags.includes(slot)) {
+        buckets[slot].push(recipe);
+        if (isPreferred) preferredBuckets[slot].push(recipe);
+      }
     }
   }
 
@@ -157,9 +191,17 @@ export function generateMealPlan(
   while (dateCursor.getTime() <= stopAt.getTime()) {
     const meals: MealEntry[] = [];
     for (const slot of preferences.slots) {
-      const bucket = buckets[slot];
-      // Fall back to the whole filtered pool if the slot has nothing tagged.
-      const pool = bucket.length > 0 ? bucket : filtered;
+      // Priority: slot-tagged preferred → slot-tagged → preferred → filtered.
+      // Each fallback fires only when the more specific bucket is empty, so
+      // "prefer high-protein dinners" still fills breakfast/lunch normally.
+      const pool =
+        preferredBuckets[slot].length > 0
+          ? preferredBuckets[slot]
+          : buckets[slot].length > 0
+            ? buckets[slot]
+            : preferredPool.length > 0
+              ? preferredPool
+              : filtered;
       if (pool.length === 0) continue;
       const offset = SLOT_OFFSETS[slot];
       const pick = pool[(dayIndex + offset) % pool.length];
@@ -209,4 +251,113 @@ function ymd(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+// ---------- In-place plan mutations ----------
+
+/**
+ * Swap the recipe assigned to a specific (date, slot). Returns a new payload;
+ * the source is not mutated. When the day/slot isn't present the payload
+ * comes back unchanged — the caller's optimistic update stays consistent
+ * with the DB write it triggers.
+ */
+export function swapMeal(
+  payload: MealPlanPayload,
+  date: string,
+  slot: MealSlot,
+  nextRecipe: Pick<RecipeSummary, "id" | "slug" | "name">,
+): MealPlanPayload {
+  const days = payload.days.map((day) => {
+    if (day.date !== date) return day;
+    let matched = false;
+    const meals = day.meals.map((meal) => {
+      if (meal.slot !== slot) return meal;
+      matched = true;
+      return {
+        slot,
+        recipe_id: nextRecipe.id,
+        recipe_slug: nextRecipe.slug,
+        recipe_name: nextRecipe.name,
+      };
+    });
+    // If the slot wasn't present today, append it. This lets the detail
+    // screen "add breakfast to this day" without a dedicated add helper.
+    if (!matched) {
+      meals.push({
+        slot,
+        recipe_id: nextRecipe.id,
+        recipe_slug: nextRecipe.slug,
+        recipe_name: nextRecipe.name,
+      });
+    }
+    return { ...day, meals };
+  });
+  return { days };
+}
+
+/**
+ * Remove a meal from a specific (date, slot). No-op if the slot isn't
+ * present. Empty days are kept — an empty day is a valid state; the user
+ * removes the day itself via `removeLastDay`.
+ */
+export function removeMeal(
+  payload: MealPlanPayload,
+  date: string,
+  slot: MealSlot,
+): MealPlanPayload {
+  const days = payload.days.map((day) => {
+    if (day.date !== date) return day;
+    return {
+      ...day,
+      meals: day.meals.filter((meal) => meal.slot !== slot),
+    };
+  });
+  return { days };
+}
+
+/**
+ * Append one day to the plan, filled with the same slot/prefer/avoid rules
+ * as the original preferences. The date is the day after the current last
+ * day (or `start_date_if_empty` when the plan has no days).
+ *
+ * Returns the mutation outcome plus the new payload. The generator can fail
+ * (e.g. avoid_tags now filters everything), in which case the payload is
+ * unchanged.
+ */
+export function appendDay(
+  payload: MealPlanPayload,
+  recipes: readonly RecipeSummary[],
+  preferences: MealPlanPreferences,
+  start_date_if_empty: string,
+): GeneratePlanOutcome {
+  const lastDay = payload.days[payload.days.length - 1];
+  const nextDate = lastDay
+    ? shiftYmd(lastDay.date, 1)
+    : start_date_if_empty;
+  const outcome = generateMealPlan({
+    recipes,
+    preferences,
+    start_date: nextDate,
+    end_date: nextDate,
+  });
+  if (!outcome.ok) return outcome;
+  return {
+    ok: true,
+    plan: { days: [...payload.days, ...outcome.plan.days] },
+  };
+}
+
+/**
+ * Drop the last day from the plan. Idempotent on an empty plan.
+ */
+export function removeLastDay(payload: MealPlanPayload): MealPlanPayload {
+  if (payload.days.length === 0) return payload;
+  return { days: payload.days.slice(0, -1) };
+}
+
+function shiftYmd(source: string, days: number): string {
+  const parsed = new Date(`${source}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return source;
+  parsed.setDate(parsed.getDate() + days);
+  return ymd(parsed);
 }

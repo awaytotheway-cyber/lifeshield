@@ -4,8 +4,12 @@
 import assert from "node:assert/strict";
 import {
   ALL_SLOTS,
+  appendDay,
   generateMealPlan,
+  removeLastDay,
+  removeMeal,
   summarizePlan,
+  swapMeal,
   type MealPlanPayload,
   type MealSlot,
 } from "./meal-planner";
@@ -302,6 +306,226 @@ assert.deepEqual(summarizePlan({ days: [] }), {
 
 // ALL_SLOTS is a stable set.
 assert.deepEqual(ALL_SLOTS, ["breakfast", "lunch", "dinner", "snack"]);
+
+// ---------- prefer_tags ----------
+
+// Preferred pool wins per-slot when a match exists.
+{
+  const lib: RecipeSummary[] = [
+    recipe("Chicken Salad", ["lunch"]),
+    recipe("Protein Bowl", ["lunch", "high-protein"]),
+    recipe("Steak Plate", ["dinner", "high-protein"]),
+    recipe("Veggie Curry", ["dinner"]),
+  ];
+  const outcome = generateMealPlan({
+    recipes: lib,
+    preferences: {
+      slots: ["lunch", "dinner"],
+      avoid_tags: [],
+      prefer_tags: ["high-protein"],
+    },
+    start_date: "2026-09-25",
+    end_date: "2026-09-25",
+  });
+  assert.equal(outcome.ok, true);
+  if (!outcome.ok) throw new Error("expected ok");
+  const lunch = outcome.plan.days[0].meals.find((m) => m.slot === "lunch");
+  const dinner = outcome.plan.days[0].meals.find((m) => m.slot === "dinner");
+  assert.equal(lunch?.recipe_name, "Protein Bowl");
+  assert.equal(dinner?.recipe_name, "Steak Plate");
+}
+
+// prefer_tags with no matches for that slot falls back to the slot bucket.
+{
+  const lib: RecipeSummary[] = [
+    recipe("Oats", ["breakfast"]),
+    recipe("Steak Plate", ["dinner", "high-protein"]),
+  ];
+  const outcome = generateMealPlan({
+    recipes: lib,
+    preferences: {
+      slots: ["breakfast"],
+      avoid_tags: [],
+      prefer_tags: ["high-protein"],
+    },
+    start_date: "2026-09-25",
+    end_date: "2026-09-25",
+  });
+  assert.equal(outcome.ok, true);
+  if (!outcome.ok) throw new Error("expected ok");
+  assert.equal(outcome.plan.days[0].meals[0].recipe_name, "Oats");
+}
+
+// prefer_tags is case-insensitive.
+{
+  const lib: RecipeSummary[] = [
+    recipe("Bowl", ["lunch", "High-Protein"]),
+    recipe("Salad", ["lunch"]),
+  ];
+  const outcome = generateMealPlan({
+    recipes: lib,
+    preferences: {
+      slots: ["lunch"],
+      avoid_tags: [],
+      prefer_tags: ["HIGH-PROTEIN"],
+    },
+    start_date: "2026-09-25",
+    end_date: "2026-09-25",
+  });
+  assert.equal(outcome.ok, true);
+  if (!outcome.ok) throw new Error("expected ok");
+  assert.equal(outcome.plan.days[0].meals[0].recipe_name, "Bowl");
+}
+
+// Empty prefer_tags is a no-op (backwards-compatible with old preferences).
+{
+  const noPref = generateMealPlan({
+    recipes: library,
+    preferences: { slots: ["breakfast"], avoid_tags: [] },
+    start_date: "2026-09-25",
+    end_date: "2026-09-25",
+  });
+  const emptyPref = generateMealPlan({
+    recipes: library,
+    preferences: { slots: ["breakfast"], avoid_tags: [], prefer_tags: [] },
+    start_date: "2026-09-25",
+    end_date: "2026-09-25",
+  });
+  assert.deepEqual(noPref, emptyPref);
+}
+
+// ---------- swapMeal ----------
+
+const samplePayload: MealPlanPayload = {
+  days: [
+    {
+      date: "2026-09-25",
+      meals: [
+        {
+          slot: "breakfast",
+          recipe_id: "a",
+          recipe_slug: "a",
+          recipe_name: "A",
+        },
+        {
+          slot: "lunch",
+          recipe_id: "b",
+          recipe_slug: "b",
+          recipe_name: "B",
+        },
+      ],
+    },
+    {
+      date: "2026-09-26",
+      meals: [
+        {
+          slot: "breakfast",
+          recipe_id: "a",
+          recipe_slug: "a",
+          recipe_name: "A",
+        },
+      ],
+    },
+  ],
+};
+
+// Swap replaces one slot in one day; other days untouched.
+{
+  const next = swapMeal(samplePayload, "2026-09-25", "breakfast", {
+    id: "x",
+    slug: "x",
+    name: "X",
+  });
+  assert.equal(next.days[0].meals[0].recipe_id, "x");
+  assert.equal(next.days[0].meals[1].recipe_id, "b");
+  // Day 2 unchanged.
+  assert.equal(next.days[1].meals[0].recipe_id, "a");
+  // Source is not mutated.
+  assert.equal(samplePayload.days[0].meals[0].recipe_id, "a");
+}
+
+// Swap on a slot the day doesn't have — appends the slot to that day.
+{
+  const next = swapMeal(samplePayload, "2026-09-26", "dinner", {
+    id: "d",
+    slug: "d",
+    name: "D",
+  });
+  const day2 = next.days.find((day) => day.date === "2026-09-26")!;
+  assert.equal(day2.meals.length, 2);
+  assert.equal(
+    day2.meals.some((meal) => meal.slot === "dinner" && meal.recipe_id === "d"),
+    true,
+  );
+}
+
+// Swap on an absent date is a no-op.
+{
+  const next = swapMeal(samplePayload, "2026-12-01", "breakfast", {
+    id: "z",
+    slug: "z",
+    name: "Z",
+  });
+  assert.deepEqual(next, samplePayload);
+}
+
+// ---------- removeMeal ----------
+
+{
+  const next = removeMeal(samplePayload, "2026-09-25", "lunch");
+  assert.equal(next.days[0].meals.length, 1);
+  assert.equal(next.days[0].meals[0].slot, "breakfast");
+  // Idempotent when the slot is already absent.
+  const again = removeMeal(next, "2026-09-25", "lunch");
+  assert.deepEqual(again, next);
+}
+
+// ---------- appendDay ----------
+
+{
+  const outcome = appendDay(
+    samplePayload,
+    library,
+    { slots: ["breakfast"], avoid_tags: [] },
+    "2026-09-25",
+  );
+  assert.equal(outcome.ok, true);
+  if (!outcome.ok) throw new Error("expected ok");
+  assert.equal(outcome.plan.days.length, samplePayload.days.length + 1);
+  assert.equal(outcome.plan.days[outcome.plan.days.length - 1].date, "2026-09-27");
+}
+
+// appendDay on an empty payload uses the fallback start date.
+{
+  const outcome = appendDay(
+    { days: [] },
+    library,
+    { slots: ["breakfast"], avoid_tags: [] },
+    "2026-10-01",
+  );
+  assert.equal(outcome.ok, true);
+  if (!outcome.ok) throw new Error("expected ok");
+  assert.equal(outcome.plan.days.length, 1);
+  assert.equal(outcome.plan.days[0].date, "2026-10-01");
+}
+
+// appendDay bubbles up generator failures without mutating the payload.
+{
+  const outcome = appendDay(
+    samplePayload,
+    library,
+    { slots: [], avoid_tags: [] },
+    "2026-09-25",
+  );
+  assert.equal(outcome.ok, false);
+  if (outcome.ok) throw new Error("expected error");
+  assert.equal(outcome.error.code, "no_slots");
+}
+
+// ---------- removeLastDay ----------
+
+assert.equal(removeLastDay(samplePayload).days.length, samplePayload.days.length - 1);
+assert.deepEqual(removeLastDay({ days: [] }), { days: [] });
 
 // eslint-disable-next-line no-console
 console.log("meal-planner.test.ts OK");

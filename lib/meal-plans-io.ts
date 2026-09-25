@@ -257,6 +257,47 @@ export async function updateMealPlanStatus(
   }
 }
 
+export type UpdatePayloadOutcome =
+  | { ok: true; row: MealPlanRow }
+  | { ok: false; message: string };
+
+/**
+ * Replace the whole plan payload (used by in-place editing on the detail
+ * screen). Kept as a full-payload write rather than a jsonb path patch so
+ * the mutation semantics match lib/meal-planner's pure helpers.
+ */
+export async function updateMealPlanPayload(
+  id: string,
+  plan: MealPlanPayload,
+): Promise<UpdatePayloadOutcome> {
+  if (!isSupabaseConfigured) {
+    return { ok: false, message: "Supabase not configured." };
+  }
+  try {
+    const { data, error } = await withTimeout(
+      supabase
+        .from("meal_plans")
+        .update({ plan, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .select(COLUMNS)
+        .single(),
+      "Updating meal plan",
+    );
+    if (error || !data) {
+      return {
+        ok: false,
+        message: messageFromUnknown(error, "Couldn't update meal plan."),
+      };
+    }
+    return { ok: true, row: toRow(data as Record<string, unknown>) };
+  } catch (error) {
+    return {
+      ok: false,
+      message: messageFromUnknown(error, "Couldn't update meal plan."),
+    };
+  }
+}
+
 export type DeletePlanOutcome =
   | { ok: true }
   | { ok: false; message: string };

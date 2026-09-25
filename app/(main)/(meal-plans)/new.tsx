@@ -69,6 +69,7 @@ export default function NewMealPlanScreen() {
     "dinner",
   ]);
   const [avoidTags, setAvoidTags] = useState<string[]>([]);
+  const [preferTags, setPreferTags] = useState<string[]>([]);
   const [preview, setPreview] = useState<MealPlanPayload | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -110,6 +111,24 @@ export default function NewMealPlanScreen() {
         ? current.filter((t) => t.toLowerCase() !== lower)
         : [...current, tag];
     });
+    // A tag can't be both preferred and avoided; drop from prefer if it was.
+    setPreferTags((current) =>
+      current.filter((t) => t.toLowerCase() !== tag.toLowerCase()),
+    );
+    setPreview(null);
+  }
+
+  function togglePreferTag(tag: string) {
+    setPreferTags((current) => {
+      const lower = tag.toLowerCase();
+      const has = current.some((t) => t.toLowerCase() === lower);
+      return has
+        ? current.filter((t) => t.toLowerCase() !== lower)
+        : [...current, tag];
+    });
+    setAvoidTags((current) =>
+      current.filter((t) => t.toLowerCase() !== tag.toLowerCase()),
+    );
     setPreview(null);
   }
 
@@ -118,6 +137,7 @@ export default function NewMealPlanScreen() {
     const preferences: MealPlanPreferences = {
       slots,
       avoid_tags: avoidTags,
+      prefer_tags: preferTags,
     };
     const outcome = generateMealPlan({
       recipes,
@@ -145,7 +165,11 @@ export default function NewMealPlanScreen() {
       start_date: startDate,
       end_date: endDate,
       plan: preview,
-      preferences: { slots, avoid_tags: avoidTags },
+      preferences: {
+        slots,
+        avoid_tags: avoidTags,
+        prefer_tags: preferTags,
+      },
     });
     setSaving(false);
     if (!outcome.ok) {
@@ -240,6 +264,38 @@ export default function NewMealPlanScreen() {
 
           {availableTags.length > 0 ? (
             <>
+              <Text style={styles.label}>Prefer tags</Text>
+              <Text style={styles.helper}>
+                Recipes with any of these get first pick per slot. Great for
+                goal-driven planning (e.g. "high-protein").
+              </Text>
+              <View style={styles.chipRow}>
+                {availableTags.map((tag) => {
+                  const active = preferTags.some(
+                    (t) => t.toLowerCase() === tag.toLowerCase(),
+                  );
+                  return (
+                    <Pressable
+                      key={`prefer-${tag}`}
+                      onPress={() => togglePreferTag(tag)}
+                      style={[
+                        styles.chip,
+                        active ? styles.chipPreferActive : null,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.chipLabel,
+                          active ? styles.chipLabelActive : null,
+                        ]}
+                      >
+                        {tag}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+
               <Text style={styles.label}>Avoid tags</Text>
               <Text style={styles.helper}>
                 Recipes with any of these tags won't appear in the plan.
@@ -251,7 +307,7 @@ export default function NewMealPlanScreen() {
                   );
                   return (
                     <Pressable
-                      key={tag}
+                      key={`avoid-${tag}`}
                       onPress={() => toggleAvoidTag(tag)}
                       style={[
                         styles.chip,
@@ -367,6 +423,7 @@ const styles = StyleSheet.create({
   },
   chipActive: { backgroundColor: colors.primaryBlue },
   chipAvoidActive: { backgroundColor: colors.riskHigh },
+  chipPreferActive: { backgroundColor: colors.riskLow },
   chipLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,

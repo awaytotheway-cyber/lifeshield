@@ -5,7 +5,10 @@ import assert from "node:assert/strict";
 import {
   aggregateIngredients,
   distinctProductIds,
+  formatAmountSummary,
   matchIngredientsToProducts,
+  parseAmount,
+  summariseAmounts,
   type ProductLite,
   type RecipeWithIngredients,
 } from "./shopping-list";
@@ -235,6 +238,102 @@ const ingredients = aggregateIngredients([
   ];
   assert.deepEqual(distinctProductIds(items), ["p"]);
 }
+
+// ---------- parseAmount ----------
+
+// Basic decimals + integers.
+assert.deepEqual(parseAmount("2"), { value: 2, unit: "" });
+assert.deepEqual(parseAmount("1.5"), { value: 1.5, unit: "" });
+
+// Fractions.
+assert.deepEqual(parseAmount("1/2"), { value: 0.5, unit: "" });
+assert.deepEqual(parseAmount("3/4"), { value: 0.75, unit: "" });
+
+// Mixed numbers.
+{
+  const parsed = parseAmount("1 1/2");
+  assert.equal(parsed?.value, 1.5);
+  assert.equal(parsed?.unit, "");
+}
+
+// Unit aliases normalise.
+assert.deepEqual(parseAmount("2 cups"), { value: 2, unit: "cup" });
+assert.deepEqual(parseAmount("1 tablespoon"), { value: 1, unit: "tbsp" });
+assert.deepEqual(parseAmount("500 grams"), { value: 500, unit: "g" });
+assert.deepEqual(parseAmount("1 lb"), { value: 1, unit: "lb" });
+
+// Numeric with attached unit (no space).
+assert.deepEqual(parseAmount("100g"), { value: 100, unit: "g" });
+
+// Unrecognised unit strings pass through as-is (lowercased).
+assert.deepEqual(parseAmount("3 twigs"), { value: 3, unit: "twigs" });
+
+// Non-numeric leading tokens fail to parse.
+assert.equal(parseAmount("a pinch"), null);
+assert.equal(parseAmount("some"), null);
+assert.equal(parseAmount(""), null);
+assert.equal(parseAmount("   "), null);
+
+// Zero-denominator fraction fails.
+assert.equal(parseAmount("1/0"), null);
+
+// ---------- summariseAmounts ----------
+
+{
+  const summary = summariseAmounts([
+    "1/2 cup",
+    "1 cup",
+    "2 tbsp",
+    "1 tablespoon",
+    "a pinch",
+    "some",
+    "3 cloves",
+  ]);
+  assert.equal(summary.by_unit["cup"], 1.5);
+  assert.equal(summary.by_unit["tbsp"], 3);
+  assert.equal(summary.by_unit["clove"], 3);
+  assert.equal(summary.unknown_count, 2);
+}
+
+// Empty input.
+assert.deepEqual(summariseAmounts([]), { by_unit: {}, unknown_count: 0 });
+
+// Unit-less values group together under the empty-string key.
+{
+  const summary = summariseAmounts(["2", "3", "1.5"]);
+  assert.equal(summary.by_unit[""], 6.5);
+  assert.equal(summary.unknown_count, 0);
+}
+
+// Floating-point jitter is rounded away.
+{
+  const summary = summariseAmounts(["0.1 cup", "0.2 cup"]);
+  // 0.1 + 0.2 !== 0.3 in raw floats, but the rounding fixes it.
+  assert.equal(summary.by_unit["cup"], 0.3);
+}
+
+// ---------- formatAmountSummary ----------
+
+assert.equal(
+  formatAmountSummary({ by_unit: { cup: 2, tbsp: 3 }, unknown_count: 0 }),
+  "2 cup + 3 tbsp",
+);
+assert.equal(
+  formatAmountSummary({ by_unit: { cup: 1.5 }, unknown_count: 1 }),
+  "1.5 cup + 1 more",
+);
+assert.equal(
+  formatAmountSummary({ by_unit: {}, unknown_count: 2 }),
+  "2 more amounts",
+);
+assert.equal(
+  formatAmountSummary({ by_unit: { "": 4 }, unknown_count: 0 }),
+  "4",
+);
+assert.equal(
+  formatAmountSummary({ by_unit: {}, unknown_count: 0 }),
+  "",
+);
 
 // eslint-disable-next-line no-console
 console.log("shopping-list.test.ts OK");
