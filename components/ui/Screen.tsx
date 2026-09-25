@@ -6,11 +6,9 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, gradients, spacing } from "@/lib/design-tokens";
+import { colors, hairline, spacing } from "@/lib/design-tokens";
 
 type ScreenProps = {
   children: ReactNode;
@@ -25,24 +23,12 @@ type ScreenProps = {
   centered?: boolean;
 };
 
-/** Soft blurred blobs so glass cards never sit on flat white. */
-function Atmosphere() {
-  return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <LinearGradient
-        colors={[...gradients.screen]}
-        locations={[...gradients.screenLocations]}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <View style={[styles.blob, styles.blobTL]} />
-      <View style={[styles.blob, styles.blobBR]} />
-      <View style={[styles.blob, styles.blobMid]} />
-    </View>
-  );
-}
-
+/**
+ * SwimClub screen shell — flat paper-white canvas, no blur, no gradient.
+ * Hierarchy comes from surface contrast and hairline borders inside the
+ * content, not from atmosphere behind it. Footer is a hairline-topped
+ * white band pinned to the bottom (no shadow, no glass).
+ */
 export function Screen({
   children,
   scroll = false,
@@ -82,7 +68,6 @@ export function Screen({
 
   return (
     <View style={styles.root}>
-      <Atmosphere />
       <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
         <KeyboardAvoidingView
           style={styles.flex}
@@ -91,11 +76,11 @@ export function Screen({
           {header ? <View style={pad}>{header}</View> : null}
           {body}
           {footer ? (
-            <GlassCard intensity="chrome" style={styles.footerGlass}>
+            <View style={styles.footerBar}>
               <SafeAreaView edges={["bottom"]} style={[styles.footer, pad]}>
                 {footer}
               </SafeAreaView>
-            </GlassCard>
+            </View>
           ) : null}
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -106,7 +91,7 @@ export function Screen({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.iceBlue,
+    backgroundColor: colors.paperWhite,
   },
   safe: {
     flex: 1,
@@ -116,52 +101,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 16,
-    paddingBottom: 32,
+    paddingTop: spacing.base,
+    paddingBottom: spacing.lg,
   },
   scrollWithFooter: {
-    paddingBottom: 16,
+    paddingBottom: spacing.base,
   },
   paddedY: {
-    paddingVertical: 32,
+    paddingVertical: spacing.lg,
   },
   center: {
     justifyContent: "center",
   },
-  footerGlass: {
-    overflow: "hidden",
+  footerBar: {
+    backgroundColor: colors.paperWhite,
+    borderTopWidth: hairline,
+    borderTopColor: colors.inkBlack,
   },
   footer: {
     backgroundColor: "transparent",
-    paddingTop: 8,
-    paddingBottom: 8,
-  },
-  blob: {
-    position: "absolute",
-    borderRadius: 999,
-    opacity: 0.45,
-  },
-  blobTL: {
-    width: 220,
-    height: 220,
-    top: -60,
-    left: -40,
-    backgroundColor: colors.skyBlue,
-  },
-  blobBR: {
-    width: 260,
-    height: 260,
-    bottom: -80,
-    right: -60,
-    backgroundColor: colors.primaryBlue,
-    opacity: 0.18,
-  },
-  blobMid: {
-    width: 160,
-    height: 160,
-    top: 280,
-    right: -30,
-    backgroundColor: "#A8C4F8",
-    opacity: 0.35,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
   },
 });

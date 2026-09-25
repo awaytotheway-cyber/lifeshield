@@ -5,14 +5,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { BlurView } from "expo-blur";
 
-import {
-  colors,
-  glassBlurIntensity,
-  radius,
-  shadows,
-} from "@/lib/design-tokens";
+import { colors, hairline } from "@/lib/design-tokens";
 
 export type GlassIntensity = "card" | "chrome" | "sheet" | "button";
 export type GlassTint = "light" | "dark";
@@ -20,24 +14,26 @@ export type GlassTint = "light" | "dark";
 type GlassCardProps = {
   children?: ReactNode;
   intensity?: GlassIntensity;
-  /** light = white frosted fill; dark = navy tint (rare chrome). */
+  /**
+   * "light" (default) renders as a white paper card with a 1px black
+   * outline. "dark" renders on the capsule-black hero surface with a
+   * white outline — used for the hero product bands and the outlined
+   * CTA on dark.
+   */
   tint?: GlassTint;
   style?: StyleProp<ViewStyle>;
 };
 
-const radiusFor: Record<GlassIntensity, number> = {
-  card: radius.card,
-  chrome: 0,
-  sheet: radius.sheet,
-  button: radius.button,
-};
-
 /**
- * Frosted glass panel — BlurView + semi-transparent fill.
- * Prefer this public API on new screens. GlassSurface re-exports the same look.
- * Never place on a plain white background; Screen provides ice-blue atmosphere.
+ * SwimClub flat card — same public API as the old GlassCard so existing
+ * screens keep compiling, but the rendered chrome is now hairline paper
+ * (or hairline dark for tint="dark"). No blur, no shadow, no radius.
  *
- * Children sit above the blur layers so padding / alignItems on `style` still work.
+ * The old "intensity" prop is kept for callsite compatibility but no
+ * longer changes the visual — every intensity is a flat paper panel with
+ * the same hairline outline. The "chrome" intensity (used by legacy
+ * footer bars) skips the border so it can sit flush against a Screen
+ * edge without doubling up the divider.
  */
 export function GlassCard({
   children,
@@ -46,32 +42,16 @@ export function GlassCard({
   style,
 }: GlassCardProps) {
   const isDark = tint === "dark";
-  const fill = isDark ? colors.glassFillDark : colors.glassFill;
-  const blurTint = isDark ? "dark" : "light";
-  const corner = radiusFor[intensity];
+  const bg = isDark ? colors.capsuleBlack : colors.paperWhite;
+  const borderColor = isDark ? colors.paperWhite : colors.inkBlack;
 
   const shape: ViewStyle = {
-    borderRadius: intensity === "sheet" ? undefined : corner,
-    borderTopLeftRadius: intensity === "sheet" ? radius.sheet : corner,
-    borderTopRightRadius: intensity === "sheet" ? radius.sheet : corner,
-    borderWidth: intensity === "chrome" ? StyleSheet.hairlineWidth : 1,
-    borderColor: colors.glassBorder,
+    backgroundColor: bg,
+    borderWidth: intensity === "chrome" ? 0 : hairline,
+    borderColor,
+    borderRadius: 0,
     overflow: "hidden",
-    ...(intensity === "card" || intensity === "sheet" ? shadows.card : {}),
   };
 
-  return (
-    <View style={[shape, style]}>
-      <BlurView
-        intensity={glassBlurIntensity}
-        tint={blurTint}
-        style={StyleSheet.absoluteFill}
-      />
-      <View
-        pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { backgroundColor: fill }]}
-      />
-      {children}
-    </View>
-  );
+  return <View style={[shape, style]}>{children}</View>;
 }

@@ -1,17 +1,28 @@
 // Must be the first import so NativeWind styles load before anything renders.
 import "../global.css";
 
+// SwimClub-style clinical-dossier system: Space Grotesk (workhorse),
+// JetBrains Mono (uppercase micro-copy), VT323 (LCD/pixel display).
+// Manrope/Inter/DM Mono still load so any screen holding an old fontFamily
+// literal keeps rendering during the conversion.
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
 } from "@expo-google-fonts/inter";
+import { JetBrainsMono_400Regular } from "@expo-google-fonts/jetbrains-mono";
 import {
   Manrope_600SemiBold,
   Manrope_700Bold,
   Manrope_800ExtraBold,
 } from "@expo-google-fonts/manrope";
+import {
+  SpaceGrotesk_400Regular,
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_700Bold,
+} from "@expo-google-fonts/space-grotesk";
+import { VT323_400Regular } from "@expo-google-fonts/vt323";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -87,6 +98,11 @@ function AuthGate() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    SpaceGrotesk_400Regular,
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_700Bold,
+    JetBrainsMono_400Regular,
+    VT323_400Regular,
     Manrope_600SemiBold,
     Manrope_700Bold,
     Manrope_800ExtraBold,
