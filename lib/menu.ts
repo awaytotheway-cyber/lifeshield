@@ -22,6 +22,7 @@ export type MenuItemId =
   | "book_test"
   | "genetic_test"
   | "medications"
+  | "activity"
   | "notifications"
   | "profile"
   | "settings";
@@ -53,6 +54,7 @@ export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "book_test",
   "genetic_test",
   "medications",
+  "activity",
   "goals",
   "reminders",
   "notifications",
@@ -158,6 +160,14 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     href: routes.medications,
     match: ["/medications", "(medications)"],
     requiresFlag: "supplements_v2",
+  },
+  activity: {
+    id: "activity",
+    label: "Activity",
+    icon: "activity",
+    href: routes.activity,
+    match: ["/activity", "(activity)"],
+    requiresFlag: "activity_v1",
   },
   notifications: {
     id: "notifications",

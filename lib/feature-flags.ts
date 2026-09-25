@@ -52,7 +52,13 @@ export type FeatureFlagName =
    * raise a pending_manual order; result ingestion + rules-engine
    * integration wait on a signed partner contract.
    */
-  | "genetic_testing_v1";
+  | "genetic_testing_v1"
+  /**
+   * Phase G — activity tracking. Users can log daily steps / active
+   * minutes / heart-rate resting manually today; HealthKit and Google Fit
+   * bridges plug into lib/activity-source when the native modules land.
+   */
+  | "activity_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
@@ -64,6 +70,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     test_booking_v1: false,
     supplements_v2: false,
     genetic_testing_v1: false,
+    activity_v1: false,
   });
 
 /**

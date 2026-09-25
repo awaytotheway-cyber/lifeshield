@@ -66,6 +66,9 @@ export const routes = {
   ordersGenetic: "/(main)/(orders)/genetic" as Href,
   medications: "/(main)/(medications)" as Href,
   medicationsNew: "/(main)/(medications)/new" as Href,
+  activity: "/(main)/(activity)" as Href,
+  activityLog: "/(main)/(activity)/log" as Href,
+  activitySources: "/(main)/(settings)/health-permissions" as Href,
 } as const;
 
 export function resultDetailHref(id: string): Href {
