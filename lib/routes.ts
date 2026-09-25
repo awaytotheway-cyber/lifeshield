@@ -100,6 +100,10 @@ export function mealPlanHref(id: string): Href {
   return `/(main)/(meal-plans)/plan?id=${encodeURIComponent(id)}` as Href;
 }
 
+export function mealPlanShoppingListHref(id: string): Href {
+  return `/(main)/(meal-plans)/shopping-list?id=${encodeURIComponent(id)}` as Href;
+}
+
 /**
  * Deep-link to the New Goal screen with fields prefilled from an intervention.
  * The screen validates on save, so if any param is missing or malformed the

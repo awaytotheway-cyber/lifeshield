@@ -150,6 +150,70 @@ export async function loadRecipeBySlug(
   }
 }
 
+export type LoadRecipesByIdsOutcome =
+  | { ok: true; rows: Recipe[] }
+  | { ok: false; rows: []; message: string };
+
+/**
+ * Batch fetch by id, used by the meal-plan shopping list. Preserves the
+ * caller's id order in the returned array (missing ids are omitted, not
+ * padded with nulls — the caller can diff against the requested set).
+ */
+export async function loadRecipesByIds(
+  ids: readonly string[],
+): Promise<LoadRecipesByIdsOutcome> {
+  if (ids.length === 0) return { ok: true, rows: [] };
+  if (!isSupabaseConfigured) return { ok: true, rows: [] };
+  try {
+    const { data, error } = await withTimeout(
+      supabase.from("recipes").select(FULL_COLUMNS).in("id", ids as string[]),
+      "Loading recipes",
+    );
+    if (error) {
+      return {
+        ok: false,
+        rows: [],
+        message: messageFromUnknown(error, "Couldn't load recipes."),
+      };
+    }
+    const byId = new Map<string, Recipe>();
+    for (const raw of (data ?? []) as Record<string, unknown>[]) {
+      const recipe: Recipe = {
+        id: raw.id as string,
+        slug: raw.slug as string,
+        name: raw.name as string,
+        description: (raw.description as string | null) ?? null,
+        ingredients: parseIngredients(raw.ingredients),
+        instructions: parseInstructions(raw.instructions),
+        nutrition: parseNutrition(raw.nutrition),
+        tags: Array.isArray(raw.tags)
+          ? (raw.tags.filter((t): t is string => typeof t === "string"))
+          : [],
+        prep_minutes: (raw.prep_minutes as number | null) ?? null,
+        cook_minutes: (raw.cook_minutes as number | null) ?? null,
+        servings: (raw.servings as number | null) ?? null,
+        image_url: (raw.image_url as string | null) ?? null,
+        active: Boolean(raw.active),
+        created_at: raw.created_at as string,
+        updated_at: raw.updated_at as string,
+      };
+      byId.set(recipe.id, recipe);
+    }
+    const rows: Recipe[] = [];
+    for (const id of ids) {
+      const recipe = byId.get(id);
+      if (recipe) rows.push(recipe);
+    }
+    return { ok: true, rows };
+  } catch (error) {
+    return {
+      ok: false,
+      rows: [],
+      message: messageFromUnknown(error, "Couldn't load recipes."),
+    };
+  }
+}
+
 // ---------- Favorites ----------
 
 export type LoadFavoritesOutcome =

@@ -27,7 +27,11 @@ import {
   type MealPlanStatus,
 } from "@/lib/meal-plans-io";
 import { fontFamily } from "@/lib/typography";
-import { recipeHref, routes } from "@/lib/routes";
+import {
+  mealPlanShoppingListHref,
+  recipeHref,
+  routes,
+} from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
@@ -139,6 +143,9 @@ export default function MealPlanDetailScreen() {
           onSetStatus={onSetStatus}
           onDelete={onDelete}
           onOpenRecipe={(slug) => router.push(recipeHref(slug))}
+          onOpenShoppingList={() =>
+            router.push(mealPlanShoppingListHref(row.id))
+          }
         />
       ) : null}
     </Screen>
@@ -151,12 +158,14 @@ function PlanBody({
   onSetStatus,
   onDelete,
   onOpenRecipe,
+  onOpenShoppingList,
 }: {
   row: MealPlanRow;
   busy: boolean;
   onSetStatus: (next: MealPlanStatus) => void;
   onDelete: () => void;
   onOpenRecipe: (slug: string) => void;
+  onOpenShoppingList: () => void;
 }) {
   const summary = summarizePlan(row.plan);
   return (
@@ -174,6 +183,11 @@ function PlanBody({
       </GlassCard>
 
       <View style={styles.actionRow}>
+        <PrimaryButton
+          title="Shopping list"
+          disabled={busy || summary.meal_count === 0}
+          onPress={onOpenShoppingList}
+        />
         {row.status === "active" ? (
           <>
             <SecondaryButton
@@ -188,7 +202,7 @@ function PlanBody({
             />
           </>
         ) : (
-          <PrimaryButton
+          <SecondaryButton
             title="Reactivate"
             disabled={busy}
             onPress={() => onSetStatus("active")}
