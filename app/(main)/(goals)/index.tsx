@@ -18,7 +18,7 @@ import {
 import { computeDailyStreak, computeProgress, type Goal } from "@/lib/goals";
 import { loadGoals } from "@/lib/goals-io";
 import { fontFamily } from "@/lib/typography";
-import { routes } from "@/lib/routes";
+import { goalHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -143,7 +143,9 @@ export default function GoalsScreen() {
             data={active}
             scrollEnabled={false}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <GoalCard goal={item} />}
+            renderItem={({ item }) => (
+              <GoalCard goal={item} onOpen={() => router.push(goalHref(item.id))} />
+            )}
             ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
           />
         </View>
@@ -156,7 +158,13 @@ export default function GoalsScreen() {
             data={other}
             scrollEnabled={false}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <GoalCard goal={item} muted />}
+            renderItem={({ item }) => (
+              <GoalCard
+                goal={item}
+                muted
+                onOpen={() => router.push(goalHref(item.id))}
+              />
+            )}
             ItemSeparatorComponent={() => <View style={{ height: spacing.sm }} />}
           />
         </View>
@@ -165,7 +173,15 @@ export default function GoalsScreen() {
   );
 }
 
-function GoalCard({ goal, muted }: { goal: Goal; muted?: boolean }) {
+function GoalCard({
+  goal,
+  muted,
+  onOpen,
+}: {
+  goal: Goal;
+  muted?: boolean;
+  onOpen: () => void;
+}) {
   // No stored progress yet on the list screen — show target + cadence.
   const progress = computeProgress(goal, [], new Date());
   const streak = computeDailyStreak(goal, [], new Date());
@@ -183,12 +199,7 @@ function GoalCard({ goal, muted }: { goal: Goal; muted?: boolean }) {
           <Text style={styles.metaText}>· {streak}-day streak</Text>
         ) : null}
       </View>
-      <TextButton
-        title="Open"
-        onPress={() => {
-          // Detail screen ships in the next slice; keep the row tappable.
-        }}
-      />
+      <TextButton title="Open" onPress={onOpen} />
     </GlassCard>
   );
 }

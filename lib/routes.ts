@@ -79,6 +79,10 @@ export function orderPlacedHref(orderId: string): Href {
   return `/(main)/(orders)?placed=1&orderId=${encodeURIComponent(orderId)}` as Href;
 }
 
+export function goalHref(id: string): Href {
+  return `/(main)/(goals)/goal?id=${encodeURIComponent(id)}` as Href;
+}
+
 /**
  * Deep-link to the New Goal screen with fields prefilled from an intervention.
  * The screen validates on save, so if any param is missing or malformed the
