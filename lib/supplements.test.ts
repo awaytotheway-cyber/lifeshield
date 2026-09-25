@@ -7,6 +7,8 @@ import {
   isSubscribable,
   parseSubscriptionOptions,
   parseSupportingStudies,
+  validateMedicationDraft,
+  type MedicationDraft,
   type MedicationLite,
 } from "./supplements";
 
@@ -218,6 +220,65 @@ assert.equal(
 assert.deepEqual(parseSupportingStudies(null), []);
 assert.deepEqual(parseSupportingStudies("garbage"), []);
 assert.deepEqual(parseSupportingStudies({ not: "array" }), []);
+
+// ---------- validateMedicationDraft ----------
+
+const validMed: MedicationDraft = {
+  name: "Vitamin D",
+  dosage: "2000 IU",
+  frequency: "Daily",
+  start_date: null,
+  end_date: null,
+  notes: null,
+  contraindication_codes: [],
+  active: true,
+};
+
+assert.deepEqual(validateMedicationDraft(validMed), []);
+
+// Blank name.
+{
+  const errs = validateMedicationDraft({ ...validMed, name: "  " });
+  assert.equal(errs.some((e) => e.field === "name"), true);
+}
+
+// Bad start_date format.
+{
+  const errs = validateMedicationDraft({
+    ...validMed,
+    start_date: "25/09/2026",
+  });
+  assert.equal(errs.some((e) => e.field === "start_date"), true);
+}
+
+// End before start.
+{
+  const errs = validateMedicationDraft({
+    ...validMed,
+    start_date: "2026-09-25",
+    end_date: "2026-09-24",
+  });
+  assert.equal(errs.some((e) => e.field === "end_date"), true);
+}
+
+// Dates in the right order pass.
+assert.deepEqual(
+  validateMedicationDraft({
+    ...validMed,
+    start_date: "2026-09-25",
+    end_date: "2026-10-25",
+  }),
+  [],
+);
+
+// Bad end_date format alone.
+{
+  const errs = validateMedicationDraft({
+    ...validMed,
+    end_date: "not a date",
+  });
+  assert.equal(errs.some((e) => e.field === "end_date"), true);
+}
 
 // eslint-disable-next-line no-console
 console.log("supplements.test.ts OK");

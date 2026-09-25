@@ -16,6 +16,61 @@ export type MedicationLite = {
   active: boolean;
 };
 
+export type MedicationDraft = {
+  name: string;
+  dosage: string | null;
+  frequency: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  notes: string | null;
+  contraindication_codes: string[];
+  active: boolean;
+};
+
+export type MedicationValidationError = {
+  field: "name" | "start_date" | "end_date";
+  message: string;
+};
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Returns [] when the draft is savable. Name required; dates optional but
+ * must be YYYY-MM-DD when set, and end_date must be on or after start_date.
+ */
+export function validateMedicationDraft(
+  draft: MedicationDraft,
+): MedicationValidationError[] {
+  const errors: MedicationValidationError[] = [];
+  if (!draft.name || draft.name.trim().length === 0) {
+    errors.push({ field: "name", message: "Add the medication name." });
+  }
+  if (draft.start_date && !ISO_DATE.test(draft.start_date)) {
+    errors.push({
+      field: "start_date",
+      message: "Start date must be YYYY-MM-DD.",
+    });
+  }
+  if (draft.end_date) {
+    if (!ISO_DATE.test(draft.end_date)) {
+      errors.push({
+        field: "end_date",
+        message: "End date must be YYYY-MM-DD.",
+      });
+    } else if (
+      draft.start_date &&
+      ISO_DATE.test(draft.start_date) &&
+      draft.end_date < draft.start_date
+    ) {
+      errors.push({
+        field: "end_date",
+        message: "End date can't be before the start date.",
+      });
+    }
+  }
+  return errors;
+}
+
 export type ContraindicationWarning = {
   code: string;
   medication_names: string[];

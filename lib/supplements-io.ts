@@ -5,7 +5,7 @@
  */
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import type { MedicationLite } from "@/lib/supplements";
+import type { MedicationDraft, MedicationLite } from "@/lib/supplements";
 
 const REQUEST_TIMEOUT_MS = 15_000;
 
@@ -78,24 +78,9 @@ export async function loadOwnMedications(
         message: messageFromUnknown(error, "Couldn't load medications."),
       };
     }
-    const rows = ((data ?? []) as Record<string, unknown>[]).map((raw) => ({
-      id: raw.id as string,
-      user_id: raw.user_id as string,
-      name: raw.name as string,
-      dosage: (raw.dosage as string | null) ?? null,
-      frequency: (raw.frequency as string | null) ?? null,
-      start_date: (raw.start_date as string | null) ?? null,
-      end_date: (raw.end_date as string | null) ?? null,
-      notes: (raw.notes as string | null) ?? null,
-      contraindication_codes: Array.isArray(raw.contraindication_codes)
-        ? (raw.contraindication_codes.filter(
-            (v): v is string => typeof v === "string",
-          ))
-        : [],
-      active: Boolean(raw.active),
-      created_at: raw.created_at as string,
-      updated_at: raw.updated_at as string,
-    }));
+    const rows = ((data ?? []) as Record<string, unknown>[]).map(
+      toMedicationRow,
+    );
     return { ok: true, rows };
   } catch (error) {
     return {
@@ -116,6 +101,165 @@ export function toMedicationLites(
     contraindication_codes: row.contraindication_codes,
     active: row.active,
   }));
+}
+
+// ---------- Medications write path ----------
+
+export type CreateMedicationOutcome =
+  | { ok: true; row: MedicationRow }
+  | { ok: false; message: string };
+
+export async function createMedication(
+  userId: string,
+  draft: MedicationDraft,
+): Promise<CreateMedicationOutcome> {
+  if (!isSupabaseConfigured) {
+    return {
+      ok: false,
+      message: "Add your Supabase keys before saving medications.",
+    };
+  }
+  try {
+    const { data, error } = await withTimeout(
+      supabase
+        .from("medications")
+        .insert({
+          user_id: userId,
+          name: draft.name.trim(),
+          dosage: nullIfBlank(draft.dosage),
+          frequency: nullIfBlank(draft.frequency),
+          start_date: nullIfBlank(draft.start_date),
+          end_date: nullIfBlank(draft.end_date),
+          notes: nullIfBlank(draft.notes),
+          contraindication_codes: draft.contraindication_codes,
+          active: draft.active,
+        })
+        .select(MEDICATION_COLUMNS)
+        .single(),
+      "Saving medication",
+    );
+    if (error || !data) {
+      return {
+        ok: false,
+        message: messageFromUnknown(error, "Couldn't save this medication."),
+      };
+    }
+    return { ok: true, row: toMedicationRow(data as Record<string, unknown>) };
+  } catch (error) {
+    return {
+      ok: false,
+      message: messageFromUnknown(error, "Couldn't save this medication."),
+    };
+  }
+}
+
+export type UpdateMedicationOutcome =
+  | { ok: true; row: MedicationRow }
+  | { ok: false; message: string };
+
+export async function updateMedication(
+  medicationId: string,
+  draft: MedicationDraft,
+): Promise<UpdateMedicationOutcome> {
+  if (!isSupabaseConfigured) {
+    return { ok: false, message: "Supabase not configured." };
+  }
+  try {
+    const { data, error } = await withTimeout(
+      supabase
+        .from("medications")
+        .update({
+          name: draft.name.trim(),
+          dosage: nullIfBlank(draft.dosage),
+          frequency: nullIfBlank(draft.frequency),
+          start_date: nullIfBlank(draft.start_date),
+          end_date: nullIfBlank(draft.end_date),
+          notes: nullIfBlank(draft.notes),
+          contraindication_codes: draft.contraindication_codes,
+          active: draft.active,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", medicationId)
+        .select(MEDICATION_COLUMNS)
+        .single(),
+      "Updating medication",
+    );
+    if (error || !data) {
+      return {
+        ok: false,
+        message: messageFromUnknown(
+          error,
+          "Couldn't update this medication.",
+        ),
+      };
+    }
+    return { ok: true, row: toMedicationRow(data as Record<string, unknown>) };
+  } catch (error) {
+    return {
+      ok: false,
+      message: messageFromUnknown(error, "Couldn't update this medication."),
+    };
+  }
+}
+
+export type DeleteMedicationOutcome =
+  | { ok: true }
+  | { ok: false; message: string };
+
+export async function deleteMedication(
+  medicationId: string,
+): Promise<DeleteMedicationOutcome> {
+  if (!isSupabaseConfigured) {
+    return { ok: false, message: "Supabase not configured." };
+  }
+  try {
+    const { error } = await withTimeout(
+      supabase.from("medications").delete().eq("id", medicationId),
+      "Deleting medication",
+    );
+    if (error) {
+      return {
+        ok: false,
+        message: messageFromUnknown(
+          error,
+          "Couldn't delete this medication.",
+        ),
+      };
+    }
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      message: messageFromUnknown(error, "Couldn't delete this medication."),
+    };
+  }
+}
+
+function nullIfBlank(value: string | null): string | null {
+  if (value === null || value === undefined) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function toMedicationRow(raw: Record<string, unknown>): MedicationRow {
+  return {
+    id: raw.id as string,
+    user_id: raw.user_id as string,
+    name: raw.name as string,
+    dosage: (raw.dosage as string | null) ?? null,
+    frequency: (raw.frequency as string | null) ?? null,
+    start_date: (raw.start_date as string | null) ?? null,
+    end_date: (raw.end_date as string | null) ?? null,
+    notes: (raw.notes as string | null) ?? null,
+    contraindication_codes: Array.isArray(raw.contraindication_codes)
+      ? (raw.contraindication_codes.filter(
+          (v): v is string => typeof v === "string",
+        ))
+      : [],
+    active: Boolean(raw.active),
+    created_at: raw.created_at as string,
+    updated_at: raw.updated_at as string,
+  };
 }
 
 // ---------- Product supplement metadata ----------

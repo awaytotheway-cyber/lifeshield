@@ -17,6 +17,7 @@ assert.equal(DEFAULT_MENU_ORDER.includes("reminders"), true);
 assert.equal(DEFAULT_MENU_ORDER.includes("recipes"), true);
 assert.equal(DEFAULT_MENU_ORDER.includes("meal_plans"), true);
 assert.equal(DEFAULT_MENU_ORDER.includes("book_test"), true);
+assert.equal(DEFAULT_MENU_ORDER.includes("medications"), true);
 
 // Each flag-gated row declares its own flag; nothing else in the default set
 // carries a flag requirement.
@@ -25,12 +26,14 @@ assert.equal(MENU_ITEMS.reminders.requiresFlag, "reminders_v1");
 assert.equal(MENU_ITEMS.recipes.requiresFlag, "recipes_v1");
 assert.equal(MENU_ITEMS.meal_plans.requiresFlag, "meal_planner_v1");
 assert.equal(MENU_ITEMS.book_test.requiresFlag, "test_booking_v1");
+assert.equal(MENU_ITEMS.medications.requiresFlag, "supplements_v2");
 const FLAG_GATED: readonly string[] = [
   "goals",
   "reminders",
   "recipes",
   "meal_plans",
   "book_test",
+  "medications",
 ];
 for (const id of DEFAULT_MENU_ORDER) {
   if (FLAG_GATED.includes(id)) continue;
@@ -111,6 +114,18 @@ assert.equal(
   true,
 );
 assert.equal(menuItemIsActive(MENU_ITEMS.book_test, "/(main)/home"), false);
+assert.equal(
+  menuItemIsActive(MENU_ITEMS.medications, "/(main)/(medications)"),
+  true,
+);
+assert.equal(
+  menuItemIsActive(
+    MENU_ITEMS.medications,
+    "/(main)/(medications)/medication?id=x",
+  ),
+  true,
+);
+assert.equal(menuItemIsActive(MENU_ITEMS.medications, "/(main)/home"), false);
 
 // eslint-disable-next-line no-console
 console.log("menu.test.ts OK");
