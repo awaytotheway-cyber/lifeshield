@@ -11,15 +11,17 @@ import {
 } from "./menu";
 import type { FeatureFlagName } from "./feature-flags";
 
-// Goals and Reminders are in the default order.
+// Goals, Reminders and Recipes are in the default order.
 assert.equal(DEFAULT_MENU_ORDER.includes("goals"), true);
 assert.equal(DEFAULT_MENU_ORDER.includes("reminders"), true);
+assert.equal(DEFAULT_MENU_ORDER.includes("recipes"), true);
 
-// Goals requires goals_v1; Reminders requires reminders_v1; nothing else in
-// the default set carries a flag requirement.
+// Each flag-gated row declares its own flag; nothing else in the default set
+// carries a flag requirement.
 assert.equal(MENU_ITEMS.goals.requiresFlag, "goals_v1");
 assert.equal(MENU_ITEMS.reminders.requiresFlag, "reminders_v1");
-const FLAG_GATED: readonly string[] = ["goals", "reminders"];
+assert.equal(MENU_ITEMS.recipes.requiresFlag, "recipes_v1");
+const FLAG_GATED: readonly string[] = ["goals", "reminders", "recipes"];
 for (const id of DEFAULT_MENU_ORDER) {
   if (FLAG_GATED.includes(id)) continue;
   assert.equal(
@@ -79,6 +81,12 @@ assert.equal(
   menuItemIsActive(MENU_ITEMS.reminders, "/(main)/(settings)/notifications"),
   false,
 );
+assert.equal(menuItemIsActive(MENU_ITEMS.recipes, "/(main)/(recipes)"), true);
+assert.equal(
+  menuItemIsActive(MENU_ITEMS.recipes, "/(main)/(recipes)/recipe?slug=x"),
+  true,
+);
+assert.equal(menuItemIsActive(MENU_ITEMS.recipes, "/(main)/home"), false);
 
 // eslint-disable-next-line no-console
 console.log("menu.test.ts OK");

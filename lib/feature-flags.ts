@@ -23,13 +23,19 @@ export type FeatureFlagName =
    * action steps, resources, and per-intervention progress log. Additive to
    * the existing detail screen; when off, users see the current view.
    */
-  | "plan_v2";
+  | "plan_v2"
+  /**
+   * Phase C — recipe library browse + favorite. Meal planning and the
+   * ingredient → cart bridge are separate flags on a later slice.
+   */
+  | "recipes_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
     goals_v1: false,
     reminders_v1: false,
     plan_v2: false,
+    recipes_v1: false,
   });
 
 /**
