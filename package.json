@@ -86,6 +86,7 @@
     "test:menu": "npx --yes tsx --tsconfig tsconfig.json lib/menu.test.ts",
     "test:reminders": "npx --yes tsx --tsconfig tsconfig.json lib/reminders.test.ts",
     "test:intervention-templates": "npx --yes tsx --tsconfig tsconfig.json lib/intervention-templates.test.ts",
+    "test:intervention-templates-seed": "npx --yes tsx --tsconfig tsconfig.json lib/intervention-templates-seed.test.ts",
     "test:intervention-progress": "npx --yes tsx --tsconfig tsconfig.json lib/intervention-progress.test.ts",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
