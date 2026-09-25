@@ -18,6 +18,7 @@ assert.equal(FEATURE_FLAG_DEFAULTS.recipes_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.meal_planner_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.test_booking_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.supplements_v2, false);
+assert.equal(FEATURE_FLAG_DEFAULTS.genetic_testing_v1, false);
 assert.equal(isFeatureEnabled(null, "goals_v1"), false);
 assert.equal(isFeatureEnabled(undefined, "goals_v1"), false);
 assert.equal(isFeatureEnabled({}, "goals_v1"), false);
@@ -27,6 +28,7 @@ assert.equal(isFeatureEnabled(null, "recipes_v1"), false);
 assert.equal(isFeatureEnabled(null, "meal_planner_v1"), false);
 assert.equal(isFeatureEnabled(null, "test_booking_v1"), false);
 assert.equal(isFeatureEnabled(null, "supplements_v2"), false);
+assert.equal(isFeatureEnabled(null, "genetic_testing_v1"), false);
 
 // A per-user boolean override wins over the default.
 assert.equal(
@@ -71,6 +73,7 @@ assert.deepEqual(fromUnknown, {
   meal_planner_v1: false,
   test_booking_v1: false,
   supplements_v2: false,
+  genetic_testing_v1: false,
 });
 
 // eslint-disable-next-line no-console

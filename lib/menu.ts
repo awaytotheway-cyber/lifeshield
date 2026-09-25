@@ -20,6 +20,7 @@ export type MenuItemId =
   | "recipes"
   | "meal_plans"
   | "book_test"
+  | "genetic_test"
   | "medications"
   | "notifications"
   | "profile"
@@ -50,6 +51,7 @@ export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "recipes",
   "meal_plans",
   "book_test",
+  "genetic_test",
   "medications",
   "goals",
   "reminders",
@@ -140,6 +142,14 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     href: routes.ordersBook,
     match: ["/book", "orders/book"],
     requiresFlag: "test_booking_v1",
+  },
+  genetic_test: {
+    id: "genetic_test",
+    label: "Genetic testing",
+    icon: "share-2",
+    href: routes.ordersGenetic,
+    match: ["/genetic", "orders/genetic"],
+    requiresFlag: "genetic_testing_v1",
   },
   medications: {
     id: "medications",
@@ -253,6 +263,9 @@ export function menuItemIsActive(item: MenuItem, pathname: string): boolean {
   }
   if (item.id === "book_test") {
     return path.includes("orders/book") || path.endsWith("/book");
+  }
+  if (item.id === "genetic_test") {
+    return path.includes("orders/genetic") || path.endsWith("/genetic");
   }
   if (item.id === "medications") {
     return path.includes("/medications") || path.includes("(medications)");

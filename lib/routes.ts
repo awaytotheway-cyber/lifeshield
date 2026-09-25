@@ -63,6 +63,7 @@ export const routes = {
   mealPlans: "/(main)/(meal-plans)" as Href,
   mealPlansNew: "/(main)/(meal-plans)/new" as Href,
   ordersBook: "/(main)/(orders)/book" as Href,
+  ordersGenetic: "/(main)/(orders)/genetic" as Href,
   medications: "/(main)/(medications)" as Href,
   medicationsNew: "/(main)/(medications)/new" as Href,
 } as const;

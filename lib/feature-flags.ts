@@ -46,7 +46,13 @@ export type FeatureFlagName =
    * the user's medications, supporting-studies list, subscription info.
    * Cart-level subscription plumbing waits on Stripe Subscriptions.
    */
-  | "supplements_v2";
+  | "supplements_v2"
+  /**
+   * Phase F — genetic panel ordering. Users can browse the catalogue and
+   * raise a pending_manual order; result ingestion + rules-engine
+   * integration wait on a signed partner contract.
+   */
+  | "genetic_testing_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
@@ -57,6 +63,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     meal_planner_v1: false,
     test_booking_v1: false,
     supplements_v2: false,
+    genetic_testing_v1: false,
   });
 
 /**
