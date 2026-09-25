@@ -84,6 +84,7 @@
     "test:feature-flags": "npx --yes tsx --tsconfig tsconfig.json lib/feature-flags.test.ts",
     "test:goals": "npx --yes tsx --tsconfig tsconfig.json lib/goals.test.ts",
     "test:menu": "npx --yes tsx --tsconfig tsconfig.json lib/menu.test.ts",
+    "test:reminders": "npx --yes tsx --tsconfig tsconfig.json lib/reminders.test.ts",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
   },

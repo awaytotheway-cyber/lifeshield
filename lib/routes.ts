@@ -57,6 +57,8 @@ export const routes = {
   pathwayB: "/pathway-b" as Href,
   goals: "/(main)/(goals)" as Href,
   goalsNew: "/(main)/(goals)/new" as Href,
+  reminders: "/(main)/(reminders)" as Href,
+  remindersNew: "/(main)/(reminders)/new" as Href,
 } as const;
 
 export function resultDetailHref(id: string): Href {
@@ -81,6 +83,10 @@ export function orderPlacedHref(orderId: string): Href {
 
 export function goalHref(id: string): Href {
   return `/(main)/(goals)/goal?id=${encodeURIComponent(id)}` as Href;
+}
+
+export function reminderHref(id: string): Href {
+  return `/(main)/(reminders)/reminder?id=${encodeURIComponent(id)}` as Href;
 }
 
 /**

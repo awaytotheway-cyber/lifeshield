@@ -12,9 +12,11 @@ import {
 
 // Default is off, and a null profile returns the default.
 assert.equal(FEATURE_FLAG_DEFAULTS.goals_v1, false);
+assert.equal(FEATURE_FLAG_DEFAULTS.reminders_v1, false);
 assert.equal(isFeatureEnabled(null, "goals_v1"), false);
 assert.equal(isFeatureEnabled(undefined, "goals_v1"), false);
 assert.equal(isFeatureEnabled({}, "goals_v1"), false);
+assert.equal(isFeatureEnabled(null, "reminders_v1"), false);
 
 // A per-user boolean override wins over the default.
 assert.equal(
@@ -51,7 +53,7 @@ assert.equal(resolved.goals_v1, true);
 const fromUnknown = resolveFeatureFlags({
   feature_flags: { not_a_real_flag: true } as Record<string, unknown>,
 });
-assert.deepEqual(fromUnknown, { goals_v1: false });
+assert.deepEqual(fromUnknown, { goals_v1: false, reminders_v1: false });
 
 // eslint-disable-next-line no-console
 console.log("feature-flags.test.ts OK");

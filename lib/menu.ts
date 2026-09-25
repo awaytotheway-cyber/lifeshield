@@ -16,6 +16,7 @@ export type MenuItemId =
   | "prescriptions"
   | "shop"
   | "goals"
+  | "reminders"
   | "notifications"
   | "profile"
   | "settings";
@@ -43,6 +44,7 @@ export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "prescriptions",
   "shop",
   "goals",
+  "reminders",
   "notifications",
   "profile",
   "settings",
@@ -98,6 +100,14 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     href: routes.goals,
     match: ["/goals", "(goals)"],
     requiresFlag: "goals_v1",
+  },
+  reminders: {
+    id: "reminders",
+    label: "Reminders",
+    icon: "clock",
+    href: routes.reminders,
+    match: ["/reminders", "(reminders)"],
+    requiresFlag: "reminders_v1",
   },
   notifications: {
     id: "notifications",
@@ -191,6 +201,9 @@ export function menuItemIsActive(item: MenuItem, pathname: string): boolean {
   }
   if (item.id === "goals") {
     return path.includes("/goals") || path.includes("(goals)");
+  }
+  if (item.id === "reminders") {
+    return path.includes("/reminders") || path.includes("(reminders)");
   }
   return item.match.some((snippet) => path.includes(snippet.toLowerCase()));
 }

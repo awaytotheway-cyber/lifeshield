@@ -15,11 +15,14 @@
 
 export type FeatureFlagName =
   /** Phase A — user-defined SMART goals surface + create flow. */
-  | "goals_v1";
+  | "goals_v1"
+  /** Phase A — user-defined reminders surface (list + create + notifications). */
+  | "reminders_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
     goals_v1: false,
+    reminders_v1: false,
   });
 
 /**

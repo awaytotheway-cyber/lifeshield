@@ -4,11 +4,12 @@
  */
 import type { Href } from "expo-router";
 
-import { followUpSymptomHref, routes } from "@/lib/routes";
+import { followUpSymptomHref, reminderHref, routes } from "@/lib/routes";
 
 export type NotificationPayload = {
   type?: string;
   followUpId?: string;
+  reminderId?: string;
   href?: string;
 };
 
@@ -34,6 +35,13 @@ export function hrefFromNotificationData(
 
   if (type === "follow_up" || type === "retest" || type === "review") {
     return routes.followUp;
+  }
+
+  if (type === "reminder") {
+    const id =
+      typeof payload.reminderId === "string" ? payload.reminderId.trim() : "";
+    if (id) return reminderHref(id);
+    return routes.reminders;
   }
 
   if (type === "results_ready") {
