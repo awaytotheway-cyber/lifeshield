@@ -951,4 +951,31 @@ export const COPY = {
   profileBuddyInterestsPlaceholder:
     "e.g. walking, yoga, meal prep, meditation",
   profileBuddySaved: "Buddy settings saved.",
+
+  // ——— Recipes ———
+  recipesTitle: "Recipes",
+  recipesSubtitle:
+    "Simple, healthy meals that support your plan. Not medical advice.",
+  recipesSearchPlaceholder: "Search recipes…",
+  recipesEmptyTitle: "No recipes match",
+  recipesEmptyBody: "Try a broader search or clear the filters.",
+  recipesFilterAll: "All",
+  recipesFilterQuick: "≤ 15 min",
+  recipesFilterMedium: "≤ 30 min",
+  recipesSavedLabel: "Saved",
+  recipesSaveCta: "Save",
+  recipesUnsaveCta: "Unsave",
+  recipesIngredientsLabel: "Ingredients",
+  recipesInstructionsLabel: "Instructions",
+  recipesNutritionLabel: "Nutrition (per serving)",
+  recipesPortionsLabel: "Servings",
+  recipesTotalMinutes: "Total time",
+  recipesPrepLabel: "Prep",
+  recipesCookLabel: "Cook",
+  recipesHomeHeader: "Recipes for your plan",
+  recipesHomeSeeAll: "See all recipes",
+  recipesLoadFailed:
+    "We couldn't load recipes right now. Check your connection and try again.",
+  recipesNeedSql:
+    "Recipes need the 20260928_recipes migration to run in Supabase → SQL Editor.",
 } as const;

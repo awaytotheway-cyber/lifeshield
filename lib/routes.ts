@@ -36,6 +36,8 @@ export const routes = {
   buddies: "/(main)/(buddies)" as Href,
   buddiesFind: "/(main)/(buddies)/find" as Href,
   buddiesChat: "/(main)/(buddies)/chat" as Href,
+  recipes: "/(main)/(recipes)" as Href,
+  recipeDetail: "/(main)/(recipes)/recipe-detail" as Href,
   followUp: "/(main)/(followup)" as Href,
   followUpSymptomRecheck: "/(main)/(followup)/symptom-recheck" as Href,
   store: "/(main)/(store)" as Href,
@@ -94,4 +96,8 @@ export function goalDetailHref(id: string): Href {
 
 export function buddyChatHref(connectionId: string): Href {
   return `/(main)/(buddies)/chat?id=${encodeURIComponent(connectionId)}` as Href;
+}
+
+export function recipeDetailHref(id: string): Href {
+  return `/(main)/(recipes)/recipe-detail?id=${encodeURIComponent(id)}` as Href;
 }
