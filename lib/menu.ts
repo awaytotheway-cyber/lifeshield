@@ -10,6 +10,7 @@ import { routes } from "@/lib/routes";
 export type MenuItemId =
   | "home"
   | "plan"
+  | "goals"
   | "appointments"
   | "results"
   | "prescriptions"
@@ -30,6 +31,7 @@ export type MenuItem = {
 export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "home",
   "plan",
+  "goals",
   "appointments",
   "results",
   "prescriptions",
@@ -53,6 +55,13 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     icon: "map",
     href: routes.plan,
     match: ["/plan"],
+  },
+  goals: {
+    id: "goals",
+    label: "My Goals",
+    icon: "target",
+    href: routes.goals,
+    match: ["/goals", "(goals)"],
   },
   appointments: {
     id: "appointments",

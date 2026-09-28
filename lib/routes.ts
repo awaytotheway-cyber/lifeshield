@@ -30,6 +30,9 @@ export const routes = {
   enterResults: "/(main)/(results)/enter-results" as Href,
   plan: "/(main)/(plan)" as Href,
   planItem: "/(main)/(plan)/intervention" as Href,
+  goals: "/(main)/(goals)" as Href,
+  goalDetail: "/(main)/(goals)/goal-detail" as Href,
+  newGoal: "/(main)/(goals)/new-goal" as Href,
   followUp: "/(main)/(followup)" as Href,
   followUpSymptomRecheck: "/(main)/(followup)/symptom-recheck" as Href,
   store: "/(main)/(store)" as Href,
@@ -79,4 +82,8 @@ export function orderPlacedHref(orderId: string): Href {
 
 export function orderDetailHref(orderId: string): Href {
   return `/(main)/(orders)/order?id=${encodeURIComponent(orderId)}` as Href;
+}
+
+export function goalDetailHref(id: string): Href {
+  return `/(main)/(goals)/goal-detail?id=${encodeURIComponent(id)}` as Href;
 }
