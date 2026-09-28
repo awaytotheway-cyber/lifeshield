@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -159,6 +160,15 @@ export default function PlanItemScreen() {
           <Text className="mt-4 text-center text-sm text-teal">
             {COPY.planDetailNotInstruction}
           </Text>
+
+          {session?.user.id ? (
+            <BarriersAccordion
+              userId={session.user.id}
+              category={row.category as any}
+              sourceType="intervention"
+              sourceId={row.id}
+            />
+          ) : null}
         </>
       ) : null}
 

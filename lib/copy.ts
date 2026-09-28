@@ -864,4 +864,36 @@ export const COPY = {
   goalsTypeMeditation: "Meditation",
   goalsTypeRecipe: "Healthy meal",
   goalsTypeHabit: "Habit",
+
+  // ——— Barriers & strategies ———
+  barriersSectionTitle: "What's getting in the way?",
+  barriersSectionBody:
+    "Pick a common obstacle to try a small strategy for it. Not medical advice — just something to nudge you back on track.",
+  barriersTypeTime: "Time",
+  barriersTypeEnergy: "Energy",
+  barriersTypeMotivation: "Motivation",
+  barriersTypeKnowledge: "Knowledge",
+  barrierTypeTime: "Time",
+  barrierTypeEnergy: "Energy",
+  barrierTypeMotivation: "Motivation",
+  barrierTypeKnowledge: "Knowledge",
+  barriersTry: "Try it",
+  barriersTryingLabel: "Trying this",
+  barriersTip: "Try this cue",
+  barriersEvidence: "Why this works",
+  barriersFeedbackPromptTitle: "How's this working for you?",
+  barriersFeedbackPromptBody:
+    "You started this a week ago. A quick answer helps us give you better ideas.",
+  barriersFeedbackHelpful: "It helped",
+  barriersFeedbackNotHelpful: "Didn't help",
+  barriersFeedbackAbandoned: "I stopped trying it",
+  barriersFeedbackContinue: "How likely to keep going? (1–5)",
+  barriersFeedbackNoteLabel: "Anything else?",
+  barriersFeedbackNotePlaceholder: "Optional — what worked, what didn't.",
+  barriersFeedbackSave: "Save feedback",
+  barriersEmpty: "No strategies for this category yet.",
+  barriersLoadFailed:
+    "We couldn't load barriers right now. Check your connection and try again.",
+  barriersNeedSql:
+    "Barriers need the 20260928_barriers_strategies migration to run in Supabase → SQL Editor.",
 } as const;

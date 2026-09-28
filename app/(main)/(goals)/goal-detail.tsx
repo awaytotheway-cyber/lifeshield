@@ -2,6 +2,7 @@ import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
@@ -140,6 +141,15 @@ export default function GoalDetailScreen() {
             </View>
           )}
         </View>
+      ) : null}
+
+      {!loading && row && session.user.id ? (
+        <BarriersAccordion
+          userId={session.user.id}
+          category={row.goal_type}
+          sourceType="goal"
+          sourceId={row.id}
+        />
       ) : null}
       {message ? <Text style={styles.error}>{message}</Text> : null}
     </Screen>
