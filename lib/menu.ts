@@ -11,6 +11,7 @@ export type MenuItemId =
   | "home"
   | "plan"
   | "goals"
+  | "buddies"
   | "appointments"
   | "results"
   | "prescriptions"
@@ -32,6 +33,7 @@ export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "home",
   "plan",
   "goals",
+  "buddies",
   "appointments",
   "results",
   "prescriptions",
@@ -62,6 +64,13 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     icon: "target",
     href: routes.goals,
     match: ["/goals", "(goals)"],
+  },
+  buddies: {
+    id: "buddies",
+    label: "Buddies",
+    icon: "users",
+    href: routes.buddies,
+    match: ["/buddies", "(buddies)"],
   },
   appointments: {
     id: "appointments",

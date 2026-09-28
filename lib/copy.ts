@@ -896,4 +896,59 @@ export const COPY = {
     "We couldn't load barriers right now. Check your connection and try again.",
   barriersNeedSql:
     "Barriers need the 20260928_barriers_strategies migration to run in Supabase → SQL Editor.",
+
+  // ——— Buddies ———
+  buddiesTitle: "Buddies",
+  buddiesSubtitle:
+    "Optional accountability partners. Nobody sees you here unless you turn on 'Find me as a buddy' in your profile.",
+  buddiesActiveHeader: "Your buddies",
+  buddiesRequestsHeader: "Requests",
+  buddiesFindCta: "Find buddies",
+  buddiesEmptyTitle: "No buddies yet",
+  buddiesEmptyBody:
+    "Turn on 'Find me as a buddy' in Profile, then find someone with similar goals.",
+  buddiesFindTitle: "Find buddies",
+  buddiesSearchPlaceholder: "Search by name, city or interest…",
+  buddiesFindEmpty: "No matches yet. Try a broader search or check again later.",
+  buddiesMatchLabel: "Match",
+  buddiesSharedInterestsLabel: "Shared interests",
+  buddiesSendRequest: "Send request",
+  buddiesRequestSent: "Request sent",
+  buddiesRequestNoteLabel: "Add a message (optional)",
+  buddiesRequestNotePlaceholder: "Hi — I'm working on similar goals. Want to check in weekly?",
+  buddiesAccept: "Accept",
+  buddiesDecline: "Decline",
+  buddiesArchive: "Archive",
+  buddiesReactivate: "Reactivate",
+  buddiesOpenChat: "Open chat",
+  buddiesStaleTitle: "This chat has been quiet for a while",
+  buddiesStaleBody:
+    "You haven't messaged in over two weeks. Say hi again or archive this connection.",
+  buddiesChatTitle: "Chat",
+  buddiesChatPlaceholder: "Type a message…",
+  buddiesChatSend: "Send",
+  buddiesChatEmpty: "Say hi to break the ice.",
+  buddiesNotDiscoverable:
+    "Turn on 'Find me as a buddy' in Profile before you can search — otherwise other people can't find you back.",
+  buddiesLoadFailed:
+    "We couldn't load buddies right now. Check your connection and try again.",
+  buddiesNeedSql:
+    "Buddies need the 20260928_buddies_chat migration to run in Supabase → SQL Editor.",
+  buddiesConsentTitle: "How buddies work",
+  buddiesConsentBody:
+    "This is opt-in. When you turn it on, other opt-in users can find you by display name, city or interest tags. They never see your email or health data. Turn it off any time.",
+
+  // Profile discoverability fields
+  profileBuddyGroup: "Buddies",
+  profileBuddyToggle: "Find me as a buddy",
+  profileBuddyToggleHint:
+    "Let other opt-in users find you by display name, city or interests. You can turn this off any time.",
+  profileBuddyDisplayNameLabel: "Display name (buddies)",
+  profileBuddyDisplayNamePlaceholder: "e.g. Ravi (not your legal name)",
+  profileBuddyCityLabel: "City (optional)",
+  profileBuddyCityPlaceholder: "e.g. Bangalore",
+  profileBuddyInterestsLabel: "Interests (comma-separated)",
+  profileBuddyInterestsPlaceholder:
+    "e.g. walking, yoga, meal prep, meditation",
+  profileBuddySaved: "Buddy settings saved.",
 } as const;

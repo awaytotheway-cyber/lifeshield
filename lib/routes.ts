@@ -33,6 +33,9 @@ export const routes = {
   goals: "/(main)/(goals)" as Href,
   goalDetail: "/(main)/(goals)/goal-detail" as Href,
   newGoal: "/(main)/(goals)/new-goal" as Href,
+  buddies: "/(main)/(buddies)" as Href,
+  buddiesFind: "/(main)/(buddies)/find" as Href,
+  buddiesChat: "/(main)/(buddies)/chat" as Href,
   followUp: "/(main)/(followup)" as Href,
   followUpSymptomRecheck: "/(main)/(followup)/symptom-recheck" as Href,
   store: "/(main)/(store)" as Href,
@@ -50,6 +53,7 @@ export const routes = {
   settingsAbout: "/(main)/(settings)/about" as Href,
   settingsDeleteAccount: "/(main)/(settings)/delete-account" as Href,
   settingsConsents: "/(main)/(settings)/consents" as Href,
+  settingsBuddies: "/(main)/(settings)/buddies-settings" as Href,
   appointments: "/(main)/(settings)/appointments" as Href,
   prescriptions: "/(main)/(settings)/prescriptions" as Href,
   notificationsInbox: "/(main)/(settings)/notifications-inbox" as Href,
@@ -86,4 +90,8 @@ export function orderDetailHref(orderId: string): Href {
 
 export function goalDetailHref(id: string): Href {
   return `/(main)/(goals)/goal-detail?id=${encodeURIComponent(id)}` as Href;
+}
+
+export function buddyChatHref(connectionId: string): Href {
+  return `/(main)/(buddies)/chat?id=${encodeURIComponent(connectionId)}` as Href;
 }
