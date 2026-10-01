@@ -15,7 +15,13 @@ import type { InterventionStatus } from "@/lib/plan";
 /** Row shape from public.products — only fields the gates need. */
 export type Product = {
   id?: string;
-  product_type: "supplement" | "test";
+  product_type:
+    | "supplement"
+    | "test"
+    | "food"
+    | "home_goods"
+    | "beauty"
+    | "cleaning";
   plain_name: string;
   plain_description?: string | null;
   clinical_name: string;

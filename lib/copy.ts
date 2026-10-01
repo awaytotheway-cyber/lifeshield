@@ -817,4 +817,246 @@ export const COPY = {
   orderBackOrders: "Back to orders",
   orderBackStore: "Back to store",
   orderBackHome: "Back to Home",
+
+  // ——— Weekly goals ———
+  goalsTitle: "My Goals",
+  goalsSubtitle:
+    "Small weekly targets you set for yourself. Not medical advice — a way to keep momentum on your plan.",
+  goalsEmptyTitle: "No goals yet",
+  goalsEmptyBody:
+    "Set a small, kind target for this week — like three walks or one meditation. You can edit or stop it any time.",
+  goalsNewCta: "Set a new goal",
+  goalsHomeHeader: "This week's goals",
+  goalsHomeSeeAll: "See all",
+  goalsActiveLabel: "Active",
+  goalsCompletedLabel: "Completed",
+  goalsMissedLabel: "Missed",
+  goalsCancelledLabel: "Cancelled",
+  goalsProgressLabel: "Progress",
+  goalsLogOne: "Log 1",
+  goalsMarkComplete: "Mark complete",
+  goalsCancelGoal: "Stop this goal",
+  goalsDelete: "Delete",
+  goalsSaveGoal: "Save goal",
+  goalsFormTitleLabel: "What are you working on?",
+  goalsFormTitlePlaceholder: "e.g. Walk after dinner",
+  goalsFormTypeLabel: "Category",
+  goalsFormTargetLabel: "Target",
+  goalsFormUnitLabel: "Unit",
+  goalsFormUnitPlaceholder: "e.g. sessions, minutes, walks",
+  goalsFormDurationLabel: "How long?",
+  goalsFormDuration7: "1 week",
+  goalsFormDuration14: "2 weeks",
+  goalsFormDuration30: "1 month",
+  goalsFormNoteLabel: "Notes (optional)",
+  goalsFormNotePlaceholder:
+    "Why does this matter to you? What might get in the way?",
+  goalsEndPromptTitle: "Your goal wraps up today",
+  goalsEndPromptBody:
+    "How did it go? Marking honestly helps you learn — this is not a judgement.",
+  goalsEndComplete: "Mark completed",
+  goalsEndMissed: "Mark missed",
+  goalsLoadFailed: "We couldn't load your goals. Check your connection and try again.",
+  goalsNeedSql:
+    "Weekly goals need the 20260928_weekly_goals migration to run in Supabase → SQL Editor.",
+  goalsTypeSupplement: "Supplement",
+  goalsTypeExercise: "Exercise",
+  goalsTypeMeditation: "Meditation",
+  goalsTypeRecipe: "Healthy meal",
+  goalsTypeHabit: "Habit",
+
+  // ——— Barriers & strategies ———
+  barriersSectionTitle: "What's getting in the way?",
+  barriersSectionBody:
+    "Pick a common obstacle to try a small strategy for it. Not medical advice — just something to nudge you back on track.",
+  barriersTypeTime: "Time",
+  barriersTypeEnergy: "Energy",
+  barriersTypeMotivation: "Motivation",
+  barriersTypeKnowledge: "Knowledge",
+  barrierTypeTime: "Time",
+  barrierTypeEnergy: "Energy",
+  barrierTypeMotivation: "Motivation",
+  barrierTypeKnowledge: "Knowledge",
+  barriersTry: "Try it",
+  barriersTryingLabel: "Trying this",
+  barriersTip: "Try this cue",
+  barriersEvidence: "Why this works",
+  barriersFeedbackPromptTitle: "How's this working for you?",
+  barriersFeedbackPromptBody:
+    "You started this a week ago. A quick answer helps us give you better ideas.",
+  barriersFeedbackHelpful: "It helped",
+  barriersFeedbackNotHelpful: "Didn't help",
+  barriersFeedbackAbandoned: "I stopped trying it",
+  barriersFeedbackContinue: "How likely to keep going? (1–5)",
+  barriersFeedbackNoteLabel: "Anything else?",
+  barriersFeedbackNotePlaceholder: "Optional — what worked, what didn't.",
+  barriersFeedbackSave: "Save feedback",
+  barriersEmpty: "No strategies for this category yet.",
+  barriersLoadFailed:
+    "We couldn't load barriers right now. Check your connection and try again.",
+  barriersNeedSql:
+    "Barriers need the 20260928_barriers_strategies migration to run in Supabase → SQL Editor.",
+
+  // ——— Buddies ———
+  buddiesTitle: "Buddies",
+  buddiesSubtitle:
+    "Optional accountability partners. Nobody sees you here unless you turn on 'Find me as a buddy' in your profile.",
+  buddiesActiveHeader: "Your buddies",
+  buddiesRequestsHeader: "Requests",
+  buddiesFindCta: "Find buddies",
+  buddiesEmptyTitle: "No buddies yet",
+  buddiesEmptyBody:
+    "Turn on 'Find me as a buddy' in Profile, then find someone with similar goals.",
+  buddiesFindTitle: "Find buddies",
+  buddiesSearchPlaceholder: "Search by name, city or interest…",
+  buddiesFindEmpty: "No matches yet. Try a broader search or check again later.",
+  buddiesMatchLabel: "Match",
+  buddiesSharedInterestsLabel: "Shared interests",
+  buddiesSendRequest: "Send request",
+  buddiesRequestSent: "Request sent",
+  buddiesRequestNoteLabel: "Add a message (optional)",
+  buddiesRequestNotePlaceholder: "Hi — I'm working on similar goals. Want to check in weekly?",
+  buddiesAccept: "Accept",
+  buddiesDecline: "Decline",
+  buddiesArchive: "Archive",
+  buddiesReactivate: "Reactivate",
+  buddiesOpenChat: "Open chat",
+  buddiesStaleTitle: "This chat has been quiet for a while",
+  buddiesStaleBody:
+    "You haven't messaged in over two weeks. Say hi again or archive this connection.",
+  buddiesChatTitle: "Chat",
+  buddiesChatPlaceholder: "Type a message…",
+  buddiesChatSend: "Send",
+  buddiesChatEmpty: "Say hi to break the ice.",
+  buddiesNotDiscoverable:
+    "Turn on 'Find me as a buddy' in Profile before you can search — otherwise other people can't find you back.",
+  buddiesLoadFailed:
+    "We couldn't load buddies right now. Check your connection and try again.",
+  buddiesNeedSql:
+    "Buddies need the 20260928_buddies_chat migration to run in Supabase → SQL Editor.",
+  buddiesConsentTitle: "How buddies work",
+  buddiesConsentBody:
+    "This is opt-in. When you turn it on, other opt-in users can find you by display name, city or interest tags. They never see your email or health data. Turn it off any time.",
+
+  // Profile discoverability fields
+  profileBuddyGroup: "Buddies",
+  profileBuddyToggle: "Find me as a buddy",
+  profileBuddyToggleHint:
+    "Let other opt-in users find you by display name, city or interests. You can turn this off any time.",
+  profileBuddyDisplayNameLabel: "Display name (buddies)",
+  profileBuddyDisplayNamePlaceholder: "e.g. Ravi (not your legal name)",
+  profileBuddyCityLabel: "City (optional)",
+  profileBuddyCityPlaceholder: "e.g. Bangalore",
+  profileBuddyInterestsLabel: "Interests (comma-separated)",
+  profileBuddyInterestsPlaceholder:
+    "e.g. walking, yoga, meal prep, meditation",
+  profileBuddySaved: "Buddy settings saved.",
+
+  // ——— Recipes ———
+  recipesTitle: "Recipes",
+  recipesSubtitle:
+    "Simple, healthy meals that support your plan. Not medical advice.",
+  recipesSearchPlaceholder: "Search recipes…",
+  recipesEmptyTitle: "No recipes match",
+  recipesEmptyBody: "Try a broader search or clear the filters.",
+  recipesFilterAll: "All",
+  recipesFilterQuick: "≤ 15 min",
+  recipesFilterMedium: "≤ 30 min",
+  recipesSavedLabel: "Saved",
+  recipesSaveCta: "Save",
+  recipesUnsaveCta: "Unsave",
+  recipesIngredientsLabel: "Ingredients",
+  recipesInstructionsLabel: "Instructions",
+  recipesNutritionLabel: "Nutrition (per serving)",
+  recipesPortionsLabel: "Servings",
+  recipesTotalMinutes: "Total time",
+  recipesPrepLabel: "Prep",
+  recipesCookLabel: "Cook",
+  recipesHomeHeader: "Recipes for your plan",
+  recipesHomeSeeAll: "See all recipes",
+  recipesLoadFailed:
+    "We couldn't load recipes right now. Check your connection and try again.",
+  recipesNeedSql:
+    "Recipes need the 20260928_recipes migration to run in Supabase → SQL Editor.",
+
+  // ——— Partners & activities ———
+  partnersTitle: "Partner apps",
+  partnersSubtitle:
+    "Link your favourite meditation and exercise apps. Log activity here to keep everything in one place.",
+  partnersMeditationHeader: "Meditation & mindfulness",
+  partnersExerciseHeader: "Movement & fitness",
+  partnersOtherHeader: "Other",
+  partnersLink: "Link",
+  partnersUnlink: "Unlink",
+  partnersOpen: "Open app",
+  partnersLinkedBadge: "Linked",
+  partnersLogActivityCta: "Log an activity",
+  partnersActivityHeader: "Your last activities",
+  partnersActivityEmpty: "No activity logged yet. Tap 'Log an activity' to start.",
+  partnersLoadFailed:
+    "We couldn't load partner apps right now. Check your connection and try again.",
+  partnersNeedSql:
+    "Partners need the 20260928_partners_activities migration to run in Supabase → SQL Editor.",
+  activityFormType: "What did you do?",
+  activityFormMinutes: "Minutes (optional)",
+  activityFormIntensity: "Intensity",
+  activityFormNote: "Notes (optional)",
+  activityFormSave: "Save activity",
+  activityWeeklyMinutes: "Minutes this week",
+
+  // ——— 10-step Journey dashboard ———
+  journeyDashTitle: "Your journey",
+  journeyDashSubtitle:
+    "Ten milestones from sign-up to steady practice. Small steps, not a race.",
+  journeyDashProgress: "steps complete",
+  journeyDashOpenStep: "Open",
+  journeyDashCelebrate: "Nice work — three or more steps done. Keep going.",
+  journey10_registration_title: "1. Registration",
+  journey10_registration_body:
+    "Your account is set up and your basics are saved.",
+  journey10_baseline_title: "2. Baseline assessment",
+  journey10_baseline_body:
+    "The questionnaire captures a snapshot so we can personalise the plan.",
+  journey10_test_recommendations_title: "3. Test recommendations",
+  journey10_test_recommendations_body:
+    "Bloods and other diagnostics matched to your profile.",
+  journey10_test_results_title: "4. Test results",
+  journey10_test_results_body: "Your entered or lab-loaded results.",
+  journey10_lifestyle_plan_title: "5. Lifestyle recommendations",
+  journey10_lifestyle_plan_body:
+    "Diet, habits, supplements — grouped and prioritised.",
+  journey10_goal_setting_title: "6. Goal setting",
+  journey10_goal_setting_body:
+    "Small weekly targets you set yourself.",
+  journey10_habit_tracking_title: "7. Habit tracking",
+  journey10_habit_tracking_body:
+    "Logged activity — movement, meditation, meals.",
+  journey10_barriers_strategies_title: "8. Barriers & strategies",
+  journey10_barriers_strategies_body:
+    "Which obstacles show up, and what to try.",
+  journey10_social_support_title: "9. Social support",
+  journey10_social_support_body:
+    "Accountability buddies for the low-motivation weeks.",
+  journey10_iterate_title: "10. Iterative refinement",
+  journey10_iterate_body:
+    "Adjust as you learn — the plan is a living thing.",
+
+  // ——— Plugins dashboard ———
+  pluginsTitle: "Plugins",
+  pluginsSubtitle:
+    "Turn optional features on or off. Each shows exactly what it reads and never touches anything else.",
+  pluginsCategoryDataImport: "Data import",
+  pluginsCategoryContent: "Content & recommendations",
+  pluginsCategorySocial: "Social",
+  pluginsCategoryNotifications: "Notifications",
+  pluginsCategoryIntegrations: "Integrations",
+  pluginsCategoryOther: "Other",
+  pluginsEnabledBadge: "Enabled",
+  pluginsPrivacyLabel: "Privacy",
+  pluginsDisconnect: "Disconnect and delete data",
+  pluginsUsage: "Usage",
+  pluginsLoadFailed:
+    "We couldn't load plugins right now. Check your connection and try again.",
+  pluginsNeedSql:
+    "Plugins need the 20260928_plugins migration to run in Supabase → SQL Editor.",
 } as const;

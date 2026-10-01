@@ -9,7 +9,13 @@ import { routes } from "@/lib/routes";
 
 export type MenuItemId =
   | "home"
+  | "journey"
   | "plan"
+  | "goals"
+  | "buddies"
+  | "recipes"
+  | "partners"
+  | "plugins"
   | "appointments"
   | "results"
   | "prescriptions"
@@ -29,7 +35,13 @@ export type MenuItem = {
 
 export const DEFAULT_MENU_ORDER: MenuItemId[] = [
   "home",
+  "journey",
   "plan",
+  "goals",
+  "buddies",
+  "recipes",
+  "partners",
+  "plugins",
   "appointments",
   "results",
   "prescriptions",
@@ -47,12 +59,54 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     href: routes.home,
     match: ["/home"],
   },
+  journey: {
+    id: "journey",
+    label: "Journey",
+    icon: "compass",
+    href: routes.journey,
+    match: ["/journey", "(journey)"],
+  },
   plan: {
     id: "plan",
     label: "My Plan",
     icon: "map",
     href: routes.plan,
     match: ["/plan"],
+  },
+  goals: {
+    id: "goals",
+    label: "My Goals",
+    icon: "target",
+    href: routes.goals,
+    match: ["/goals", "(goals)"],
+  },
+  buddies: {
+    id: "buddies",
+    label: "Buddies",
+    icon: "users",
+    href: routes.buddies,
+    match: ["/buddies", "(buddies)"],
+  },
+  recipes: {
+    id: "recipes",
+    label: "Recipes",
+    icon: "book-open",
+    href: routes.recipes,
+    match: ["/recipes", "(recipes)"],
+  },
+  partners: {
+    id: "partners",
+    label: "Partner apps",
+    icon: "grid",
+    href: routes.partners,
+    match: ["/partners", "(partners)"],
+  },
+  plugins: {
+    id: "plugins",
+    label: "Plugins",
+    icon: "toggle-right",
+    href: routes.plugins,
+    match: ["/plugins", "(plugins)"],
   },
   appointments: {
     id: "appointments",

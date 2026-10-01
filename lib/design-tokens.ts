@@ -1,55 +1,62 @@
-﻿/**
- * PRESCOPE design tokens — blue-primary glassmorphism system.
+/**
+ * PRESCOPE design tokens.
  * Change a value here (and in tailwind.config.js + global.css if it is a colour)
  * instead of hunting through screens for hex codes.
  *
  * Legacy aliases (deepTeal, cream, sage…) keep older screens working while
- * they gradually adopt the new names (primaryBlue, iceBlue, riskLow…).
+ * they gradually adopt the new names.
  */
 
 export const colors = {
-  /** Brand primary — buttons, active tabs, key accents. */
-  primaryBlue: "#2B5FE0",
-  /** Dark text / navy glass tint base. */
-  deepNavy: "#0B1E4D",
-  /** Softer blue for secondary actions and highlights. */
-  skyBlue: "#6FA8F5",
-  /** Default screen atmosphere (never plain white behind glass). */
-  iceBlue: "#EAF1FF",
+  /** Brand primary — buttons, links, active tabs. */
+  primaryBlue: "#007AFF",
+  /** Primary text — pure black per the design system. */
+  deepNavy: "#000000",
+  /** Softer accent blue — info highlights, secondary chrome. */
+  skyBlue: "#5AC8FA",
+  /** Default screen atmosphere — iOS Light Gray. */
+  iceBlue: "#F2F2F7",
 
   /** Glass fills — light cards / dark chrome overlays. */
-  glassFill: "rgba(255,255,255,0.55)",
-  glassFillDark: "rgba(11,30,77,0.45)",
-  glassChrome: "rgba(255,255,255,0.42)",
-  glassBorder: "rgba(255,255,255,0.3)",
+  glassFill: "rgba(255,255,255,0.72)",
+  glassFillDark: "rgba(0,0,0,0.40)",
+  glassChrome: "rgba(255,255,255,0.60)",
+  glassBorder: "rgba(0,0,0,0.06)",
 
-  /** Risk semantics ONLY — never decorative coral. */
-  riskLow: "#2FB8A6",
-  riskLowLight: "#E6F8F5",
-  riskModerate: "#F5A623",
-  riskModerateLight: "#FEF4E3",
-  riskHigh: "#F26D6D",
-  riskHighLight: "#FDECEC",
+  /** Risk semantics — mapped to the system Green/Yellow/Red. */
+  riskLow: "#34C759",
+  riskLowLight: "#E8F8ED",
+  riskModerate: "#FFCC00",
+  riskModerateLight: "#FFF8DB",
+  riskHigh: "#FF3B30",
+  riskHighLight: "#FFE5E3",
 
   white: "#FFFFFF",
-  charcoal: "#0B1E4D",
-  slate: "#4A5568",
-  mist: "#9AA5B4",
-  border: "#D4E0F5",
-  shadow: "rgba(43,95,224,0.12)",
+  /** Headline / primary text. */
+  charcoal: "#000000",
+  /** Secondary text — Dark Gray. */
+  slate: "#8E8E93",
+  /** Tertiary text / inactive elements. */
+  mist: "#C7C7CC",
+  /** Borders and dividers — Medium Gray. */
+  border: "#E5E5EA",
+  /** Neutral shadow. */
+  shadow: "rgba(0,0,0,0.15)",
 
-  // ——— Legacy aliases (map old teal/cream system → blue glass) ———
-  deepTeal: "#2B5FE0",
-  midTeal: "#6FA8F5",
-  lightTeal: "#D6E4FF",
-  sage: "#2FB8A6",
-  sageLight: "#E6F8F5",
-  coral: "#F26D6D",
-  coralLight: "#FDECEC",
-  amber: "#F5A623",
-  amberLight: "#FEF4E3",
-  cream: "#EAF1FF",
-  teal: "#2B5FE0",
+  // ——— Legacy aliases (map old teal/cream system → iOS palette) ———
+  deepTeal: "#007AFF",
+  midTeal: "#5AC8FA",
+  lightTeal: "#E5F2FF",
+  sage: "#34C759",
+  sageLight: "#E8F8ED",
+  coral: "#FF3B30",
+  coralLight: "#FFE5E3",
+  amber: "#FFCC00",
+  amberLight: "#FFF8DB",
+  cream: "#F2F2F7",
+  teal: "#007AFF",
+  /** Highlight accent — Purple, per spec (premium / highlights). */
+  purple: "#AF52DE",
 } as const;
 
 /** Everyday names so screens do not guess which blue to use. */
@@ -64,10 +71,10 @@ export const semantic = {
   disabledText: colors.mist,
 } as const;
 
-/** Soft gradient stops for Screen backgrounds. */
+/** Soft background wash for Screen — near-flat light gray per the design system. */
 export const gradients = {
-  screen: ["#EAF1FF", "#D6E4FF", "#C8DBFF"] as const,
-  screenLocations: [0, 0.55, 1] as const,
+  screen: ["#FFFFFF", "#F2F2F7", "#F2F2F7"] as const,
+  screenLocations: [0, 0.6, 1] as const,
 } as const;
 
 /** 8-point grid (4px for tiny tweaks). */
@@ -85,42 +92,41 @@ export const spacing = {
 
 export const radius = {
   input: 12,
-  button: 16,
-  alert: 16,
-  card: 24,
-  radioCard: 20,
+  button: 12,
+  alert: 12,
+  card: 16,
+  radioCard: 14,
   chip: 20,
-  sheet: 28,
-  /** Tailwind rounded-2xl ≈ 16; glass cards use a slightly fuller corner. */
+  sheet: 20,
   glass: 16,
 } as const;
 
 export const shadows = {
   card: {
-    shadowColor: colors.primaryBlue,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 4,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
   },
   button: {
-    shadowColor: colors.primaryBlue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.22,
-    shadowRadius: 16,
-    elevation: 4,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   modal: {
-    shadowColor: colors.deepNavy,
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
-    shadowRadius: 32,
+    shadowRadius: 24,
     elevation: 8,
   },
   focusGlow: {
-    shadowColor: colors.skyBlue,
+    shadowColor: colors.primaryBlue,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 2,
   },
@@ -128,8 +134,8 @@ export const shadows = {
 
 export const tapTarget = 44;
 export const inputHeight = 56;
-export const primaryButtonHeight = 56;
-export const secondaryButtonHeight = 52;
+export const primaryButtonHeight = 50;
+export const secondaryButtonHeight = 50;
 
 /** BlurView intensity used by GlassCard (native glass look). */
-export const glassBlurIntensity = 40;
+export const glassBlurIntensity = 32;

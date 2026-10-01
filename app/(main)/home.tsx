@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { GoalsSummaryCard } from "@/components/ui/GoalsSummaryCard";
 import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
 import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
 import { TrustBanner } from "@/components/ui/TrustBanner";
@@ -301,6 +302,8 @@ export default function HomeScreen() {
       <View style={styles.timeline}>
         <JourneyProgressCard steps={timeline} onContinue={goPrimary} />
       </View>
+
+      {consentsDone ? <GoalsSummaryCard userId={session.user.id} /> : null}
 
       {labCheckMessage ? (
         <Text style={styles.error}>{labCheckMessage}</Text>

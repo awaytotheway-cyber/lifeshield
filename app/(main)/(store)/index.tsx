@@ -1,6 +1,6 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { ProductCard } from "@/components/store/ProductCard";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
@@ -45,6 +45,7 @@ export default function StoreScreen() {
   const [addingId, setAddingId] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [cartCount, setCartCount] = useState(0);
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
   const refresh = useCallback(() => {
     const userId = session?.user.id;
@@ -110,8 +111,16 @@ export default function StoreScreen() {
 
   const catalog = useMemo(() => {
     const recommendedIds = new Set(recommended.map((p) => p.id));
-    return products.filter((p) => !recommendedIds.has(p.id));
-  }, [products, recommended]);
+    return products
+      .filter((p) => !recommendedIds.has(p.id))
+      .filter((p) => typeFilter === "all" || p.product_type === typeFilter);
+  }, [products, recommended, typeFilter]);
+
+  const availableTypes = useMemo(() => {
+    const set = new Set<string>();
+    for (const p of products) if (p.product_type) set.add(p.product_type);
+    return Array.from(set);
+  }, [products]);
 
   const handleAdd = async (product: ProductRow) => {
     if (!session?.user.id || !userContext) {
@@ -222,6 +231,37 @@ export default function StoreScreen() {
                 ))
               )}
               <Text style={styles.group}>{COPY.storeFullCatalog}</Text>
+              {availableTypes.length > 1 ? (
+                <View style={styles.filterRow}>
+                  {[
+                    { value: "all", label: "All" },
+                    ...availableTypes.map((t) => ({
+                      value: t,
+                      label: t.replace(/_/g, " "),
+                    })),
+                  ].map((chip) => (
+                    <Pressable
+                      key={chip.value}
+                      accessibilityRole="button"
+                      accessibilityState={{ selected: typeFilter === chip.value }}
+                      onPress={() => setTypeFilter(chip.value)}
+                      style={[
+                        styles.chip,
+                        typeFilter === chip.value && styles.chipOn,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.chipText,
+                          typeFilter === chip.value && styles.chipTextOn,
+                        ]}
+                      >
+                        {chip.label}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : null}
               {catalog.length === 0 ? (
                 <EmptyState
                   icon="shopping-bag"
@@ -296,6 +336,33 @@ const styles = StyleSheet.create({
   },
   recGap: {
     marginBottom: 12,
+  },
+  filterRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 12,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  chipOn: {
+    backgroundColor: colors.primaryBlue,
+    borderColor: colors.primaryBlue,
+  },
+  chipText: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 12,
+    color: colors.charcoal,
+    textTransform: "capitalize",
+  },
+  chipTextOn: {
+    color: colors.white,
   },
   columns: {
     gap: 8,

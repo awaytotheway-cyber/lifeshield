@@ -11,3 +11,6 @@ verify_jwt = true
 # Stripe calls this URL directly — no Supabase JWT on the request.
 [functions.stripe-webhook]
 verify_jwt = false
+
+[functions.send-chat-push]
+verify_jwt = true
