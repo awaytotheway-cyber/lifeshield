@@ -8,32 +8,47 @@
 @config "./tailwind.config.js";
 
 /*
-  Brand colours (must match tailwind.config.js and lib/design-tokens.ts).
-  v5 reads these CSS variables to create classes like text-coral and bg-cream.
+  PRESCOPE v2 brand colours — must match tailwind.config.js and
+  lib/design-tokens.ts.  v5 reads these CSS variables to create classes
+  like text-orangeDark and bg-softWhite.
 */
 @theme {
-  --color-primaryBlue: #007aff;
-  --color-deepNavy: #000000;
-  --color-skyBlue: #5ac8fa;
-  --color-iceBlue: #f2f2f7;
-  --color-riskLow: #34c759;
-  --color-riskModerate: #ffcc00;
-  --color-riskHigh: #ff3b30;
-  --color-deepTeal: #007aff;
-  --color-midTeal: #5ac8fa;
-  --color-lightTeal: #e5f2ff;
-  --color-sage: #34c759;
-  --color-sageLight: #e8f8ed;
-  --color-coral: #ff3b30;
-  --color-coralLight: #ffe5e3;
-  --color-amber: #ffcc00;
-  --color-amberLight: #fff8db;
-  --color-cream: #f2f2f7;
+  --color-orangeDark: #c84b11;
+  --color-orangeBright: #e8650a;
+  --color-orangeLight: #ff8c42;
+  --color-softWhite: #fdf9f7;
+  --color-pureWhite: #ffffff;
+  --color-orangeTint: #fff3ec;
+  --color-orangeTintDeep: #ffe8d6;
+  --color-charcoal: #1a1a1a;
+  --color-darkText: #2d2d2d;
+  --color-bodyText: #5c5c5c;
+  --color-mutedText: #9b9b9b;
+  --color-placeholderText: #c0b8b3;
+  --color-borderLight: #f0e8e3;
+  --color-borderMedium: #e0d5ce;
+  --color-successGreen: #2db87a;
+  --color-warningAmber: #f5a623;
+  --color-dangerRed: #e63b3b;
+
+  /* Legacy aliases → new orange palette */
+  --color-primaryBlue: #c84b11;
+  --color-deepNavy: #1a1a1a;
+  --color-skyBlue: #ff8c42;
+  --color-iceBlue: #fdf9f7;
+  --color-deepTeal: #c84b11;
+  --color-midTeal: #ff8c42;
+  --color-lightTeal: #fff3ec;
+  --color-teal: #c84b11;
+  --color-sage: #2db87a;
+  --color-sageLight: #e8f8f1;
+  --color-coral: #e63b3b;
+  --color-coralLight: #fff0f0;
+  --color-amber: #f5a623;
+  --color-amberLight: #fff8ec;
+  --color-cream: #fdf9f7;
   --color-white: #ffffff;
-  --color-charcoal: #000000;
-  --color-slate: #8e8e93;
-  --color-mist: #c7c7cc;
-  --color-border: #e5e5ea;
-  --color-teal: #007aff;
-  --color-purple: #af52de;
+  --color-slate: #5c5c5c;
+  --color-mist: #9b9b9b;
+  --color-border: #f0e8e3;
 }

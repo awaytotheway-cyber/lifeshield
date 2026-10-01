@@ -6,7 +6,13 @@ import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
 } from "@expo-google-fonts/inter";
+import {
+  JetBrainsMono_400Regular,
+  JetBrainsMono_700Bold,
+} from "@expo-google-fonts/jetbrains-mono";
 import {
   Manrope_600SemiBold,
   Manrope_700Bold,
@@ -93,7 +99,11 @@ export default function RootLayout() {
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
     DMMono_400Regular,
+    JetBrainsMono_400Regular,
+    JetBrainsMono_700Bold,
   });
 
   // If a font file fails, keep going with system fonts rather than a blank screen.
