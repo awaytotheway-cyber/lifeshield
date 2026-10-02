@@ -5,8 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
-import { colors, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Size, Space, typeStyle } from "@/lib/theme";
 
 type WhyAskButtonProps = {
   explanation: string;
@@ -29,7 +28,7 @@ export function WhyAskButton({
         onPress={() => setOpen(true)}
         style={styles.infoHit}
       >
-        <Feather name="info" size={16} color={colors.midTeal} />
+        <Feather name="info" size={18} color={Colors.orange} />
       </Pressable>
       <Modal
         visible={open}
@@ -76,52 +75,48 @@ export function LabelRow({ label, whyAsk }: LabelRowProps) {
 
 const styles = StyleSheet.create({
   infoHit: {
-    minWidth: tapTarget,
-    minHeight: tapTarget,
+    minWidth: Size.tap,
+    minHeight: Size.tap,
     alignItems: "center",
     justifyContent: "center",
   },
   labelRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    // Section 3: 10px between a label and the field it describes.
+    marginBottom: Gap.labelToField,
   },
+  /** Question text — 17px semibold, per Section 8 QUESTIONNAIRE. */
   label: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: "rgba(31,27,24,0.35)",
   },
   sheet: {
-    padding: 20,
+    padding: Space.cardPad,
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    color: colors.deepTeal,
+    ...typeStyle("section"),
+    color: Colors.ink,
   },
   body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   closeHit: {
-    minHeight: tapTarget,
-    marginTop: 16,
+    minHeight: Size.tap,
+    marginTop: Space.md,
     alignItems: "center",
     justifyContent: "center",
   },
   closeText: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
+    ...typeStyle("body"),
+    color: Colors.orange,
   },
 });

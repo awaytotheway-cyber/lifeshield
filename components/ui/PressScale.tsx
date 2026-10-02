@@ -7,14 +7,34 @@ import {
 } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
 
+import { hapticLight, hapticMedium } from "@/lib/haptics";
+import { Motion } from "@/lib/theme";
+
 type PressScaleProps = Omit<PressableProps, "style"> & {
-  style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+  style?:
+    | StyleProp<ViewStyle>
+    | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>);
+  /** How far to shrink on press. Buttons use 0.97, cards 0.98. */
+  scale?: number;
+  /** Fire a haptic tap on press. "medium" for primary actions, "light" for choices. */
+  haptic?: "none" | "light" | "medium";
 };
 
 /**
- * Tiny press shrink (scale 0.97). Turns off when the phone asks for less motion.
+ * Tiny press shrink. Turns off when the phone asks for less motion.
+ *
+ * PLAIN ENGLISH: wraps anything tappable so it gently shrinks while held and
+ * (optionally) buzzes. Haptics are safe on web — they just do nothing.
  */
-export function PressScale({ children, style, onPressIn, onPressOut, ...rest }: PressScaleProps) {
+export function PressScale({
+  children,
+  style,
+  scale = Motion.pressButton,
+  haptic = "none",
+  onPressIn,
+  onPressOut,
+  ...rest
+}: PressScaleProps) {
   const reduceMotion = useReducedMotion();
 
   return (
@@ -22,10 +42,17 @@ export function PressScale({ children, style, onPressIn, onPressOut, ...rest }: 
       {...rest}
       style={(state) => {
         const resolved = typeof style === "function" ? style(state) : style;
-        const scale = !reduceMotion && state.pressed ? 0.97 : 1;
-        return [resolved, { transform: [{ scale }] }];
+        const pressedScale = !reduceMotion && state.pressed ? scale : 1;
+        return [resolved, { transform: [{ scale: pressedScale }] }];
       }}
-      onPressIn={onPressIn}
+      onPressIn={(event) => {
+        if (haptic === "medium") {
+          hapticMedium();
+        } else if (haptic === "light") {
+          hapticLight();
+        }
+        onPressIn?.(event);
+      }}
       onPressOut={onPressOut}
     >
       {children}
