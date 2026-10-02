@@ -8,32 +8,54 @@
 @config "./tailwind.config.js";
 
 /*
-  Brand colours (must match tailwind.config.js and lib/design-tokens.ts).
-  v5 reads these CSS variables to create classes like text-coral and bg-cream.
+  PRESCOPE brand colours — the orange + warm-white redesign.
+  Must match tailwind.config.js and lib/theme.ts (the source of truth).
+  v5 reads these CSS variables to create classes like text-orange and bg-background.
+  Legacy variable names are kept and re-pointed so old screens stop looking blue.
 */
 @theme {
-  --color-primaryBlue: #007aff;
-  --color-deepNavy: #000000;
-  --color-skyBlue: #5ac8fa;
-  --color-iceBlue: #f2f2f7;
-  --color-riskLow: #34c759;
-  --color-riskModerate: #ffcc00;
-  --color-riskHigh: #ff3b30;
-  --color-deepTeal: #007aff;
-  --color-midTeal: #5ac8fa;
-  --color-lightTeal: #e5f2ff;
-  --color-sage: #34c759;
-  --color-sageLight: #e8f8ed;
-  --color-coral: #ff3b30;
-  --color-coralLight: #ffe5e3;
-  --color-amber: #ffcc00;
-  --color-amberLight: #fff8db;
-  --color-cream: #f2f2f7;
+  /* New orange system */
+  --color-orange: #e8650a;
+  --color-orangeDeep: #c84b11;
+  --color-orangeSoft: #ff8c42;
+  --color-orangeTint: #fff3ec;
+  --color-orangeTintDeep: #ffe4d1;
+  --color-background: #fdfaf8;
+  --color-cloud: #f7f1ec;
+  --color-ink: #1f1b18;
+  --color-body: #4a4440;
+  --color-muted: #9b938d;
+  --color-faint: #c4bbb4;
+  --color-line: #f0e8e2;
+  --color-green: #2db87a;
+  --color-greenTint: #e8f8f1;
+  --color-amberTint: #fff6e8;
+  --color-red: #e6513b;
+  --color-redTint: #fdeeeb;
+
+  /* Legacy aliases → orange system */
+  --color-primaryBlue: #e8650a;
+  --color-deepNavy: #1f1b18;
+  --color-skyBlue: #ff8c42;
+  --color-iceBlue: #fdfaf8;
+  --color-riskLow: #2db87a;
+  --color-riskModerate: #f5a623;
+  --color-riskHigh: #e6513b;
+  --color-deepTeal: #c84b11;
+  --color-midTeal: #e8650a;
+  --color-lightTeal: #fff3ec;
+  --color-sage: #2db87a;
+  --color-sageLight: #e8f8f1;
+  --color-coral: #e6513b;
+  --color-coralLight: #fdeeeb;
+  --color-amber: #f5a623;
+  --color-amberLight: #fff6e8;
+  --color-cream: #f7f1ec;
   --color-white: #ffffff;
-  --color-charcoal: #000000;
-  --color-slate: #8e8e93;
-  --color-mist: #c7c7cc;
-  --color-border: #e5e5ea;
-  --color-teal: #007aff;
-  --color-purple: #af52de;
+  --color-charcoal: #1f1b18;
+  --color-slate: #9b938d;
+  --color-mist: #c4bbb4;
+  --color-border: #f0e8e2;
+  --color-teal: #e8650a;
+  --color-purple: #c84b11;
 }
