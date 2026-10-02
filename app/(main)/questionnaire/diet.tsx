@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text } from "react-native";
 
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -92,6 +92,7 @@ export default function DietEnvironmentScreen() {
   return (
     <SectionScaffold
       title="Diet & environment"
+      subtitle="Everyday food, packaging and cosmetics — rough answers are fine."
       step={9}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -102,9 +103,7 @@ export default function DietEnvironmentScreen() {
       onCompleteDone={() => router.replace(routes.qPriorScreening)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}

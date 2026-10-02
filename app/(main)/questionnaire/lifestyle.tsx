@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { NumberInput } from "@/components/ui/NumberInput";
@@ -108,6 +108,7 @@ export default function LifestyleScreen() {
   return (
     <SectionScaffold
       title="Lifestyle"
+      subtitle="Sleep, movement, water and the places you spend your days."
       step={7}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -118,9 +119,7 @@ export default function LifestyleScreen() {
       onCompleteDone={() => router.replace(routes.qStress)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}

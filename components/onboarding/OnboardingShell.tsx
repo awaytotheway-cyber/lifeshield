@@ -3,12 +3,11 @@ import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { DotProgress, type DotState } from "@/components/ui/DotProgress";
 import { Screen } from "@/components/ui/Screen";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Size, Space, typeStyle } from "@/lib/theme";
 
 type OnboardingShellProps = {
   /** 1, 2, or 3 — three screens in this flow. */
@@ -22,12 +21,16 @@ type OnboardingShellProps = {
   illustration?: ReactNode;
   children?: ReactNode;
   footer: ReactNode;
-  /** Show solid trust banner (welcome). */
+  /** Show the privacy reassurance panel (welcome). */
   showTrustBanner?: boolean;
 };
 
+const TOTAL_STEPS = 3;
+
 /**
- * Shared look for welcome, disclaimer, and terms: one idea, glass panel, dots.
+ * Shared look for welcome, disclaimer, and terms: one idea per screen, a
+ * serif headline with lots of air around it, a dot indicator, and one clear
+ * action pinned to the bottom.
  */
 export function OnboardingShell({
   step,
@@ -40,124 +43,96 @@ export function OnboardingShell({
   footer,
   showTrustBanner = false,
 }: OnboardingShellProps) {
+  const dots: DotState[] = Array.from({ length: TOTAL_STEPS }, (_, index) => {
+    const position = index + 1;
+    if (position < step) {
+      return "complete";
+    }
+    return position === step ? "current" : "upcoming";
+  });
+
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      {onSkip ? (
-        <View style={styles.skipRow}>
+    <Screen
+      scroll
+      footer={<View style={styles.footer}>{footer}</View>}
+    >
+      <View style={styles.topRow}>
+        <DotProgress
+          states={dots}
+          accessibilityLabel={`Step ${step} of ${TOTAL_STEPS}`}
+        />
+        {onSkip ? (
           <TextButton
             title={COPY.onboardingSkip}
             onPress={onSkip}
             style={styles.skipBtn}
             accessibilityLabel={COPY.onboardingSkip}
           />
-        </View>
+        ) : null}
+      </View>
+
+      {illustration ? (
+        <View style={styles.illustration}>{illustration}</View>
       ) : (
-        <View style={styles.skipSpacer} />
+        <View style={styles.iconSquare}>
+          <Feather name={icon} size={24} color={Colors.orange} />
+        </View>
       )}
+
+      <Text style={styles.title} accessibilityRole="header">
+        {title}
+      </Text>
+      <Text style={styles.body}>{body}</Text>
+
+      {children}
 
       {showTrustBanner ? (
         <View style={styles.trust}>
           <TrustBanner />
         </View>
       ) : null}
-
-      <GlassCard intensity="card" style={styles.panel}>
-        {illustration ? (
-          <View style={styles.illustration}>{illustration}</View>
-        ) : (
-          <View style={styles.iconCircle}>
-            <Feather name={icon} size={24} color={colors.primaryBlue} />
-          </View>
-        )}
-
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.body}>{body}</Text>
-
-        {children}
-      </GlassCard>
-
-      <View
-        style={styles.dots}
-        accessibilityRole="text"
-        accessibilityLabel={`Step ${step} of 3`}
-      >
-        {[1, 2, 3].map((dot) => (
-          <View
-            key={dot}
-            style={[styles.dot, dot === step ? styles.dotActive : styles.dotIdle]}
-          />
-        ))}
-      </View>
-
-      {footer}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  skipRow: {
-    alignItems: "flex-end",
-    minHeight: 44,
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minHeight: Size.tap,
   },
   skipBtn: {
     marginTop: 0,
   },
-  skipSpacer: {
-    minHeight: 44,
-  },
-  trust: {
-    marginBottom: spacing.base,
-  },
-  panel: {
-    padding: spacing.md,
-    marginBottom: 8,
-  },
   illustration: {
-    alignSelf: "center",
-    alignItems: "center",
-    marginTop: 8,
-    marginBottom: 24,
+    alignSelf: "flex-start",
+    marginTop: Gap.afterTitle,
   },
-  iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.lightTeal,
+  iconSquare: {
+    width: Size.choiceCard,
+    height: Size.choiceCard,
+    borderRadius: 20,
+    backgroundColor: Colors.orangeTint,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
-    marginBottom: 24,
+    marginTop: Gap.afterTitle,
   },
   title: {
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.primaryBlue,
+    ...typeStyle("hero"),
+    marginTop: Gap.afterTitle,
+    color: Colors.ink,
   },
   body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.md,
+    color: Colors.body,
   },
-  dots: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 8,
-    marginTop: 32,
-    marginBottom: 8,
+  trust: {
+    marginTop: Gap.sections,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  dotActive: {
-    backgroundColor: colors.primaryBlue,
-  },
-  dotIdle: {
-    backgroundColor: colors.border,
+  footer: {
+    paddingTop: Space.xs,
+    paddingBottom: Space.xs,
   },
 });

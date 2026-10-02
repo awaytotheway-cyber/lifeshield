@@ -1,13 +1,12 @@
 import { Redirect } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import { Animated, Easing, StyleSheet, Text } from "react-native";
+import { useEffect, useState } from "react";
+import { Animated, Easing, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useReducedMotion } from "react-native-reanimated";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
-import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
-import { fontFamily, typography } from "@/lib/typography";
+import { Colors, Gradients, Motion, Space, typeStyle } from "@/lib/theme";
 import { useJourney } from "@/lib/use-journey";
 
 const SPLASH_HOLD_MS = 1800;
@@ -19,7 +18,8 @@ const SPLASH_HOLD_MS = 1800;
 export default function SplashScreen() {
   const { loading, href } = useJourney();
   const reduceMotion = useReducedMotion();
-  const opacity = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current;
+  // Lazy initialiser keeps the same Animated.Value across renders.
+  const [opacity] = useState(() => new Animated.Value(reduceMotion ? 1 : 0));
   const [minTimeDone, setMinTimeDone] = useState(false);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function SplashScreen() {
     }
     Animated.timing(opacity, {
       toValue: 1,
-      duration: 400,
+      duration: Motion.screen + 100,
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
@@ -42,12 +42,18 @@ export default function SplashScreen() {
 
   if (!minTimeDone) {
     return (
-      <Animated.View style={[styles.wrap, { opacity }]}>
-        <GlassSurface intensity="card" style={styles.panel}>
+      <LinearGradient
+        colors={[...Gradients.heroWarm]}
+        start={{ x: 0.1, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={styles.wrap}
+      >
+        <Animated.View style={[styles.panel, { opacity }]}>
+          <View style={styles.rule} />
           <Text style={styles.brand}>{COPY.appName}</Text>
           <Text style={styles.tagline}>{COPY.splashSubtitle}</Text>
-        </GlassSurface>
-      </Animated.View>
+        </Animated.View>
+      </LinearGradient>
     );
   }
 
@@ -63,29 +69,28 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.cream,
-    paddingHorizontal: 20,
+    backgroundColor: Colors.background,
+    paddingHorizontal: Space.screenH,
   },
   panel: {
-    paddingHorizontal: 28,
-    paddingVertical: 32,
     alignItems: "center",
-    minWidth: "86%",
+  },
+  rule: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.orange,
+    marginBottom: Space.xl,
   },
   brand: {
-    marginTop: 16,
-    ...typography.display,
-    fontSize: 36,
-    lineHeight: 42,
-    color: colors.deepTeal,
+    ...typeStyle("hero"),
+    color: Colors.ink,
     textAlign: "center",
   },
   tagline: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.md,
+    color: Colors.body,
     textAlign: "center",
   },
 });

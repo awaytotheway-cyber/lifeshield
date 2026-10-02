@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -94,6 +94,7 @@ export default function RadiationScreen() {
   return (
     <SectionScaffold
       title="Radiation & occupation"
+      subtitle="Where you work and what you have been exposed to over the years."
       step={3}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -104,9 +105,7 @@ export default function RadiationScreen() {
       onCompleteDone={() => router.replace(routes.qComorbidities)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}

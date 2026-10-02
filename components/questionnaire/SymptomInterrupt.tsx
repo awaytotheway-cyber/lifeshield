@@ -1,14 +1,13 @@
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
-import { BackHandler, Text } from "react-native";
+import { BackHandler, StyleSheet, Text, View } from "react-native";
 
 import { SymptomInterruptCard } from "@/components/questionnaire/SymptomInterruptCard";
 import { DangerButton, PrimaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useTriageStore } from "@/stores/triage-store";
 
 type SymptomInterruptProps = {
@@ -56,56 +55,16 @@ export function SymptomInterrupt({
     onNo();
   };
 
-  return (
-    <Screen scroll>
-      <Text
-        style={{
-          fontFamily: fontFamily.display,
-          fontSize: 26,
-          color: colors.deepTeal,
-        }}
-      >
-        {COPY.interruptTitle}
-      </Text>
-      <Text
-        style={{
-          marginTop: 12,
-          fontFamily: fontFamily.body,
-          fontSize: 15,
-          lineHeight: 24,
-          color: colors.slate,
-        }}
-      >
-        {COPY.interruptBody}
-      </Text>
-      <SymptomInterruptCard
-        question={COPY.interruptQuestion}
-        value={answer}
-        onChange={(value) => {
-          setAnswer(value);
-          setLocalError(null);
-        }}
-        error={localError ?? undefined}
-      />
-      {errorMessage ? (
-        <Text
-          style={{
-            marginTop: 12,
-            textAlign: "center",
-            color: colors.coral,
-            fontFamily: fontFamily.body,
-            fontSize: 13,
-          }}
-        >
-          {errorMessage}
-        </Text>
-      ) : null}
+  const footer = (
+    <View style={styles.footer}>
+      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
       {answer === "yes" ? (
         <DangerButton
           title={COPY.interruptYes}
           onPress={confirm}
           loading={saving}
           disabled={saving}
+          style={styles.footerButton}
         />
       ) : (
         <PrimaryButton
@@ -113,8 +72,57 @@ export function SymptomInterrupt({
           onPress={confirm}
           loading={saving}
           disabled={saving}
+          style={styles.footerButton}
         />
       )}
+    </View>
+  );
+
+  return (
+    <Screen scroll footer={footer}>
+      <Text style={styles.title} accessibilityRole="header">
+        {COPY.interruptTitle}
+      </Text>
+      <Text style={styles.body}>{COPY.interruptBody}</Text>
+      <View style={styles.cardWrap}>
+        <SymptomInterruptCard
+          question={COPY.interruptQuestion}
+          value={answer}
+          onChange={(value) => {
+            setAnswer(value);
+            setLocalError(null);
+          }}
+          error={localError ?? undefined}
+        />
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  title: {
+    ...typeStyle("title"),
+    color: Colors.ink,
+  },
+  body: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
+  cardWrap: {
+    marginTop: Gap.afterTitle,
+  },
+  footer: {
+    paddingTop: Space.xs,
+    paddingBottom: Space.xs,
+  },
+  footerButton: {
+    marginTop: 0,
+  },
+  error: {
+    ...typeStyle("secondary"),
+    color: Colors.red,
+    textAlign: "center",
+    marginBottom: Space.sm,
+  },
+});

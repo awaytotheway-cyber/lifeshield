@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -8,8 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { SectionComplete } from "@/components/illustrations";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radius, Shadow, Space, typeStyle } from "@/lib/theme";
 
 type SectionCompleteCardProps = {
   title?: string;
@@ -51,8 +50,10 @@ export function SectionCompleteCard({
   }));
 
   return (
-    <Animated.View style={[styles.card, motionStyle]}>
-      <SectionComplete width={80} height={80} />
+    <Animated.View style={[styles.card, Shadow.soft, motionStyle]}>
+      <View style={styles.badge}>
+        <SectionComplete width={64} height={64} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
     </Animated.View>
@@ -61,24 +62,29 @@ export function SectionCompleteCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.card,
-    padding: spacing.md,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.card,
+    padding: Space.cardPad,
     alignItems: "center",
   },
+  badge: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: Colors.greenTint,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   title: {
-    marginTop: 12,
-    fontFamily: fontFamily.display,
-    fontSize: 20,
-    color: colors.sage,
+    ...typeStyle("title"),
+    marginTop: Space.lg,
+    color: Colors.ink,
     textAlign: "center",
   },
   subtitle: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
     textAlign: "center",
   },
 });

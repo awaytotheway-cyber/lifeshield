@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { z } from "zod";
 
 import { PostAuthRedirect } from "@/components/journey/PostAuthRedirect";
@@ -11,9 +11,8 @@ import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TextField } from "@/components/ui/TextField";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily, typography } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 const registerSchema = z
@@ -54,7 +53,7 @@ export default function RegisterScreen() {
 
   if (loading) {
     return (
-      <Screen contentPadding={spacing.screenX}>
+      <Screen>
         <Text style={styles.loading}>{COPY.authLoading}</Text>
       </Screen>
     );
@@ -85,132 +84,145 @@ export default function RegisterScreen() {
   });
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <Text style={styles.brand}>{COPY.appName}</Text>
-      <Text style={styles.title}>{COPY.registerTitle}</Text>
-      <Text style={styles.sub}>{COPY.registerSubtitle}</Text>
+    <Screen scroll>
+      <View style={styles.head}>
+        <Text style={styles.brand}>{COPY.appName}</Text>
+        <Text style={styles.title} accessibilityRole="header">
+          {COPY.registerTitle}
+        </Text>
+        <Text style={styles.sub}>{COPY.registerSubtitle}</Text>
+      </View>
 
       <SetupBanners />
 
-      <Card>
-      <Controller
-        control={control}
-        name="fullName"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextField
-            label="Full name"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            autoCapitalize="words"
-            textContentType="name"
-            autoComplete="name"
-            error={errors.fullName?.message}
-          />
-        )}
-      />
+      <Card style={styles.form}>
+        <Controller
+          control={control}
+          name="fullName"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextField
+              label="Full name"
+              value={value}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              autoCapitalize="words"
+              textContentType="name"
+              autoComplete="name"
+              error={errors.fullName?.message}
+            />
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="email"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextField
-            label="Email"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            keyboardType="email-address"
-            textContentType="emailAddress"
-            autoComplete="email"
-            error={errors.email?.message}
-          />
-        )}
-      />
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextField
+              label="Email"
+              value={value}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              keyboardType="email-address"
+              textContentType="emailAddress"
+              autoComplete="email"
+              error={errors.email?.message}
+            />
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="password"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextField
-            label="Password"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            secureTextEntry
-            textContentType="newPassword"
-            autoComplete="new-password"
-            error={errors.password?.message}
-          />
-        )}
-      />
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextField
+              label="Password"
+              value={value}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              secureTextEntry
+              textContentType="newPassword"
+              autoComplete="new-password"
+              error={errors.password?.message}
+            />
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="confirmPassword"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextField
-            label="Confirm password"
-            value={value}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            secureTextEntry
-            textContentType="newPassword"
-            autoComplete="new-password"
-            error={errors.confirmPassword?.message}
-          />
-        )}
-      />
+        <Controller
+          control={control}
+          name="confirmPassword"
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextField
+              label="Confirm password"
+              value={value}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              secureTextEntry
+              textContentType="newPassword"
+              autoComplete="new-password"
+              error={errors.confirmPassword?.message}
+            />
+          )}
+        />
       </Card>
 
       {errors.root?.message ? (
         <Text style={styles.error}>{errors.root.message}</Text>
       ) : null}
 
-      <PrimaryButton
-        title={COPY.registerButton}
-        onPress={() => void onSubmit()}
-        loading={isSubmitting}
-        disabled={!configured || isSubmitting}
-      />
-
-      <TextButton
-        title={COPY.registerToLogin}
-        onPress={() => router.push(routes.login)}
-      />
+      <View style={styles.actions}>
+        <PrimaryButton
+          title={COPY.registerButton}
+          onPress={() => void onSubmit()}
+          loading={isSubmitting}
+          disabled={!configured || isSubmitting}
+          style={styles.primary}
+        />
+        <TextButton
+          title={COPY.registerToLogin}
+          onPress={() => router.push(routes.login)}
+        />
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  head: {
+    marginTop: Space.xl,
+  },
   brand: {
-    ...typography.display,
-    color: colors.deepTeal,
+    ...typeStyle("label"),
+    color: Colors.orange,
+    letterSpacing: 1.6,
   },
   title: {
-    marginTop: 12,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    lineHeight: 26,
-    color: colors.charcoal,
+    ...typeStyle("hero"),
+    marginTop: Space.sm,
+    color: Colors.ink,
   },
   sub: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
+  form: {
+    marginTop: Gap.afterTitle,
+    paddingTop: Space.xs,
+  },
+  actions: {
+    marginTop: Gap.sections,
+  },
+  primary: {
+    marginTop: 0,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Gap.cards,
+    color: Colors.red,
   },
   loading: {
+    ...typeStyle("body"),
     textAlign: "center",
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.slate,
+    color: Colors.muted,
   },
 });

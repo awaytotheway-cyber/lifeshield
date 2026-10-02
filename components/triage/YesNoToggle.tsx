@@ -14,7 +14,6 @@ export function YesNoToggle({ label, value, onChange }: YesNoToggleProps) {
   return (
     <ChoiceToggle
       label={label}
-      color="warning"
       allowClear={false}
       options={[
         { value: "yes", label: COPY.triageYes },

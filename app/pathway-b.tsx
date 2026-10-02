@@ -1,19 +1,18 @@
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
-import { BackHandler, StyleSheet, Text } from "react-native";
+import { BackHandler, StyleSheet, Text, View } from "react-native";
 
+import { TextButton } from "@/components/ui/Button";
 import { PathwayBBanner } from "@/components/ui/PathwayBBanner";
 import { Screen } from "@/components/ui/Screen";
-import { TextButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
 /**
- * Pathway B — outside the main tabs on purpose.
+ * Pathway B — outside the main stack on purpose.
  * Symptomatic users stay here. Back is swallowed so they cannot
  * return to the symptom check or questionnaire.
  */
@@ -50,7 +49,7 @@ export default function PathwayBScreen() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll>
       <PathwayBBanner
         onFindDoctor={() => {
           setNotice(COPY.pathwayBFindDoctorHint);
@@ -59,31 +58,42 @@ export default function PathwayBScreen() {
           setNotice(COPY.pathwayBSaved);
         }}
       />
+      {notice ? (
+        <View style={styles.notice}>
+          <Text style={styles.noticeText}>{notice}</Text>
+        </View>
+      ) : null}
       <Text style={styles.locked}>{COPY.pathwayBLockedNote}</Text>
-      {notice ? <Text style={styles.notice}>{notice}</Text> : null}
-      <TextButton
-        title={COPY.signOut}
-        onPress={() => {
-          void signOut();
-        }}
-      />
+      <View style={styles.signOut}>
+        <TextButton
+          title={COPY.signOut}
+          onPress={() => {
+            void signOut();
+          }}
+        />
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  locked: {
-    marginTop: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
-  },
   notice: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.charcoal,
+    marginTop: Gap.cards,
+    borderRadius: 16,
+    backgroundColor: Colors.orangeTint,
+    padding: Space.md + 2,
+  },
+  noticeText: {
+    ...typeStyle("secondary"),
+    color: Colors.orangeDeep,
+  },
+  locked: {
+    ...typeStyle("secondary"),
+    marginTop: Gap.sections,
+    color: Colors.muted,
+  },
+  signOut: {
+    marginTop: Space.md,
+    alignItems: "flex-start",
   },
 });

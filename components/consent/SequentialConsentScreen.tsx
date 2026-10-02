@@ -5,7 +5,8 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/lib/consent-flow";
 import { COPY } from "@/lib/copy";
 import { routes } from "@/lib/routes";
+import { Colors, Gap, Radius, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -104,55 +106,107 @@ export function SequentialConsentScreen({
     }
   };
 
-  return (
-    <Screen scroll>
-      <Text className="text-coral text-3xl">{COPY.appName}</Text>
-      <Text className="mt-4 text-2xl text-charcoal">{COPY.consentTitle}</Text>
-      <Text className="mt-3 text-charcoal">{COPY.consentIntro}</Text>
-      {illustration ? <View style={styles.illustration}>{illustration}</View> : null}
-      <ClinicalTerm termKey={consentType} />
-      <Text className="mt-4 text-charcoal">{extraBody}</Text>
-      <SetupBanners />
-
-      {message ? (
-        <Text className="mt-4 text-center text-coral">{message}</Text>
-      ) : null}
-
+  const footer = (
+    <View style={styles.footer}>
+      {message ? <Text style={styles.message}>{message}</Text> : null}
       {declined ? (
         <>
-          <Text className="mt-3 text-center text-charcoal">
-            {COPY.consentDeclinedHint}
-          </Text>
-          <Button
+          <Text style={styles.declinedHint}>{COPY.consentDeclinedHint}</Text>
+          <TextButton
             title={COPY.consentGoHome}
-            variant="ghost"
             onPress={() => {
               router.replace(routes.home);
             }}
           />
         </>
       ) : null}
-
-      <Button
+      <PrimaryButton
         title={COPY.consentAgree}
         onPress={() => void onAgree()}
         loading={saving}
         disabled={saving || loading}
+        style={styles.primary}
       />
-      <Button
+      <TextButton
         title={COPY.consentDecline}
-        variant="ghost"
         onPress={() => void onDecline()}
         disabled={saving || loading}
       />
+    </View>
+  );
+
+  return (
+    <Screen scroll footer={footer}>
+      <Text style={styles.eyebrow}>{COPY.appName}</Text>
+      <Text style={styles.title} accessibilityRole="header">
+        {COPY.consentTitle}
+      </Text>
+      <Text style={styles.intro}>{COPY.consentIntro}</Text>
+
+      {illustration ? (
+        <View style={styles.illustration}>{illustration}</View>
+      ) : null}
+
+      {/* ClinicalTerm brings its own white card. */}
+      <ClinicalTerm termKey={consentType} />
+
+      <Card style={styles.detail}>
+        <Text style={styles.body}>{extraBody}</Text>
+      </Card>
+
+      <SetupBanners />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  eyebrow: {
+    ...typeStyle("label"),
+    color: Colors.orange,
+    letterSpacing: 1.6,
+  },
+  title: {
+    ...typeStyle("title"),
+    marginTop: Space.sm,
+    color: Colors.ink,
+  },
+  intro: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
   illustration: {
+    marginTop: Gap.afterTitle,
     alignItems: "center",
-    marginTop: 16,
-    marginBottom: 8,
+    justifyContent: "center",
+    paddingVertical: Space.lg,
+    borderRadius: Radius.card,
+    backgroundColor: Colors.orangeTint,
+  },
+  detail: {
+    marginTop: Gap.cards,
+  },
+  body: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  footer: {
+    paddingTop: Space.xs,
+    paddingBottom: Space.xs,
+  },
+  primary: {
+    marginTop: 0,
+  },
+  message: {
+    ...typeStyle("secondary"),
+    textAlign: "center",
+    marginBottom: Space.sm,
+    color: Colors.red,
+  },
+  declinedHint: {
+    ...typeStyle("secondary"),
+    textAlign: "center",
+    marginBottom: Space.sm,
+    color: Colors.body,
   },
 });

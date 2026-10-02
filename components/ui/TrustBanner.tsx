@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radius, Size, Space, typeStyle } from "@/lib/theme";
 
 type TrustBannerProps = {
   title?: string;
@@ -10,8 +9,12 @@ type TrustBannerProps = {
 };
 
 /**
- * Solid (NON-glass) trust/privacy strip — sits near the top of home/onboarding.
- * Solid fill keeps it readable and distinct from frosted cards below.
+ * Quiet privacy reassurance strip — sits near the top of onboarding and in
+ * settings.
+ *
+ * PLAIN ENGLISH: a soft orange-tinted panel with a shield icon that tells
+ * people their answers stay private. Tinted rather than solid, so it reads as
+ * reassurance instead of a warning.
  */
 export function TrustBanner({
   title = "Your data stays private",
@@ -19,8 +22,8 @@ export function TrustBanner({
 }: TrustBannerProps) {
   return (
     <View style={styles.wrap} accessibilityRole="summary">
-      <View style={styles.iconWrap}>
-        <Feather name="shield" size={18} color={colors.white} />
+      <View style={styles.iconSquare}>
+        <Feather name="shield" size={20} color={Colors.orange} />
       </View>
       <View style={styles.textCol}>
         <Text style={styles.title}>{title}</Text>
@@ -34,16 +37,16 @@ const styles = StyleSheet.create({
   wrap: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: spacing.mdSm,
-    padding: spacing.base,
-    borderRadius: radius.alert,
-    backgroundColor: colors.deepNavy,
+    gap: Space.md - 2,
+    padding: Space.cardPad,
+    borderRadius: Radius.card,
+    backgroundColor: Colors.orangeTint,
   },
-  iconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: colors.primaryBlue,
+  iconSquare: {
+    width: Size.iconSquare,
+    height: Size.iconSquare,
+    borderRadius: 14,
+    backgroundColor: Colors.white,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -51,16 +54,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 15,
-    lineHeight: 20,
-    color: colors.white,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   body: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: "rgba(255,255,255,0.82)",
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.body,
   },
 });

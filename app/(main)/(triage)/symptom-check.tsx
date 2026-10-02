@@ -8,9 +8,8 @@ import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TRIAGE_QUESTIONS, type TriageAnswerKey } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -105,90 +104,88 @@ export default function SymptomCheckScreen() {
     }
   };
 
+  const footer = (
+    <View style={styles.footer}>
+      {message ? <Text style={styles.error}>{message}</Text> : null}
+      <PrimaryButton
+        title={COPY.triageContinue}
+        onPress={() => void onContinue()}
+        loading={saving || triageLoading}
+        disabled={!allAnswered || saving}
+        style={styles.primary}
+      />
+    </View>
+  );
+
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <Text style={styles.h1}>{COPY.triageTitle}</Text>
+    <Screen scroll footer={footer}>
+      <Text style={styles.title} accessibilityRole="header">
+        {COPY.triageTitle}
+      </Text>
       <Text style={styles.sub}>{COPY.triageBody}</Text>
       <Text style={styles.note}>{COPY.triageAwareness}</Text>
       <SetupBanners />
 
-      <View style={styles.questions}>
-        {TRIAGE_QUESTIONS.map((question) => {
-          const current = answers[question.key];
-          const value =
-            current === true ? "yes" : current === false ? "no" : "";
-          return (
-            <RadioGroup
-              key={question.key}
-              label={question.label}
-              allowClear={false}
-              options={[
-                { value: "yes", label: COPY.triageYes },
-                { value: "no", label: COPY.triageNo },
-              ]}
-              value={value}
-              onChange={(next) => {
-                if (next === "yes") {
-                  setAnswer(question.key, true);
-                  return;
-                }
-                if (next === "no") {
-                  setAnswer(question.key, false);
-                }
-              }}
-            />
-          );
-        })}
-      </View>
+      {TRIAGE_QUESTIONS.map((question) => {
+        const current = answers[question.key];
+        const value = current === true ? "yes" : current === false ? "no" : "";
+        return (
+          <RadioGroup
+            key={question.key}
+            label={question.label}
+            allowClear={false}
+            options={[
+              { value: "yes", label: COPY.triageYes },
+              { value: "no", label: COPY.triageNo },
+            ]}
+            value={value}
+            onChange={(next) => {
+              if (next === "yes") {
+                setAnswer(question.key, true);
+                return;
+              }
+              if (next === "no") {
+                setAnswer(question.key, false);
+              }
+            }}
+          />
+        );
+      })}
 
-      {message ? <Text style={styles.error}>{message}</Text> : null}
-
-      <View style={styles.cta}>
-        <PrimaryButton
-          title={COPY.triageContinue}
-          onPress={() => void onContinue()}
-          loading={saving || triageLoading}
-          disabled={!allAnswered || saving}
-        />
-      </View>
+      <View style={styles.tailSpace} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  h1: {
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+  title: {
+    ...typeStyle("title"),
+    color: Colors.ink,
   },
   sub: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   note: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.muted,
   },
-  questions: {
-    marginTop: 24,
-    gap: 8,
+  tailSpace: {
+    height: Gap.cards,
+  },
+  footer: {
+    paddingTop: Space.xs,
+    paddingBottom: Space.xs,
+  },
+  primary: {
+    marginTop: 0,
   },
   error: {
-    marginTop: 16,
+    ...typeStyle("secondary"),
     textAlign: "center",
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-  },
-  cta: {
-    marginTop: 40,
+    marginBottom: Space.sm,
+    color: Colors.red,
   },
 });

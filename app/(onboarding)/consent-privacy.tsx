@@ -1,4 +1,3 @@
-import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useState } from "react";
@@ -12,46 +11,27 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ShieldTrust } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Card } from "@/components/ui/Card";
+import { ChoiceCard } from "@/components/ui/ChoiceCard";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
-import { fontFamily, typography } from "@/lib/typography";
+import {
+  Colors,
+  Gap,
+  Radius,
+  Shadow,
+  Size,
+  Space,
+  typeStyle,
+} from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
-
-type CheckCardProps = {
-  label: string;
-  checked: boolean;
-  onToggle: () => void;
-};
-
-/** Full-width card checkbox — same shape as RadioGroup, never auto-checked. */
-function CheckCard({ label, checked, onToggle }: CheckCardProps) {
-  return (
-    <Pressable
-      accessibilityRole="checkbox"
-      accessibilityLabel={label}
-      accessibilityState={{ checked }}
-      onPress={onToggle}
-      style={[styles.checkCard, checked ? styles.checkOn : styles.checkOff]}
-    >
-      <Text style={styles.checkLabel}>{label}</Text>
-      {checked ? (
-        <Feather name="check" size={20} color={colors.midTeal} />
-      ) : (
-        <View style={styles.checkEmpty} />
-      )}
-    </Pressable>
-  );
-}
 
 function PolicyBlock({ title, body }: { title: string; body: string }) {
   return (
@@ -127,36 +107,32 @@ export default function ConsentPrivacyScreen() {
     <Screen
       scroll
       footer={
-        <>
+        <View style={styles.footer}>
           {message ? <Text style={styles.error}>{message}</Text> : null}
           <PrimaryButton
             title={COPY.consentGateContinue}
             onPress={() => void onContinue()}
             loading={saving}
             disabled={!bothChecked || saving}
+            style={styles.primary}
           />
           <TextButton
             title={COPY.consentGateDecline}
             onPress={() => setDeclineOpen(true)}
             disabled={saving}
           />
-        </>
+        </View>
       }
     >
-      <View style={styles.logoWrap}>
-        <Image
-          source={require("../../assets/images/prescope-logo.png")}
-          style={styles.logo}
-          contentFit="contain"
-          accessibilityLabel="Prescope logo"
-        />
-      </View>
       <View style={styles.shieldWrap}>
-        <ShieldTrust width={120} height={120} />
+        <ShieldTrust width={96} height={96} />
       </View>
-      <Text style={styles.title}>{COPY.consentGateTitle}</Text>
+      <Text style={styles.brand}>{COPY.appName}</Text>
+      <Text style={styles.title} accessibilityRole="header">
+        {COPY.consentGateTitle}
+      </Text>
 
-      <GlassSurface intensity="card" style={styles.summaryCard}>
+      <Card style={styles.summaryCard} padded={false}>
         <ScrollView
           style={styles.summaryScroll}
           contentContainerStyle={styles.summaryInner}
@@ -170,7 +146,6 @@ export default function ConsentPrivacyScreen() {
           <PolicyBlock title={COPY.consentGateGeneticTitle} body={COPY.consentGateGeneticBody} />
           <PolicyBlock title={COPY.consentGatePaymentTitle} body={COPY.consentGatePaymentBody} />
           <PolicyBlock title={COPY.consentGateNeverTitle} body={COPY.consentGateNeverBody} />
-          <PolicyBlock title={COPY.consentGateControlTitle} body={COPY.consentGateControlBody} />
           <TextButton
             title={COPY.consentGateReadPrivacy}
             onPress={() => void openLegal("privacy")}
@@ -180,24 +155,28 @@ export default function ConsentPrivacyScreen() {
             onPress={() => void openLegal("terms")}
           />
         </ScrollView>
-      </GlassSurface>
+      </Card>
 
-      <CheckCard
-        label={COPY.consentGateCheckPolicy}
-        checked={policyOk}
-        onToggle={() => {
-          setPolicyOk((value) => !value);
-          setMessage(null);
-        }}
-      />
-      <CheckCard
-        label={COPY.consentGateCheckHealth}
-        checked={healthOk}
-        onToggle={() => {
-          setHealthOk((value) => !value);
-          setMessage(null);
-        }}
-      />
+      <View style={styles.checks}>
+        <ChoiceCard
+          label={COPY.consentGateCheckPolicy}
+          selected={policyOk}
+          multi
+          onPress={() => {
+            setPolicyOk((value) => !value);
+            setMessage(null);
+          }}
+        />
+        <ChoiceCard
+          label={COPY.consentGateCheckHealth}
+          selected={healthOk}
+          multi
+          onPress={() => {
+            setHealthOk((value) => !value);
+            setMessage(null);
+          }}
+        />
+      </View>
 
       <Modal
         visible={declineOpen}
@@ -206,31 +185,30 @@ export default function ConsentPrivacyScreen() {
         onRequestClose={() => setDeclineOpen(false)}
       >
         <Pressable style={styles.backdrop} onPress={() => setDeclineOpen(false)}>
-          <Pressable onPress={() => undefined}>
-            <GlassSurface intensity="sheet" style={styles.sheet}>
-              <SafeAreaView edges={["bottom"]}>
-                <Text style={styles.sheetTitle}>{COPY.consentGateDeclineTitle}</Text>
-                <Text style={styles.sheetBody}>{COPY.consentGateDeclineBody}</Text>
-                <View style={styles.sheetRow}>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={COPY.consentGateCloseApp}
-                    onPress={onCloseApp}
-                    style={styles.sheetHit}
-                  >
-                    <Text style={styles.sheetClose}>{COPY.consentGateCloseApp}</Text>
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={COPY.consentGateGoBack}
-                    onPress={() => setDeclineOpen(false)}
-                    style={styles.sheetHit}
-                  >
-                    <Text style={styles.sheetBack}>{COPY.consentGateGoBack}</Text>
-                  </Pressable>
-                </View>
-              </SafeAreaView>
-            </GlassSurface>
+          <Pressable style={styles.sheet} onPress={() => undefined}>
+            <SafeAreaView edges={["bottom"]}>
+              <View style={styles.sheetHandle} />
+              <Text style={styles.sheetTitle}>{COPY.consentGateDeclineTitle}</Text>
+              <Text style={styles.sheetBody}>{COPY.consentGateDeclineBody}</Text>
+              <View style={styles.sheetRow}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={COPY.consentGateCloseApp}
+                  onPress={onCloseApp}
+                  style={styles.sheetHit}
+                >
+                  <Text style={styles.sheetClose}>{COPY.consentGateCloseApp}</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={COPY.consentGateGoBack}
+                  onPress={() => setDeclineOpen(false)}
+                  style={styles.sheetHit}
+                >
+                  <Text style={styles.sheetBack}>{COPY.consentGateGoBack}</Text>
+                </Pressable>
+              </View>
+            </SafeAreaView>
           </Pressable>
         </Pressable>
       </Modal>
@@ -239,134 +217,114 @@ export default function ConsentPrivacyScreen() {
 }
 
 const styles = StyleSheet.create({
-  logoWrap: {
-    alignItems: "center",
-    marginBottom: spacing.sm,
-  },
-  logo: {
-    width: 72,
-    height: 72,
-  },
   shieldWrap: {
     alignItems: "center",
-    marginBottom: spacing.sm,
+    marginTop: Space.sm,
+  },
+  brand: {
+    ...typeStyle("label"),
+    color: Colors.orange,
+    letterSpacing: 1.6,
+    textAlign: "center",
+    marginTop: Space.lg,
   },
   title: {
-    ...typography.h1,
-    color: colors.deepTeal,
+    ...typeStyle("title"),
+    color: Colors.ink,
     textAlign: "center",
-    marginBottom: spacing.base,
+    marginTop: Space.sm,
   },
   summaryCard: {
-    maxHeight: "55%",
+    marginTop: Gap.afterTitle,
     overflow: "hidden",
   },
   summaryScroll: {
-    maxHeight: 360,
+    maxHeight: 340,
   },
   summaryInner: {
-    padding: spacing.base,
-    paddingBottom: spacing.md,
+    padding: Space.cardPad,
   },
   summaryHeading: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    lineHeight: 22,
-    color: colors.deepTeal,
-    marginBottom: spacing.sm,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+    marginBottom: Space.sm,
   },
   block: {
-    marginTop: spacing.base,
+    marginTop: Space.lg,
   },
   blockTitle: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
-    marginBottom: 4,
+    ...typeStyle("label"),
+    color: Colors.ink,
+    marginBottom: Space.xs,
   },
   blockBody: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+    ...typeStyle("body"),
+    color: Colors.body,
   },
-  checkCard: {
-    marginTop: spacing.sm,
-    minHeight: 56,
-    borderRadius: radius.radioCard,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+  checks: {
+    marginTop: Gap.sections,
+    gap: Space.sm,
   },
-  checkOff: {
-    backgroundColor: colors.white,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+  footer: {
+    paddingTop: Space.xs,
+    paddingBottom: Space.xs,
   },
-  checkOn: {
-    backgroundColor: colors.lightTeal,
-    borderWidth: 2,
-    borderColor: colors.midTeal,
-  },
-  checkLabel: {
-    flex: 1,
-    paddingRight: 12,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.charcoal,
-  },
-  checkEmpty: {
-    width: 20,
-    height: 20,
+  primary: {
+    marginTop: 0,
   },
   error: {
+    ...typeStyle("secondary"),
     textAlign: "center",
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.coral,
+    marginBottom: Space.sm,
+    color: Colors.red,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: "rgba(31,27,24,0.35)",
   },
   sheet: {
-    padding: 20,
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    paddingHorizontal: Space.cardPad,
+    paddingTop: Space.sm,
+    ...Shadow.lift,
+  },
+  sheetHandle: {
+    alignSelf: "center",
+    width: 44,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.line,
+    marginBottom: Space.md,
   },
   sheetTitle: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    color: colors.deepTeal,
+    ...typeStyle("section"),
+    color: Colors.ink,
   },
   sheetBody: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   sheetRow: {
-    marginTop: 8,
+    marginTop: Space.lg,
     flexDirection: "row",
     justifyContent: "space-between",
+    gap: Space.sm,
   },
   sheetHit: {
-    minHeight: tapTarget,
+    minHeight: Size.tap,
     justifyContent: "center",
-    paddingHorizontal: 4,
+    paddingHorizontal: Space.xs,
   },
   sheetClose: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.coral,
+    ...typeStyle("body"),
+    color: Colors.red,
   },
   sheetBack: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
+    ...typeStyle("body"),
+    color: Colors.orange,
   },
 });

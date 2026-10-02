@@ -2,15 +2,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
-import { Button } from "@/components/ui/Button";
+import { SecondaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { MAMMOGRAM_FINDING_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
+import { Colors, Gap, typeStyle } from "@/lib/theme";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
 import {
   jsonToPriorScreeningForm,
@@ -134,6 +137,7 @@ export default function PriorScreeningScreen() {
   return (
     <SectionScaffold
       title="Prior screening"
+      subtitle="The last step. Then we work out which tests to suggest."
       step={10}
       loading={!ready}
       footerTitle={COPY.sectionSubmitResults}
@@ -144,9 +148,7 @@ export default function PriorScreeningScreen() {
       onCompleteDone={() => router.replace(routes.results)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}
@@ -163,15 +165,13 @@ export default function PriorScreeningScreen() {
       />
 
       {previousMammogram === "yes" ? (
-        <View className="mt-2">
+        <View style={styles.mammograms}>
           {errors.mammograms?.message ? (
-            <Text className="text-coral">
-              {String(errors.mammograms.message)}
-            </Text>
+            <SectionNotice message={String(errors.mammograms.message)} />
           ) : null}
           {fields.map((field, index) => (
-            <View key={field.id} className="mt-3 rounded-xl bg-white px-4 py-3">
-              <Text className="text-charcoal">Mammogram {index + 1}</Text>
+            <Card key={field.id}>
+              <Text style={styles.mammogramLabel}>Mammogram {index + 1}</Text>
               <Controller
                 control={control}
                 name={`mammograms.${index}.date`}
@@ -198,17 +198,17 @@ export default function PriorScreeningScreen() {
                 )}
               />
               {fields.length > 1 ? (
-                <Button
+                <TextButton
                   title={COPY.removeMammogram}
-                  variant="ghost"
                   onPress={() => remove(index)}
+                  style={styles.remove}
                 />
               ) : null}
-            </View>
+            </Card>
           ))}
-          <Button
+          <SecondaryButton
             title={COPY.addMammogram}
-            variant="ghost"
+            icon="plus"
             onPress={() => append({ date: "", finding: "" })}
           />
         </View>
@@ -217,3 +217,17 @@ export default function PriorScreeningScreen() {
     </SectionScaffold>
   );
 }
+
+const styles = StyleSheet.create({
+  mammograms: {
+    marginTop: Gap.cards,
+    gap: Gap.cards,
+  },
+  mammogramLabel: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  remove: {
+    alignSelf: "flex-start",
+  },
+});

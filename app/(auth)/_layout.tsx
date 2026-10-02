@@ -1,4 +1,4 @@
-import { Redirect, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 import { GateLoading, PostAuthRedirect } from "@/components/journey/PostAuthRedirect";
 import { useAuthStore } from "@/stores/auth-store";
@@ -15,5 +15,10 @@ export default function AuthLayout() {
     return <PostAuthRedirect />;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  // Section 9: screens slide in from the right.
+  return (
+    <Stack
+      screenOptions={{ headerShown: false, animation: "slide_from_right" }}
+    />
+  );
 }

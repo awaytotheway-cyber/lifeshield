@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { PathwayBHandoff } from "@/components/illustrations";
-import { DangerButton, TextButton } from "@/components/ui/Button";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Radius, Space, typeStyle } from "@/lib/theme";
 
 type PathwayBBannerProps = {
   onFindDoctor?: () => void;
@@ -13,46 +12,57 @@ type PathwayBBannerProps = {
 };
 
 /**
- * Calm hand-off look for Pathway B — cream, not a red screen of doom.
+ * Calm hand-off look for Pathway B — warm and caring, not a red screen of
+ * doom. The red is used only as a thin accent band behind the illustration.
  */
 export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProps) {
   return (
-    <GlassSurface intensity="card" style={styles.wrap}>
+    <Card>
       <View style={styles.illustration}>
         <PathwayBHandoff width={160} height={140} />
       </View>
-      <Text style={styles.title}>{COPY.pathwayBTitle}</Text>
+      <Text style={styles.title} accessibilityRole="header">
+        {COPY.pathwayBTitle}
+      </Text>
       <Text style={styles.body}>{COPY.pathwayBBody}</Text>
       {onFindDoctor ? (
-        <DangerButton title={COPY.pathwayBFindDoctor} onPress={onFindDoctor} />
+        <View style={styles.actions}>
+          <PrimaryButton
+            title={COPY.pathwayBFindDoctor}
+            onPress={onFindDoctor}
+            style={styles.primary}
+          />
+          {onSavePlace ? (
+            <TextButton title={COPY.pathwayBSavePlace} onPress={onSavePlace} />
+          ) : null}
+        </View>
       ) : null}
-      {onSavePlace ? (
-        <TextButton title={COPY.pathwayBSavePlace} onPress={onSavePlace} />
-      ) : null}
-    </GlassSurface>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    padding: spacing.md,
-  },
   illustration: {
     alignItems: "center",
-    marginBottom: 16,
+    justifyContent: "center",
+    paddingVertical: Space.md,
+    borderRadius: Radius.card - 4,
+    backgroundColor: Colors.redTint,
   },
   title: {
-    fontFamily: fontFamily.display,
-    fontSize: 24,
-    lineHeight: 29,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+    ...typeStyle("title"),
+    marginTop: Space.lg,
+    color: Colors.ink,
   },
   body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
+  actions: {
+    marginTop: Gap.cards,
+  },
+  primary: {
+    marginTop: 0,
   },
 });

@@ -4,19 +4,20 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { QuestionnaireStepper } from "@/components/questionnaire/QuestionnaireStepper";
 import { SectionCompleteCard } from "@/components/questionnaire/SectionCompleteCard";
-import { IconButton, PrimaryButton } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
 
 type SectionScaffoldProps = {
   title: string;
+  /** One line of body copy under the serif title. */
+  subtitle?: string;
   step: number;
   total?: number;
   loading?: boolean;
@@ -37,6 +38,7 @@ type SectionScaffoldProps = {
  */
 export function SectionScaffold({
   title,
+  subtitle,
   step,
   total = 10,
   loading = false,
@@ -75,7 +77,7 @@ export function SectionScaffold({
 
   if (!hubHydrated) {
     return (
-      <Screen contentPadding={spacing.screenX}>
+      <Screen>
         <StaticSkeleton rows={4} />
       </Screen>
     );
@@ -94,26 +96,20 @@ export function SectionScaffold({
     .replace("{total}", String(total));
 
   const header = (
-    <View>
-      {hideBack ? null : (
-        <IconButton
-          icon="arrow-left"
-          accessibilityLabel={COPY.hubBack}
-          onPress={() => {
-            router.replace(routes.questionnaire);
-          }}
-        />
-      )}
-      <QuestionnaireStepper current={step} total={total} />
-      <Text style={styles.title} accessibilityRole="header">
-        {title}
-      </Text>
-    </View>
+    <QuestionnaireStepper
+      current={step}
+      total={total}
+      hideBack={hideBack}
+      backLabel={COPY.hubBack}
+      onBack={() => {
+        router.replace(routes.questionnaire);
+      }}
+    />
   );
 
   if (loading) {
     return (
-      <Screen contentPadding={spacing.screenX} header={header}>
+      <Screen header={header}>
         <StaticSkeleton rows={5} />
       </Screen>
     );
@@ -121,7 +117,7 @@ export function SectionScaffold({
 
   if (showComplete) {
     return (
-      <Screen contentPadding={spacing.screenX} header={header}>
+      <Screen header={header}>
         <View style={styles.completeWrap}>
           <SectionCompleteCard
             subtitle={completeSubtitle}
@@ -132,48 +128,77 @@ export function SectionScaffold({
     );
   }
 
+  // Section 8: 24px of padding around the sticky footer button. The Screen
+  // shell supplies 18px, so 6px more on each side lands on 24.
   const footer = onFooterPress ? (
-    <View>
-      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+    <View style={styles.footer}>
+      {errorMessage ? (
+        <Text style={styles.footerError}>{errorMessage}</Text>
+      ) : null}
       <PrimaryButton
         title={footerTitle}
         onPress={onFooterPress}
         loading={footerLoading}
         disabled={footerDisabled}
         accessibilityLabel={footerTitle}
+        style={styles.footerButton}
       />
     </View>
   ) : errorMessage ? (
-    <Text style={styles.error}>{errorMessage}</Text>
+    <View style={styles.footer}>
+      <Text style={styles.footerError}>{errorMessage}</Text>
+    </View>
   ) : null;
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} header={header} footer={footer}>
+    <Screen scroll header={header} footer={footer}>
+      <View style={styles.titleBlock}>
+        <Text style={styles.title} accessibilityRole="header">
+          {title}
+        </Text>
+        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+      </View>
       {children}
+      {/* Section 8: 56px of air before the sticky footer (40 from the
+          Screen shell + 16 here). */}
+      <View style={styles.tailSpace} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    marginTop: 8,
-    marginBottom: 8,
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+  titleBlock: {
+    // The Screen shell already adds 24px; 8px more makes the mandated 32px
+    // of air between the header and the first content.
+    marginTop: Space.sm - 4,
   },
-  error: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.coral,
-    textAlign: "center",
-    marginBottom: 4,
+  title: {
+    ...typeStyle("title"),
+    color: Colors.ink,
+  },
+  subtitle: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
+  tailSpace: {
+    height: Gap.cards,
   },
   completeWrap: {
     flex: 1,
     justifyContent: "center",
+  },
+  footer: {
+    paddingTop: Space.xs,
+    paddingBottom: Space.xs,
+  },
+  footerButton: {
+    marginTop: 0,
+  },
+  footerError: {
+    ...typeStyle("secondary"),
+    color: Colors.red,
+    textAlign: "center",
+    marginBottom: Space.sm,
   },
 });
