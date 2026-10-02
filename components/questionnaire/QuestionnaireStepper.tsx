@@ -7,8 +7,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { colors } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, typeStyle } from "@/lib/theme";
 
 type QuestionnaireStepperProps = {
   current: number;
@@ -16,7 +15,7 @@ type QuestionnaireStepperProps = {
 };
 
 /**
- * Top bar for a questionnaire section: “Section 3 of 10” plus a thin sage bar.
+ * Top bar for a questionnaire section: “Section 3 of 10” plus a thin orange bar.
  */
 export function QuestionnaireStepper({ current, total }: QuestionnaireStepperProps) {
   const reduceMotion = useReducedMotion();
@@ -45,27 +44,24 @@ export function QuestionnaireStepper({ current, total }: QuestionnaireStepperPro
 
 const styles = StyleSheet.create({
   bar: {
-    backgroundColor: colors.white,
     paddingHorizontal: 0,
     paddingTop: 12,
     paddingBottom: 12,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
-    color: colors.slate,
+    ...typeStyle("label", Colors.muted),
     marginBottom: 8,
   },
   track: {
-    height: 4,
+    height: 6,
     width: "100%",
-    backgroundColor: colors.border,
-    borderRadius: 2,
+    backgroundColor: Colors.line,
+    borderRadius: 3,
     overflow: "hidden",
   },
   fill: {
-    height: 4,
-    backgroundColor: colors.sage,
-    borderRadius: 2,
+    height: 6,
+    backgroundColor: Colors.orange,
+    borderRadius: 3,
   },
 });
