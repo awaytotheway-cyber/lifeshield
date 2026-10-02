@@ -60,6 +60,8 @@ export const Colors = {
   amber: "#F5A623",
   amberTint: "#FFF6E8",
   red: "#E6513B",
+  /** Pressed state for a destructive button, mirroring orangeDeep. */
+  redDeep: "#C8402C",
   redTint: "#FDEEEB",
 } as const;
 

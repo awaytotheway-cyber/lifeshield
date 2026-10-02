@@ -180,7 +180,7 @@ export function Button({
             <View
               style={[
                 styles.primaryFill,
-                { backgroundColor: pressed ? "#C8402C" : Colors.red },
+                { backgroundColor: pressed ? Colors.redDeep : Colors.red },
               ]}
             />
           ) : (
