@@ -2,8 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { RadioGroup } from "@/components/ui/RadioGroup";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radius, Size, Space, typeStyle } from "@/lib/theme";
 
 type SymptomInterruptCardProps = {
   question: string;
@@ -13,7 +12,9 @@ type SymptomInterruptCardProps = {
 };
 
 /**
- * Mid-questionnaire safety gate look: coral callout, not a red panic screen.
+ * Mid-questionnaire safety gate look: a soft warm-red callout, not a red
+ * panic screen. The wording and the Yes/No behaviour are fixed — only the
+ * styling changes.
  */
 export function SymptomInterruptCard({
   question,
@@ -23,10 +24,10 @@ export function SymptomInterruptCard({
 }: SymptomInterruptCardProps) {
   return (
     <View style={styles.card}>
-      <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.coral} />
-        <Text style={styles.title}>One important question</Text>
+      <View style={styles.iconSquare}>
+        <Feather name="alert-circle" size={20} color={Colors.red} />
       </View>
+      <Text style={styles.title}>One important question</Text>
       <Text style={styles.body}>{question}</Text>
       <RadioGroup
         label=""
@@ -46,28 +47,26 @@ export function SymptomInterruptCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.coralLight,
-    borderRadius: radius.alert,
-    borderLeftWidth: 2,
-    borderLeftColor: colors.coral,
-    padding: spacing.base,
+    backgroundColor: Colors.redTint,
+    borderRadius: Radius.card,
+    padding: Space.cardPad,
   },
-  header: {
-    flexDirection: "row",
+  iconSquare: {
+    width: Size.iconSquare,
+    height: Size.iconSquare,
+    borderRadius: 14,
+    backgroundColor: Colors.white,
     alignItems: "center",
-    gap: 8,
+    justifyContent: "center",
   },
   title: {
-    flex: 1,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    color: colors.coral,
+    ...typeStyle("section"),
+    marginTop: Space.md,
+    color: Colors.ink,
   },
   body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
 });

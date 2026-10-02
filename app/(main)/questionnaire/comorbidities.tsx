@@ -2,9 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -104,6 +104,7 @@ export default function ComorbiditiesScreen() {
   return (
     <SectionScaffold
       title="Other conditions"
+      subtitle="Anything ongoing that could shape which tests make sense for you."
       step={4}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -114,9 +115,7 @@ export default function ComorbiditiesScreen() {
       onCompleteDone={() => router.replace(routes.qFamilyHistory)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <ClinicalTerm termKey="gilbert" />
       <Controller
@@ -161,7 +160,7 @@ export default function ComorbiditiesScreen() {
         )}
       />
       {showObesityHint ? (
-        <Text className="mt-2 text-teal">{COPY.obesityBmiHint}</Text>
+        <SectionNotice message={COPY.obesityBmiHint} tone="info" />
       ) : null}
 
       <Controller

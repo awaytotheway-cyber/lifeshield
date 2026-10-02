@@ -1,15 +1,18 @@
+import { Image } from "expo-image";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
+import { TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextInput } from "@/components/ui/TextInput";
-import { TextButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   loadRecipes,
   loadSavedRecipeIds,
@@ -17,10 +20,16 @@ import {
   type RecipeRow,
 } from "@/lib/recipes";
 import { recipeDetailHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Font, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 type Filter = "all" | "quick" | "medium";
+
+const FILTERS: [Filter, string][] = [
+  ["all", COPY.recipesFilterAll],
+  ["quick", COPY.recipesFilterQuick],
+  ["medium", COPY.recipesFilterMedium],
+];
 
 export default function RecipesListScreen() {
   const router = useRouter();
@@ -59,44 +68,31 @@ export default function RecipesListScreen() {
   if (!session) return <Redirect href={routes.login} />;
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.recipesTitle}
+        subtitle={COPY.recipesSubtitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.orderBackHome}
       />
-      <Text style={styles.body}>{COPY.recipesSubtitle}</Text>
 
-      <View style={{ marginTop: spacing.sm }}>
-        <TextInput
-          label="Search"
-          placeholder={COPY.recipesSearchPlaceholder}
-          value={q}
-          onChangeText={setQ}
-          onSubmitEditing={() => void load()}
-          returnKeyType="search"
-        />
-      </View>
+      <TextInput
+        label="Search"
+        placeholder={COPY.recipesSearchPlaceholder}
+        value={q}
+        onChangeText={setQ}
+        onSubmitEditing={() => void load()}
+        returnKeyType="search"
+      />
 
       <View style={styles.chips}>
-        {(
-          [
-            ["all", COPY.recipesFilterAll],
-            ["quick", COPY.recipesFilterQuick],
-            ["medium", COPY.recipesFilterMedium],
-          ] as [Filter, string][]
-        ).map(([value, label]) => (
-          <Pressable
+        {FILTERS.map(([value, label]) => (
+          <Chip
             key={value}
-            accessibilityRole="button"
-            accessibilityState={{ selected: filter === value }}
+            label={label}
+            selected={filter === value}
             onPress={() => setFilter(value)}
-            style={[styles.chip, filter === value && styles.chipOn]}
-          >
-            <Text style={[styles.chipText, filter === value && styles.chipTextOn]}>
-              {label}
-            </Text>
-          </Pressable>
+          />
         ))}
       </View>
 
@@ -112,30 +108,58 @@ export default function RecipesListScreen() {
         />
       ) : null}
 
-      {(rows ?? []).map((row) => (
-        <Pressable
-          key={row.id}
-          accessibilityRole="button"
-          onPress={() => router.push(recipeDetailHref(row.id))}
-          style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-        >
-          <Text style={styles.name}>{row.name}</Text>
-          {row.description ? (
-            <Text style={styles.meta}>{row.description}</Text>
-          ) : null}
-          <View style={styles.rowMeta}>
-            <Text style={styles.metaLight}>
-              {totalMinutes(row)} min · {row.servings} servings
-            </Text>
-            {saved.has(row.id) ? (
-              <Text style={styles.savedBadge}>★ {COPY.recipesSavedLabel}</Text>
+      <View style={styles.list}>
+        {(rows ?? []).map((row) => (
+          <Card
+            key={row.id}
+            padded={false}
+            style={styles.card}
+            accessibilityLabel={row.name}
+            onPress={() => router.push(recipeDetailHref(row.id))}
+          >
+            {row.image_url ? (
+              <Image
+                source={{ uri: row.image_url }}
+                style={styles.image}
+                contentFit="cover"
+                accessibilityIgnoresInvertColors
+              />
             ) : null}
-          </View>
-          {row.tags.length > 0 ? (
-            <Text style={styles.tags}>{row.tags.join(" · ")}</Text>
-          ) : null}
-        </Pressable>
-      ))}
+            <View style={styles.cardBody}>
+              <Text style={styles.name}>{row.name}</Text>
+              {row.description ? (
+                <Text style={styles.desc} numberOfLines={3}>
+                  {row.description}
+                </Text>
+              ) : null}
+
+              <View style={styles.metaRow}>
+                <View style={styles.metaItem}>
+                  <Feather name="clock" size={14} color={Colors.muted} />
+                  <Text style={styles.metaText}>{totalMinutes(row)} min</Text>
+                </View>
+                <View style={styles.metaItem}>
+                  <Feather name="users" size={14} color={Colors.muted} />
+                  <Text style={styles.metaText}>
+                    {row.servings} servings
+                  </Text>
+                </View>
+                {saved.has(row.id) ? (
+                  <Chip label={COPY.recipesSavedLabel} tone="orange" />
+                ) : null}
+              </View>
+
+              {row.tags.length > 0 ? (
+                <View style={styles.tags}>
+                  {row.tags.slice(0, 4).map((tag) => (
+                    <Chip key={tag} label={tag} />
+                  ))}
+                </View>
+              ) : null}
+            </View>
+          </Card>
+        ))}
+      </View>
 
       <TextButton title="Refresh" onPress={() => void load()} />
     </Screen>
@@ -143,73 +167,65 @@ export default function RecipesListScreen() {
 }
 
 const styles = StyleSheet.create({
-  body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
-  },
   chips: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.base,
+    marginTop: Space.lg,
+    marginBottom: Gap.sections,
     flexDirection: "row",
-    gap: 8,
+    gap: Space.sm,
   },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: radius.chip,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
+  list: {
+    gap: Gap.cards,
   },
-  chipOn: { backgroundColor: colors.primaryBlue, borderColor: colors.primaryBlue },
-  chipText: { fontFamily: fontFamily.bodySemi, fontSize: 13, color: colors.charcoal },
-  chipTextOn: { color: colors.white },
   card: {
-    marginBottom: spacing.sm,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    overflow: "hidden",
   },
-  cardPressed: { opacity: 0.85 },
+  image: {
+    width: "100%",
+    height: 180,
+    backgroundColor: Colors.cloud,
+  },
+  cardBody: {
+    padding: Space.cardPad,
+  },
   name: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 17,
-    color: colors.charcoal,
+    fontFamily: Font.serif,
+    fontSize: 22,
+    lineHeight: 30,
+    letterSpacing: -0.3,
+    color: Colors.ink,
   },
-  meta: {
-    marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+  desc: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
-  rowMeta: {
-    marginTop: spacing.sm,
+  metaRow: {
+    marginTop: Space.md,
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center",
+    gap: Space.md,
+    flexWrap: "wrap",
   },
-  metaLight: {
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Space.xs,
   },
-  savedBadge: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.primaryBlue,
+  metaText: {
+    ...typeStyle("secondary"),
+    color: Colors.muted,
   },
   tags: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
+    marginTop: Space.md,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Space.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.line,
+    paddingTop: Space.md,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    color: Colors.red,
   },
 });

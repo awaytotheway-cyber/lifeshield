@@ -1,11 +1,14 @@
 import { Redirect, useRouter } from "expo-router";
-import { Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
 import { routes } from "@/lib/routes";
+import { Colors, Gap, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 /**
@@ -23,22 +26,37 @@ export default function ClinicalTermPreviewScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
-        {COPY.clinicalTermPreviewTitle}
-      </Text>
-      <Text className="mt-3 text-center text-charcoal">
-        {COPY.clinicalTermPreviewBody}
-      </Text>
+      <ScreenHeader
+        title={COPY.clinicalTermPreviewTitle}
+        onBack={() => router.replace(routes.home)}
+        backLabel={COPY.clinicalTermPreviewBack}
+      />
+
+      <Card>
+        <Text style={styles.body}>{COPY.clinicalTermPreviewBody}</Text>
+      </Card>
 
       {/* Sample: Gut health check (TERMS.stool) */}
       <ClinicalTerm termKey="stool" />
 
-      <Button
-        title={COPY.clinicalTermPreviewBack}
-        onPress={() => {
-          router.replace(routes.home);
-        }}
-      />
+      <View style={styles.footer}>
+        <PrimaryButton
+          title={COPY.clinicalTermPreviewBack}
+          onPress={() => {
+            router.replace(routes.home);
+          }}
+        />
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  body: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter,
+  },
+});

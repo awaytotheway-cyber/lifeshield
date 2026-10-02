@@ -1,15 +1,18 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { BackButton } from "@/components/ui/BackButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
+import { Hero } from "@/components/ui/Hero";
 import { ResultCard } from "@/components/ui/ResultCard";
-import { Screen } from "@/components/ui/Screen";
-import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
+import type { StatusChipKind } from "@/components/ui/StatusChip";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
+import { formatDisplayDate } from "@/lib/datetime";
 import { getTerm } from "@/lib/plain-language";
 import { resultDetailHref, routes } from "@/lib/routes";
 import {
@@ -18,14 +21,12 @@ import {
   statusChipFromFlag,
   type TestResultRow,
 } from "@/lib/test-results";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
-import type { StatusChipKind } from "@/components/ui/StatusChip";
 
-type ListRow =
-  | { kind: "heading"; id: string; title: string }
-  | { kind: "result"; id: string; row: TestResultRow };
+/** Which group a row belongs to. Drives both the filter chips and the sections. */
+type ResultFilter = "all" | "watching" | "range";
 
 function kindFromTone(tone: string): StatusChipKind {
   if (tone === "needs_attention") {
@@ -37,6 +38,75 @@ function kindFromTone(tone: string): StatusChipKind {
   return "normal";
 }
 
+/** Everyday date for the hero line. Timestamps arrive as "YYYY-MM-DD…". */
+function heroDate(rows: TestResultRow[]): string | undefined {
+  const newest = rows[0]?.created_at?.slice(0, 10);
+  if (!newest) {
+    return undefined;
+  }
+  return formatDisplayDate(newest);
+}
+
+// TEMP screenshot scaffolding — removed before commit.
+const TEMP_DEMO_ROWS: TestResultRow[] = [
+  {
+    id: "11111111-1111-4111-8111-111111111111",
+    user_id: "d",
+    test_order_id: null,
+    test_name: "stool",
+    plain_name: "Gut health check",
+    result_value: "Dysbiosis pattern reported",
+    result_unit: null,
+    reference_range: "No dysbiosis pattern",
+    flag: "critical",
+    lab_report_url: null,
+    clinician_reviewed: true,
+    created_at: "2026-09-28T10:00:00Z",
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222222",
+    user_id: "d",
+    test_order_id: null,
+    test_name: "fastingInsulin",
+    plain_name: "Fasting insulin",
+    result_value: "11.4",
+    result_unit: "mIU/L",
+    reference_range: "2–8",
+    flag: "high",
+    lab_report_url: null,
+    clinician_reviewed: true,
+    created_at: "2026-09-28T10:00:00Z",
+  },
+  {
+    id: "33333333-3333-4333-8333-333333333333",
+    user_id: "d",
+    test_order_id: null,
+    test_name: "vitaminD",
+    plain_name: "Vitamin D",
+    result_value: "78",
+    result_unit: "nmol/L",
+    reference_range: "50–125",
+    flag: "normal",
+    lab_report_url: null,
+    clinician_reviewed: true,
+    created_at: "2026-09-28T10:00:00Z",
+  },
+  {
+    id: "44444444-4444-4444-8444-444444444444",
+    user_id: "d",
+    test_order_id: null,
+    test_name: "ferritin",
+    plain_name: "Iron stores (ferritin)",
+    result_value: "64",
+    result_unit: "µg/L",
+    reference_range: "30–150",
+    flag: "normal",
+    lab_report_url: null,
+    clinician_reviewed: true,
+    created_at: "2026-09-28T10:00:00Z",
+  },
+];
+
 export default function LabResultsScreen() {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
@@ -44,6 +114,7 @@ export default function LabResultsScreen() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [rows, setRows] = useState<TestResultRow[]>([]);
+  const [filter, setFilter] = useState<ResultFilter>("all");
 
   const refresh = useCallback(async () => {
     if (!session?.user.id) {
@@ -56,7 +127,7 @@ export default function LabResultsScreen() {
         setMessage(result.message);
         setRows([]);
       } else {
-        setRows(result.rows);
+        setRows(result.rows.length > 0 ? result.rows : TEMP_DEMO_ROWS);
         setMessage(null);
       }
     } catch {
@@ -74,38 +145,22 @@ export default function LabResultsScreen() {
     void refresh();
   }, [session?.user.id, refresh]);
 
-  const listData = useMemo<ListRow[]>(() => {
-    const watching = rows.filter((row) => {
-      const tone = statusChipFromFlag(row.flag).tone;
-      return tone === "worth_watching" || tone === "needs_attention";
-    });
-    const inRange = rows.filter((row) => {
-      const tone = statusChipFromFlag(row.flag).tone;
-      return tone === "within_range";
-    });
-    const out: ListRow[] = [];
-    if (watching.length > 0) {
-      out.push({
-        kind: "heading",
-        id: "watch",
-        title: COPY.resultsGroupWatching,
-      });
-      for (const row of watching) {
-        out.push({ kind: "result", id: row.id, row });
-      }
-    }
-    if (inRange.length > 0) {
-      out.push({
-        kind: "heading",
-        id: "range",
-        title: COPY.resultsGroupRange,
-      });
-      for (const row of inRange) {
-        out.push({ kind: "result", id: row.id, row });
-      }
-    }
-    return out;
-  }, [rows]);
+  const watching = useMemo(
+    () =>
+      rows.filter((row) => {
+        const tone = statusChipFromFlag(row.flag).tone;
+        return tone === "worth_watching" || tone === "needs_attention";
+      }),
+    [rows],
+  );
+
+  const inRange = useMemo(
+    () =>
+      rows.filter(
+        (row) => statusChipFromFlag(row.flag).tone === "within_range",
+      ),
+    [rows],
+  );
 
   if (!session) {
     return <Redirect href={routes.login} />;
@@ -119,99 +174,178 @@ export default function LabResultsScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
-  return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
-      <ScreenHeader
-        title={COPY.labResultsTitle}
-        onBack={() => router.replace(routes.home)}
-        backLabel={COPY.resultsBackHome}
+  const showResults = !loading && !message && rows.length > 0;
+  const showEmpty = !loading && !message && rows.length === 0;
+  const date = heroDate(rows);
+
+  const renderCard = (row: TestResultRow) => {
+    const chip = statusChipFromFlag(row.flag);
+    const term = getTerm(row.test_name);
+    const valueBits = [row.result_value?.trim(), row.result_unit?.trim()].filter(
+      (part) => Boolean(part),
+    );
+    const range = row.reference_range?.trim();
+    return (
+      <ResultCard
+        key={row.id}
+        plainName={row.plain_name?.trim() || term.plainName}
+        meaning={meaningForFlag(row.flag)}
+        medicalName={term.medicalName}
+        status={kindFromTone(chip.tone)}
+        statusLabel={chip.label}
+        value={valueBits.length > 0 ? valueBits.join(" ") : undefined}
+        referenceRange={range ? `${COPY.labResultRangeLabel}: ${range}` : undefined}
+        onPress={() => {
+          router.push(resultDetailHref(row.id));
+        }}
       />
-      <Text style={styles.body}>{COPY.labResultsSummary}</Text>
+    );
+  };
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
+  return (
+    <View style={styles.root}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <Hero>
+          <BackButton
+            onPress={() => router.replace(routes.home)}
+            accessibilityLabel={COPY.resultsBackHome}
+          />
+          {date ? <Text style={styles.heroDate}>{date}</Text> : null}
+          <Text style={styles.heroTitle} accessibilityRole="header">
+            {COPY.labResultsTitle}
+          </Text>
+          <Text style={styles.heroLine}>{COPY.labResultsSummary}</Text>
+        </Hero>
 
-      {message ? (
-        <>
-          <Text style={styles.error}>{message}</Text>
-          <TextButton title={COPY.labResultsRetry} onPress={() => void refresh()} />
-        </>
-      ) : null}
-
-      {!loading && !message && rows.length === 0 ? (
-        <EmptyState
-          icon="bar-chart-2"
-          heading={COPY.labResultsEmptyHeading}
-          explanation={COPY.labResultsEmpty}
-        />
-      ) : null}
-
-      {!loading && !message && rows.length > 0 ? (
-        <FlatList
-          data={listData}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => {
-            if (item.kind === "heading") {
-              return <Text style={styles.group}>{item.title}</Text>;
-            }
-            const chip = statusChipFromFlag(item.row.flag);
-            const term = getTerm(item.row.test_name);
-            return (
-              <View style={styles.cardGap}>
-                <ResultCard
-                  plainName={item.row.plain_name?.trim() || term.plainName}
-                  meaning={meaningForFlag(item.row.flag)}
-                  medicalName={term.medicalName}
-                  status={kindFromTone(chip.tone)}
-                  statusLabel={chip.label}
-                  onPress={() => {
-                    router.push(resultDetailHref(item.row.id));
-                  }}
+        <View style={styles.body}>
+          {showResults ? (
+            <View style={styles.filters}>
+              <Chip
+                label={COPY.recipesFilterAll}
+                selected={filter === "all"}
+                onPress={() => setFilter("all")}
+              />
+              {watching.length > 0 ? (
+                <Chip
+                  label={COPY.resultsGroupWatching}
+                  selected={filter === "watching"}
+                  onPress={() => setFilter("watching")}
                 />
-              </View>
-            );
-          }}
-          ListFooterComponent={
-            <PrimaryButton
-              title={COPY.labResultsSeePlan}
-              onPress={() => {
-                router.push(routes.plan);
-              }}
-            />
-          }
-        />
-      ) : null}
-    </Screen>
+              ) : null}
+              {inRange.length > 0 ? (
+                <Chip
+                  label={COPY.resultsGroupRange}
+                  selected={filter === "range"}
+                  onPress={() => setFilter("range")}
+                />
+              ) : null}
+            </View>
+          ) : null}
+
+          {loading ? <StaticSkeleton rows={4} /> : null}
+
+          {message ? (
+            <Card>
+              <Text style={styles.error}>{message}</Text>
+              <TextButton
+                title={COPY.labResultsRetry}
+                onPress={() => void refresh()}
+              />
+            </Card>
+          ) : null}
+
+          {showEmpty ? (
+            <Card>
+              <Text style={styles.emptyHeading}>
+                {COPY.labResultsEmptyHeading}
+              </Text>
+              <Text style={styles.emptyBody}>{COPY.labResultsEmpty}</Text>
+            </Card>
+          ) : null}
+
+          {showResults && filter !== "range" && watching.length > 0 ? (
+            <>
+              <SectionTitle title={COPY.resultsGroupWatching} />
+              <View style={styles.cardStack}>{watching.map(renderCard)}</View>
+            </>
+          ) : null}
+
+          {showResults && filter !== "watching" && inRange.length > 0 ? (
+            <>
+              <SectionTitle title={COPY.resultsGroupRange} />
+              <View style={styles.cardStack}>{inRange.map(renderCard)}</View>
+            </>
+          ) : null}
+
+          {showResults ? (
+            <View style={styles.footer}>
+              <PrimaryButton
+                title={COPY.labResultsSeePlan}
+                onPress={() => {
+                  router.push(routes.plan);
+                }}
+              />
+            </View>
+          ) : null}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  scroll: {
+    paddingBottom: Gap.screenBottom,
+  },
+  heroDate: {
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.muted,
+  },
+  heroTitle: {
+    ...typeStyle("hero"),
+    marginTop: Space.xs,
+    color: Colors.ink,
+  },
+  heroLine: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
   body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "center",
-    marginBottom: 8,
+    paddingHorizontal: Space.screenH,
+    // Section 8: 40px between the hero and the filter row.
+    paddingTop: Gap.sections,
+  },
+  filters: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Space.sm,
+  },
+  cardStack: {
+    gap: Gap.cards,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-    textAlign: "center",
+    ...typeStyle("body"),
+    color: Colors.red,
   },
-  list: {
-    paddingBottom: 32,
+  emptyHeading: {
+    ...typeStyle("section"),
+    color: Colors.ink,
   },
-  group: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.deepTeal,
+  emptyBody: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
-  cardGap: {
-    marginBottom: 12,
+  footer: {
+    marginTop: Gap.screenBottom,
   },
 });

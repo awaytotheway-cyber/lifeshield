@@ -1,17 +1,19 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { goalDetailHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Font, Gap, Space, typeStyle } from "@/lib/theme";
 import {
   goalTypeLabel,
   isOverdue,
@@ -24,49 +26,43 @@ import { useAuthStore } from "@/stores/auth-store";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
-function GoalRow({
-  row,
-  onPress,
-}: {
-  row: WeeklyGoalRow;
-  onPress: () => void;
-}) {
+/** Status pill colour: green when done, red when missed, orange while live. */
+function statusTone(row: WeeklyGoalRow): ChipTone {
+  if (isOverdue(row)) return "red";
+  switch (row.status) {
+    case "completed":
+      return "green";
+    case "missed":
+      return "red";
+    case "cancelled":
+      return "neutral";
+    default:
+      return "orange";
+  }
+}
+
+function GoalCard({ row, onPress }: { row: WeeklyGoalRow; onPress: () => void }) {
   const pct = progressPercent(row);
   const overdue = isOverdue(row);
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`${row.title} — ${statusLabel(row.status)}, ${pct}% progress`}
+    <Card
       onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      accessibilityLabel={`${row.title} — ${statusLabel(row.status)}, ${pct}% progress`}
     >
-      <View style={styles.rowTop}>
+      <View style={styles.cardTop}>
         <Text style={styles.type}>{goalTypeLabel(row.goal_type)}</Text>
-        <Text style={[styles.status, statusColor(row)]}>
-          {overdue ? COPY.goalsMissedLabel : statusLabel(row.status)}
-        </Text>
+        <Chip
+          label={overdue ? COPY.goalsMissedLabel : statusLabel(row.status)}
+          tone={statusTone(row)}
+        />
       </View>
-      <Text style={styles.title}>{row.title}</Text>
+      <Text style={styles.goalTitle}>{row.title}</Text>
       <Text style={styles.meta}>
         {row.progress} / {row.target} {row.unit} · ends {row.end_date}
       </Text>
       <ProgressBar current={row.progress} total={row.target} />
-    </Pressable>
+    </Card>
   );
-}
-
-function statusColor(row: WeeklyGoalRow) {
-  if (isOverdue(row)) return { color: colors.riskHigh };
-  switch (row.status) {
-    case "completed":
-      return { color: colors.riskLow };
-    case "missed":
-      return { color: colors.riskHigh };
-    case "cancelled":
-      return { color: colors.slate };
-    default:
-      return { color: colors.primaryBlue };
-  }
 }
 
 export default function GoalsListScreen() {
@@ -110,20 +106,22 @@ export default function GoalsListScreen() {
   const showEmpty = loadState === "ready" && !message && rows.length === 0;
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.goalsTitle}
+        subtitle={COPY.goalsSubtitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.orderBackHome}
       />
-      <Text style={styles.body}>{COPY.goalsSubtitle}</Text>
 
-      <View style={styles.ctaWrap}>
-        <PrimaryButton
-          title={COPY.goalsNewCta}
-          onPress={() => router.push(routes.newGoal)}
-        />
-      </View>
+      <PrimaryButton
+        title={COPY.goalsNewCta}
+        icon="plus"
+        style={styles.cta}
+        onPress={() => router.push(routes.newGoal)}
+      />
+
+      <SectionTitle title="This week" />
 
       {loading ? <StaticSkeleton rows={3} /> : null}
 
@@ -143,78 +141,52 @@ export default function GoalsListScreen() {
       ) : null}
 
       {loadState === "ready" && rows.length > 0 ? (
-        <FlatList
-          data={rows}
-          keyExtractor={(row) => row.id}
-          renderItem={({ item }) => (
-            <GoalRow row={item} onPress={() => router.push(goalDetailHref(item.id))} />
-          )}
-          ItemSeparatorComponent={() => <View style={styles.sep} />}
-        />
+        <View style={styles.list}>
+          {rows.map((row) => (
+            <GoalCard
+              key={row.id}
+              row={row}
+              onPress={() => router.push(goalDetailHref(row.id))}
+            />
+          ))}
+        </View>
       ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.slate,
+  cta: {
+    marginTop: 0,
   },
-  ctaWrap: {
-    marginTop: spacing.base,
-    marginBottom: spacing.base,
+  list: {
+    gap: Gap.cards,
   },
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
-  },
-  cardPressed: {
-    opacity: 0.85,
-  },
-  rowTop: {
+  cardTop: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: spacing.sm,
+    gap: Space.sm,
   },
   type: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    lineHeight: 16,
-    letterSpacing: 0.4,
-    color: colors.slate,
-    textTransform: "uppercase",
+    ...typeStyle("label"),
+    color: Colors.muted,
   },
-  status: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    lineHeight: 16,
-  },
-  title: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    lineHeight: 24,
-    color: colors.charcoal,
+  goalTitle: {
+    marginTop: Space.sm,
+    fontFamily: Font.serif,
+    fontSize: 22,
+    lineHeight: 30,
+    letterSpacing: -0.3,
+    color: Colors.ink,
   },
   meta: {
-    marginTop: spacing.micro,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 18,
-    color: colors.slate,
-  },
-  sep: {
-    height: spacing.mdSm,
+    marginTop: Space.xs,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    color: Colors.red,
   },
 });

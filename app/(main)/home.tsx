@@ -1,16 +1,18 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { GoalsSummaryCard } from "@/components/ui/GoalsSummaryCard";
-import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
-import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
-import { TrustBanner } from "@/components/ui/TrustBanner";
-import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
-import { Screen } from "@/components/ui/Screen";
+import { ActionCard } from "@/components/ui/ActionCard";
+import { TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { DotProgress, type DotState } from "@/components/ui/DotProgress";
+import { Hero } from "@/components/ui/Hero";
+import { PressScale } from "@/components/ui/PressScale";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { SetupBanners } from "@/components/ui/SetupBanners";
+import { StatCard } from "@/components/ui/StatCard";
 import {
   allConsentsAgreed,
   firstIncompleteConsent,
@@ -18,21 +20,18 @@ import {
 } from "@/lib/consent-flow";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import {
   currentJourneyStep,
   isJourneyStepComplete,
-  loopStepState,
   primaryJourneyAction,
   type JourneyProgress,
-  type JourneyRowState,
   type JourneyStepId,
 } from "@/lib/journey";
-import { hasOwnInterventions } from "@/lib/plan";
 import { hasOwnStoreOrders } from "@/lib/orders";
+import { hasOwnInterventions } from "@/lib/plan";
 import { routes } from "@/lib/routes";
 import { hasOwnTestResults } from "@/lib/test-results";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Motion, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import {
@@ -41,7 +40,9 @@ import {
 } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
 
-const LOOP_LABELS: { id: JourneyStepId; label: string }[] = [
+/** Every stage of the closed loop, in order — one dot each. */
+const JOURNEY_STEPS: { id: JourneyStepId; label: string }[] = [
+  { id: "consents", label: COPY.homeStepConsents },
   { id: "questionnaire", label: COPY.homeStepQuestionnaire },
   { id: "tests", label: COPY.homeStepTests },
   { id: "results", label: COPY.homeStepLabResults },
@@ -50,19 +51,15 @@ const LOOP_LABELS: { id: JourneyStepId; label: string }[] = [
   { id: "followup", label: COPY.homeStepFollowUp },
 ];
 
-function journeyState(
-  state: JourneyRowState,
-  step: JourneyStepId,
-  progress: JourneyProgress,
-): JourneyStepItem["state"] {
-  if (state === "done" || isJourneyStepComplete(step, progress)) {
-    return "complete";
-  }
-  if (state === "current") {
-    return "current";
-  }
-  return "upcoming";
-}
+const STEP_ICONS: Record<JourneyStepId, keyof typeof Feather.glyphMap> = {
+  consents: "shield",
+  questionnaire: "clipboard",
+  tests: "check-circle",
+  results: "bar-chart-2",
+  plan: "list",
+  store: "shopping-bag",
+  followup: "refresh-cw",
+};
 
 function headlineFor(step: JourneyStepId): string {
   switch (step) {
@@ -83,6 +80,43 @@ function headlineFor(step: JourneyStepId): string {
   }
 }
 
+/** Short card subtitle for the current step. The long version stays on the journey card. */
+function subtitleFor(step: JourneyStepId, questionnaireCount: number): string {
+  switch (step) {
+    case "consents":
+      return COPY.homeTodaySubConsents;
+    case "questionnaire":
+      return `${COPY.homeTodaySubQuestionnaire} — ${questionnaireCount}/10`;
+    case "tests":
+      return COPY.homeTodaySubTests;
+    case "results":
+      return COPY.homeTodaySubResults;
+    case "plan":
+      return COPY.homeTodaySubPlan;
+    case "store":
+      return COPY.homeTodaySubStore;
+    case "followup":
+      return COPY.homeTodaySubFollowUp;
+  }
+}
+
+function greeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    return COPY.homeGreetingMorning;
+  }
+  if (hour < 18) {
+    return COPY.homeGreetingAfternoon;
+  }
+  return COPY.homeGreetingEvening;
+}
+
+/** First name from the sign-up metadata. Empty when we genuinely don't know it. */
+function firstNameFrom(fullName: string): string {
+  const first = fullName.trim().split(/\s+/)[0] ?? "";
+  return first;
+}
+
 export default function HomeScreen() {
   const router = useRouter();
   const loading = useAuthStore((state) => state.loading);
@@ -96,7 +130,6 @@ export default function HomeScreen() {
     (state) => state.hasRecommendations,
   );
   const loadQuestionnaire = useQuestionnaireStore((state) => state.load);
-  const signOut = useAuthStore((state) => state.signOut);
   const [hasLabResults, setHasLabResults] = useState(false);
   const [hasPlan, setHasPlan] = useState(false);
   const [hasStoreOrders, setHasStoreOrders] = useState(false);
@@ -160,12 +193,13 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <Screen>
-        <Text style={styles.loading}>{COPY.authLoading}</Text>
-      </Screen>
+      <View style={styles.loadingScreen}>
+        <Text style={styles.loadingText}>{COPY.authLoading}</Text>
+      </View>
     );
   }
 
+  // ——— Journey safety gates — unchanged, do not reorder. ———
   if (!session) {
     return <Redirect href={routes.login} />;
   }
@@ -200,6 +234,25 @@ export default function HomeScreen() {
   };
   const current = currentJourneyStep(journey);
   const primary = primaryJourneyAction(journey);
+  const currentIndex = JOURNEY_STEPS.findIndex((step) => step.id === current);
+
+  const dots: DotState[] = JOURNEY_STEPS.map((step, index) => {
+    if (isJourneyStepComplete(step.id, journey)) {
+      return "complete";
+    }
+    if (step.id === current) {
+      return "current";
+    }
+    return index < currentIndex ? "complete" : "upcoming";
+  });
+
+  const currentStepLabel =
+    JOURNEY_STEPS[currentIndex]?.label ?? COPY.homeJourneyTitle;
+  const stepCounter = COPY.homeJourneyStepOf
+    .replace("{current}", String(currentIndex + 1))
+    .replace("{total}", String(JOURNEY_STEPS.length));
+  const questionnaireSuffix =
+    current === "questionnaire" ? ` — ${questionnaireCount}/10` : "";
 
   const goPrimary = () => {
     switch (primary.href) {
@@ -232,256 +285,265 @@ export default function HomeScreen() {
     }
   };
 
-  const timeline: JourneyStepItem[] = [
+  // "Today" — the one next step, plus whatever is genuinely available now.
+  const todayCards: {
+    id: string;
+    title: string;
+    subtitle: string;
+    icon: keyof typeof Feather.glyphMap;
+    onPress: () => void;
+  }[] = [
     {
-      id: "safety",
-      title: COPY.homeStepSafety,
-      state: "complete",
-    },
-    {
-      id: "consents",
-      title: `${COPY.homeStepConsents}${consentsDone ? "" : nextConsent ? ` — ${nextConsent}` : ""}`,
-      state: consentsDone ? "complete" : "current",
-    },
-    ...LOOP_LABELS.map((item) => {
-      const extra =
-        item.id === "questionnaire" ? ` — ${questionnaireCount}/10` : "";
-      return {
-        id: item.id,
-        title: `${item.label}${extra}`,
-        state: journeyState(loopStepState(item.id, current, journey), item.id, journey),
-      };
-    }),
-  ];
-
-  const consentCount = (agreed.brca ? 1 : 0) + (agreed.ctc ? 1 : 0) + (agreed.snp ? 1 : 0);
-
-  const milestoneStats: [
-    { id: string; value: string | number; label: string },
-    { id: string; value: string | number; label: string },
-    { id: string; value: string | number; label: string },
-  ] = [
-    { id: "sections", value: `${questionnaireCount}/10`, label: "Questionnaire" },
-    { id: "consents", value: `${consentCount}/3`, label: "Consents" },
-    {
-      id: "tests",
-      value: hasRecommendations ? "Ready" : "Soon",
-      label: "Test plan",
+      id: "next",
+      title: COPY[primary.titleKey],
+      subtitle: subtitleFor(current, questionnaireCount),
+      icon: STEP_ICONS[current],
+      onPress: goPrimary,
     },
   ];
 
-  const homeFeatures = [
-    { id: "science", label: "Science-backed rules", icon: "cpu" as const },
-    { id: "private", label: "Private by default", icon: "lock" as const },
-    { id: "calm", label: "Calm, clear next steps", icon: "heart" as const },
-    { id: "track", label: "Track your journey", icon: "map" as const },
-  ];
+  if (hasLabResults && current !== "results") {
+    todayCards.push({
+      id: "results",
+      title: COPY.homeTodayResultsTitle,
+      subtitle: COPY.homeTodayResultsSubtitle,
+      icon: "bar-chart-2",
+      onPress: () => router.push(routes.labResults),
+    });
+  }
+
+  if (hasPlan && current !== "plan") {
+    todayCards.push({
+      id: "plan",
+      title: COPY.homeTodayPlanTitle,
+      subtitle: COPY.homeTodayPlanSubtitle,
+      icon: "list",
+      onPress: () => router.push(routes.plan),
+    });
+  }
+
+  if (consentsDone && todayCards.length < 3) {
+    todayCards.push({
+      id: "goals",
+      title: COPY.homeTodayGoalsTitle,
+      subtitle: COPY.homeTodayGoalsSubtitle,
+      icon: "target",
+      onPress: () => router.push(routes.goals),
+    });
+  }
+
+  const consentCount =
+    (agreed.brca ? 1 : 0) + (agreed.ctc ? 1 : 0) + (agreed.snp ? 1 : 0);
+
+  const metadata = session.user.user_metadata as
+    | { full_name?: string }
+    | undefined;
+  const firstName = firstNameFrom(metadata?.full_name ?? "");
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <View style={styles.menuRow}>
-        <MenuButton />
-        <Text style={styles.brand}>{COPY.appName}</Text>
-      </View>
-      <Text style={styles.tagline}>{COPY.tagline}</Text>
-      <Text style={styles.headline}>{headlineFor(current)}</Text>
+    <View style={styles.root}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <Hero
+          eyebrow={greeting()}
+          title={firstName || COPY.homeGreetingFallbackName}
+          subtitle={COPY.tagline}
+          action={<MenuButton />}
+          style={styles.hero}
+        />
 
-      <View style={styles.trust}>
-        <TrustBanner />
-      </View>
+        {/* Floating feature card, overlapping the hero's bottom edge. */}
+        <View style={styles.featureWrap}>
+          <Card elevated>
+            <Text style={styles.featureTitle}>{COPY.homeJourneyTitle}</Text>
+            <View style={styles.dots}>
+              <DotProgress states={dots} accessibilityLabel={stepCounter} />
+            </View>
+            <Text style={styles.stepCounter}>{stepCounter}</Text>
+            <Text style={styles.stepLabel}>
+              {currentStepLabel}
+              {questionnaireSuffix}
+            </Text>
+            <Text style={styles.stepBody}>{headlineFor(current)}</Text>
+            <PressScale
+              accessibilityRole="button"
+              accessibilityLabel={COPY[primary.titleKey]}
+              onPress={goPrimary}
+              scale={Motion.pressCard}
+              haptic="medium"
+              style={styles.continueHit}
+            >
+              <Text style={styles.continueText}>{COPY.homeContinueLink}</Text>
+            </PressScale>
+          </Card>
+        </View>
 
-      <View style={styles.stats}>
-        <MilestoneStatStrip stats={milestoneStats} />
-      </View>
-
-      <View style={styles.features}>
-        <PillFeatureGrid features={homeFeatures} />
-      </View>
-
-      <Text style={styles.section}>{COPY.homeJourneyTitle}</Text>
-      <View style={styles.timeline}>
-        <JourneyProgressCard steps={timeline} onContinue={goPrimary} />
-      </View>
-
-      {consentsDone ? <GoalsSummaryCard userId={session.user.id} /> : null}
-
-      {labCheckMessage ? (
-        <Text style={styles.error}>{labCheckMessage}</Text>
-      ) : null}
-
-      <SetupBanners />
-
-      <Text style={styles.hint}>{COPY.homePrimaryHint}</Text>
-      <PrimaryButton title={COPY[primary.titleKey]} onPress={goPrimary} />
-
-      {consentsDone ? (
-        <>
-          <Text style={styles.also}>{COPY.homeAlsoAvailable}</Text>
-          {current !== "questionnaire" ? (
-            <TextButton
-              title={COPY.homeOpenQuestionnaire}
-              onPress={() => {
-                router.replace(routes.questionnaire);
-              }}
-            />
+        <View style={styles.body}>
+          <SetupBanners />
+          {labCheckMessage ? (
+            <Text style={styles.error}>{labCheckMessage}</Text>
           ) : null}
-          {hasRecommendations || questionnaireCount >= 10 ? (
-            current !== "tests" ? (
+
+          <SectionTitle title={COPY.homeTodayTitle} topGap={Space.xxl + 4} />
+          <View style={styles.cardStack}>
+            {todayCards.map((card) => (
+              <ActionCard
+                key={card.id}
+                title={card.title}
+                subtitle={card.subtitle}
+                icon={card.icon}
+                onPress={card.onPress}
+              />
+            ))}
+          </View>
+
+          <SectionTitle title={COPY.homeNumbersTitle} topGap={Space.xxl + 4} />
+          {/* Two roomy cards per row; a third wraps to a full-width card. */}
+          <View style={styles.statGrid}>
+            <View style={styles.statCell}>
+              <StatCard
+                value={`${questionnaireCount}/10`}
+                label={COPY.homeNumberQuestionnaire}
+                onPress={
+                  consentsDone
+                    ? () => router.replace(routes.questionnaire)
+                    : undefined
+                }
+              />
+            </View>
+            <View style={styles.statCell}>
+              <StatCard
+                value={`${consentCount}/3`}
+                label={COPY.homeNumberConsents}
+              />
+            </View>
+            <View style={styles.statCell}>
+              <StatCard
+                value={
+                  hasRecommendations
+                    ? COPY.homeTestPlanReady
+                    : COPY.homeNumberPending
+                }
+                label={COPY.homeNumberTestPlan}
+                onPress={
+                  hasRecommendations
+                    ? () => router.replace(routes.results)
+                    : undefined
+                }
+              />
+            </View>
+          </View>
+
+          {isAdminEmail(session.user.email) ? (
+            <View style={styles.adminBlock}>
               <TextButton
-                title={COPY.homeOpenResults}
+                title={COPY.homeEnterResults}
                 onPress={() => {
-                  router.replace(routes.results);
+                  router.push(routes.enterResults);
                 }}
               />
-            ) : null
+              <TextButton
+                title={COPY.homeClinicalTermPreview}
+                onPress={() => {
+                  router.push(routes.clinicalTermPreview);
+                }}
+              />
+            </View>
           ) : null}
-          {hasLabResults && current !== "results" ? (
-            <TextButton
-              title={COPY.homeOpenLabResults}
-              onPress={() => {
-                router.push(routes.labResults);
-              }}
-            />
-          ) : null}
-          {(hasLabResults || hasPlan) && current !== "plan" ? (
-            <TextButton
-              title={COPY.homeOpenPlan}
-              onPress={() => {
-                router.push(routes.plan);
-              }}
-            />
-          ) : null}
-          {hasPlan && current !== "store" ? (
-            <TextButton
-              title={COPY.homeOpenStore}
-              onPress={() => {
-                router.push(routes.store);
-              }}
-            />
-          ) : null}
-          {hasStoreOrders && current !== "followup" ? (
-            <TextButton
-              title={COPY.homeOpenOrders}
-              onPress={() => {
-                router.push(routes.orders);
-              }}
-            />
-          ) : null}
-          {hasPlan && current !== "followup" ? (
-            <TextButton
-              title={COPY.homeOpenFollowUp}
-              onPress={() => {
-                router.push(routes.followUp);
-              }}
-            />
-          ) : null}
-        </>
-      ) : null}
-
-      {isAdminEmail(session.user.email) ? (
-        <>
-          <TextButton
-            title={COPY.homeEnterResults}
-            onPress={() => {
-              router.push(routes.enterResults);
-            }}
-          />
-          <TextButton
-            title={COPY.homeClinicalTermPreview}
-            onPress={() => {
-              router.push(routes.clinicalTermPreview);
-            }}
-          />
-        </>
-      ) : null}
-
-      <TextButton
-        title={COPY.signOut}
-        onPress={() => {
-          void signOut();
-        }}
-      />
-    </Screen>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loading: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  scroll: {
+    // Section 10: generous bottom padding — the screen never feels full.
+    paddingBottom: Gap.screenBottom,
+  },
+  loadingScreen: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.background,
+    paddingHorizontal: Space.screenH,
+  },
+  loadingText: {
+    ...typeStyle("body"),
+    color: Colors.body,
     textAlign: "center",
   },
-  menuRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
+  hero: {
+    // Extra bottom room so the feature card can overlap the wash.
+    paddingBottom: Space.xxl,
   },
-  brand: {
-    flex: 1,
-    fontFamily: fontFamily.display,
-    fontSize: 34,
-    lineHeight: 40,
-    letterSpacing: -0.6,
-    color: colors.primaryBlue,
-    textAlign: "left",
+  featureWrap: {
+    paddingHorizontal: Space.screenH,
+    marginTop: -Space.xl,
   },
-  trust: {
-    marginTop: 20,
+  featureTitle: {
+    ...typeStyle("title"),
+    color: Colors.ink,
   },
-  stats: {
-    marginTop: 16,
+  dots: {
+    marginTop: Space.lg,
   },
-  features: {
-    marginTop: 16,
+  stepCounter: {
+    ...typeStyle("label"),
+    marginTop: Space.lg,
+    color: Colors.muted,
   },
-  tagline: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "left",
+  stepLabel: {
+    ...typeStyle("cardTitle"),
+    marginTop: Space.xs,
+    color: Colors.ink,
   },
-  headline: {
-    marginTop: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
-    textAlign: "left",
+  stepBody: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
-  section: {
-    marginTop: 24,
-    marginBottom: 12,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.primaryBlue,
-    textAlign: "left",
+  continueHit: {
+    marginTop: Space.md,
+    alignSelf: "flex-start",
+    minHeight: 44,
+    justifyContent: "center",
+    paddingRight: Space.sm,
   },
-  timeline: {
-    marginBottom: 8,
+  continueText: {
+    ...typeStyle("cardTitle"),
+    color: Colors.orange,
+  },
+  body: {
+    paddingHorizontal: Space.screenH,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-    textAlign: "left",
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.red,
   },
-  hint: {
-    marginTop: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.slate,
-    textAlign: "left",
+  cardStack: {
+    // Section 10: 16px minimum between stacked cards.
+    gap: Gap.cards,
   },
-  also: {
-    marginTop: 24,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
-    textAlign: "left",
+  statGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Gap.cards,
+  },
+  statCell: {
+    flexGrow: 1,
+    flexBasis: 0,
+    // Keeps two cards per row on a phone and stops numbers being clipped.
+    minWidth: 140,
+  },
+  adminBlock: {
+    marginTop: Gap.sections,
   },
 });
-

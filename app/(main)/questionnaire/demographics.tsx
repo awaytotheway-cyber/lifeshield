@@ -2,10 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
-import { QuestionCard } from "@/components/questionnaire/QuestionCard";
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
+import { DerivedValue } from "@/components/questionnaire/DerivedValue";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -109,6 +109,7 @@ export default function DemographicsScreen() {
   return (
     <SectionScaffold
       title="Demographics & measurements"
+      subtitle="A few basics so your suggestions fit your body, not an average."
       step={1}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -119,9 +120,7 @@ export default function DemographicsScreen() {
       onCompleteDone={() => router.replace(routes.qReproductive)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}
@@ -137,9 +136,11 @@ export default function DemographicsScreen() {
           />
         )}
       />
-      <Text className="mt-2 text-teal">
-        {COPY.ageLabel}: {age === null ? "—" : `${age} years`}
-      </Text>
+      <DerivedValue
+        label={COPY.ageLabel}
+        value={age === null ? "—" : `${age} years`}
+        pending={age === null}
+      />
 
       <Controller
         control={control}
@@ -181,45 +182,48 @@ export default function DemographicsScreen() {
           />
         )}
       />
-      <Text className="mt-3 text-teal">
-        {COPY.bmiLabel}: {bmi === null ? "—" : String(bmi)}
-      </Text>
-      <Text className="mt-1 text-charcoal">{COPY.bmiHint}</Text>
+      <DerivedValue
+        label={COPY.bmiLabel}
+        value={bmi === null ? "—" : String(bmi)}
+        hint={COPY.bmiHint}
+        pending={bmi === null}
+      />
 
-      <QuestionCard title="Waist (cm)" hint={WAIST_MEASURE_HINT}>
-        <Controller
-          control={control}
-          name="waistCm"
-          render={({ field: { value, onChange, onBlur } }) => (
-            <NumberInput
-              label="Waist measurement"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              error={errors.waistCm?.message}
-            />
-          )}
-        />
-      </QuestionCard>
-
-      <QuestionCard title="Hip (cm)" hint={HIP_MEASURE_HINT}>
-        <Controller
-          control={control}
-          name="hipCm"
-          render={({ field: { value, onChange, onBlur } }) => (
-            <NumberInput
-              label="Hip measurement"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              error={errors.hipCm?.message}
-            />
-          )}
-        />
-      </QuestionCard>
-      <Text className="mt-3 text-teal">
-        {COPY.whrLabel}: {whr === null ? "—" : String(whr)}
-      </Text>
+      {/* The measuring guidance sits inline under the label rather than behind
+          an info button: it is an instruction you need while you measure. */}
+      <Controller
+        control={control}
+        name="waistCm"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <NumberInput
+            label="Waist (cm)"
+            hint={WAIST_MEASURE_HINT}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={errors.waistCm?.message}
+          />
+        )}
+      />
+      <Controller
+        control={control}
+        name="hipCm"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <NumberInput
+            label="Hip (cm)"
+            hint={HIP_MEASURE_HINT}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={errors.hipCm?.message}
+          />
+        )}
+      />
+      <DerivedValue
+        label={COPY.whrLabel}
+        value={whr === null ? "—" : String(whr)}
+        pending={whr === null}
+      />
 
       <Controller
         control={control}

@@ -1,57 +1,104 @@
+import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { IconButton } from "@/components/ui/Button";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { BackButton } from "@/components/ui/BackButton";
+import { Colors, Gap, Size, Space, typeStyle } from "@/lib/theme";
 
 type ScreenHeaderProps = {
   title: string;
+  /** Omit to use the default router.back() behaviour. */
   onBack?: () => void;
   backLabel?: string;
+  /** Hide the back button (Home and other root screens). */
+  hideBack?: boolean;
+  /** Small warm grey line under the title. */
+  subtitle?: string;
+  /** Right-hand control (menu button, chip, action). */
+  right?: ReactNode;
+  /** Left-align the serif title under the back button instead of centring it. */
+  align?: "left" | "center";
 };
 
-/** Stack-style heading with an optional back arrow. */
+/**
+ * Sub-screen heading: a 48px circular white back button top-left and a serif
+ * title. Every screen that is not Home gets one of these, so the back button
+ * is inherited rather than rebuilt per screen.
+ */
 export function ScreenHeader({
   title,
   onBack,
   backLabel = "Go back",
+  hideBack = false,
+  subtitle,
+  right,
+  align = "left",
 }: ScreenHeaderProps) {
+  const centred = align === "center";
+
   return (
-    <View style={styles.row}>
-      {onBack ? (
-        <IconButton
-          icon="arrow-left"
-          accessibilityLabel={backLabel}
-          onPress={onBack}
-        />
-      ) : (
-        <View style={styles.spacer} />
+    <View style={styles.wrap}>
+      <View style={styles.row}>
+        {hideBack ? (
+          <View style={styles.spacer} />
+        ) : (
+          <BackButton onPress={onBack} accessibilityLabel={backLabel} />
+        )}
+        {centred ? (
+          <Text
+            style={[styles.title, styles.titleCentred]}
+            accessibilityRole="header"
+            numberOfLines={1}
+          >
+            {title}
+          </Text>
+        ) : null}
+        <View style={styles.rightSlot}>{right}</View>
+      </View>
+      {centred ? null : (
+        <Text style={styles.titleBelow} accessibilityRole="header">
+          {title}
+        </Text>
       )}
-      <Text style={styles.title} accessibilityRole="header">
-        {title}
-      </Text>
-      <View style={styles.spacer} />
+      {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrap: {
+    // Section 10: 32px of air between the title and the first content.
+    paddingBottom: Gap.afterTitle,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    paddingBottom: spacing.sm,
+    minHeight: Size.circleButton,
+  },
+  spacer: {
+    width: Size.circleButton,
+    height: Size.circleButton,
+  },
+  rightSlot: {
+    minWidth: Size.circleButton,
+    alignItems: "flex-end",
   },
   title: {
     flex: 1,
-    textAlign: "center",
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+    ...typeStyle("section"),
+    color: Colors.ink,
   },
-  spacer: {
-    width: 44,
-    height: 44,
+  titleCentred: {
+    textAlign: "center",
+    paddingHorizontal: Space.sm,
+  },
+  titleBelow: {
+    ...typeStyle("title"),
+    marginTop: Space.lg,
+    color: Colors.ink,
+  },
+  subtitle: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
 });

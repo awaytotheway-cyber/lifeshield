@@ -2,8 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text } from "react-native";
 
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import {
@@ -85,6 +85,7 @@ export default function StressScreen() {
   return (
     <SectionScaffold
       title="Stress"
+      subtitle="How stress sits with you, so the coping plan fits how you cope."
       step={8}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -95,11 +96,9 @@ export default function StressScreen() {
       onCompleteDone={() => router.replace(routes.qDiet)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
-      <Text className="mt-4 text-center text-teal">{COPY.stressFramingNote}</Text>
+      <SectionNotice message={COPY.stressFramingNote} tone="info" />
 
       <Controller
         control={control}

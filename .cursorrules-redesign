@@ -1,0 +1,441 @@
+# .cursorrules-redesign — PRESCOPE COMPLETE UI REDESIGN
+# Orange + White · Premium Wellness · Generous Spacing · Menu-based Nav
+#
+# HOW TO USE: Add this file to your project root as `.cursorrules-redesign`.
+# Tell Cursor: "Read .cursorrules-redesign and follow it for all UI work.
+# This REPLACES the old visual style completely. Keep all backend logic,
+# Supabase calls, rules engine, and navigation data intact — only the
+# visual layer, spacing, layout, and navigation structure change."
+
+═══════════════════════════════════════════════════════════════
+## 0. WHAT THIS REDESIGN FIXES
+═══════════════════════════════════════════════════════════════
+
+The current app has three problems this redesign solves:
+1. Everything is cramped — not enough breathing room, text too close together,
+   cards touching, tight padding. Fix: a generous spacing system (Section 3).
+2. The bottom tab bar is crowded with too many tabs. Fix: remove the bottom tab
+   bar entirely. Move navigation into a menu (Section 7).
+3. The visual style looks generic. Fix: a premium wellness aesthetic with a
+   warm orange-and-white palette, soft depth, and editorial typography.
+
+Keep ALL existing functionality, screens, data flow, Supabase integration,
+rules engine, consent logic, and safety gates. This is a visual + navigation
+redesign only. Do not delete or rewrite business logic.
+
+═══════════════════════════════════════════════════════════════
+## 1. THE AESTHETIC TARGET
+═══════════════════════════════════════════════════════════════
+
+Premium wellness app. Think the calm, spacious, confident feeling of a
+high-end spa or private health clinic's app. Lots of white space. Warm,
+inviting orange as the signature colour. Soft rounded shapes. Gentle shadows.
+Large, readable type. Nothing cramped, nothing loud, nothing clinical-cold.
+
+The user should feel: calm, cared-for, in control, and like they're using
+something expensive and trustworthy.
+
+Reference feeling: the generosity of Airbnb's spacing, the warmth of Headspace's
+colour, the editorial confidence of Apple Health's typography — but orange.
+
+═══════════════════════════════════════════════════════════════
+## 2. COLOUR SYSTEM (create lib/theme.ts)
+═══════════════════════════════════════════════════════════════
+
+```typescript
+export const Colors = {
+  // Signature orange
+  orange:        '#E8650A',   // primary — buttons, highlights, active
+  orangeDeep:    '#C84B11',   // pressed states, deep accents
+  orangeSoft:    '#FF8C42',   // gradient partner, soft highlights
+  orangeTint:    '#FFF3EC',   // selected backgrounds, soft fills
+  orangeTintDeep:'#FFE4D1',   // pressed tint states
+
+  // Whites & warm neutrals (the app breathes in these)
+  white:         '#FFFFFF',   // cards
+  background:    '#FDFAF8',   // app background — warm off-white, never grey
+  cloud:         '#F7F1EC',   // secondary surfaces, inset areas
+
+  // Text
+  ink:           '#1F1B18',   // headings — warm near-black
+  body:          '#4A4440',   // body text — warm dark grey
+  muted:         '#9B938D',   // secondary text, captions
+  faint:         '#C4BBB4',   // placeholders, disabled
+
+  // Lines
+  line:          '#F0E8E2',   // hairlines, dividers, input borders
+
+  // Status
+  green:         '#2DB87A',  greenTint: '#E8F8F1',
+  amber:         '#F5A623',  amberTint: '#FFF6E8',
+  red:           '#E6513B',  redTint:   '#FDEEEB',
+};
+
+export const Gradients = {
+  orange: ['#E8650A', '#FF8C42'],      // buttons, hero accents
+  heroWarm: ['#FFF3EC', '#FDFAF8'],    // soft background washes
+};
+```
+
+Rules:
+- Background is ALWAYS `#FDFAF8` (warm off-white). Never pure white, never grey.
+- Cards are `#FFFFFF` white, sitting on the warm background — the contrast is
+  gentle and premium.
+- Orange is used with restraint: primary buttons, one key accent per screen,
+  active states, and important numbers. Not everywhere. Restraint = premium.
+- No blue, teal, purple, or pink anywhere.
+
+═══════════════════════════════════════════════════════════════
+## 3. SPACING — THE MOST IMPORTANT FIX (lib/theme.ts)
+═══════════════════════════════════════════════════════════════
+
+The current app is cramped. This spacing system is deliberately generous.
+When in doubt, add MORE space, not less.
+
+```typescript
+export const Space = {
+  xs:  6,
+  sm:  12,
+  md:  18,
+  lg:  24,
+  xl:  32,
+  xxl: 44,
+  xxxl: 56,
+  giant: 72,
+
+  screenH: 24,   // horizontal screen padding — generous, was probably 16 or 20
+  cardPad: 24,   // internal card padding — roomy, was probably 16
+};
+```
+
+MANDATORY spacing rules (these directly fix the "conjusted" problem):
+
+- Screen horizontal padding: **24px** on both sides, every screen. Not 16, not 20.
+- Card internal padding: **24px** all around. Never less than 20.
+- Gap between stacked cards: **16px** minimum.
+- Gap between sections: **40px** (Space.xxl+). Sections must feel clearly separate.
+- Gap between a screen's header and its first content: **32px**.
+- Space above a bottom button / sticky footer: **40px** of clearance.
+- Line height on body text: **1.75** (very generous — this alone reduces the
+  cramped feeling dramatically).
+- Line height on headings: **1.25**.
+- Vertical padding inside list rows: **18px** minimum (was probably 12).
+- Space between a label and its input field: **10px**.
+- Letter spacing on large headings: **-0.5px** (tighter, more editorial).
+
+Never place two interactive elements closer than 12px apart.
+Never let text touch a card edge — minimum 20px gap to any edge.
+Empty space is a feature, not wasted space. A premium app is mostly empty space.
+
+═══════════════════════════════════════════════════════════════
+## 4. TYPOGRAPHY (lib/theme.ts)
+═══════════════════════════════════════════════════════════════
+
+Install: npx expo install @expo-google-fonts/inter @expo-google-fonts/fraunces
+(Fraunces is a warm, premium serif for headings. Inter for everything else.)
+
+```typescript
+export const Font = {
+  serif:    'Fraunces_600SemiBold',  // screen titles, hero moments — warm, premium
+  bold:     'Inter_700Bold',
+  semibold: 'Inter_600SemiBold',
+  medium:   'Inter_500Medium',
+  regular:  'Inter_400Regular',
+};
+
+export const Type = {
+  hero:        { size: 34, font: 'serif',    lineHeight: 42, spacing: -0.5 },
+  title:       { size: 28, font: 'serif',    lineHeight: 36, spacing: -0.4 },
+  section:     { size: 20, font: 'semibold', lineHeight: 26, spacing: -0.2 },
+  cardTitle:   { size: 17, font: 'semibold', lineHeight: 24 },
+  body:        { size: 16, font: 'regular',  lineHeight: 28 },   // 1.75 ratio
+  secondary:   { size: 14, font: 'regular',  lineHeight: 22 },
+  label:       { size: 13, font: 'medium',   lineHeight: 18 },
+  caption:     { size: 12, font: 'regular',  lineHeight: 16 },
+  dataBig:     { size: 30, font: 'bold',     lineHeight: 34 },   // key numbers
+};
+```
+
+Rules:
+- Screen titles use Fraunces serif — this single choice makes the app feel
+  premium and editorial instead of generic.
+- Body text is 16px with 28px line height. The generous line height is essential
+  to fixing the cramped feeling.
+- Headings in warm near-black `#1F1B18`, body in warm grey `#4A4440`.
+- Sentence case everywhere. No ALL CAPS except small section labels in settings.
+
+═══════════════════════════════════════════════════════════════
+## 5. SHAPE & DEPTH (lib/theme.ts)
+═══════════════════════════════════════════════════════════════
+
+```typescript
+export const Radius = {
+  card:   24,   // generous, soft, premium
+  button: 18,
+  input:  16,
+  chip:   100,  // fully round
+  sheet:  32,   // bottom sheets
+  hero:   32,
+};
+
+export const Shadow = {
+  // Soft, warm, barely-there shadows — premium apps use subtle depth
+  soft: {
+    shadowColor: '#C84B11',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.06,
+    shadowRadius: 24,
+    elevation: 3,
+  },
+  lift: {
+    shadowColor: '#C84B11',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.10,
+    shadowRadius: 32,
+    elevation: 6,
+  },
+  button: {
+    shadowColor: '#E8650A',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.28,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+};
+```
+
+Rules:
+- Big soft corners (24px on cards) — this is a core part of the premium feel.
+- Shadows are warm (orange-tinted) and very soft — never harsh grey drop shadows.
+- Cards float gently on the warm background. The effect is calm, not dramatic.
+
+═══════════════════════════════════════════════════════════════
+## 6. CORE COMPONENTS (build in components/ui/ first)
+═══════════════════════════════════════════════════════════════
+
+Build these BEFORE any screen. Every screen is assembled from them.
+
+**PrimaryButton**
+- Height 60px (tall, easy, premium), full width minus screen padding
+- Orange gradient fill (#E8650A → #FF8C42), left to right
+- 18px radius, white text 17px semibold, Shadow.button
+- Pressed: scale 0.97
+- Haptics.impactAsync(Medium) on press
+- Disabled: #F0E8E2 fill, #C4BBB4 text, no shadow
+
+**SecondaryButton**
+- Height 56px, white fill, 1.5px orange border, orange text 17px semibold, 18px radius
+
+**Card**
+- White fill, 24px radius, 24px padding, Shadow.soft
+- This is the workhorse. Most content lives in these.
+
+**ChoiceCard** (for all questionnaire options — NEVER radio dots)
+- Full width, min height 60px, 20px padding, 20px radius
+- Unselected: white, 1.5px #F0E8E2 border
+- Selected: #FFF3EC fill, 2px #E8650A border, orange checkmark right
+- 16px text, Haptics.impactAsync(Light) on tap
+
+**Chip** — fully round, 13px padding H, 7px padding V, status colours from theme
+
+**ListRow** — 18px vertical padding (roomy), label left, value/chevron right,
+hairline divider below (except last row)
+
+**SectionTitle** — Fraunces serif heading with 40px top margin, 20px bottom margin
+
+**Hero** — top-of-screen section, warm gradient wash background (#FFF3EC → #FDFAF8),
+32px bottom radius, generous 32px internal padding, serif title inside
+
+═══════════════════════════════════════════════════════════════
+## 7. NAVIGATION — REMOVE BOTTOM TABS, USE A MENU
+═══════════════════════════════════════════════════════════════
+
+**Remove the bottom tab bar completely.** It's crowded. Replace with this:
+
+### 7.1 Home is the hub
+The Home screen becomes the central dashboard. From Home, the user reaches
+everything either through content cards (primary actions surfaced directly) or
+through the menu (everything else).
+
+### 7.2 The menu
+A top-right menu button on the Home screen (and a back arrow on all sub-screens).
+
+Menu button: a 48px circular white button, Shadow.soft, with a Feather 'menu'
+icon (24px, ink colour), top-right of the Home header.
+
+Tapping it opens a **slide-in drawer from the right** (or a bottom sheet on
+smaller devices — your call, drawer preferred). The drawer:
+- Covers ~82% of screen width, warm background #FDFAF8
+- Soft shadow on its left edge
+- At the top: the user's avatar (orange circle, initials), name in serif, email
+- Then a generously spaced list of menu items, each a ListRow with:
+  - A Feather icon in an orange-tint rounded square (44px) on the left
+  - Label in 16px medium
+  - Chevron right
+  - 20px vertical padding per row (roomy)
+
+Menu items in order:
+```
+My Journey        (map icon)       → questionnaire hub / progress
+My Results        (bar-chart-2)    → results dashboard
+My Plan           (list)           → personalised plan
+My Orders         (shopping-bag)   → order history & tracking
+Appointments      (calendar)       → appointments list
+Shop              (grid)           → store
+Weekly Goals      (target)         → goals screen
+Recipes           (coffee)         → recipes
+Profile           (user)           → profile
+Settings          (settings)       → settings
+Help & Support    (help-circle)    → support
+```
+
+- A divider, then "Log out" in red at the bottom.
+- Each item has 20px vertical padding — the menu must feel spacious, not listy.
+
+### 7.3 Navigation pattern
+- Home → menu → any section (pushes onto the stack)
+- Every sub-screen has a back arrow top-left (48px circular white button,
+  Shadow.soft, Feather 'arrow-left', ink colour)
+- Deep actions from Home cards go straight to the relevant screen
+- No bottom bar anywhere. The screen is cleaner and more spacious without it.
+
+### 7.4 Implementation
+- Remove the `(tabs)` layout / Tabs navigator from expo-router
+- Use a Stack navigator with Home as the root
+- Build the drawer as a reusable component `components/navigation/MenuDrawer.tsx`
+  using react-native-reanimated for the slide-in, or a modal with a slide animation
+- Keep all the existing screen routes — only the navigation chrome changes
+
+═══════════════════════════════════════════════════════════════
+## 8. SCREEN LAYOUTS (premium, spacious)
+═══════════════════════════════════════════════════════════════
+
+General rules for EVERY screen:
+- Warm background #FDFAF8
+- 24px horizontal padding
+- A Hero section or a serif title at the top with 32px space below it
+- Content in white Cards with 16px gaps
+- 40px between distinct sections
+- One clear primary action
+- Generous empty space — never fill the screen edge to edge with content
+
+### HOME (the hub)
+```
+Hero section (warm gradient wash, 32px bottom radius):
+  Top row: "Good morning" (secondary) + "Pratik" (serif title) on left,
+           menu button (48px circle) on right
+  32px gap inside hero
+  A large feature card (white, floating, overlapping hero bottom edge):
+    "Your journey" serif, a horizontal 5-dot progress indicator with generous
+    spacing between dots, current step label, and an orange "Continue →" link
+48px gap
+Section: "Today" serif title
+  Two or three spacious action cards (white, 24px padding, 80px tall), each with
+  a 44px orange-tint icon square, title, subtitle, chevron. 16px gaps.
+48px gap
+Section: "Your numbers" serif title
+  A row of 2-3 stat cards, white, roomy, big orange numbers (dataBig), label below
+72px bottom padding
+```
+
+### QUESTIONNAIRE SECTION
+```
+Sticky slim header: back button, "Section 4 of 10" centred, flush progress bar below
+32px gap
+Serif section title + one line of body subtitle
+40px gap
+Question groups, each with 40px between them (lots of air):
+  Question text (cardTitle, 17px semibold)
+  16px gap
+  ChoiceCards stacked with 12px gaps, each 60px tall
+56px empty space
+Sticky footer: PrimaryButton "Save & continue" with 24px padding around it
+```
+
+### RESULTS
+```
+Hero: serif "Your results" + "Reviewed by Dr Mehta · 14 Oct"
+40px gap
+Filter chips row (roomy, 12px gaps)
+40px gap
+Section "Worth watching" serif
+  Result cards: white, 24px padding, soft shadow, a 4px orange/amber/green left
+  edge bar, plain name + status chip, meaning line, divider, clinical value in
+  the data font. 16px gaps between cards.
+40px gap
+Section "Within range" serif — green-barred cards
+72px bottom padding + PrimaryButton "See my plan"
+```
+
+### PLAN
+```
+Hero: serif "Your plan" + a soft green approval chip "Approved by Dr Mehta"
+40px gap
+Four grouped sections (Daily habits / Food / Supplements / Follow-up), each:
+  Section title (serif) with a 44px orange icon square to its left
+  24px gap
+  Plan cards, white, 24px padding, generous: title, "why" reason, collapsed
+  "clinical basis" expandable inline, and for supplements a price + orange "Add"
+  pill. 16px gaps.
+  40px before next group
+```
+
+### PROFILE / SETTINGS / ORDERS / APPOINTMENTS / GOALS / RECIPES / SHOP
+Apply the same system: warm background, 24px padding, serif titles, white Cards
+with 24px padding and 16px gaps, 40px between sections, menu-based navigation
+with a back button. Roomy ListRows (18px vertical padding) for settings/profile.
+
+═══════════════════════════════════════════════════════════════
+## 9. MOTION
+═══════════════════════════════════════════════════════════════
+- Screen transitions: slide, 300ms, ease-out
+- Button press: scale 0.97
+- Menu drawer: slide in from right, 280ms ease-out, with a dimmed backdrop
+- Card tap: subtle scale 0.98
+- Haptics on every primary interaction (expo-haptics)
+- Respect useReducedMotion — cut animation if enabled
+- No looping/idle animations
+
+═══════════════════════════════════════════════════════════════
+## 10. THE SPACING CHECKLIST (run after every screen)
+═══════════════════════════════════════════════════════════════
+□ Screen horizontal padding is 24px
+□ Every card has 24px internal padding
+□ Body text line height is 28px (1.75) — this fixes the cramped feeling
+□ 40px between distinct sections
+□ 16px minimum between stacked cards
+□ No two interactive elements closer than 12px
+□ Text never within 20px of a card edge
+□ Screen title has 32px of space below it before content
+□ List rows have 18px vertical padding
+□ There is NO bottom tab bar — navigation is via the menu drawer
+□ Serif font (Fraunces) is used on all screen titles
+□ Background is warm #FDFAF8, cards are white, shadows are soft and orange-tinted
+□ Orange is used with restraint — one key accent per screen, not everywhere
+□ Generous empty space exists — the screen does not feel full
+
+═══════════════════════════════════════════════════════════════
+## 11. FIRST MESSAGE TO PASTE INTO CURSOR
+═══════════════════════════════════════════════════════════════
+
+```
+Read .cursorrules-redesign. This is a complete visual + navigation redesign of
+Prescope. Keep ALL backend logic, Supabase calls, the rules engine, consent
+flow, and safety gates exactly as they are — change only the visual layer,
+spacing, layout, and navigation structure.
+
+Do this in order:
+1. Create lib/theme.ts with the Colors, Space, Font, Type, Radius, and Shadow
+   tokens from Sections 2-5. Install Fraunces + Inter fonts and expo-haptics.
+2. Build the core components in components/ui/ from Section 6.
+3. Remove the bottom tab bar completely. Build the MenuDrawer from Section 7 and
+   switch navigation to a Stack with Home as the hub.
+4. Rebuild the Home screen per Section 8 as the new spacious hub.
+
+Stop after the Home screen and show it to me. Do not rebuild other screens until
+I approve the Home screen's spacing and premium feel.
+
+The single most important goal: fix the cramped feeling. Use generous spacing
+everywhere — 24px screen padding, 24px card padding, 1.75 line height, 40px
+between sections. When in doubt, add more space.
+```

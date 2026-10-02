@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Chip } from "@/components/ui/Chip";
+import { Colors, Radius, Space, typeStyle } from "@/lib/theme";
 
 type InteractionFlagProps = {
   reason?: string;
@@ -17,9 +17,7 @@ export function InteractionFlag({
 }: InteractionFlagProps) {
   return (
     <View>
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>Needs practitioner check</Text>
-      </View>
+      <Chip label="Needs practitioner check" tone="amber" />
       {!compact && reason ? (
         <View style={styles.callout}>
           <Text style={styles.calloutText}>{reason}</Text>
@@ -30,28 +28,14 @@ export function InteractionFlag({
 }
 
 const styles = StyleSheet.create({
-  badge: {
-    alignSelf: "flex-start",
-    backgroundColor: colors.amberLight,
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  badgeText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.amber,
-  },
   callout: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.amberLight,
-    borderRadius: radius.alert,
-    padding: spacing.mdSm,
+    marginTop: Space.sm,
+    backgroundColor: Colors.amberTint,
+    borderRadius: Radius.input,
+    padding: Space.md,
   },
   calloutText: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.charcoal,
+    ...typeStyle("secondary"),
+    color: Colors.body,
   },
 });

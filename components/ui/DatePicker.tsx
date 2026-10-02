@@ -1,14 +1,12 @@
-import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
-import { colors, inputHeight, radius } from "@/lib/design-tokens";
 import {
   localDateToIso,
   type DatePickerFieldProps,
 } from "@/lib/datetime";
 import { isValidIsoCalendarDate } from "@/lib/questionnaire/numbers";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Font, Gap, Radius, Size, Space, Type, typeStyle } from "@/lib/theme";
 
 /**
  * Default (web) date field. On iPhone Safari this is the system calendar.
@@ -42,16 +40,18 @@ export function DatePicker({
         style={{
           marginTop: 0,
           width: "100%",
-          minHeight: inputHeight,
-          padding: 12,
-          borderRadius: radius.input,
+          minHeight: Size.input,
+          padding: Space.md,
+          borderRadius: Radius.input,
           borderWidth: 1.5,
           borderStyle: "solid",
-          borderColor: colors.border,
-          backgroundColor: colors.white,
-          color: colors.charcoal,
-          fontSize: 15,
-          fontFamily: "Inter, system-ui, sans-serif",
+          borderColor: error ? Colors.red : Colors.line,
+          backgroundColor: Colors.white,
+          color: Colors.ink,
+          fontSize: Type.body.size,
+          lineHeight: `${Type.body.lineHeight}px`,
+          fontFamily: `${Font.regular}, Inter, system-ui, sans-serif`,
+          boxSizing: "border-box",
         }}
       />
       {leftoverText ? (
@@ -66,31 +66,26 @@ export function DatePicker({
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: 16,
+    marginTop: Space.lg,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+    marginBottom: Gap.labelToField,
   },
   hint: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+    marginBottom: Gap.labelToField,
   },
   warn: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
   },
   error: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
   },
 });

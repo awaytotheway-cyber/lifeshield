@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Text } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
 import { createLabOrdersForStoreOrder } from "@/lib/lab-orders";
 import { createOrderFromCart } from "@/lib/orders";
@@ -10,6 +10,7 @@ import { formatPaymentTotalForDisplay } from "@/lib/payment-intent-format";
 import { requestPaymentIntent } from "@/lib/payment-intent";
 import type { CartLineRow } from "@/lib/store";
 import { paymentIntentIdFromClientSecret } from "@/lib/stripe-config";
+import { Colors, typeStyle } from "@/lib/theme";
 
 type CheckoutPhase = "idle" | "starting" | "sheet" | "saving";
 
@@ -116,11 +117,10 @@ export function StripePayButton({
 
   return (
     <>
-      <Text className="mt-2 text-center text-sm text-charcoal">
-        {COPY.cartTotalNote}
-      </Text>
-      <Button
+      <Text style={styles.note}>{COPY.cartTotalNote}</Text>
+      <PrimaryButton
         title={title}
+        icon="lock"
         loading={busy}
         disabled={disabled || busy}
         onPress={() => {
@@ -130,6 +130,14 @@ export function StripePayButton({
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  note: {
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+    textAlign: "center",
+  },
+});
 
 /** For tests / display helpers without importing native Stripe. */
 export function formatCheckoutServerHint(total: number, currency: string): string {

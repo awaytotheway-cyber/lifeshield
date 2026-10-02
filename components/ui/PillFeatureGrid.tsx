@@ -1,9 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Card } from "@/components/ui/Card";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 
 export type PillFeature = {
   id: string;
@@ -16,20 +15,23 @@ type PillFeatureGridProps = {
 };
 
 /**
- * Two-column pill grid for home / onboarding feature highlights.
+ * Two-column feature grid for home / onboarding highlights.
+ *
+ * PLAIN ENGLISH: a pair of small white cards per row, each with an orange
+ * Feather icon and a short label.
  */
 export function PillFeatureGrid({ features }: PillFeatureGridProps) {
   return (
     <View style={styles.grid}>
       {features.map((item) => (
-        <GlassCard key={item.id} intensity="card" style={styles.pill}>
+        <Card key={item.id} style={styles.pill}>
           <View style={styles.row}>
             {item.icon ? (
-              <Feather name={item.icon} size={16} color={colors.primaryBlue} />
+              <Feather name={item.icon} size={18} color={Colors.orange} />
             ) : null}
             <Text style={styles.label}>{item.label}</Text>
           </View>
-        </GlassCard>
+        </Card>
       ))}
     </View>
   );
@@ -39,25 +41,23 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.sm,
+    gap: Gap.cards,
   },
   pill: {
-    width: "48%",
     flexGrow: 1,
-    minWidth: "46%",
-    paddingVertical: spacing.mdSm,
-    paddingHorizontal: spacing.base,
+    flexBasis: "45%",
+    minWidth: "45%",
+    paddingVertical: Space.md,
+    paddingHorizontal: Space.lg,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: Space.sm,
   },
   label: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
-    lineHeight: 18,
-    color: colors.deepNavy,
+    ...typeStyle("label"),
+    color: Colors.ink,
   },
 });

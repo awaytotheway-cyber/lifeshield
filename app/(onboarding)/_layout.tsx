@@ -44,5 +44,10 @@ export default function OnboardingLayout() {
     return <Redirect href={routes.welcome} />;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  // Section 9: screens slide in from the right.
+  return (
+    <Stack
+      screenOptions={{ headerShown: false, animation: "slide_from_right" }}
+    />
+  );
 }

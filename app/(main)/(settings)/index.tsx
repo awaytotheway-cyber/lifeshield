@@ -1,54 +1,71 @@
 import { Redirect, useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { MenuButton } from "@/components/navigation/MenuButton";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
+import { ListRow } from "@/components/ui/ListRow";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
-import { colors, spacing, tapTarget } from "@/lib/design-tokens";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
-type LinkRow = {
+type SettingsLink = {
   title: string;
-  subtitle?: string;
   icon: keyof typeof Feather.glyphMap;
-  href: typeof routes.settingsNotifications | typeof routes.profile | typeof routes.settingsPrivacy | typeof routes.settingsHelp | typeof routes.settingsAbout | typeof routes.appointments | typeof routes.prescriptions | typeof routes.notificationsInbox | typeof routes.plan | typeof routes.labResults | typeof routes.store;
+  href:
+    | typeof routes.profile
+    | typeof routes.settingsNotifications
+    | typeof routes.settingsPrivacy
+    | typeof routes.settingsHelp
+    | typeof routes.settingsAbout;
 };
 
-const LINKS: LinkRow[] = [
+type SettingsGroup = {
+  /** Settings is the one screen where the brief allows small ALL-CAPS labels. */
+  label: string;
+  links: SettingsLink[];
+};
+
+const GROUPS: SettingsGroup[] = [
   {
-    title: COPY.settingsOpenProfile,
-    icon: "user",
-    href: routes.profile,
+    label: "ACCOUNT",
+    links: [
+      { title: COPY.settingsOpenProfile, icon: "user", href: routes.profile },
+      {
+        title: COPY.settingsOpenNotifications,
+        icon: "bell",
+        href: routes.settingsNotifications,
+      },
+    ],
   },
   {
-    title: COPY.settingsOpenNotifications,
-    icon: "bell",
-    href: routes.settingsNotifications,
+    label: "DATA & PRIVACY",
+    links: [
+      {
+        title: COPY.settingsOpenPrivacy,
+        icon: "shield",
+        href: routes.settingsPrivacy,
+      },
+    ],
   },
   {
-    title: COPY.settingsOpenPrivacy,
-    icon: "shield",
-    href: routes.settingsPrivacy,
-  },
-  {
-    title: COPY.settingsOpenHelp,
-    icon: "help-circle",
-    href: routes.settingsHelp,
-  },
-  {
-    title: COPY.settingsOpenAbout,
-    icon: "info",
-    href: routes.settingsAbout,
+    label: "SUPPORT",
+    links: [
+      {
+        title: COPY.settingsOpenHelp,
+        icon: "help-circle",
+        href: routes.settingsHelp,
+      },
+      { title: COPY.settingsOpenAbout, icon: "info", href: routes.settingsAbout },
+    ],
   },
 ];
 
-/** Settings hub — replaces the old instant redirect to profile. */
+/** Settings hub — reached from the menu drawer, with a normal back button. */
 export default function SettingsIndex() {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
@@ -65,78 +82,58 @@ export default function SettingsIndex() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <View style={styles.top}>
-        <MenuButton accessibilityLabel={COPY.settingsOpenMenu} />
-        <Text style={styles.title} accessibilityRole="header">
-          {COPY.settingsTitle}
-        </Text>
-      </View>
-      <Text style={styles.body}>{COPY.settingsBody}</Text>
-      <View style={styles.banner}>
+    <Screen scroll>
+      <ScreenHeader
+        title={COPY.settingsTitle}
+        subtitle={COPY.settingsBody}
+        onBack={() => router.replace(routes.home)}
+        backLabel={COPY.orderBackHome}
+      />
+
+      {GROUPS.map((group, groupIndex) => (
+        <View
+          key={group.label}
+          style={groupIndex === 0 ? undefined : styles.groupGap}
+        >
+          <Text style={styles.groupLabel}>{group.label}</Text>
+          <Card padded={false} style={styles.card}>
+            {group.links.map((link, index) => (
+              <ListRow
+                key={link.title}
+                label={link.title}
+                icon={link.icon}
+                divider={index < group.links.length - 1}
+                onPress={() => router.push(link.href)}
+              />
+            ))}
+          </Card>
+        </View>
+      ))}
+
+      <View style={styles.trust}>
         <TrustBanner />
       </View>
-
-      <GlassCard intensity="card" style={styles.card}>
-        {LINKS.map((link) => (
-          <Pressable
-            key={link.title}
-            accessibilityRole="button"
-            accessibilityLabel={link.title}
-            onPress={() => router.push(link.href)}
-            style={styles.row}
-          >
-            <Feather name={link.icon} size={20} color={colors.primaryBlue} />
-            <Text style={styles.rowLabel}>{link.title}</Text>
-            <Feather name="chevron-right" size={20} color={colors.mist} />
-          </Pressable>
-        ))}
-      </GlassCard>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  top: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+  groupGap: {
+    // Section 10: 40px between distinct sections.
+    marginTop: Gap.sections,
   },
-  title: {
-    flex: 1,
-    fontFamily: fontFamily.display,
-    fontSize: 34,
-    lineHeight: 40,
-    letterSpacing: -0.6,
-    color: colors.deepTeal,
-  },
-  body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-  },
-  banner: {
-    marginTop: spacing.md,
+  groupLabel: {
+    ...typeStyle("label"),
+    marginBottom: Space.sm,
+    marginLeft: Space.xs,
+    letterSpacing: 0.8,
+    color: Colors.muted,
   },
   card: {
-    marginTop: spacing.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: Space.cardPad,
+    paddingVertical: Space.xs,
   },
-  row: {
-    minHeight: tapTarget,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 10,
-  },
-  rowLabel: {
-    flex: 1,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 16,
-    color: colors.charcoal,
+  trust: {
+    marginTop: Gap.sections,
   },
 });

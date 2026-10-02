@@ -2,9 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { SymptomInterrupt } from "@/components/questionnaire/SymptomInterrupt";
 import { NumberInput } from "@/components/ui/NumberInput";
@@ -281,12 +281,8 @@ export default function ReproductiveScreen() {
         footerTitle={COPY.reproductiveGoSection1}
         onFooterPress={() => router.replace(routes.qDemographics)}
       >
-        {loadMessage ? (
-          <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-        ) : null}
-        <Text className="mt-4 text-center text-charcoal">
-          {COPY.reproductiveNeedSection1}
-        </Text>
+        {loadMessage ? <SectionNotice message={loadMessage} /> : null}
+        <SectionNotice message={COPY.reproductiveNeedSection1} tone="info" />
       </SectionScaffold>
     );
   }
@@ -310,12 +306,8 @@ export default function ReproductiveScreen() {
         }}
         errorMessage={saveMessage}
       >
-        {loadMessage ? (
-          <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-        ) : null}
-        <Text className="mt-4 text-center text-charcoal">
-          {COPY.reproductiveMaleSkip}
-        </Text>
+        {loadMessage ? <SectionNotice message={loadMessage} /> : null}
+        <SectionNotice message={COPY.reproductiveMaleSkip} tone="info" />
       </SectionScaffold>
     );
   }
@@ -323,6 +315,7 @@ export default function ReproductiveScreen() {
   return (
     <SectionScaffold
       title="Reproductive & menstrual history"
+      subtitle="Hormone timeline questions. Skip anything that does not apply to you."
       step={2}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -336,9 +329,7 @@ export default function ReproductiveScreen() {
       }}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}

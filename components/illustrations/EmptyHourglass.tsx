@@ -1,7 +1,7 @@
 import Svg, { Circle, Path } from "react-native-svg";
 
 import { IllustrationFrame } from "@/components/illustrations/IllustrationFrame";
-import { colors } from "@/lib/design-tokens";
+import { art } from "@/components/illustrations/palette";
 
 type EmptyHourglassProps = {
   width?: number;
@@ -28,18 +28,18 @@ export function EmptyHourglass({
       viewBox="0 0 100 100"
       fill="none"
     >
-      <Circle cx="50" cy="50" r="42" fill={colors.cream} />
+      <Circle cx="50" cy="50" r="42" fill={art.wash} />
 
       {/* Caps */}
       <Path
         d="M28 18h44"
-        stroke={colors.deepTeal}
+        stroke={art.outline}
         strokeWidth="3"
         strokeLinecap="round"
       />
       <Path
         d="M28 82h44"
-        stroke={colors.deepTeal}
+        stroke={art.outline}
         strokeWidth="3"
         strokeLinecap="round"
       />
@@ -47,7 +47,8 @@ export function EmptyHourglass({
       {/* Glass silhouette */}
       <Path
         d="M32 20c0 10 4 16 18 30C36 64 32 70 32 80h36c0-10-4-16-18-30 14-14 18-20 18-30H32z"
-        stroke={colors.midTeal}
+        fill={art.paper}
+        stroke={art.solid}
         strokeWidth="2"
         strokeLinejoin="round"
       />
@@ -55,19 +56,19 @@ export function EmptyHourglass({
       {/* Remaining sand (top) — planned wait, not an error */}
       <Path
         d="M38 24h24c-2 8-8 14-12 18-4-4-10-10-12-18z"
-        fill={colors.amber}
+        fill={art.waiting}
         opacity={0.85}
       />
 
       {/* Gentle trickle — static grains, no looping motion */}
-      <Circle cx="50" cy="48" r="1.3" fill={colors.amber} />
-      <Circle cx="50" cy="54" r="1.1" fill={colors.amber} />
-      <Circle cx="50" cy="59" r="0.9" fill={colors.amber} />
+      <Circle cx="50" cy="48" r="1.3" fill={art.waiting} />
+      <Circle cx="50" cy="54" r="1.1" fill={art.waiting} />
+      <Circle cx="50" cy="59" r="0.9" fill={art.waiting} />
 
       {/* Soft pile at the bottom */}
       <Path
         d="M40 76c3-8 7-12 10-12s7 4 10 12H40z"
-        fill={colors.amber}
+        fill={art.waiting}
         opacity={0.7}
       />
     </Svg>

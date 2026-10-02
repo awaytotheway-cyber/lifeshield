@@ -1,18 +1,18 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -74,14 +74,17 @@ export default function ConsentsSettingsScreen() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.consentsSettingsTitle}
+        subtitle={COPY.consentsSettingsBody}
         onBack={() => router.replace(routes.settingsPrivacy)}
+        backLabel={COPY.privacyTitle}
       />
-      <Text style={styles.body}>{COPY.consentsSettingsBody}</Text>
+
       {loading ? <StaticSkeleton rows={2} /> : null}
       {message ? <Text style={styles.error}>{message}</Text> : null}
+
       {!loading && !message && rows.length === 0 ? (
         <EmptyState
           icon="check-circle"
@@ -89,48 +92,54 @@ export default function ConsentsSettingsScreen() {
           explanation={COPY.consentsSettingsBody}
         />
       ) : null}
-      {rows.map((row, index) => (
-        <GlassCard
-          key={`${row.consent_type}-${index}`}
-          intensity="card"
-          style={styles.card}
-        >
-          <Text style={styles.type}>{row.consent_type}</Text>
-          <Text style={styles.status}>
-            {row.consented ? "Agreed" : "Not agreed"}
-            {row.consented_at ? ` · ${row.consented_at.slice(0, 10)}` : ""}
-          </Text>
-        </GlassCard>
-      ))}
+
+      {rows.length > 0 ? (
+        <View style={styles.list}>
+          {rows.map((row, index) => (
+            <Card key={`${row.consent_type}-${index}`}>
+              <View style={styles.row}>
+                <Text style={styles.type}>{row.consent_type}</Text>
+                <Chip
+                  label={row.consented ? "Agreed" : "Not agreed"}
+                  tone={row.consented ? "green" : "neutral"}
+                />
+              </View>
+              {row.consented_at ? (
+                <Text style={styles.when}>
+                  Recorded {row.consented_at.slice(0, 10)}
+                </Text>
+              ) : null}
+            </Card>
+          ))}
+        </View>
+      ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+  list: {
+    gap: Gap.cards,
   },
-  error: {
-    marginTop: 12,
-    color: colors.coral,
-    fontFamily: fontFamily.body,
-  },
-  card: {
-    marginTop: spacing.mdSm,
-    padding: spacing.base,
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
   },
   type: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+    flex: 1,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
-  status: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    color: colors.slate,
+  when: {
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.muted,
+  },
+  error: {
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.red,
   },
 });

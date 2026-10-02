@@ -1,14 +1,28 @@
-import { Pressable, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { SWITCH_PALETTE, type SwitchColor } from "@/lib/switch-colors";
+import { PressScale } from "@/components/ui/PressScale";
+import type { SwitchColor } from "@/lib/switch-colors";
+import { Colors, Font, Gap, Radius, Size, Space } from "@/lib/theme";
 
 type ColorSwitchProps = {
   label: string;
   value: boolean;
   onChange: (next: boolean) => void;
-  /** primary = teal, secondary = sage, warning = coral, default = charcoal */
+  /** primary / secondary = orange, warning = red, default = ink */
   color?: SwitchColor;
   accessibilityLabel?: string;
+};
+
+/**
+ * Accent colour for the "on" track. The redesign keeps switches orange so an
+ * enabled preference reads as the one accent on the screen; `warning` stays red
+ * for genuine attention questions.
+ */
+const TRACK_ON: Record<SwitchColor, string> = {
+  primary: Colors.orange,
+  secondary: Colors.orange,
+  warning: Colors.red,
+  default: Colors.ink,
 };
 
 /**
@@ -23,36 +37,64 @@ export function ColorSwitch({
   color = "primary",
   accessibilityLabel,
 }: ColorSwitchProps) {
-  const palette = SWITCH_PALETTE[color];
+  const trackOn = TRACK_ON[color];
 
   return (
-    <Pressable
+    <PressScale
       accessibilityRole="switch"
       accessibilityState={{ checked: value }}
       accessibilityLabel={accessibilityLabel ?? label}
       onPress={() => onChange(!value)}
-      className="mt-6 flex-row items-center"
+      haptic="light"
+      style={styles.row}
     >
+      <Text style={styles.label}>{label}</Text>
       <View
-        className="mr-3 h-8 w-14 justify-center rounded-full px-1"
-        style={{
-          backgroundColor: value ? palette.trackOn : palette.trackOff,
-        }}
+        style={[
+          styles.track,
+          { backgroundColor: value ? trackOn : Colors.line },
+        ]}
       >
         <View
-          className="h-6 w-6 rounded-full"
-          style={{
-            backgroundColor: value ? palette.thumbOn : palette.thumbOff,
-            alignSelf: value ? "flex-end" : "flex-start",
-            elevation: 2,
-            shadowColor: "#000",
-            shadowOpacity: 0.2,
-            shadowRadius: 2,
-            shadowOffset: { width: 0, height: 1 },
-          }}
+          style={[
+            styles.thumb,
+            {
+              backgroundColor: value ? Colors.white : Colors.faint,
+              alignSelf: value ? "flex-end" : "flex-start",
+            },
+          ]}
         />
       </View>
-      <Text className="flex-1 text-charcoal">{label}</Text>
-    </Pressable>
+    </PressScale>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Space.md,
+    // Section 10: list rows get 18px of vertical padding.
+    paddingVertical: Gap.rowY,
+    minHeight: Size.tap,
+  },
+  label: {
+    flex: 1,
+    fontFamily: Font.medium,
+    fontSize: 16,
+    lineHeight: 22,
+    color: Colors.ink,
+  },
+  track: {
+    width: 56,
+    height: 32,
+    borderRadius: Radius.chip,
+    justifyContent: "center",
+    paddingHorizontal: 3,
+  },
+  thumb: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+  },
+});

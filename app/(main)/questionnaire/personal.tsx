@@ -2,9 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
-import { QuestionCard } from "@/components/questionnaire/QuestionCard";
+import { DerivedValue } from "@/components/questionnaire/DerivedValue";
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -101,6 +101,7 @@ export default function PersonalHistoryScreen() {
   return (
     <SectionScaffold
       title="Personal history"
+      subtitle="Honest answers here make the suggestions more useful. Nothing is judged."
       step={6}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -111,9 +112,7 @@ export default function PersonalHistoryScreen() {
       onCompleteDone={() => router.replace(routes.qLifestyle)}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}
@@ -157,10 +156,12 @@ export default function PersonalHistoryScreen() {
               />
             )}
           />
-          <Text className="mt-3 text-teal">
-            {COPY.packYearsLabel}: {packYears ?? "—"}
-          </Text>
-          <Text className="mt-1 text-charcoal">{COPY.packYearsHint}</Text>
+          <DerivedValue
+            label={COPY.packYearsLabel}
+            value={packYears === null ? "—" : String(packYears)}
+            hint={COPY.packYearsHint}
+            pending={packYears === null}
+          />
         </>
       ) : null}
 
@@ -194,25 +195,22 @@ export default function PersonalHistoryScreen() {
         />
       ) : null}
 
-      <QuestionCard
-        title="Alcohol (units per week)"
-        hint={ALCOHOL_UNIT_HINT}
-        hintLabel={COPY.tooltipWhatsAUnit}
-      >
-        <Controller
-          control={control}
-          name="alcoholUnitsPerWeek"
-          render={({ field: { value, onChange, onBlur } }) => (
-            <NumberInput
-              label="Units per week"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              error={errors.alcoholUnitsPerWeek?.message}
-            />
-          )}
-        />
-      </QuestionCard>
+      {/* “What’s a unit?” reads inline under the label — you need it while you
+          are answering, not behind a tap. */}
+      <Controller
+        control={control}
+        name="alcoholUnitsPerWeek"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <NumberInput
+            label="Alcohol (units per week)"
+            hint={ALCOHOL_UNIT_HINT}
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            error={errors.alcoholUnitsPerWeek?.message}
+          />
+        )}
+      />
 
       <Controller
         control={control}

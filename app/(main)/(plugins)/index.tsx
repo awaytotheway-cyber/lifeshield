@@ -3,11 +3,13 @@ import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
 
 import { TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   disconnectPlugin,
   loadOwnEnabledPlugins,
@@ -18,7 +20,7 @@ import {
   type PluginRow,
 } from "@/lib/plugins";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 const CATEGORY_HEADER: Record<PluginCategory, string> = {
@@ -102,71 +104,85 @@ export default function PluginsScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.pluginsTitle}
+        subtitle={COPY.pluginsSubtitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.orderBackHome}
       />
-      <Text style={styles.body}>{COPY.pluginsSubtitle}</Text>
 
-      {loading && plugins.length === 0 ? <StaticSkeleton rows={4} /> : null}
-      {message ? <Text style={styles.error}>{message}</Text> : null}
+      {loading && plugins.length === 0 ? <StaticSkeleton rows={3} /> : null}
+      {message ? (
+        <Card>
+          <Text style={styles.error}>{message}</Text>
+        </Card>
+      ) : null}
 
       {CATEGORY_ORDER.map((cat) => {
         const items = grouped.get(cat) ?? [];
         if (items.length === 0) return null;
         return (
-          <View key={cat} style={{ marginTop: spacing.lg }}>
-            <Text style={styles.section}>{CATEGORY_HEADER[cat]}</Text>
-            {items.map((p) => {
-              const state = enabled[p.id];
-              const on = state?.enabled ?? false;
-              return (
-                <View key={p.id} style={styles.card}>
-                  <View style={styles.headRow}>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.name}>{p.name}</Text>
-                      {p.provider ? (
-                        <Text style={styles.provider}>{p.provider}</Text>
-                      ) : null}
+          <View key={cat}>
+            <SectionTitle title={CATEGORY_HEADER[cat]} />
+            <View style={styles.stack}>
+              {items.map((p) => {
+                const state = enabled[p.id];
+                const on = state?.enabled ?? false;
+                return (
+                  <Card key={p.id}>
+                    <View style={styles.headRow}>
+                      <View style={styles.headText}>
+                        <Text style={styles.name}>{p.name}</Text>
+                        {p.provider ? (
+                          <Text style={styles.provider}>{p.provider}</Text>
+                        ) : null}
+                      </View>
+                      <Switch
+                        value={on}
+                        onValueChange={(v) => flip(p, v)}
+                        disabled={busyId === p.id}
+                        trackColor={{ true: Colors.orange, false: Colors.line }}
+                        thumbColor={Colors.white}
+                      />
                     </View>
-                    <Switch
-                      value={on}
-                      onValueChange={(v) => flip(p, v)}
-                      disabled={busyId === p.id}
-                      trackColor={{ true: colors.primaryBlue, false: colors.border }}
-                      thumbColor={colors.white}
-                    />
-                  </View>
 
-                  <Text style={styles.desc}>{p.description}</Text>
+                    {on ? (
+                      <View style={styles.badgeWrap}>
+                        <Chip label={COPY.pluginsEnabledBadge} tone="green" />
+                      </View>
+                    ) : null}
 
-                  <Text style={styles.subLabel}>{COPY.pluginsPrivacyLabel}</Text>
-                  <Text style={styles.privacy}>{p.privacy_disclosure}</Text>
+                    <Text style={styles.desc}>{p.description}</Text>
 
-                  {state ? (
-                    <View style={styles.usageRow}>
-                      <Text style={styles.usageLabel}>{COPY.pluginsUsage}</Text>
-                      <Text style={styles.usageValue}>{state.usage_count}</Text>
+                    <View style={styles.privacyBlock}>
+                      <Text style={styles.subLabel}>
+                        {COPY.pluginsPrivacyLabel}
+                      </Text>
+                      <Text style={styles.privacy}>{p.privacy_disclosure}</Text>
                     </View>
-                  ) : null}
 
-                  {state && !on ? (
-                    <TextButton
-                      title={COPY.pluginsDisconnect}
-                      onPress={() => disconnect(p)}
-                    />
-                  ) : null}
+                    {state ? (
+                      <View style={styles.usageRow}>
+                        <Text style={styles.usageLabel}>
+                          {COPY.pluginsUsage}
+                        </Text>
+                        <Text style={styles.usageValue}>
+                          {state.usage_count}
+                        </Text>
+                      </View>
+                    ) : null}
 
-                  {on ? (
-                    <Text style={styles.enabledBadge}>
-                      ● {COPY.pluginsEnabledBadge}
-                    </Text>
-                  ) : null}
-                </View>
-              );
-            })}
+                    {state && !on ? (
+                      <TextButton
+                        title={COPY.pluginsDisconnect}
+                        onPress={() => disconnect(p)}
+                      />
+                    ) : null}
+                  </Card>
+                );
+              })}
+            </View>
           </View>
         );
       })}
@@ -175,80 +191,66 @@ export default function PluginsScreen() {
 }
 
 const styles = StyleSheet.create({
-  body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
   },
-  section: {
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: colors.charcoal,
-  },
-  card: {
-    marginBottom: spacing.sm,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.white,
-    ...shadows.card,
+  stack: {
+    gap: Gap.cards,
   },
   headRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: spacing.sm,
+    gap: Space.md,
+  },
+  headText: {
+    flex: 1,
   },
   name: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   provider: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
+    ...typeStyle("caption"),
+    color: Colors.muted,
+  },
+  badgeWrap: {
+    marginTop: Space.sm,
   },
   desc: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
+    marginTop: Space.md,
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  privacyBlock: {
+    marginTop: Space.md,
   },
   subLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
-    letterSpacing: 0.4,
-    color: colors.slate,
+    ...typeStyle("label"),
+    color: Colors.muted,
     textTransform: "uppercase",
+    letterSpacing: 0.6,
   },
   privacy: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    marginTop: Space.xs,
+    ...typeStyle("secondary"),
+    color: Colors.body,
   },
   usageRow: {
-    marginTop: spacing.sm,
+    marginTop: Space.md,
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
+    gap: Space.sm,
   },
-  usageLabel: { fontFamily: fontFamily.bodyMedium, fontSize: 13, color: colors.slate },
-  usageValue: { fontFamily: fontFamily.bodySemi, fontSize: 13, color: colors.charcoal },
-  enabledBadge: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.primaryBlue,
+  usageLabel: {
+    ...typeStyle("label"),
+    color: Colors.muted,
   },
-  error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+  usageValue: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
 });

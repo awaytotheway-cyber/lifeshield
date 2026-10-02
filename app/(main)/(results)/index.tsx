@@ -1,30 +1,28 @@
 import { Redirect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { EmptyHourglass, InsightLens } from "@/components/illustrations";
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
+import { BackButton } from "@/components/ui/BackButton";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  TextButton,
+} from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Hero } from "@/components/ui/Hero";
 import { ResultCard } from "@/components/ui/ResultCard";
-import { Screen } from "@/components/ui/Screen";
-import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { getTerm } from "@/lib/plain-language";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import {
   useQuestionnaireStore,
   type TestOrderRow,
 } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
-
-type ListRow =
-  | { kind: "heading"; id: string; title: string }
-  | { kind: "order"; id: string; order: TestOrderRow };
 
 export default function ResultsScreen() {
   const router = useRouter();
@@ -64,20 +62,6 @@ export default function ResultsScreen() {
     void refresh();
   }, [session?.user.id, refresh]);
 
-  const listData = useMemo<ListRow[]>(() => {
-    if (orders.length === 0) {
-      return [];
-    }
-    return [
-      { kind: "heading", id: "watch", title: COPY.resultsGroupWatching },
-      ...orders.map((order) => ({
-        kind: "order" as const,
-        id: order.id,
-        order,
-      })),
-    ];
-  }, [orders]);
-
   if (!session) {
     return <Redirect href={routes.login} />;
   }
@@ -90,166 +74,159 @@ export default function ResultsScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
+  const showOrders = !loading && !message && orders.length > 0;
+  const showEmpty = !loading && !message && orders.length === 0;
+
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
-      <ScreenHeader
-        title={COPY.resultsTitle}
-        onBack={() => router.replace(routes.home)}
-        backLabel={COPY.resultsBackHome}
-      />
-      <Text style={styles.body}>{COPY.resultsBody}</Text>
-
-      {!loading && !message && orders.length > 0 ? (
-        <View style={styles.stats}>
-          <MilestoneStatStrip
-            stats={[
-              {
-                id: "count",
-                value: orders.length,
-                label: "Suggested tests",
-              },
-              {
-                id: "tiers",
-                value: new Set(orders.map((o) => o.test_tier)).size,
-                label: "Focus areas",
-              },
-              {
-                id: "next",
-                value: "Discuss",
-                label: "With clinician",
-              },
-            ]}
+    <View style={styles.root}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <Hero>
+          <BackButton
+            onPress={() => router.replace(routes.home)}
+            accessibilityLabel={COPY.resultsBackHome}
           />
-        </View>
-      ) : null}
+          <Text style={styles.heroTitle} accessibilityRole="header">
+            {COPY.resultsTitle}
+          </Text>
+          <Text style={styles.heroLine}>{COPY.resultsBody}</Text>
+        </Hero>
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
+        <View style={styles.body}>
+          {loading ? <StaticSkeleton rows={4} /> : null}
 
-      {message ? (
-        <>
-          <Text style={styles.error}>{message}</Text>
-          <TextButton title={COPY.resultsRetry} onPress={() => void refresh()} />
-        </>
-      ) : null}
+          {message ? (
+            <Card>
+              <Text style={styles.error}>{message}</Text>
+              <TextButton
+                title={COPY.resultsRetry}
+                onPress={() => void refresh()}
+              />
+            </Card>
+          ) : null}
 
-      {!loading && !message && orders.length === 0 ? (
-        <>
-          <EmptyState
-            icon="bar-chart-2"
-            heading={COPY.resultsEmptyHeading}
-            explanation={COPY.resultsEmpty}
-            illustration={<EmptyHourglass width={100} height={100} />}
-          />
-          <PrimaryButton
-            title={COPY.resultsOpenQuestionnaire}
-            onPress={() => {
-              router.replace(routes.questionnaire);
-            }}
-          />
-        </>
-      ) : null}
-
-      {!loading && !message && orders.length > 0 ? (
-        <FlatList
-          data={listData}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          ListHeaderComponent={
-            <View style={styles.insight}>
-              <InsightLens width={120} height={100} />
-            </View>
-          }
-          renderItem={({ item }) => {
-            if (item.kind === "heading") {
-              return <Text style={styles.group}>{item.title}</Text>;
-            }
-            const term = getTerm(item.order.test_name);
-            return (
-              <View style={styles.cardGap}>
-                <ResultCard
-                  plainName={term.plainName}
-                  meaning={
-                    item.order.trigger_reason?.trim() ||
-                    COPY.resultsStatusSuggested
-                  }
-                  medicalName={term.medicalName}
-                  status="attention"
-                  statusLabel={COPY.resultsChipDiscuss}
+          {showEmpty ? (
+            <>
+              <Card>
+                <Text style={styles.emptyHeading}>
+                  {COPY.resultsEmptyHeading}
+                </Text>
+                <Text style={styles.emptyBody}>{COPY.resultsEmpty}</Text>
+              </Card>
+              <View style={styles.footer}>
+                <PrimaryButton
+                  title={COPY.resultsOpenQuestionnaire}
+                  onPress={() => {
+                    router.replace(routes.questionnaire);
+                  }}
                 />
               </View>
-            );
-          }}
-          ListFooterComponent={
-            <View>
-              <Text style={styles.discuss}>{COPY.resultsActionDiscuss}</Text>
-              <PrimaryButton
-                title={COPY.resultsOpenLabResults}
-                onPress={() => {
-                  router.push(routes.labResults);
-                }}
-              />
-              <TextButton
-                title={COPY.homeOpenPlan}
-                onPress={() => {
-                  router.push(routes.plan);
-                }}
-              />
-              <TextButton
-                title={COPY.homeOpenStore}
-                onPress={() => {
-                  router.push(routes.store);
-                }}
-              />
-            </View>
-          }
-        />
-      ) : null}
-    </Screen>
+            </>
+          ) : null}
+
+          {showOrders ? (
+            <>
+              <SectionTitle title={COPY.resultsGroupWatching} first />
+              <View style={styles.cardStack}>
+                {orders.map((order) => {
+                  const term = getTerm(order.test_name);
+                  return (
+                    <ResultCard
+                      key={order.id}
+                      plainName={term.plainName}
+                      meaning={
+                        order.trigger_reason?.trim() ||
+                        COPY.resultsStatusSuggested
+                      }
+                      medicalName={term.medicalName}
+                      status="attention"
+                      statusLabel={COPY.resultsChipDiscuss}
+                    />
+                  );
+                })}
+              </View>
+
+              <Card style={styles.nextStep}>
+                <Text style={styles.discuss}>{COPY.resultsActionDiscuss}</Text>
+              </Card>
+
+              <View style={styles.footer}>
+                <PrimaryButton
+                  title={COPY.resultsOpenLabResults}
+                  onPress={() => {
+                    router.push(routes.labResults);
+                  }}
+                />
+                <SecondaryButton
+                  title={COPY.homeOpenPlan}
+                  onPress={() => {
+                    router.push(routes.plan);
+                  }}
+                />
+                <TextButton
+                  title={COPY.homeOpenStore}
+                  onPress={() => {
+                    router.push(routes.store);
+                  }}
+                />
+              </View>
+            </>
+          ) : null}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "left",
-    marginBottom: 8,
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
   },
-  stats: {
-    marginBottom: 12,
+  scroll: {
+    paddingBottom: Gap.screenBottom,
+  },
+  heroTitle: {
+    ...typeStyle("hero"),
+    marginTop: Space.lg,
+    color: Colors.ink,
+  },
+  heroLine: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
+  body: {
+    paddingHorizontal: Space.screenH,
+    // Section 8: 40px between the hero and the first section.
+    paddingTop: Gap.sections,
+  },
+  cardStack: {
+    gap: Gap.cards,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-    textAlign: "center",
+    ...typeStyle("body"),
+    color: Colors.red,
   },
-  insight: {
-    alignItems: "center",
-    marginBottom: 8,
+  emptyHeading: {
+    ...typeStyle("section"),
+    color: Colors.ink,
   },
-  list: {
-    paddingBottom: 32,
+  emptyBody: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
-  group: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.primaryBlue,
-  },
-  cardGap: {
-    marginBottom: 12,
+  nextStep: {
+    marginTop: Gap.sections,
   },
   discuss: {
-    marginTop: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
-    textAlign: "center",
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  footer: {
+    marginTop: Gap.screenBottom,
   },
 });

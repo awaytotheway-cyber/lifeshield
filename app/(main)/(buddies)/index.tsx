@@ -1,11 +1,18 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  TextButton,
+} from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
 import {
@@ -15,16 +22,42 @@ import {
   loadBuddyProfile,
   loadOwnConnections,
   otherPartyId,
-  reactivateConnection,
   type BuddyProfile,
   type ConnectionRow,
 } from "@/lib/buddies";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { buddyChatHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Font, Gap, Radius, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
+
+function initialOf(name: string): string {
+  return name.trim().charAt(0).toUpperCase() || "?";
+}
+
+/** Avatar circle plus name and city — the top of every buddy card. */
+function BuddyIdentity({
+  name,
+  city,
+  right,
+}: {
+  name: string;
+  city?: string | null;
+  right?: ReactNode;
+}) {
+  return (
+    <View style={styles.identity}>
+      <View style={styles.avatar}>
+        <Text style={styles.avatarText}>{initialOf(name)}</Text>
+      </View>
+      <View style={styles.identityText}>
+        <Text style={styles.name}>{name}</Text>
+        {city ? <Text style={styles.meta}>{city}</Text> : null}
+      </View>
+      {right}
+    </View>
+  );
+}
 
 export default function BuddiesListScreen() {
   const router = useRouter();
@@ -97,82 +130,102 @@ export default function BuddiesListScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.buddiesTitle}
+        subtitle={COPY.buddiesSubtitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.orderBackHome}
       />
-      <Text style={styles.body}>{COPY.buddiesSubtitle}</Text>
 
-      <View style={styles.cta}>
-        <PrimaryButton
-          title={COPY.buddiesFindCta}
-          onPress={() => router.push(routes.buddiesFind)}
-        />
-        <TextButton
-          title="Buddy settings"
-          onPress={() => router.push(routes.settingsBuddies)}
-        />
-      </View>
+      <PrimaryButton
+        title={COPY.buddiesFindCta}
+        icon="user-plus"
+        style={styles.cta}
+        onPress={() => router.push(routes.buddiesFind)}
+      />
+      <TextButton
+        title="Buddy settings"
+        onPress={() => router.push(routes.settingsBuddies)}
+      />
 
-      {state === "loading" ? <StaticSkeleton rows={3} /> : null}
+      {state === "loading" ? (
+        <View style={styles.loading}>
+          <StaticSkeleton rows={3} />
+        </View>
+      ) : null}
 
       {message ? <Text style={styles.error}>{message}</Text> : null}
 
       {incoming.length > 0 ? (
         <>
-          <Text style={styles.section}>{COPY.buddiesRequestsHeader}</Text>
-          {incoming.map((row) => {
-            const p = profiles[otherPartyId(row, uid)];
-            return (
-              <View key={row.id} style={styles.card}>
-                <Text style={styles.name}>{p?.display_name ?? "Buddy"}</Text>
-                {p?.city ? <Text style={styles.meta}>{p.city}</Text> : null}
-                {row.request_note ? (
-                  <Text style={styles.note}>&ldquo;{row.request_note}&rdquo;</Text>
-                ) : null}
-                <View style={styles.rowActions}>
-                  <PrimaryButton
-                    title={COPY.buddiesAccept}
-                    loading={busyId === row.id}
-                    onPress={() => runAction(() => acceptConnection(row.id), row.id)}
+          <SectionTitle title={COPY.buddiesRequestsHeader} />
+          <View style={styles.list}>
+            {incoming.map((row) => {
+              const p = profiles[otherPartyId(row, uid)];
+              return (
+                <Card key={row.id}>
+                  <BuddyIdentity
+                    name={p?.display_name ?? "Buddy"}
+                    city={p?.city}
                   />
-                  <TextButton
-                    title={COPY.buddiesDecline}
-                    onPress={() =>
-                      runAction(() => declineConnection(row.id), row.id)
-                    }
-                  />
-                </View>
-              </View>
-            );
-          })}
+                  {row.request_note ? (
+                    <Text style={styles.note}>
+                      &ldquo;{row.request_note}&rdquo;
+                    </Text>
+                  ) : null}
+                  <View style={styles.actions}>
+                    <SecondaryButton
+                      title={COPY.buddiesAccept}
+                      loading={busyId === row.id}
+                      onPress={() =>
+                        runAction(() => acceptConnection(row.id), row.id)
+                      }
+                    />
+                    <TextButton
+                      title={COPY.buddiesDecline}
+                      onPress={() =>
+                        runAction(() => declineConnection(row.id), row.id)
+                      }
+                    />
+                  </View>
+                </Card>
+              );
+            })}
+          </View>
         </>
       ) : null}
 
       {outgoing.length > 0 ? (
         <>
-          <Text style={styles.section}>Sent</Text>
-          {outgoing.map((row) => {
-            const p = profiles[otherPartyId(row, uid)];
-            return (
-              <View key={row.id} style={styles.card}>
-                <Text style={styles.name}>{p?.display_name ?? "Buddy"}</Text>
-                <Text style={styles.metaLight}>{COPY.buddiesRequestSent}</Text>
-                <TextButton
-                  title={COPY.buddiesArchive}
-                  onPress={() =>
-                    runAction(() => archiveConnection(row.id), row.id)
-                  }
-                />
-              </View>
-            );
-          })}
+          <SectionTitle title="Sent" />
+          <View style={styles.list}>
+            {outgoing.map((row) => {
+              const p = profiles[otherPartyId(row, uid)];
+              return (
+                <Card key={row.id}>
+                  <BuddyIdentity
+                    name={p?.display_name ?? "Buddy"}
+                    city={p?.city}
+                    right={<Chip label={COPY.buddiesRequestSent} />}
+                  />
+                  <View style={styles.actions}>
+                    <TextButton
+                      title={COPY.buddiesArchive}
+                      onPress={() =>
+                        runAction(() => archiveConnection(row.id), row.id)
+                      }
+                    />
+                  </View>
+                </Card>
+              );
+            })}
+          </View>
         </>
       ) : null}
 
-      <Text style={styles.section}>{COPY.buddiesActiveHeader}</Text>
+      <SectionTitle title={COPY.buddiesActiveHeader} />
+
       {active.length === 0 && state === "ready" ? (
         <EmptyState
           icon="users"
@@ -180,91 +233,103 @@ export default function BuddiesListScreen() {
           explanation={COPY.buddiesEmptyBody}
         />
       ) : null}
-      {active.map((row) => {
-        const p = profiles[otherPartyId(row, uid)];
-        return (
-          <Pressable
-            key={row.id}
-            accessibilityRole="button"
-            onPress={() => router.push(buddyChatHref(row.id))}
-            style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-          >
-            <Text style={styles.name}>{p?.display_name ?? "Buddy"}</Text>
-            {p?.city ? <Text style={styles.meta}>{p.city}</Text> : null}
-            {p?.interests?.length ? (
-              <Text style={styles.metaLight}>{p.interests.join(" · ")}</Text>
-            ) : null}
-            <View style={styles.rowActions}>
-              <TextButton title={COPY.buddiesOpenChat} onPress={() => router.push(buddyChatHref(row.id))} />
-              <TextButton
-                title={COPY.buddiesArchive}
-                onPress={() => runAction(() => archiveConnection(row.id), row.id)}
+
+      <View style={styles.list}>
+        {active.map((row) => {
+          const p = profiles[otherPartyId(row, uid)];
+          return (
+            <Card key={row.id}>
+              <BuddyIdentity
+                name={p?.display_name ?? "Buddy"}
+                city={p?.city}
               />
-            </View>
-          </Pressable>
-        );
-      })}
+              {p?.interests?.length ? (
+                <View style={styles.interests}>
+                  {p.interests.slice(0, 4).map((interest) => (
+                    <Chip key={interest} label={interest} />
+                  ))}
+                </View>
+              ) : null}
+              <View style={styles.actions}>
+                <SecondaryButton
+                  title={COPY.buddiesOpenChat}
+                  icon="message-circle"
+                  onPress={() => router.push(buddyChatHref(row.id))}
+                />
+                <TextButton
+                  title={COPY.buddiesArchive}
+                  onPress={() =>
+                    runAction(() => archiveConnection(row.id), row.id)
+                  }
+                />
+              </View>
+            </Card>
+          );
+        })}
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
+  cta: {
+    marginTop: 0,
   },
-  cta: { marginTop: spacing.base },
-  section: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+  loading: {
+    marginTop: Gap.sections,
   },
-  card: {
-    marginBottom: spacing.sm,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+  list: {
+    gap: Gap.cards,
   },
-  cardPressed: { opacity: 0.85 },
+  identity: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Space.md,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.orangeTint,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarText: {
+    fontFamily: Font.semibold,
+    fontSize: 18,
+    lineHeight: 24,
+    color: Colors.orangeDeep,
+  },
+  identityText: {
+    flex: 1,
+  },
   name: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 17,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   meta: {
+    ...typeStyle("secondary"),
     marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    color: Colors.muted,
   },
-  metaLight: {
-    marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
+  interests: {
+    marginTop: Space.md,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Space.sm,
   },
   note: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.md,
+    color: Colors.body,
     fontStyle: "italic",
   },
-  rowActions: {
-    marginTop: spacing.sm,
-    flexDirection: "row",
-    gap: spacing.mdSm,
-    flexWrap: "wrap",
+  actions: {
+    marginTop: Space.sm,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.red,
   },
 });

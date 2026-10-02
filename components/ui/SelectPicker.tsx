@@ -11,9 +11,16 @@ import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
 import { COPY } from "@/lib/copy";
-import { fontFamily } from "@/lib/typography";
+import {
+  Colors,
+  Gap,
+  Radius,
+  Shadow,
+  Size,
+  Space,
+  typeStyle,
+} from "@/lib/theme";
 
 type Option = { value: string; label: string };
 
@@ -49,12 +56,15 @@ export function SelectPicker({
         accessibilityRole="button"
         accessibilityLabel={label}
         onPress={() => setOpen(true)}
-        style={styles.field}
+        style={({ pressed }) => [
+          styles.field,
+          pressed ? styles.fieldPressed : null,
+        ]}
       >
         <Text style={selected ? styles.value : styles.placeholder}>
           {selected?.label ?? placeholder ?? COPY.pickOption}
         </Text>
-        <Feather name="chevron-down" size={20} color={colors.slate} />
+        <Feather name="chevron-down" size={20} color={Colors.muted} />
       </Pressable>
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -85,7 +95,7 @@ export function SelectPicker({
                     >
                       <Text style={styles.rowLabel}>{option.label}</Text>
                       {isOn ? (
-                        <Feather name="check" size={20} color={colors.midTeal} />
+                        <Feather name="check" size={22} color={Colors.orange} />
                       ) : null}
                     </Pressable>
                   );
@@ -101,91 +111,85 @@ export function SelectPicker({
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: 16,
-  },
-  label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    marginTop: Space.lg,
   },
   field: {
-    minHeight: inputHeight,
-    borderRadius: radius.input,
+    minHeight: Size.input,
+    borderRadius: Radius.input,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    paddingHorizontal: 16,
+    borderColor: Colors.line,
+    backgroundColor: Colors.white,
+    paddingHorizontal: Space.md,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
+  fieldPressed: {
+    borderColor: Colors.orange,
+  },
   value: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    color: Colors.ink,
     flex: 1,
   },
   placeholder: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.mist,
+    ...typeStyle("body"),
+    color: Colors.faint,
     flex: 1,
   },
   error: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: "rgba(31,27,24,0.35)",
   },
   sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
-    paddingHorizontal: 20,
-    paddingTop: 8,
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    paddingHorizontal: Space.cardPad,
+    paddingTop: Space.sm,
     maxHeight: "70%",
-    ...shadows.modal,
+    ...Shadow.lift,
   },
   sheetHandle: {
     alignSelf: "center",
-    width: 40,
+    width: 44,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.border,
-    marginBottom: 12,
+    backgroundColor: Colors.line,
+    marginBottom: Space.md,
   },
   sheetTitle: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    color: colors.charcoal,
-    marginBottom: 8,
+    ...typeStyle("section"),
+    color: Colors.ink,
+    marginBottom: Space.sm,
   },
   sheetScroll: {
-    maxHeight: 360,
+    maxHeight: 380,
   },
   row: {
-    minHeight: 56,
+    minHeight: Size.input,
+    paddingVertical: Gap.rowY - 6,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.line,
   },
   rowOn: {
-    backgroundColor: colors.lightTeal,
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
+    backgroundColor: Colors.orangeTint,
+    marginHorizontal: -Space.cardPad,
+    paddingHorizontal: Space.cardPad,
   },
   rowLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    color: Colors.ink,
+    flex: 1,
+    paddingRight: Space.sm,
   },
 });

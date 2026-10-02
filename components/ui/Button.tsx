@@ -8,18 +8,19 @@ import {
   type ViewStyle,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
-import { GlassCard } from "@/components/ui/GlassCard";
 import { PressScale } from "@/components/ui/PressScale";
 import {
-  colors,
-  primaryButtonHeight,
-  radius,
-  secondaryButtonHeight,
-  shadows,
-  tapTarget,
-} from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+  Colors,
+  Gradients,
+  Motion,
+  Radius,
+  Shadow,
+  Size,
+  Space,
+  typeStyle,
+} from "@/lib/theme";
 
 export type ButtonVariant =
   | "primary"
@@ -39,17 +40,17 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   style?: StyleProp<ViewStyle>;
 };
 
-function darkerPrimary(pressed: boolean) {
-  return pressed ? "#234FBF" : colors.primaryBlue;
-}
-
-function darkerCoral(pressed: boolean) {
-  return pressed ? "#E05555" : colors.riskHigh;
-}
-
 /**
- * Shared button. Prefer PrimaryButton / SecondaryButton names in new screens.
- * Older screens still pass title + variant="ghost".
+ * Shared button for the orange redesign (Section 6 of .cursorrules-redesign).
+ *
+ * PLAIN ENGLISH:
+ * - `primary`   → 60px tall, orange gradient, white label, warm glow.
+ * - `secondary` → 56px tall, white with a 1.5px orange border.
+ * - `text`      → a plain orange link.
+ * - `danger`    → solid red, for destructive actions.
+ * - `icon`      → a 48px circular white button with a soft shadow.
+ *
+ * Prefer the named helpers (PrimaryButton, SecondaryButton…) in screens.
  */
 export function Button({
   title = "",
@@ -72,9 +73,19 @@ export function Button({
         accessibilityRole="button"
         accessibilityLabel={label}
         disabled={isDisabled}
-        style={[styles.iconBtn, isDisabled && styles.iconDisabled, style]}
+        haptic="light"
+        style={[
+          styles.iconBtn,
+          !isDisabled ? Shadow.soft : null,
+          isDisabled && styles.iconDisabled,
+          style,
+        ]}
       >
-        <Feather name={icon ?? "more-horizontal"} size={20} color={colors.primaryBlue} />
+        <Feather
+          name={icon ?? "more-horizontal"}
+          size={22}
+          color={isDisabled ? Colors.faint : Colors.ink}
+        />
       </PressScale>
     );
   }
@@ -86,11 +97,11 @@ export function Button({
         accessibilityRole="button"
         accessibilityLabel={label}
         disabled={isDisabled}
-        style={[styles.textBtn, isDisabled && styles.disabledWrap, style]}
+        style={[styles.textBtn, style]}
       >
         {({ pressed }) =>
           loading ? (
-            <ActivityIndicator color={colors.skyBlue} />
+            <ActivityIndicator color={Colors.orange} />
           ) : (
             <Text
               style={[
@@ -114,22 +125,33 @@ export function Button({
         accessibilityRole="button"
         accessibilityLabel={label}
         disabled={isDisabled}
+        haptic="light"
         style={({ pressed }) => [
-          styles.secondaryWrap,
+          styles.secondary,
           pressed && !isDisabled ? styles.secondaryPressed : null,
-          isDisabled && styles.disabledWrap,
+          isDisabled && styles.secondaryDisabled,
           style,
         ]}
       >
-        <GlassCard intensity="button" style={styles.secondaryGlass}>
-          {loading ? (
-            <ActivityIndicator color={colors.primaryBlue} />
-          ) : (
-            <Text style={[styles.secondaryLabel, isDisabled && styles.disabledText]}>
+        {loading ? (
+          <ActivityIndicator color={Colors.orange} />
+        ) : (
+          <View style={styles.row}>
+            {icon ? (
+              <Feather
+                name={icon}
+                size={18}
+                color={isDisabled ? Colors.faint : Colors.orange}
+                style={styles.iconGap}
+              />
+            ) : null}
+            <Text
+              style={[styles.secondaryLabel, isDisabled && styles.disabledText]}
+            >
               {title}
             </Text>
-          )}
-        </GlassCard>
+          </View>
+        )}
       </PressScale>
     );
   }
@@ -142,132 +164,172 @@ export function Button({
       accessibilityRole="button"
       accessibilityLabel={label}
       disabled={isDisabled}
-      style={({ pressed }) => [
-        styles.primary,
-        { backgroundColor: isDanger ? darkerCoral(pressed) : darkerPrimary(pressed) },
-        !isDisabled ? shadows.button : null,
-        isDisabled && styles.primaryDisabled,
+      haptic="medium"
+      scale={Motion.pressButton}
+      style={[
+        styles.primaryWrap,
+        !isDisabled ? (isDanger ? Shadow.soft : Shadow.button) : null,
         style,
       ]}
     >
-      {loading ? (
-        <ActivityIndicator color={colors.white} />
-      ) : (
-        <View style={styles.row}>
-          {icon ? (
-            <Feather
-              name={icon}
-              size={18}
-              color={isDisabled ? colors.mist : colors.white}
-              style={styles.iconGap}
+      {({ pressed }) => (
+        <>
+          {isDisabled ? (
+            <View style={[styles.primaryFill, styles.primaryDisabled]} />
+          ) : isDanger ? (
+            <View
+              style={[
+                styles.primaryFill,
+                { backgroundColor: pressed ? Colors.redDeep : Colors.red },
+              ]}
             />
-          ) : null}
-          <Text style={[styles.primaryLabel, isDisabled && styles.disabledText]}>
-            {title}
-          </Text>
-        </View>
+          ) : (
+            <LinearGradient
+              colors={
+                pressed
+                  ? [Colors.orangeDeep, Colors.orange]
+                  : [...Gradients.orange]
+              }
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={styles.primaryFill}
+            />
+          )}
+          {loading ? (
+            <ActivityIndicator color={Colors.white} />
+          ) : (
+            <View style={styles.row}>
+              {icon ? (
+                <Feather
+                  name={icon}
+                  size={18}
+                  color={isDisabled ? Colors.faint : Colors.white}
+                  style={styles.iconGap}
+                />
+              ) : null}
+              <Text
+                style={[styles.primaryLabel, isDisabled && styles.disabledText]}
+              >
+                {title}
+              </Text>
+            </View>
+          )}
+        </>
       )}
     </PressScale>
   );
 }
 
+/** 60px orange gradient button — the one clear action on a screen. */
 export function PrimaryButton(props: ButtonProps) {
   return <Button variant="primary" {...props} />;
 }
 
+/** 56px white button with an orange border — the secondary option. */
 export function SecondaryButton(props: ButtonProps) {
   return <Button variant="secondary" {...props} />;
 }
 
+/** Plain orange text link. */
 export function TextButton(props: ButtonProps) {
   return <Button variant="text" {...props} />;
 }
 
+/** Solid red button for destructive actions. */
 export function DangerButton(props: ButtonProps) {
   return <Button variant="danger" {...props} />;
 }
 
+/** 48px circular white button with a Feather icon. */
 export function IconButton(props: ButtonProps) {
   return <Button variant="icon" {...props} />;
 }
 
 const styles = StyleSheet.create({
-  primary: {
-    marginTop: 16,
-    minHeight: primaryButtonHeight,
-    borderRadius: radius.button,
+  primaryWrap: {
+    marginTop: Space.md,
+    minHeight: Size.primaryButton,
+    borderRadius: Radius.button,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: Space.lg,
     width: "100%",
-  },
-  primaryDisabled: {
-    backgroundColor: colors.border,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  primaryLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.white,
-  },
-  secondaryWrap: {
-    marginTop: 16,
-    width: "100%",
-    borderRadius: radius.button,
     overflow: "hidden",
   },
-  secondaryGlass: {
-    minHeight: secondaryButtonHeight,
+  primaryFill: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: Radius.button,
+  },
+  primaryDisabled: {
+    backgroundColor: Colors.line,
+  },
+  primaryLabel: {
+    ...typeStyle("cardTitle"),
+    color: Colors.white,
+    textAlign: "center",
+  },
+  secondary: {
+    marginTop: Space.md,
+    minHeight: Size.secondaryButton,
+    borderRadius: Radius.button,
+    borderWidth: 1.5,
+    borderColor: Colors.orange,
+    backgroundColor: Colors.white,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: Space.lg,
     width: "100%",
   },
   secondaryPressed: {
-    opacity: 0.85,
+    backgroundColor: Colors.orangeTint,
+  },
+  secondaryDisabled: {
+    borderColor: Colors.line,
+    backgroundColor: Colors.cloud,
   },
   secondaryLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.primaryBlue,
+    ...typeStyle("cardTitle"),
+    color: Colors.orange,
+    textAlign: "center",
   },
   textBtn: {
-    marginTop: 8,
-    minHeight: tapTarget,
+    marginTop: Space.sm,
+    minHeight: Size.tap,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8,
+    paddingHorizontal: Space.sm,
   },
   textLabel: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.skyBlue,
+    ...typeStyle("body"),
+    color: Colors.orange,
   },
   textLabelPressed: {
-    textDecorationLine: "underline",
+    color: Colors.orangeDeep,
   },
   iconBtn: {
-    width: tapTarget,
-    height: tapTarget,
-    borderRadius: 10,
+    width: Size.circleButton,
+    height: Size.circleButton,
+    borderRadius: Size.circleButton / 2,
+    backgroundColor: Colors.white,
     alignItems: "center",
     justifyContent: "center",
   },
   iconDisabled: {
     opacity: 0.5,
   },
-  disabledWrap: {
-    opacity: 1,
-  },
   disabledText: {
-    color: colors.mist,
+    color: Colors.faint,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
   },
   iconGap: {
-    marginRight: 8,
+    marginRight: Space.sm,
   },
 });

@@ -1,12 +1,16 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 import { EmptyBox } from "@/components/illustrations";
-import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { PressScale } from "@/components/ui/PressScale";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
 import { canPurchase, type PurchaseGateResult } from "@/lib/purchase-gates";
 import { routes } from "@/lib/routes";
@@ -18,6 +22,7 @@ import {
   setCartQuantity,
   type CartLineRow,
 } from "@/lib/store";
+import { Colors, Gap, Motion, Radius, Size, Space, typeStyle } from "@/lib/theme";
 import { loadUserContext } from "@/lib/user-context";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -181,123 +186,272 @@ export default function CartScreen() {
   }
 
   return (
-    <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">{COPY.cartTitle}</Text>
-      <Text className="mt-3 text-center text-charcoal">{COPY.cartBody}</Text>
+    <Screen
+      scroll
+      footer={
+        <PrimaryButton
+          title={COPY.cartCheckout}
+          disabled={!canCheckout}
+          onPress={() => {
+            router.push(routes.storeCheckout);
+          }}
+        />
+      }
+    >
+      <ScreenHeader
+        title={COPY.cartTitle}
+        subtitle={COPY.cartBody}
+        onBack={() => router.replace(routes.store)}
+        backLabel={COPY.storeBackStore}
+      />
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <StaticSkeleton rows={2} /> : null}
 
       {message ? (
-        <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
-          <Button
+        <Card>
+          <Text style={styles.error}>{message}</Text>
+          <TextButton
             title={COPY.storeRetry}
-            variant="ghost"
             onPress={() => {
               refresh();
             }}
           />
-        </>
+        </Card>
       ) : null}
 
-      {actionMessage ? (
-        <Text className="mt-4 text-center text-teal">{actionMessage}</Text>
-      ) : null}
+      {actionMessage ? <Text style={styles.ok}>{actionMessage}</Text> : null}
 
       {!loading && !message && lines.length === 0 ? (
-        <View className="mt-6 items-center">
-          <EmptyBox width={100} height={100} />
-          <Text className="mt-4 text-center text-charcoal">{COPY.cartEmpty}</Text>
-        </View>
+        <Card>
+          <View style={styles.emptyWrap}>
+            <EmptyBox width={120} height={120} />
+            <Text style={styles.emptyBody}>{COPY.cartEmpty}</Text>
+          </View>
+        </Card>
       ) : null}
 
-      {!loading && !message
-        ? lines.map(({ line, gate }) => {
+      {!loading && !message && lines.length > 0 ? (
+        <View style={styles.stack}>
+          {lines.map(({ line, gate }) => {
             const busy = updatingId === line.id;
             const lineTotal = line.product.price * line.quantity;
             return (
-              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
-                <ClinicalTerm
-                  plainName={line.product.plain_name}
-                  plainExplanation={
-                    line.product.plain_description?.trim() ||
-                    "Saved in your cart."
-                  }
-                  medicalName={line.product.clinical_name}
-                />
-                <Text className="mt-2 text-teal">
-                  {formatProductPrice(line.product)} × {line.quantity} = ₹
-                  {lineTotal.toLocaleString("en-IN")}
-                </Text>
-                <PurchaseStatus gate={gate} />
-
-                <View className="mt-3 flex-row items-center justify-center">
-                  <Pressable
+              <Card key={line.id}>
+                <View style={styles.lineHead}>
+                  <View style={styles.lineText}>
+                    <Text style={styles.lineName}>
+                      {line.product.plain_name}
+                    </Text>
+                    <Text style={styles.lineClinical}>
+                      {line.product.clinical_name}
+                    </Text>
+                  </View>
+                  <PressScale
                     accessibilityRole="button"
-                    accessibilityLabel={COPY.cartDecrease}
+                    accessibilityLabel={COPY.cartRemove}
                     disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
+                    haptic="light"
+                    scale={Motion.pressCard}
                     onPress={() => {
-                      void changeQuantity(line, -1);
+                      void removeLine(line);
                     }}
+                    style={({ pressed }) => [
+                      styles.removeHit,
+                      pressed ? styles.stepperPressed : null,
+                      busy ? styles.busy : null,
+                    ]}
                   >
-                    <Text className="text-xl text-charcoal">−</Text>
-                  </Pressable>
-                  <Text className="mx-4 text-charcoal">
-                    {COPY.cartQuantity}: {line.quantity}
-                  </Text>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={COPY.cartIncrease}
-                    disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
-                    onPress={() => {
-                      void changeQuantity(line, 1);
-                    }}
-                  >
-                    <Text className="text-xl text-charcoal">+</Text>
-                  </Pressable>
+                    <Feather name="trash-2" size={18} color={Colors.muted} />
+                  </PressScale>
                 </View>
 
-                <Button
-                  title={COPY.cartRemove}
-                  variant="ghost"
-                  disabled={busy}
-                  onPress={() => {
-                    void removeLine(line);
-                  }}
-                />
-              </View>
-            );
-          })
-        : null}
+                <PurchaseStatus gate={gate} />
 
-      {!loading && !message && lines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
-            ₹{total.toLocaleString("en-IN")}
-          </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
-            {COPY.cartTotalNote}
-          </Text>
+                <View style={styles.divider} />
+
+                <View style={styles.lineFoot}>
+                  <View style={styles.stepper}>
+                    <PressScale
+                      accessibilityRole="button"
+                      accessibilityLabel={COPY.cartDecrease}
+                      disabled={busy}
+                      haptic="light"
+                      scale={Motion.pressButton}
+                      onPress={() => {
+                        void changeQuantity(line, -1);
+                      }}
+                      style={({ pressed }) => [
+                        styles.stepperBtn,
+                        pressed ? styles.stepperPressed : null,
+                        busy ? styles.busy : null,
+                      ]}
+                    >
+                      <Feather name="minus" size={18} color={Colors.ink} />
+                    </PressScale>
+                    <Text style={styles.qty}>
+                      {COPY.cartQuantity} {line.quantity}
+                    </Text>
+                    <PressScale
+                      accessibilityRole="button"
+                      accessibilityLabel={COPY.cartIncrease}
+                      disabled={busy}
+                      haptic="light"
+                      scale={Motion.pressButton}
+                      onPress={() => {
+                        void changeQuantity(line, 1);
+                      }}
+                      style={({ pressed }) => [
+                        styles.stepperBtn,
+                        pressed ? styles.stepperPressed : null,
+                        busy ? styles.busy : null,
+                      ]}
+                    >
+                      <Feather name="plus" size={18} color={Colors.ink} />
+                    </PressScale>
+                  </View>
+
+                  <View style={styles.lineTotals}>
+                    <Text style={styles.unitPrice}>
+                      {formatProductPrice(line.product)} each
+                    </Text>
+                    <Text style={styles.lineTotal}>
+                      ₹{lineTotal.toLocaleString("en-IN")}
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            );
+          })}
         </View>
       ) : null}
 
-      <Button
-        title={COPY.cartCheckout}
-        disabled={!canCheckout}
-        onPress={() => {
-          router.push(routes.storeCheckout);
-        }}
-      />
-      <Button
-        title={COPY.storeBackStore}
-        variant="ghost"
-        onPress={() => {
-          router.replace(routes.store);
-        }}
-      />
+      {!loading && !message && lines.length > 0 ? (
+        <View style={styles.totalWrap}>
+          <Card>
+            <Text style={styles.totalLabel}>{COPY.cartTotal}</Text>
+            <Text style={styles.totalValue}>
+              ₹{total.toLocaleString("en-IN")}
+            </Text>
+            <Text style={styles.totalNote}>{COPY.cartTotalNote}</Text>
+          </Card>
+        </View>
+      ) : null}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  ok: {
+    marginBottom: Space.md,
+    ...typeStyle("secondary"),
+    color: Colors.green,
+  },
+  emptyWrap: {
+    alignItems: "center",
+    paddingVertical: Space.sm,
+  },
+  emptyBody: {
+    marginTop: Space.lg,
+    ...typeStyle("body"),
+    color: Colors.body,
+    textAlign: "center",
+  },
+  stack: {
+    gap: Gap.cards,
+  },
+  lineHead: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: Space.sm,
+  },
+  lineText: {
+    flex: 1,
+  },
+  lineName: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  lineClinical: {
+    marginTop: 2,
+    ...typeStyle("caption"),
+    color: Colors.muted,
+  },
+  removeHit: {
+    width: Size.tap,
+    height: Size.tap,
+    borderRadius: Size.tap / 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  divider: {
+    marginVertical: Space.md,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+  },
+  lineFoot: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.md,
+  },
+  stepper: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Space.sm,
+  },
+  stepperBtn: {
+    width: Size.tap,
+    height: Size.tap,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.cloud,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stepperPressed: {
+    backgroundColor: Colors.orangeTint,
+  },
+  busy: {
+    opacity: 0.5,
+  },
+  qty: {
+    minWidth: 52,
+    textAlign: "center",
+    ...typeStyle("label"),
+    color: Colors.body,
+  },
+  lineTotals: {
+    alignItems: "flex-end",
+  },
+  unitPrice: {
+    ...typeStyle("caption"),
+    color: Colors.muted,
+  },
+  lineTotal: {
+    marginTop: 2,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  totalWrap: {
+    marginTop: Gap.sections,
+  },
+  totalLabel: {
+    ...typeStyle("label"),
+    color: Colors.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  totalValue: {
+    marginTop: Space.sm,
+    ...typeStyle("dataBig"),
+    color: Colors.orange,
+  },
+  totalNote: {
+    marginTop: Space.sm,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+});

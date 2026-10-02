@@ -1,11 +1,14 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Platform, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
-import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StripePayButton } from "@/components/checkout/StripePayButton";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
 import { canPurchase } from "@/lib/purchase-gates";
 import { orderPlacedHref, routes } from "@/lib/routes";
@@ -16,6 +19,7 @@ import {
   type CartLineRow,
 } from "@/lib/store";
 import { isStripePublishableKeyConfigured } from "@/lib/stripe-config";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { loadUserContext } from "@/lib/user-context";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -111,131 +115,139 @@ export default function CheckoutScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">{COPY.checkoutTitle}</Text>
-      <Text className="mt-4 text-center text-charcoal">{COPY.checkoutBody}</Text>
+      <ScreenHeader
+        title={COPY.checkoutTitle}
+        subtitle={COPY.checkoutBody}
+        onBack={() => router.replace(routes.storeCart)}
+        backLabel={COPY.storeBackCart}
+      />
 
       {!stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
-          {COPY.checkoutStripeKeyMissing}
-        </Text>
+        <View style={styles.noticeWrap}>
+          <Card>
+            <Text style={styles.notice}>{COPY.checkoutStripeKeyMissing}</Text>
+          </Card>
+        </View>
       ) : null}
 
       {!stripeNative && stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
-          {COPY.checkoutWebUnsupported}
-        </Text>
+        <View style={styles.noticeWrap}>
+          <Card>
+            <Text style={styles.notice}>{COPY.checkoutWebUnsupported}</Text>
+          </Card>
+        </View>
       ) : null}
 
-      {loadingCart ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loadingCart ? <StaticSkeleton rows={2} /> : null}
 
       {cartMessage ? (
-        <>
-          <Text className="mt-4 text-center text-coral">{cartMessage}</Text>
-          <Button
+        <Card>
+          <Text style={styles.error}>{cartMessage}</Text>
+          <TextButton
             title={COPY.storeRetry}
-            variant="ghost"
             onPress={() => {
               loadCheckoutCart();
             }}
           />
-        </>
+        </Card>
       ) : null}
 
       {!loadingCart && !cartMessage && purchasableLines.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.checkoutEmptyCart}</Text>
+        <Card>
+          <Text style={styles.body}>{COPY.checkoutEmptyCart}</Text>
+        </Card>
       ) : null}
-
-      {!loadingCart && !cartMessage
-        ? purchasableLines.map((line) => {
-            const lineTotal = line.product.price * line.quantity;
-            return (
-              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
-                <ClinicalTerm
-                  plainName={line.product.plain_name}
-                  plainExplanation={
-                    line.product.plain_description?.trim() ||
-                    "In your checkout."
-                  }
-                  medicalName={line.product.clinical_name}
-                />
-                <Text className="mt-2 text-teal">
-                  {formatProductPrice(line.product)} × {line.quantity} = ₹
-                  {lineTotal.toLocaleString("en-IN")}
-                </Text>
-              </View>
-            );
-          })
-        : null}
 
       {!loadingCart && !cartMessage && purchasableLines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
-            ₹{displayTotal.toLocaleString("en-IN")}
-          </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
-            {COPY.cartTotalNote}
-          </Text>
-        </View>
+        <>
+          {/* No top gap when nothing sits between this and the header. */}
+          <SectionTitle
+            title={COPY.orderItemsLabel}
+            first={stripeKeyReady && stripeNative}
+          />
+          <View style={styles.stack}>
+            {purchasableLines.map((line) => {
+              const lineTotal = line.product.price * line.quantity;
+              return (
+                <Card key={line.id}>
+                  <Text style={styles.lineName}>{line.product.plain_name}</Text>
+                  <Text style={styles.lineClinical}>
+                    {line.product.clinical_name}
+                  </Text>
+                  <View style={styles.lineFoot}>
+                    <Text style={styles.unitPrice}>
+                      {formatProductPrice(line.product)} × {line.quantity}
+                    </Text>
+                    <Text style={styles.lineTotal}>
+                      ₹{lineTotal.toLocaleString("en-IN")}
+                    </Text>
+                  </View>
+                </Card>
+              );
+            })}
+          </View>
+
+          <View style={styles.totalWrap}>
+            <Card>
+              <Text style={styles.totalLabel}>{COPY.cartTotal}</Text>
+              <Text style={styles.totalValue}>
+                ₹{displayTotal.toLocaleString("en-IN")}
+              </Text>
+              <Text style={styles.totalNote}>{COPY.cartTotalNote}</Text>
+            </Card>
+          </View>
+        </>
       ) : null}
 
-      {canUsePaymentSheet && session.user.id ? (
-        <StripePayButton
-          disabled={!canPay}
-          userId={session.user.id}
-          lines={purchasableLines}
-          onError={(message) => {
-            setErrorMessage(message);
-          }}
-          onSuccess={(orderId) => {
-            router.replace(orderPlacedHref(orderId));
-          }}
-        />
-      ) : (
-        <Button
-          title={COPY.checkoutPay}
-          disabled={!canPay || !stripeKeyReady}
-          onPress={() => {
-            if (!stripeKeyReady) {
-              setErrorMessage(COPY.checkoutStripeKeyMissing);
-              return;
-            }
-            if (!stripeNative) {
-              setErrorMessage(COPY.checkoutWebUnsupported);
-            }
-          }}
-        />
-      )}
+      <View style={styles.payWrap}>
+        {canUsePaymentSheet && session.user.id ? (
+          <StripePayButton
+            disabled={!canPay}
+            userId={session.user.id}
+            lines={purchasableLines}
+            onError={(message) => {
+              setErrorMessage(message);
+            }}
+            onSuccess={(orderId) => {
+              router.replace(orderPlacedHref(orderId));
+            }}
+          />
+        ) : (
+          <PrimaryButton
+            title={COPY.checkoutPay}
+            icon="lock"
+            disabled={!canPay || !stripeKeyReady}
+            onPress={() => {
+              if (!stripeKeyReady) {
+                setErrorMessage(COPY.checkoutStripeKeyMissing);
+                return;
+              }
+              if (!stripeNative) {
+                setErrorMessage(COPY.checkoutWebUnsupported);
+              }
+            }}
+          />
+        )}
+      </View>
 
       {errorMessage ? (
-        <>
-          <Text className="mt-4 text-center text-coral">{errorMessage}</Text>
+        <Card>
+          <Text style={styles.error}>{errorMessage}</Text>
           {canUsePaymentSheet && canPay ? (
-            <Button
+            <TextButton
               title={COPY.checkoutRetryPay}
-              variant="ghost"
               onPress={() => {
                 setErrorMessage(null);
               }}
             />
           ) : null}
-        </>
+        </Card>
       ) : null}
 
-      <Text className="mt-4 text-center text-sm text-charcoal">
-        {COPY.checkoutDay5Note}
-      </Text>
+      <Text style={styles.footnote}>{COPY.checkoutDay5Note}</Text>
 
-      <Button
-        title={COPY.storeBackCart}
-        variant="ghost"
-        onPress={() => {
-          router.replace(routes.storeCart);
-        }}
-      />
-      <Button
+      <TextButton
         title={COPY.storeBackStore}
-        variant="ghost"
         onPress={() => {
           router.replace(routes.store);
         }}
@@ -243,3 +255,76 @@ export default function CheckoutScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  noticeWrap: {
+    marginBottom: Gap.cards,
+  },
+  notice: {
+    ...typeStyle("secondary"),
+    color: Colors.body,
+  },
+  body: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  stack: {
+    gap: Gap.cards,
+  },
+  lineName: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  lineClinical: {
+    marginTop: 2,
+    ...typeStyle("caption"),
+    color: Colors.muted,
+  },
+  lineFoot: {
+    marginTop: Space.md,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
+  },
+  unitPrice: {
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  lineTotal: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  totalWrap: {
+    marginTop: Gap.sections,
+  },
+  totalLabel: {
+    ...typeStyle("label"),
+    color: Colors.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  totalValue: {
+    marginTop: Space.sm,
+    ...typeStyle("dataBig"),
+    color: Colors.orange,
+  },
+  totalNote: {
+    marginTop: Space.sm,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  payWrap: {
+    marginTop: Gap.beforeFooter - Space.md,
+  },
+  footnote: {
+    marginTop: Space.lg,
+    ...typeStyle("caption"),
+    color: Colors.muted,
+    textAlign: "center",
+  },
+});

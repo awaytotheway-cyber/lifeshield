@@ -6,8 +6,8 @@ import { Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PressScale } from "@/components/ui/PressScale";
 import { COPY } from "@/lib/copy";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
 import {
   formatDisplayDate,
   isoToLocalDate,
@@ -16,7 +16,15 @@ import {
   type DatePickerFieldProps,
 } from "@/lib/datetime";
 import { isValidIsoCalendarDate } from "@/lib/questionnaire/numbers";
-import { fontFamily } from "@/lib/typography";
+import {
+  Colors,
+  Gap,
+  Radius,
+  Shadow,
+  Size,
+  Space,
+  typeStyle,
+} from "@/lib/theme";
 
 /**
  * Native date field. Opens a bottom sheet (iOS) or the system calendar (Android).
@@ -50,17 +58,18 @@ export function DatePicker({
     <View style={styles.wrap}>
       <Text style={styles.label}>{label}</Text>
       {hint ? <Text style={styles.hint}>{hint}</Text> : null}
-      <Pressable
+      <PressScale
         accessibilityRole="button"
         accessibilityLabel={label}
         onPress={() => setOpen((current) => !current)}
-        style={styles.field}
+        haptic="light"
+        style={[styles.field, error ? styles.fieldError : null]}
       >
         <Text style={hasCalendarValue ? styles.value : styles.placeholder}>
           {hasCalendarValue ? formatDisplayDate(value) : COPY.pickDate}
         </Text>
-        <Feather name="calendar" size={18} color={colors.slate} />
-      </Pressable>
+        <Feather name="calendar" size={20} color={Colors.muted} />
+      </PressScale>
       {leftoverText ? (
         <Text style={styles.warn}>
           {COPY.datePickerLegacy.replace("{value}", leftoverText)}
@@ -88,6 +97,7 @@ export function DatePicker({
           <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
             <Pressable style={styles.sheet} onPress={() => undefined}>
               <SafeAreaView edges={["bottom"]}>
+                <View style={styles.sheetHandle} />
                 <DateTimePicker
                   value={selected}
                   mode="date"
@@ -120,79 +130,82 @@ export function DatePicker({
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: 16,
+    marginTop: Space.lg,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+    marginBottom: Gap.labelToField,
   },
   hint: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+    marginBottom: Gap.labelToField,
   },
   field: {
-    minHeight: inputHeight,
-    borderRadius: radius.input,
+    minHeight: Size.input,
+    borderRadius: Radius.input,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    paddingHorizontal: 16,
+    borderColor: Colors.line,
+    backgroundColor: Colors.white,
+    paddingHorizontal: Space.md,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
+  fieldError: {
+    borderColor: Colors.red,
+  },
   value: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    color: Colors.ink,
     flex: 1,
   },
   placeholder: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.mist,
+    ...typeStyle("body"),
+    color: Colors.faint,
     flex: 1,
   },
   warn: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
   },
   error: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: "rgba(31,27,24,0.35)",
   },
   sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
-    paddingHorizontal: 12,
-    paddingTop: 12,
-    ...shadows.modal,
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    paddingHorizontal: Space.md,
+    paddingTop: Space.sm,
+    ...Shadow.lift,
+  },
+  sheetHandle: {
+    alignSelf: "center",
+    width: 44,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.line,
+    marginBottom: Space.md,
   },
   done: {
-    minHeight: 44,
+    minHeight: Size.tap,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: Space.sm,
+    marginBottom: Space.sm,
   },
   doneText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.midTeal,
+    ...typeStyle("cardTitle"),
+    color: Colors.orange,
   },
 });

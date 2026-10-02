@@ -1,17 +1,13 @@
 // Must be the first import so NativeWind styles load before anything renders.
 import "../global.css";
 
-import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+import { Fraunces_600SemiBold } from "@expo-google-fonts/fraunces";
 import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
+  Inter_700Bold,
 } from "@expo-google-fonts/inter";
-import {
-  Manrope_600SemiBold,
-  Manrope_700Bold,
-  Manrope_800ExtraBold,
-} from "@expo-google-fonts/manrope";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -25,9 +21,8 @@ import {
 import { NotificationBootstrap } from "@/components/NotificationBootstrap";
 import { StripeRoot } from "@/components/StripeRoot";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
 import { SessionProvider } from "@/lib/session";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Font, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 export { ExpoRouterErrorBoundary as ErrorBoundary };
@@ -39,17 +34,15 @@ function BrandSplash({ message }: { message: string }) {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.iceBlue,
+        backgroundColor: Colors.background,
       }}
     >
-      <ActivityIndicator color={colors.primaryBlue} />
+      <ActivityIndicator color={Colors.orange} />
       <Text
-        style={{
-          marginTop: 16,
-          color: colors.charcoal,
-          fontFamily: fontFamily.body,
-          fontSize: 15,
-        }}
+        style={[
+          typeStyle("body", Colors.body),
+          { marginTop: Space.md, fontFamily: Font.regular },
+        ]}
       >
         {message}
       </Text>
@@ -67,7 +60,15 @@ function AuthGate() {
   return (
     <>
       <NotificationBootstrap />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          // Section 9 motion: slide, ~300ms, ease-out.
+          animation: "slide_from_right",
+          animationDuration: 300,
+          contentStyle: { backgroundColor: Colors.background },
+        }}
+      >
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(onboarding)" />
@@ -86,14 +87,13 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  // Fraunces (warm serif) for titles, Inter for everything else — see lib/theme.ts.
   const [fontsLoaded, fontError] = useFonts({
-    Manrope_600SemiBold,
-    Manrope_700Bold,
-    Manrope_800ExtraBold,
+    Fraunces_600SemiBold,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
-    DMMono_400Regular,
+    Inter_700Bold,
   });
 
   // If a font file fails, keep going with system fonts rather than a blank screen.

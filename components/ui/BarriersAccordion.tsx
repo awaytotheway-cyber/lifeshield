@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
+import { PressScale } from "@/components/ui/PressScale";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Radius, Size, Space, typeStyle } from "@/lib/theme";
 import {
   BARRIER_TYPE_ORDER,
   barrierTypeLabel,
@@ -100,7 +102,7 @@ export function BarriersAccordion({ userId, category, sourceType, sourceId }: Pr
   };
 
   return (
-    <View style={styles.card}>
+    <Card style={styles.card}>
       <Text style={styles.title}>{COPY.barriersSectionTitle}</Text>
       <Text style={styles.body}>{COPY.barriersSectionBody}</Text>
 
@@ -118,13 +120,15 @@ export function BarriersAccordion({ userId, category, sourceType, sourceId }: Pr
                 : false;
               return (
                 <View key={item.id} style={styles.item}>
-                  <Pressable
+                  <PressScale
                     accessibilityRole="button"
                     accessibilityState={{ expanded: open }}
+                    accessibilityLabel={item.title}
+                    haptic="light"
                     onPress={() => setOpenId(open ? null : item.id)}
                     style={styles.itemHeader}
                   >
-                    <View style={{ flex: 1 }}>
+                    <View style={styles.itemHeaderText}>
                       <Text style={styles.itemTitle}>{item.title}</Text>
                       {trying ? (
                         <Text style={styles.tryingBadge}>
@@ -135,9 +139,9 @@ export function BarriersAccordion({ userId, category, sourceType, sourceId }: Pr
                     <Feather
                       name={open ? "chevron-up" : "chevron-down"}
                       size={20}
-                      color={colors.primaryBlue}
+                      color={Colors.orange}
                     />
-                  </Pressable>
+                  </PressScale>
 
                   {open ? (
                     <View style={styles.itemBody}>
@@ -191,7 +195,7 @@ export function BarriersAccordion({ userId, category, sourceType, sourceId }: Pr
       })}
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
-    </View>
+    </Card>
   );
 }
 
@@ -240,25 +244,12 @@ function FeedbackPrompt({
             ["abandoned", COPY.barriersFeedbackAbandoned],
           ] as [UserBarrierStatus, string][]
         ).map(([value, label]) => (
-          <Pressable
+          <Chip
             key={value}
-            accessibilityRole="button"
-            accessibilityState={{ selected: status === value }}
+            label={label}
+            selected={status === value}
             onPress={() => setStatus(value)}
-            style={[
-              fbStyles.chip,
-              status === value && fbStyles.chipSelected,
-            ]}
-          >
-            <Text
-              style={[
-                fbStyles.chipText,
-                status === value && fbStyles.chipTextSelected,
-              ]}
-            >
-              {label}
-            </Text>
-          </Pressable>
+          />
         ))}
       </View>
 
@@ -267,29 +258,31 @@ function FeedbackPrompt({
       </Text>
       <View style={fbStyles.row}>
         {[1, 2, 3, 4, 5].map((n) => (
-          <Pressable
+          <PressScale
             key={n}
             accessibilityRole="button"
+            accessibilityLabel={String(n)}
             accessibilityState={{ selected: likelihood === n }}
+            haptic="light"
             onPress={() => setLikelihood(n)}
             style={[
               fbStyles.numChip,
-              likelihood === n && fbStyles.chipSelected,
+              likelihood === n ? fbStyles.numChipSelected : null,
             ]}
           >
             <Text
               style={[
-                fbStyles.chipText,
-                likelihood === n && fbStyles.chipTextSelected,
+                fbStyles.numChipText,
+                likelihood === n ? fbStyles.numChipTextSelected : null,
               ]}
             >
               {n}
             </Text>
-          </Pressable>
+          </PressScale>
         ))}
       </View>
 
-      <View style={{ marginTop: spacing.sm }}>
+      <View style={fbStyles.field}>
         <TextInput
           label={COPY.barriersFeedbackNoteLabel}
           placeholder={COPY.barriersFeedbackNotePlaceholder}
@@ -302,173 +295,151 @@ function FeedbackPrompt({
 
       {message ? <Text style={fbStyles.error}>{message}</Text> : null}
 
-      <View style={{ marginTop: spacing.sm }}>
-        <PrimaryButton
-          title={COPY.barriersFeedbackSave}
-          loading={busy}
-          onPress={save}
-        />
-      </View>
+      <PrimaryButton
+        title={COPY.barriersFeedbackSave}
+        loading={busy}
+        onPress={save}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.md,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    marginTop: Gap.cards,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typeStyle("section"),
+    color: Colors.ink,
   },
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   group: {
-    marginTop: spacing.base,
+    marginTop: Space.lg,
   },
   groupTitle: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    ...typeStyle("label"),
+    marginBottom: Space.sm,
+    color: Colors.muted,
     letterSpacing: 0.4,
-    color: colors.slate,
     textTransform: "uppercase",
-    marginBottom: spacing.sm,
   },
   item: {
-    marginBottom: spacing.sm,
+    marginBottom: Space.sm,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.alert,
+    borderColor: Colors.line,
+    borderRadius: Radius.input,
     overflow: "hidden",
   },
   itemHeader: {
-    paddingVertical: 12,
-    paddingHorizontal: spacing.base,
+    minHeight: Size.tap,
+    paddingVertical: Gap.rowY - 4,
+    paddingHorizontal: Space.md,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.iceBlue,
+    gap: Space.sm,
+    backgroundColor: Colors.cloud,
+  },
+  itemHeaderText: {
+    flex: 1,
   },
   itemTitle: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   tryingBadge: {
+    ...typeStyle("caption"),
     marginTop: 2,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
+    color: Colors.orange,
     letterSpacing: 0.3,
-    color: colors.primaryBlue,
     textTransform: "uppercase",
   },
   itemBody: {
-    padding: spacing.base,
-    backgroundColor: colors.white,
-    gap: spacing.sm,
+    padding: Space.md,
+    backgroundColor: Colors.white,
   },
   strategy: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    color: Colors.body,
   },
   subLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
+    ...typeStyle("caption"),
+    marginTop: Space.md,
+    color: Colors.muted,
     letterSpacing: 0.4,
     textTransform: "uppercase",
   },
   subText: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.body,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.red,
   },
 });
 
 const fbStyles = StyleSheet.create({
   wrap: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    borderRadius: radius.alert,
-    backgroundColor: colors.riskLowLight,
-    gap: spacing.sm,
+    marginTop: Space.md,
+    padding: Space.md,
+    borderRadius: Radius.input,
+    backgroundColor: Colors.greenTint,
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   body: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.body,
   },
   row: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: radius.chip,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
+    gap: Space.sm,
+    marginTop: Space.sm,
   },
   numChip: {
-    minWidth: 40,
+    minWidth: Size.tap,
+    minHeight: Size.tap,
     alignItems: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderRadius: radius.chip,
-    backgroundColor: colors.white,
+    justifyContent: "center",
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: Colors.line,
   },
-  chipSelected: {
-    backgroundColor: colors.primaryBlue,
-    borderColor: colors.primaryBlue,
+  numChipSelected: {
+    backgroundColor: Colors.orange,
+    borderColor: Colors.orange,
   },
-  chipText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
-    color: colors.charcoal,
+  numChipText: {
+    ...typeStyle("label"),
+    color: Colors.body,
   },
-  chipTextSelected: {
-    color: colors.white,
+  numChipTextSelected: {
+    color: Colors.white,
   },
   likelihoodLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
+    ...typeStyle("caption"),
+    marginTop: Space.md,
+    color: Colors.muted,
     letterSpacing: 0.3,
     textTransform: "uppercase",
   },
+  field: {
+    marginTop: Space.sm,
+  },
   error: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
   },
 });

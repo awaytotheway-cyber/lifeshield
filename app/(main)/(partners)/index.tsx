@@ -1,13 +1,17 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { PrimaryButton, SecondaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
+import { ListRow } from "@/components/ui/ListRow";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { StatCard } from "@/components/ui/StatCard";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   activityMinutesByDay,
   loadOwnPartnerLinks,
@@ -21,7 +25,7 @@ import {
   type PartnerRow,
 } from "@/lib/partners";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 export default function PartnersScreen() {
@@ -89,28 +93,35 @@ export default function PartnersScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.partnersTitle}
+        subtitle={COPY.partnersSubtitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.orderBackHome}
       />
-      <Text style={styles.body}>{COPY.partnersSubtitle}</Text>
 
-      <View style={styles.summary}>
-        <Text style={styles.summaryValue}>{weeklyMinutes}</Text>
-        <Text style={styles.summaryLabel}>{COPY.activityWeeklyMinutes}</Text>
-      </View>
-
-      <View style={{ marginTop: spacing.sm }}>
-        <PrimaryButton
-          title={COPY.partnersLogActivityCta}
-          onPress={() => router.push(routes.partnersLog)}
+      <View style={styles.statRow}>
+        <StatCard
+          value={String(weeklyMinutes)}
+          label={COPY.activityWeeklyMinutes}
         />
       </View>
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
-      {message ? <Text style={styles.error}>{message}</Text> : null}
+      <PrimaryButton
+        title={COPY.partnersLogActivityCta}
+        icon="plus"
+        onPress={() => router.push(routes.partnersLog)}
+      />
+
+      {loading ? <StaticSkeleton rows={3} /> : null}
+      {message ? (
+        <View style={styles.errorWrap}>
+          <Card>
+            <Text style={styles.error}>{message}</Text>
+          </Card>
+        </View>
+      ) : null}
 
       {(
         [
@@ -124,142 +135,116 @@ export default function PartnersScreen() {
         const items = grouped.get(kind) ?? [];
         if (items.length === 0) return null;
         return (
-          <View key={kind} style={styles.group}>
-            <Text style={styles.section}>{header}</Text>
-            {items.map((p) => {
-              const linked = linkedIds.has(p.id);
-              return (
-                <View key={p.id} style={styles.card}>
-                  <View style={{ flex: 1 }}>
+          <View key={kind}>
+            <SectionTitle title={header} />
+            <View style={styles.stack}>
+              {items.map((p) => {
+                const linked = linkedIds.has(p.id);
+                return (
+                  <Card key={p.id}>
                     <View style={styles.headRow}>
                       <Text style={styles.name}>{p.name}</Text>
                       {linked ? (
-                        <Text style={styles.linked}>{COPY.partnersLinkedBadge}</Text>
+                        <Chip label={COPY.partnersLinkedBadge} tone="green" />
                       ) : null}
                     </View>
                     {p.description ? (
                       <Text style={styles.meta}>{p.description}</Text>
                     ) : null}
-                  </View>
-                  <View style={styles.actions}>
-                    <TextButton
-                      title={linked ? COPY.partnersUnlink : COPY.partnersLink}
-                      loading={busyId === p.id}
-                      onPress={() => runToggle(p)}
-                    />
-                    <TextButton title={COPY.partnersOpen} onPress={() => void openPartner(p)} />
-                  </View>
-                </View>
-              );
-            })}
+                    <View style={styles.actions}>
+                      <View style={styles.actionCell}>
+                        <SecondaryButton
+                          title={linked ? COPY.partnersUnlink : COPY.partnersLink}
+                          loading={busyId === p.id}
+                          onPress={() => runToggle(p)}
+                        />
+                      </View>
+                      <View style={styles.actionCell}>
+                        <TextButton
+                          title={COPY.partnersOpen}
+                          onPress={() => void openPartner(p)}
+                        />
+                      </View>
+                    </View>
+                  </Card>
+                );
+              })}
+            </View>
           </View>
         );
       })}
 
-      <Text style={styles.section}>{COPY.partnersActivityHeader}</Text>
+      <SectionTitle title={COPY.partnersActivityHeader} icon="activity" />
       {activities.length === 0 ? (
-        <Text style={styles.emptyLine}>{COPY.partnersActivityEmpty}</Text>
+        <Card>
+          <Text style={styles.emptyBody}>{COPY.partnersActivityEmpty}</Text>
+        </Card>
       ) : (
-        activities.slice(0, 10).map((a) => (
-          <View key={a.id} style={styles.activityRow}>
-            <Text style={styles.activityType}>{a.activity_type}</Text>
-            <Text style={styles.activityMeta}>
-              {a.duration_min ? `${a.duration_min} min · ` : ""}
-              {a.intensity ?? ""}
-              {a.performed_at ? ` · ${a.performed_at.slice(0, 10)}` : ""}
-            </Text>
-          </View>
-        ))
+        <Card padded={false} style={styles.listCard}>
+          {activities.slice(0, 10).map((a, index, all) => (
+            <ListRow
+              key={a.id}
+              label={
+                a.activity_type.charAt(0).toUpperCase() +
+                a.activity_type.slice(1)
+              }
+              subtitle={`${a.duration_min ? `${a.duration_min} min · ` : ""}${
+                a.intensity ?? ""
+              }${a.performed_at ? ` · ${a.performed_at.slice(0, 10)}` : ""}`}
+              divider={index < all.length - 1}
+            />
+          ))}
+        </Card>
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
-  },
-  summary: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.iceBlue,
-    alignItems: "center",
-  },
-  summaryValue: {
-    fontFamily: fontFamily.heroStat,
-    fontSize: 40,
-    color: colors.primaryBlue,
-  },
-  summaryLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
-  },
-  group: { marginTop: spacing.lg },
-  section: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: colors.charcoal,
-  },
-  card: {
+  statRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: spacing.sm,
-    padding: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    ...shadows.card,
-    gap: spacing.sm,
+    gap: Gap.cards,
   },
-  headRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  name: { fontFamily: fontFamily.bodySemi, fontSize: 15, color: colors.charcoal },
-  linked: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.primaryBlue,
-  },
-  meta: {
-    marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.slate,
-  },
-  actions: { justifyContent: "space-between", alignItems: "flex-end" },
-  activityRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  activityType: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
-    color: colors.charcoal,
-    textTransform: "capitalize",
-  },
-  activityMeta: {
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.slate,
-  },
-  emptyLine: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+  errorWrap: {
+    marginTop: Gap.cards,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  stack: {
+    gap: Gap.cards,
+  },
+  headRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
+  },
+  name: {
+    flex: 1,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  meta: {
+    marginTop: Space.xs,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  actions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Space.md,
+  },
+  actionCell: {
+    flex: 1,
+  },
+  emptyBody: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  listCard: {
+    paddingHorizontal: Space.cardPad,
+    paddingVertical: Space.xs,
   },
 });

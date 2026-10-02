@@ -5,14 +5,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { BlurView } from "expo-blur";
 
-import {
-  colors,
-  glassBlurIntensity,
-  radius,
-  shadows,
-} from "@/lib/design-tokens";
+import { Colors, Radius, Shadow } from "@/lib/theme";
 
 export type GlassIntensity = "card" | "chrome" | "sheet" | "button";
 export type GlassTint = "light" | "dark";
@@ -20,24 +14,18 @@ export type GlassTint = "light" | "dark";
 type GlassCardProps = {
   children?: ReactNode;
   intensity?: GlassIntensity;
-  /** light = white frosted fill; dark = navy tint (rare chrome). */
+  /** light = white card; dark = warm ink scrim (rare chrome). */
   tint?: GlassTint;
   style?: StyleProp<ViewStyle>;
 };
 
-const radiusFor: Record<GlassIntensity, number> = {
-  card: radius.card,
-  chrome: 0,
-  sheet: radius.sheet,
-  button: radius.button,
-};
-
 /**
- * Frosted glass panel — BlurView + semi-transparent fill.
- * Prefer this public API on new screens. GlassSurface re-exports the same look.
- * Never place on a plain white background; Screen provides ice-blue atmosphere.
+ * ⚠️ LEGACY NAME, NEW LOOK. Prefer `Card` from components/ui/Card.tsx.
  *
- * Children sit above the blur layers so padding / alignItems on `style` still work.
+ * PLAIN ENGLISH: this used to be a frosted-glass panel. The orange redesign is
+ * flat and premium, so it now renders as a plain white card with the soft
+ * orange-tinted shadow. The name and props are unchanged so the ~80 screens
+ * that still import it keep working and instantly pick up the new look.
  */
 export function GlassCard({
   children,
@@ -46,32 +34,37 @@ export function GlassCard({
   style,
 }: GlassCardProps) {
   const isDark = tint === "dark";
-  const fill = isDark ? colors.glassFillDark : colors.glassFill;
-  const blurTint = isDark ? "dark" : "light";
-  const corner = radiusFor[intensity];
 
   const shape: ViewStyle = {
-    borderRadius: intensity === "sheet" ? undefined : corner,
-    borderTopLeftRadius: intensity === "sheet" ? radius.sheet : corner,
-    borderTopRightRadius: intensity === "sheet" ? radius.sheet : corner,
-    borderWidth: intensity === "chrome" ? StyleSheet.hairlineWidth : 1,
-    borderColor: colors.glassBorder,
-    overflow: "hidden",
-    ...(intensity === "card" || intensity === "sheet" ? shadows.card : {}),
+    backgroundColor: isDark
+      ? "rgba(31,27,24,0.45)"
+      : intensity === "chrome"
+        ? Colors.background
+        : Colors.white,
+    ...radiusFor(intensity),
+    ...(intensity === "card" || intensity === "sheet" ? Shadow.soft : {}),
+    ...(intensity === "chrome"
+      ? {
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: Colors.line,
+        }
+      : {}),
   };
 
-  return (
-    <View style={[shape, style]}>
-      <BlurView
-        intensity={glassBlurIntensity}
-        tint={blurTint}
-        style={StyleSheet.absoluteFill}
-      />
-      <View
-        pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { backgroundColor: fill }]}
-      />
-      {children}
-    </View>
-  );
+  return <View style={[shape, style]}>{children}</View>;
+}
+
+function radiusFor(intensity: GlassIntensity): ViewStyle {
+  if (intensity === "chrome") {
+    return { borderRadius: 0 };
+  }
+  if (intensity === "sheet") {
+    return {
+      borderTopLeftRadius: Radius.sheet,
+      borderTopRightRadius: Radius.sheet,
+    };
+  }
+  return {
+    borderRadius: intensity === "button" ? Radius.button : Radius.card,
+  };
 }

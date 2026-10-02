@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { StyleSheet } from "react-native";
 
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { PrimaryButton } from "@/components/ui/Button";
@@ -22,9 +23,16 @@ export default function WelcomeScreen() {
           <PrimaryButton
             title={COPY.welcomeContinue}
             onPress={() => router.push(routes.disclaimer)}
+            style={styles.action}
           />
         </>
       }
     />
   );
 }
+
+const styles = StyleSheet.create({
+  action: {
+    marginTop: 0,
+  },
+});

@@ -1,9 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radius, Size, Space } from "@/lib/theme";
 
 type NumberInputProps = {
   label: string;
@@ -65,7 +64,7 @@ export function NumberInput({
           onPress={() => nudge(-1)}
           style={styles.stepBtn}
         >
-          <Feather name="minus" size={18} color={colors.deepTeal} />
+          <Feather name="minus" size={18} color={Colors.orange} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -73,7 +72,7 @@ export function NumberInput({
           onPress={() => nudge(1)}
           style={styles.stepBtn}
         >
-          <Feather name="plus" size={18} color={colors.deepTeal} />
+          <Feather name="plus" size={18} color={Colors.orange} />
         </Pressable>
       </View>
     </View>
@@ -84,16 +83,17 @@ const styles = StyleSheet.create({
   steppers: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: 8,
-    marginTop: 8,
+    // Section 10: never two interactive elements closer than 12px.
+    gap: Space.sm,
+    marginTop: Space.sm,
   },
   stepBtn: {
-    minWidth: tapTarget,
-    minHeight: tapTarget,
-    borderRadius: radius.input,
+    minWidth: Size.tap,
+    minHeight: Size.tap,
+    borderRadius: Radius.input,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
+    borderColor: Colors.line,
+    backgroundColor: Colors.white,
     alignItems: "center",
     justifyContent: "center",
   },

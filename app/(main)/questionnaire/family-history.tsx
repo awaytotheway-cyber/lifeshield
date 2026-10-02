@@ -2,16 +2,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
+import { SectionNotice } from "@/components/questionnaire/SectionNotice";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { SymptomInterrupt } from "@/components/questionnaire/SymptomInterrupt";
-import { Button } from "@/components/ui/Button";
+import { SecondaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { FAMILY_RELATIONSHIP_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import {
   familyHistoryToJson,
   interruptClearedFromJson,
@@ -181,6 +184,7 @@ export default function FamilyHistoryScreen() {
   return (
     <SectionScaffold
       title="Family history"
+      subtitle="Blood relatives only — parents, siblings, children, grandparents."
       step={5}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -194,9 +198,7 @@ export default function FamilyHistoryScreen() {
       }}
       errorMessage={saveMessage}
     >
-      {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
-      ) : null}
+      {loadMessage ? <SectionNotice message={loadMessage} /> : null}
 
       <Controller
         control={control}
@@ -213,13 +215,13 @@ export default function FamilyHistoryScreen() {
         )}
       />
       {breastCancer === "yes" ? (
-        <View className="mt-2">
+        <View style={styles.relatives}>
           {errors.breastRelatives?.message ? (
-            <Text className="text-coral">{String(errors.breastRelatives.message)}</Text>
+            <SectionNotice message={String(errors.breastRelatives.message)} />
           ) : null}
           {fields.map((field, index) => (
-            <View key={field.id} className="mt-3 rounded-xl bg-white px-4 py-3">
-              <Text className="text-charcoal">
+            <Card key={field.id} style={styles.relativeCard}>
+              <Text style={styles.relativeLabel}>
                 {COPY.familyRelativeLabel} {index + 1}
               </Text>
               <Controller
@@ -247,17 +249,17 @@ export default function FamilyHistoryScreen() {
                 )}
               />
               {fields.length > 1 ? (
-                <Button
+                <TextButton
                   title={COPY.removeRelative}
-                  variant="ghost"
                   onPress={() => remove(index)}
+                  style={styles.remove}
                 />
               ) : null}
-            </View>
+            </Card>
           ))}
-          <Button
+          <SecondaryButton
             title={COPY.addRelative}
-            variant="ghost"
+            icon="plus"
             onPress={() =>
               append({ relationship: "", ageAtDiagnosis: "" })
             }
@@ -355,3 +357,21 @@ export default function FamilyHistoryScreen() {
     </SectionScaffold>
   );
 }
+
+const styles = StyleSheet.create({
+  relatives: {
+    marginTop: Gap.cards,
+    gap: Gap.cards,
+  },
+  relativeCard: {
+    // The fields inside bring their own 24px top margin.
+    paddingBottom: Space.cardPad,
+  },
+  relativeLabel: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  remove: {
+    alignSelf: "flex-start",
+  },
+});

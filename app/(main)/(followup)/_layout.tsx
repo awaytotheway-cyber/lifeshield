@@ -1,6 +1,18 @@
 import { Stack } from "expo-router";
 
-/** Follow-up list + symptom re-check. Hidden from the tab bar. */
+import { Colors, Motion } from "@/lib/theme";
+
+/** Follow-up list + symptom re-check. */
 export default function FollowUpLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        // Section 9 motion: slide, ~300ms, ease-out.
+        animation: "slide_from_right",
+        animationDuration: Motion.screen,
+        contentStyle: { backgroundColor: Colors.background },
+      }}
+    />
+  );
 }

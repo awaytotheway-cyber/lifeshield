@@ -5,10 +5,9 @@ import { StyleSheet, Text } from "react-native";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { PrimaryButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 /**
@@ -52,6 +51,7 @@ export default function ConsentTermsScreen() {
             onPress={() => void onContinue()}
             loading={saving}
             disabled={saving}
+            style={styles.action}
           />
         </>
       }
@@ -61,11 +61,12 @@ export default function ConsentTermsScreen() {
 
 const styles = StyleSheet.create({
   error: {
-    marginTop: 16,
+    ...typeStyle("secondary"),
     textAlign: "center",
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.coral,
+    marginBottom: Space.sm,
+    color: Colors.red,
+  },
+  action: {
+    marginTop: 0,
   },
 });

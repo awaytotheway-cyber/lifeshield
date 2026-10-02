@@ -3,15 +3,21 @@ import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  TextButton,
+} from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import {
   cancelGoal,
   completeGoal,
@@ -26,6 +32,20 @@ import {
   type WeeklyGoalRow,
 } from "@/lib/weekly-goals";
 import { useAuthStore } from "@/stores/auth-store";
+
+function statusTone(row: WeeklyGoalRow): ChipTone {
+  if (isOverdue(row)) return "red";
+  switch (row.status) {
+    case "completed":
+      return "green";
+    case "missed":
+      return "red";
+    case "cancelled":
+      return "neutral";
+    default:
+      return "orange";
+  }
+}
 
 export default function GoalDetailScreen() {
   const router = useRouter();
@@ -84,143 +104,120 @@ export default function GoalDetailScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
-        title={COPY.goalsTitle}
+        title={row?.title ?? COPY.goalsTitle}
+        subtitle={row ? goalTypeLabel(row.goal_type) : undefined}
         onBack={() => router.back()}
         backLabel={COPY.goalsTitle}
       />
-      {loading ? <StaticSkeleton rows={4} /> : null}
+
+      {loading ? <StaticSkeleton rows={3} /> : null}
+
       {!loading && row ? (
-        <View style={styles.card}>
-          <Text style={styles.type}>{goalTypeLabel(row.goal_type)}</Text>
-          <Text style={styles.title}>{row.title}</Text>
-          <Text style={styles.meta}>
-            {row.start_date} → {row.end_date}
-          </Text>
-          <Text style={styles.status}>
-            {isOverdue(row) ? COPY.goalsMissedLabel : statusLabel(row.status)}
-          </Text>
-
-          <View style={styles.progressRow}>
-            <Text style={styles.progressLabel}>{COPY.goalsProgressLabel}</Text>
-            <Text style={styles.progressValue}>
-              {row.progress} / {row.target} {row.unit} · {progressPercent(row)}%
-            </Text>
-          </View>
-          <ProgressBar current={row.progress} total={row.target} />
-
-          {row.note ? <Text style={styles.note}>{row.note}</Text> : null}
-
-          {row.status === "active" ? (
-            <View style={styles.actions}>
-              <PrimaryButton
-                title={COPY.goalsLogOne}
-                loading={busy}
-                onPress={() => runAction(() => incrementGoal(row, 1))}
-              />
-              <TextButton
-                title={COPY.goalsMarkComplete}
-                onPress={() => runAction(() => completeGoal(row.id))}
-              />
-              <TextButton
-                title={COPY.goalsEndMissed}
-                onPress={() => runAction(() => markGoalMissed(row.id))}
-              />
-              <TextButton
-                title={COPY.goalsCancelGoal}
-                onPress={() => runAction(() => cancelGoal(row.id))}
+        <>
+          <Card elevated>
+            <View style={styles.cardTop}>
+              <Text style={styles.dates}>
+                {row.start_date} → {row.end_date}
+              </Text>
+              <Chip
+                label={isOverdue(row) ? COPY.goalsMissedLabel : statusLabel(row.status)}
+                tone={statusTone(row)}
               />
             </View>
-          ) : (
-            <View style={styles.actions}>
+
+            <Text style={styles.percent}>{progressPercent(row)}%</Text>
+            <Text style={styles.progressLabel}>
+              {COPY.goalsProgressLabel} · {row.progress} / {row.target} {row.unit}
+            </Text>
+            <ProgressBar current={row.progress} total={row.target} />
+
+            {row.note ? <Text style={styles.note}>{row.note}</Text> : null}
+          </Card>
+
+          <View style={styles.actions}>
+            {row.status === "active" ? (
+              <>
+                <PrimaryButton
+                  title={COPY.goalsLogOne}
+                  icon="plus"
+                  loading={busy}
+                  onPress={() => runAction(() => incrementGoal(row, 1))}
+                />
+                <SecondaryButton
+                  title={COPY.goalsMarkComplete}
+                  onPress={() => runAction(() => completeGoal(row.id))}
+                />
+                <TextButton
+                  title={COPY.goalsEndMissed}
+                  onPress={() => runAction(() => markGoalMissed(row.id))}
+                />
+                <TextButton
+                  title={COPY.goalsCancelGoal}
+                  onPress={() => runAction(() => cancelGoal(row.id))}
+                />
+              </>
+            ) : (
               <TextButton
                 title={COPY.goalsDelete}
                 onPress={() => runAction(() => deleteGoal(row.id), true)}
               />
-            </View>
-          )}
-        </View>
+            )}
+          </View>
+        </>
       ) : null}
 
       {!loading && row && session.user.id ? (
-        <BarriersAccordion
-          userId={session.user.id}
-          category={row.goal_type}
-          sourceType="goal"
-          sourceId={row.id}
-        />
+        <>
+          <SectionTitle title="What might get in the way" />
+          <BarriersAccordion
+            userId={session.user.id}
+            category={row.goal_type}
+            sourceType="goal"
+            sourceId={row.id}
+          />
+        </>
       ) : null}
+
       {message ? <Text style={styles.error}>{message}</Text> : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginTop: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.md,
-    ...shadows.card,
-  },
-  type: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.4,
-    color: colors.slate,
-    textTransform: "uppercase",
-  },
-  title: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.display,
-    fontSize: 24,
-    lineHeight: 30,
-    letterSpacing: -0.3,
-    color: colors.charcoal,
-  },
-  meta: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 18,
-    color: colors.slate,
-  },
-  status: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
-    color: colors.primaryBlue,
-  },
-  progressRow: {
-    marginTop: spacing.md,
+  cardTop: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
+    gap: Space.sm,
+  },
+  dates: {
+    flex: 1,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  percent: {
+    ...typeStyle("dataBig"),
+    marginTop: Space.md,
+    color: Colors.orange,
   },
   progressLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
-    color: colors.slate,
-  },
-  progressValue: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
-    color: colors.charcoal,
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.muted,
   },
   note: {
-    marginTop: spacing.md,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.lg,
+    color: Colors.body,
   },
   actions: {
-    marginTop: spacing.lg,
-    gap: spacing.sm,
+    marginTop: Gap.beforeFooter,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.red,
   },
 });

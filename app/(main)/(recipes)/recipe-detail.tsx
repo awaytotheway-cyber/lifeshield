@@ -1,13 +1,16 @@
+import { Image } from "expo-image";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { IconButton, PrimaryButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   adjustIngredientsForPortions,
   loadRecipeById,
@@ -18,8 +21,18 @@ import {
   type RecipeRow,
 } from "@/lib/recipes";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Font, Gap, Radius, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** One timing fact: a quiet label with an ink value underneath. */
+function MetaItem({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.metaItem}>
+      <Text style={styles.metaLabel}>{label}</Text>
+      <Text style={styles.metaValue}>{value}</Text>
+    </View>
+  );
+}
 
 export default function RecipeDetailScreen() {
   const router = useRouter();
@@ -72,8 +85,23 @@ export default function RecipeDetailScreen() {
     setIsSaved((v) => !v);
   };
 
+  const servings = portions ?? row?.servings ?? 1;
+
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen
+      scroll
+      footer={
+        row ? (
+          <PrimaryButton
+            title={isSaved ? COPY.recipesUnsaveCta : COPY.recipesSaveCta}
+            icon={isSaved ? "check" : "bookmark"}
+            loading={busy}
+            style={styles.saveButton}
+            onPress={toggleSave}
+          />
+        ) : undefined
+      }
+    >
       <ScreenHeader
         title={row?.name ?? COPY.recipesTitle}
         onBack={() => router.back()}
@@ -84,189 +112,229 @@ export default function RecipeDetailScreen() {
       {message ? <Text style={styles.error}>{message}</Text> : null}
 
       {row ? (
-        <View style={styles.card}>
+        <>
+          {row.image_url ? (
+            <Image
+              source={{ uri: row.image_url }}
+              style={styles.hero}
+              contentFit="cover"
+              accessibilityIgnoresInvertColors
+            />
+          ) : null}
+
           {row.description ? (
             <Text style={styles.desc}>{row.description}</Text>
           ) : null}
 
-          <View style={styles.metaRow}>
-            <MetaItem label={COPY.recipesPrepLabel} value={`${row.prep_min} min`} />
-            <MetaItem label={COPY.recipesCookLabel} value={`${row.cook_min} min`} />
-            <MetaItem label={COPY.recipesTotalMinutes} value={`${totalMinutes(row)} min`} />
-          </View>
-
-          <View style={styles.portionsRow}>
-            <Text style={styles.portionsLabel}>{COPY.recipesPortionsLabel}:</Text>
-            <View style={styles.portionsControls}>
-              <Pressable
-                accessibilityLabel="Fewer servings"
-                onPress={() =>
-                  setPortions((p) => Math.max(1, (p ?? row.servings) - 1))
-                }
-                style={styles.portionBtn}
-              >
-                <Text style={styles.portionBtnText}>−</Text>
-              </Pressable>
-              <Text style={styles.portionsValue}>{portions ?? row.servings}</Text>
-              <Pressable
-                accessibilityLabel="More servings"
-                onPress={() =>
-                  setPortions((p) => Math.min(20, (p ?? row.servings) + 1))
-                }
-                style={styles.portionBtn}
-              >
-                <Text style={styles.portionBtnText}>+</Text>
-              </Pressable>
+          {row.tags.length > 0 ? (
+            <View style={styles.tags}>
+              {row.tags.map((tag) => (
+                <Chip key={tag} label={tag} />
+              ))}
             </View>
-          </View>
+          ) : null}
 
-          <Text style={styles.sectionLabel}>{COPY.recipesIngredientsLabel}</Text>
-          {adjustIngredientsForPortions(
-            row.ingredients,
-            row.servings,
-            portions ?? row.servings,
-          ).map((line, idx) => (
-            <Text key={idx} style={styles.line}>
-              • {line}
-            </Text>
-          ))}
+          <Card style={styles.timingCard}>
+            <View style={styles.metaRow}>
+              <MetaItem
+                label={COPY.recipesPrepLabel}
+                value={`${row.prep_min} min`}
+              />
+              <MetaItem
+                label={COPY.recipesCookLabel}
+                value={`${row.cook_min} min`}
+              />
+              <MetaItem
+                label={COPY.recipesTotalMinutes}
+                value={`${totalMinutes(row)} min`}
+              />
+            </View>
+          </Card>
 
-          <Text style={styles.sectionLabel}>{COPY.recipesInstructionsLabel}</Text>
-          {row.instructions.map((line, idx) => (
-            <Text key={idx} style={styles.line}>
-              {idx + 1}. {line}
-            </Text>
-          ))}
+          <SectionTitle title={COPY.recipesIngredientsLabel} />
+          <Card>
+            <View style={styles.portionsRow}>
+              <Text style={styles.portionsLabel}>
+                {COPY.recipesPortionsLabel}
+              </Text>
+              <View style={styles.portionsControls}>
+                <IconButton
+                  icon="minus"
+                  accessibilityLabel="Fewer servings"
+                  onPress={() =>
+                    setPortions((p) => Math.max(1, (p ?? row.servings) - 1))
+                  }
+                />
+                <Text style={styles.portionsValue}>{servings}</Text>
+                <IconButton
+                  icon="plus"
+                  accessibilityLabel="More servings"
+                  onPress={() =>
+                    setPortions((p) => Math.min(20, (p ?? row.servings) + 1))
+                  }
+                />
+              </View>
+            </View>
+
+            <View style={styles.lines}>
+              {adjustIngredientsForPortions(
+                row.ingredients,
+                row.servings,
+                servings,
+              ).map((line, idx) => (
+                <View key={idx} style={styles.bulletRow}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.line}>{line}</Text>
+                </View>
+              ))}
+            </View>
+          </Card>
+
+          <SectionTitle title={COPY.recipesInstructionsLabel} />
+          <Card>
+            <View style={styles.steps}>
+              {row.instructions.map((line, idx) => (
+                <View key={idx} style={styles.stepRow}>
+                  <Text style={styles.stepNumber}>{idx + 1}</Text>
+                  <Text style={styles.line}>{line}</Text>
+                </View>
+              ))}
+            </View>
+          </Card>
 
           {row.nutrition ? (
             <>
-              <Text style={styles.sectionLabel}>
-                {COPY.recipesNutritionLabel}
-              </Text>
-              <Text style={styles.line}>
-                {[
-                  row.nutrition.kcal ? `${row.nutrition.kcal} kcal` : null,
-                  row.nutrition.protein_g ? `${row.nutrition.protein_g} g protein` : null,
-                  row.nutrition.carbs_g ? `${row.nutrition.carbs_g} g carbs` : null,
-                  row.nutrition.fat_g ? `${row.nutrition.fat_g} g fat` : null,
-                  row.nutrition.fiber_g ? `${row.nutrition.fiber_g} g fibre` : null,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </Text>
+              <SectionTitle title={COPY.recipesNutritionLabel} />
+              <Card>
+                <Text style={styles.line}>
+                  {[
+                    row.nutrition.kcal ? `${row.nutrition.kcal} kcal` : null,
+                    row.nutrition.protein_g
+                      ? `${row.nutrition.protein_g} g protein`
+                      : null,
+                    row.nutrition.carbs_g
+                      ? `${row.nutrition.carbs_g} g carbs`
+                      : null,
+                    row.nutrition.fat_g ? `${row.nutrition.fat_g} g fat` : null,
+                    row.nutrition.fiber_g
+                      ? `${row.nutrition.fiber_g} g fibre`
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </Text>
+              </Card>
             </>
           ) : null}
-
-          <View style={{ marginTop: spacing.md }}>
-            <PrimaryButton
-              title={isSaved ? COPY.recipesUnsaveCta : COPY.recipesSaveCta}
-              loading={busy}
-              onPress={toggleSave}
-            />
-            <TextButton title="Back to recipes" onPress={() => router.back()} />
-          </View>
-        </View>
+        </>
       ) : null}
     </Screen>
   );
 }
 
-function MetaItem({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.metaItem}>
-      <Text style={styles.metaLabel}>{label}</Text>
-      <Text style={styles.metaValue}>{value}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  card: {
-    marginTop: spacing.base,
-    padding: spacing.md,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    ...shadows.card,
+  hero: {
+    width: "100%",
+    height: 220,
+    borderRadius: Radius.hero,
+    backgroundColor: Colors.cloud,
   },
   desc: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.lg,
+    color: Colors.body,
+  },
+  tags: {
+    marginTop: Space.md,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Space.sm,
+  },
+  timingCard: {
+    marginTop: Gap.sections,
   },
   metaRow: {
-    marginTop: spacing.base,
     flexDirection: "row",
-    gap: spacing.base,
+    alignItems: "stretch",
   },
-  metaItem: { alignItems: "flex-start" },
+  metaItem: {
+    flex: 1,
+  },
   metaLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
-    letterSpacing: 0.3,
-    color: colors.slate,
-    textTransform: "uppercase",
+    ...typeStyle("label"),
+    color: Colors.muted,
   },
   metaValue: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    marginTop: Space.xs,
+    color: Colors.ink,
   },
   portionsRow: {
-    marginTop: spacing.base,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: Space.sm,
+    paddingBottom: Space.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.line,
   },
   portionsLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
-    color: colors.slate,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   portionsControls: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
-  },
-  portionBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.iceBlue,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  portionBtnText: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 20,
-    color: colors.primaryBlue,
+    gap: Space.sm,
   },
   portionsValue: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.charcoal,
-    minWidth: 24,
+    fontFamily: Font.bold,
+    fontSize: 20,
+    lineHeight: 26,
+    color: Colors.orange,
+    minWidth: 32,
     textAlign: "center",
   },
-  sectionLabel: {
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
-    letterSpacing: 0.4,
-    textTransform: "uppercase",
+  lines: {
+    marginTop: Space.md,
+    gap: Space.sm,
+  },
+  bulletRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: Space.sm,
+  },
+  bullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginTop: 11,
+    backgroundColor: Colors.orangeTintDeep,
+  },
+  steps: {
+    gap: Space.md,
+  },
+  stepRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: Space.sm,
+  },
+  stepNumber: {
+    ...typeStyle("cardTitle"),
+    width: 24,
+    color: Colors.orange,
   },
   line: {
-    marginBottom: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
-    color: colors.charcoal,
+    flex: 1,
+    ...typeStyle("body"),
+    color: Colors.body,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.red,
+  },
+  saveButton: {
+    marginTop: 0,
   },
 });

@@ -1059,4 +1059,35 @@ export const COPY = {
     "We couldn't load plugins right now. Check your connection and try again.",
   pluginsNeedSql:
     "Plugins need the 20260928_plugins migration to run in Supabase → SQL Editor.",
+
+  // ——— Home hub (orange redesign) ———
+  homeGreetingMorning: "Good morning",
+  homeGreetingAfternoon: "Good afternoon",
+  homeGreetingEvening: "Good evening",
+  homeGreetingFallbackName: "Welcome back",
+  homeTodayTitle: "Today",
+  homeNumbersTitle: "Your numbers",
+  homeContinueLink: "Continue →",
+  homeJourneyStepOf: "Step {current} of {total}",
+  homeNumberQuestionnaire: "Questionnaire",
+  homeNumberConsents: "Consents",
+  homeNumberTestPlan: "Test plan",
+  homeTestPlanReady: "Ready",
+  homeNumberPending: "—",
+  // Short one-liners for the Home "Today" cards (the long version of the same
+  // guidance stays on the journey card above).
+  homeTodaySubConsents: "Three short consents to agree",
+  homeTodaySubQuestionnaire: "Sections you have finished so far",
+  homeTodaySubTests: "The tests worth discussing",
+  homeTodaySubResults: "Add or review your lab results",
+  homeTodaySubPlan: "Your reviewed, personalised plan",
+  homeTodaySubStore: "Order what your plan suggests",
+  homeTodaySubFollowUp: "Check in on your follow-up",
+
+  homeTodayGoalsTitle: "Weekly goals",
+  homeTodayGoalsSubtitle: "Check in on this week's small steps",
+  homeTodayResultsTitle: "My results",
+  homeTodayResultsSubtitle: "Read what your latest results mean",
+  homeTodayPlanTitle: "My plan",
+  homeTodayPlanSubtitle: "Your reviewed, personalised plan",
 } as const;

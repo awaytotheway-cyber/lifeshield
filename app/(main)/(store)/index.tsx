@@ -1,16 +1,17 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { ProductCard } from "@/components/store/ProductCard";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { hrefForConsent } from "@/lib/consent-flow";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import {
   canPurchase,
   consentTypeForProduct,
@@ -24,8 +25,8 @@ import {
   recommendedFromPlan,
   type ProductRow,
 } from "@/lib/store";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { loadUserContext } from "@/lib/user-context";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -178,21 +179,21 @@ export default function StoreScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen centered={false}>
       <ScreenHeader
         title={COPY.storeTitle}
+        subtitle={COPY.storeBody}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.storeBackHome}
       />
-      <Text style={styles.body}>{COPY.storeBody}</Text>
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
+      {loading ? <StaticSkeleton rows={3} /> : null}
 
       {message ? (
-        <>
+        <Card>
           <Text style={styles.error}>{message}</Text>
           <TextButton title={COPY.storeRetry} onPress={() => refresh()} />
-        </>
+        </Card>
       ) : null}
 
       {actionMessage ? <Text style={styles.ok}>{actionMessage}</Text> : null}
@@ -201,21 +202,21 @@ export default function StoreScreen() {
         <FlatList
           data={catalog}
           keyExtractor={(item) => item.id}
-          numColumns={2}
-          columnWrapperStyle={styles.columns}
+          showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <View>
-              <Text style={styles.group}>{COPY.storeRecommended}</Text>
+              <SectionTitle title={COPY.storeRecommended} first />
               {recommended.length === 0 ? (
-                <EmptyState
-                  icon="shopping-bag"
-                  heading={COPY.storeRecommended}
-                  explanation={COPY.storeRecommendedEmpty}
-                />
+                <Card>
+                  <Text style={styles.emptyBody}>
+                    {COPY.storeRecommendedEmpty}
+                  </Text>
+                </Card>
               ) : (
-                recommended.map((product) => (
-                  <View key={product.id} style={styles.recGap}>
+                <View style={styles.stack}>
+                  {recommended.map((product) => (
                     <ProductCard
+                      key={product.id}
                       product={product}
                       gate={canPurchase(product, userContext)}
                       layout="row"
@@ -227,10 +228,11 @@ export default function StoreScreen() {
                       }}
                       adding={addingId === product.id}
                     />
-                  </View>
-                ))
+                  ))}
+                </View>
               )}
-              <Text style={styles.group}>{COPY.storeFullCatalog}</Text>
+
+              <SectionTitle title={COPY.storeFullCatalog} />
               {availableTypes.length > 1 ? (
                 <View style={styles.filterRow}>
                   {[
@@ -240,43 +242,28 @@ export default function StoreScreen() {
                       label: t.replace(/_/g, " "),
                     })),
                   ].map((chip) => (
-                    <Pressable
+                    <Chip
                       key={chip.value}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: typeFilter === chip.value }}
+                      label={chip.label}
+                      selected={typeFilter === chip.value}
                       onPress={() => setTypeFilter(chip.value)}
-                      style={[
-                        styles.chip,
-                        typeFilter === chip.value && styles.chipOn,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.chipText,
-                          typeFilter === chip.value && styles.chipTextOn,
-                        ]}
-                      >
-                        {chip.label}
-                      </Text>
-                    </Pressable>
+                    />
                   ))}
                 </View>
               ) : null}
               {catalog.length === 0 ? (
-                <EmptyState
-                  icon="shopping-bag"
-                  heading={COPY.storeTitle}
-                  explanation={COPY.storeEmpty}
-                />
+                <Card>
+                  <Text style={styles.emptyBody}>{COPY.storeEmpty}</Text>
+                </Card>
               ) : null}
             </View>
           }
           renderItem={({ item }) => (
-            <View style={styles.gridCell}>
+            <View style={styles.listGap}>
               <ProductCard
                 product={item}
                 gate={canPurchase(item, userContext)}
-                layout="grid"
+                layout="row"
                 onOpen={() => {
                   router.push(productHref(item.id));
                 }}
@@ -288,9 +275,10 @@ export default function StoreScreen() {
             </View>
           )}
           ListFooterComponent={
-            <View>
+            <View style={styles.footer}>
               <PrimaryButton
                 title={cartButtonTitle}
+                icon="shopping-bag"
                 onPress={() => {
                   router.push(routes.storeCart);
                 }}
@@ -305,72 +293,35 @@ export default function StoreScreen() {
 }
 
 const styles = StyleSheet.create({
-  body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "center",
-    marginBottom: 8,
-  },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-    textAlign: "center",
+    ...typeStyle("body"),
+    color: Colors.red,
   },
   ok: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.sage,
-    textAlign: "center",
+    marginBottom: Space.md,
+    ...typeStyle("secondary"),
+    color: Colors.green,
   },
-  group: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.deepTeal,
+  emptyBody: {
+    ...typeStyle("body"),
+    color: Colors.body,
   },
-  recGap: {
-    marginBottom: 12,
+  stack: {
+    gap: Gap.cards,
   },
   filterRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 12,
+    gap: Space.sm,
+    marginBottom: Gap.cards + 2,
   },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.border,
+  listGap: {
+    marginBottom: Gap.cards,
   },
-  chipOn: {
-    backgroundColor: colors.primaryBlue,
-    borderColor: colors.primaryBlue,
-  },
-  chipText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.charcoal,
-    textTransform: "capitalize",
-  },
-  chipTextOn: {
-    color: colors.white,
-  },
-  columns: {
-    gap: 8,
-  },
-  gridCell: {
-    flex: 1,
+  footer: {
+    marginTop: Gap.beforeFooter - Gap.cards,
   },
   list: {
-    paddingBottom: 32,
+    paddingBottom: Gap.screenBottom,
   },
 });

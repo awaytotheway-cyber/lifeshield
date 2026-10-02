@@ -1,9 +1,10 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
-import { InteractionFlag } from "@/components/ui/InteractionFlag";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
+import { PressScale } from "@/components/ui/PressScale";
+import { Colors, Gap, Motion, Radius, Size, Space, typeStyle } from "@/lib/theme";
 
 type UiProductCardProps = {
   name: string;
@@ -20,8 +21,12 @@ type UiProductCardProps = {
 };
 
 /**
- * Store card from the design system. The live store screen still uses
- * components/store/ProductCard.tsx until that screen is restyled later.
+ * Store card for the orange redesign — a white Card with 24px padding, the
+ * price in big orange numbers, and one clear "Add" pill.
+ *
+ * PLAIN ENGLISH: this is the box each shop item sits in. `layout="row"` is the
+ * roomy full-width version the shop uses; `layout="grid"` is a narrower
+ * stacked version for side-by-side columns.
  */
 export function ProductCard({
   name,
@@ -39,118 +44,172 @@ export function ProductCard({
   const showAdd = !blocked && !needsCheck;
   const isGrid = layout === "grid";
 
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={name}
-      onPress={onOpen}
-      disabled={!onOpen}
-    >
-      <GlassSurface
-        intensity="card"
-        style={[styles.card, isGrid ? styles.cardGrid : styles.cardRow]}
-      >
-      {imageUri ? (
-        <Image source={{ uri: imageUri }} style={isGrid ? styles.imageGrid : styles.image} />
-      ) : (
-        <View style={isGrid ? styles.imageGrid : styles.image} />
-      )}
-      <View style={isGrid ? styles.gridBody : styles.right}>
+  const thumbnail = imageUri ? (
+    <Image
+      source={{ uri: imageUri }}
+      style={isGrid ? styles.imageGrid : styles.image}
+      accessibilityIgnoresInvertColors
+    />
+  ) : (
+    <View style={isGrid ? styles.imageGrid : styles.image}>
+      <Feather name="package" size={isGrid ? 24 : 22} color={Colors.orange} />
+    </View>
+  );
+
+  const details = (
+    <View style={isGrid ? styles.stack : styles.row}>
+      {thumbnail}
+      <View style={styles.text}>
         <Text style={styles.name}>{name}</Text>
+        <Text style={styles.desc} numberOfLines={isGrid ? 3 : 2}>
+          {description}
+        </Text>
+      </View>
+    </View>
+  );
+
+  return (
+    <Card style={isGrid ? styles.cardGrid : undefined}>
+      {/* The details block and the Add pill are siblings, never nested, so
+          there is only ever one tap target inside another. */}
+      {onOpen ? (
+        <PressScale
+          accessibilityRole="button"
+          accessibilityLabel={name}
+          onPress={onOpen}
+          scale={Motion.pressCard}
+          haptic="light"
+        >
+          {details}
+        </PressScale>
+      ) : (
+        details
+      )}
+
+      {needsCheck ? (
+        <View style={styles.statusWrap}>
+          <Chip label="Needs practitioner check" tone="amber" />
+          {checkReason ? <Text style={styles.reason}>{checkReason}</Text> : null}
+        </View>
+      ) : null}
+
+      {blocked ? (
+        <View style={styles.statusWrap}>
+          <Chip label="Not available for you right now" tone="neutral" />
+        </View>
+      ) : null}
+
+      <View style={[styles.footer, isGrid ? styles.footerGrid : null]}>
         <Text style={styles.price}>{priceLabel}</Text>
-        <Text style={styles.desc}>{description}</Text>
-        {needsCheck ? <InteractionFlag reason={checkReason} compact={!checkReason} /> : null}
-        {blocked ? (
-          <Text style={styles.blocked}>Not available for you right now</Text>
-        ) : null}
         {showAdd ? (
-          <Pressable
+          <PressScale
             accessibilityRole="button"
             accessibilityLabel={`Add ${name}`}
-            onPress={(event) => {
-              event.stopPropagation();
+            onPress={() => {
               onAdd?.();
             }}
             disabled={adding}
-            style={styles.add}
+            haptic="light"
+            scale={Motion.pressButton}
+            style={({ pressed }) => [
+              styles.add,
+              isGrid ? styles.addGrid : null,
+              pressed ? styles.addPressed : null,
+              adding ? styles.addBusy : null,
+            ]}
           >
             <Text style={styles.addText}>{adding ? "Adding…" : "Add"}</Text>
-          </Pressable>
+          </PressScale>
         ) : null}
       </View>
-      </GlassSurface>
-    </Pressable>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: spacing.base,
-  },
-  cardRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
   cardGrid: {
     flex: 1,
-    margin: 4,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: Space.md,
+  },
+  stack: {
+    gap: Space.sm,
   },
   image: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    backgroundColor: colors.lightTeal,
+    width: 56,
+    height: 56,
+    borderRadius: Radius.input,
+    backgroundColor: Colors.orangeTint,
+    alignItems: "center",
+    justifyContent: "center",
   },
   imageGrid: {
     width: "100%",
-    height: 80,
-    borderRadius: 10,
-    backgroundColor: colors.lightTeal,
-    marginBottom: 8,
+    height: 72,
+    borderRadius: Radius.input,
+    backgroundColor: Colors.orangeTint,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  gridBody: {
-    flex: 1,
-  },
-  right: {
+  text: {
     flex: 1,
   },
   name: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
-    color: colors.charcoal,
-  },
-  price: {
-    marginTop: 4,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.deepTeal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   desc: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.muted,
   },
-  blocked: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+  statusWrap: {
+    marginTop: Space.md,
+    gap: Space.sm,
+  },
+  reason: {
+    ...typeStyle("secondary"),
+    color: Colors.body,
+  },
+  footer: {
+    marginTop: Gap.cards + 2,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
+  },
+  footerGrid: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: Space.sm,
+  },
+  price: {
+    ...typeStyle("dataBig"),
+    color: Colors.orange,
   },
   add: {
-    marginTop: 8,
-    alignSelf: "flex-end",
-    height: 32,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: colors.deepTeal,
+    minHeight: Size.tap,
+    minWidth: 96,
+    paddingHorizontal: Space.lg,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.orange,
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 44,
+  },
+  addGrid: {
+    width: "100%",
+  },
+  addPressed: {
+    backgroundColor: Colors.orangeDeep,
+  },
+  addBusy: {
+    opacity: 0.7,
   },
   addText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
-    color: colors.white,
+    ...typeStyle("cardTitle"),
+    color: Colors.white,
   },
 });

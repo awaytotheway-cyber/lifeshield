@@ -8,8 +8,7 @@ import {
 } from "react-native";
 
 import { IconButton } from "@/components/ui/Button";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Radius, Size, Space, typeStyle } from "@/lib/theme";
 
 type FieldProps = RNTextInputProps & {
   label: string;
@@ -18,7 +17,8 @@ type FieldProps = RNTextInputProps & {
 };
 
 /**
- * Standard text field: label above, 56px box, teal glow when focused.
+ * Standard text field: label above, 56px box with a 16px radius, warm border
+ * that turns orange on focus.
  */
 export function TextInput({
   label,
@@ -42,7 +42,7 @@ export function TextInput({
       <View>
         <RNTextInput
           accessibilityLabel={label}
-          placeholderTextColor={colors.mist}
+          placeholderTextColor={Colors.faint}
           autoCapitalize="none"
           autoCorrect={false}
           secureTextEntry={showEye ? passwordHidden : false}
@@ -67,7 +67,9 @@ export function TextInput({
           <View style={styles.eye}>
             <IconButton
               icon={passwordHidden ? "eye-off" : "eye"}
-              accessibilityLabel={passwordHidden ? "Show password" : "Hide password"}
+              accessibilityLabel={
+                passwordHidden ? "Show password" : "Hide password"
+              }
               onPress={() => setPasswordHidden((current) => !current)}
             />
           </View>
@@ -85,52 +87,46 @@ export function TextField(props: FieldProps) {
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: 16,
+    marginTop: Space.lg,
     width: "100%",
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+    marginBottom: Gap.labelToField,
   },
   hint: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.midTeal,
-    marginBottom: 8,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+    marginBottom: Gap.labelToField,
   },
   input: {
-    minHeight: inputHeight,
-    borderRadius: radius.input,
+    minHeight: Size.input,
+    borderRadius: Radius.input,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    paddingHorizontal: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+    borderColor: Colors.line,
+    backgroundColor: Colors.white,
+    paddingHorizontal: Space.md,
+    ...typeStyle("body"),
+    color: Colors.ink,
   },
   inputWithEye: {
-    paddingRight: 52,
+    paddingRight: 60,
   },
   eye: {
     position: "absolute",
     right: 4,
-    top: 6,
+    top: 4,
   },
   inputFocus: {
-    borderColor: colors.midTeal,
-    ...shadows.focusGlow,
+    borderColor: Colors.orange,
   },
   inputError: {
-    borderColor: colors.coral,
+    borderColor: Colors.red,
   },
   error: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
   },
 });

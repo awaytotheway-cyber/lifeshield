@@ -3,8 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { WhyAskButton } from "@/components/ui/WhyAskSheet";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, typeStyle } from "@/lib/theme";
 
 type QuestionCardProps = {
   title: string;
@@ -13,6 +12,14 @@ type QuestionCardProps = {
   children: ReactNode;
 };
 
+/**
+ * One question group inside a questionnaire section: the question in 17px
+ * semibold, an optional “why we ask” info button, then the answer control.
+ *
+ * PLAIN ENGLISH: this is not a white box any more. The redesign keeps
+ * questionnaire pages flat and airy — 40px of space separates each group, so
+ * the question text and its answers read as one block without a border.
+ */
 export function QuestionCard({
   title,
   hint,
@@ -20,7 +27,7 @@ export function QuestionCard({
   children,
 }: QuestionCardProps) {
   return (
-    <View style={styles.card}>
+    <View style={styles.group}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {hint ? (
@@ -36,12 +43,9 @@ export function QuestionCard({
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginTop: 16,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+  group: {
+    // Section 8: 40px between question groups.
+    marginTop: Gap.sections,
   },
   header: {
     flexDirection: "row",
@@ -49,8 +53,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
 });

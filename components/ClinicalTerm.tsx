@@ -3,9 +3,10 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { Card } from "@/components/ui/Card";
+import { PressScale } from "@/components/ui/PressScale";
 import { getTerm, hasTerm } from "@/lib/plain-language";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radius, Shadow, Size, Space, typeStyle } from "@/lib/theme";
 
 type ClinicalTermProps = {
   termKey?: string;
@@ -52,8 +53,10 @@ export function ClinicalTerm({
   const detail = moreDetail?.trim() || explanation;
 
   return (
-    <View style={styles.card}>
-      <View style={styles.row1}>
+    // The card carries its own top margin because it is usually dropped
+    // straight after a block of copy on screens we do not control.
+    <Card style={styles.card}>
+      <View style={styles.headingRow}>
         <Text style={styles.heading}>{heading || medical}</Text>
         <Pressable
           accessibilityRole="button"
@@ -61,10 +64,12 @@ export function ClinicalTerm({
           onPress={() => setSheetOpen(true)}
           style={styles.infoHit}
         >
-          <Feather name="info" size={16} color={colors.midTeal} />
+          <Feather name="info" size={18} color={Colors.orange} />
         </Pressable>
       </View>
-      <Text style={styles.explain}>{explanation || "plain explanation coming soon"}</Text>
+      <Text style={styles.explain}>
+        {explanation || "plain explanation coming soon"}
+      </Text>
       <View style={styles.divider} />
       <Text style={styles.clinicalLabel}>Clinical name:</Text>
       <Text style={styles.medical}>{medical}</Text>
@@ -78,95 +83,93 @@ export function ClinicalTerm({
         <Pressable style={styles.backdrop} onPress={() => setSheetOpen(false)}>
           <Pressable style={styles.sheet} onPress={() => undefined}>
             <SafeAreaView edges={["bottom"]}>
-              <Text style={styles.heading}>{heading || medical}</Text>
+              <Text style={styles.sheetHeading}>{heading || medical}</Text>
               <Text style={styles.explain}>{detail}</Text>
-              <Pressable
+              <PressScale
                 accessibilityRole="button"
                 accessibilityLabel="Close"
                 onPress={() => setSheetOpen(false)}
+                haptic="light"
                 style={styles.closeHit}
               >
                 <Text style={styles.closeText}>Close</Text>
-              </Pressable>
+              </PressScale>
             </SafeAreaView>
           </Pressable>
         </Pressable>
       </Modal>
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
-    padding: spacing.base,
-    ...shadows.card,
+    marginTop: Space.md,
   },
-  row1: {
+  headingRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
+    gap: Space.sm,
   },
   heading: {
     flex: 1,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    lineHeight: 22,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   infoHit: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: Size.tap,
+    minHeight: Size.tap,
+    // Pulls the 44px tap target back level with the title without eating padding.
+    marginRight: -Space.sm,
+    marginVertical: -Space.sm,
     alignItems: "center",
     justifyContent: "center",
   },
   explain: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginVertical: 12,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+    marginVertical: Space.md,
   },
   clinicalLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
-    color: colors.mist,
+    ...typeStyle("caption"),
+    color: Colors.muted,
   },
   medical: {
-    marginTop: 4,
-    fontFamily: fontFamily.medical,
-    fontSize: 13,
-    color: colors.slate,
+    ...typeStyle("label"),
+    marginTop: Space.xs,
+    color: Colors.body,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: "rgba(31,27,24,0.35)",
   },
   sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    ...shadows.modal,
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    paddingHorizontal: Space.cardPad,
+    paddingTop: Space.xl,
+    paddingBottom: Space.lg,
+    ...Shadow.lift,
+  },
+  sheetHeading: {
+    ...typeStyle("title"),
+    color: Colors.ink,
   },
   closeHit: {
-    minHeight: 44,
-    marginTop: 16,
+    minHeight: Size.tap,
+    marginTop: Space.lg,
     alignItems: "center",
     justifyContent: "center",
   },
   closeText: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
+    ...typeStyle("body"),
+    color: Colors.orange,
   },
 });

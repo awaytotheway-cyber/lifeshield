@@ -1,14 +1,15 @@
 import { Redirect, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { Button } from "@/components/ui/Button";
+import { EmptyBox } from "@/components/illustrations";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
 import {
   formatOrderStatus,
@@ -19,8 +20,32 @@ import {
 } from "@/lib/orders";
 import { formatPaymentTotalForDisplay } from "@/lib/payment-intent-format";
 import { orderDetailHref, routes } from "@/lib/routes";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/**
+ * Semantic colour for an order's status chip. Delivered is green, anything in
+ * transit is amber, a failed or cancelled order is red, everything else stays
+ * neutral. The wording itself still comes from formatOrderStatus().
+ */
+function orderStatusTone(order: StoreOrderRow): ChipTone {
+  if (order.payment_status === "failed" || order.fulfilment_status === "cancelled") {
+    return "red";
+  }
+  if (order.payment_status === "paid") {
+    if (
+      order.fulfilment_status === "delivered" ||
+      order.fulfilment_status === "sample_collected"
+    ) {
+      return "green";
+    }
+    if (order.fulfilment_status === "shipped") {
+      return "amber";
+    }
+  }
+  return "neutral";
+}
 
 function OrderListCard({
   order,
@@ -30,20 +55,17 @@ function OrderListCard({
   onPress: () => void;
 }) {
   return (
-    <Pressable
-      onPress={onPress}
-      className="mt-3 rounded-xl bg-white px-4 py-4 active:opacity-80"
-    >
-      <Text className="text-charcoal">
-        {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
+    <Card onPress={onPress} accessibilityLabel={formatOrderStatus(order)}>
+      <View style={styles.rowHead}>
+        <Text style={styles.orderTotal}>
+          {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
+        </Text>
+        <Chip label={formatOrderStatus(order)} tone={orderStatusTone(order)} />
+      </View>
+      <Text style={styles.orderDate}>
+        {order.created_at ? new Date(order.created_at).toLocaleDateString() : ""}
       </Text>
-      <Text className="mt-1 text-teal">{formatOrderStatus(order)}</Text>
-      <Text className="mt-1 text-xs text-charcoal">
-        {order.created_at
-          ? new Date(order.created_at).toLocaleDateString()
-          : ""}
-      </Text>
-    </Pressable>
+    </Card>
   );
 }
 
@@ -140,92 +162,100 @@ export default function OrdersScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
+  const listOrders = orders.filter(
+    (order) => !placed || order.id !== highlightOrderId,
+  );
+
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
-        {placed ? COPY.checkoutSuccessTitle : COPY.ordersTitle}
-      </Text>
+      <ScreenHeader
+        title={placed ? COPY.checkoutSuccessTitle : COPY.ordersTitle}
+        subtitle={placed ? COPY.ordersPlacedBanner : COPY.ordersBody}
+        onBack={() => router.replace(routes.home)}
+        backLabel={COPY.orderBackHome}
+      />
 
-      {placed ? (
-        <Text className="mt-4 text-center text-teal">{COPY.ordersPlacedBanner}</Text>
-      ) : (
-        <Text className="mt-4 text-center text-charcoal">{COPY.ordersBody}</Text>
-      )}
-
-      {placed ? (
-        <Text className="mt-2 text-center text-sm text-charcoal">
-          {COPY.checkoutSuccessBody}
-        </Text>
-      ) : (
-        <Text className="mt-2 text-center text-xs text-charcoal">
-          {COPY.ordersWebhookNote}
-        </Text>
-      )}
-
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <StaticSkeleton rows={3} /> : null}
 
       {message ? (
-        <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
-          <Button title={COPY.storeRetry} variant="ghost" onPress={refresh} />
-        </>
+        <Card>
+          <Text style={styles.error}>{message}</Text>
+          <TextButton title={COPY.storeRetry} onPress={refresh} />
+        </Card>
       ) : null}
 
       {showHighlight ? (
-        <Pressable
+        <Card
+          elevated
           onPress={() => {
             openOrder(showHighlight.id);
           }}
-          className="mt-6 rounded-xl border border-teal bg-white px-4 py-4 active:opacity-80"
+          accessibilityLabel={COPY.checkoutViewOrder}
         >
-          <Text className="text-center text-lg text-charcoal">
+          <Text style={styles.highlightTotal}>
             {formatPaymentTotalForDisplay(
               showHighlight.total_amount,
               showHighlight.currency,
             )}
           </Text>
-          <Text className="mt-2 text-center text-teal">
-            {formatOrderStatus(showHighlight, highlightItems)}
-          </Text>
+          <View style={styles.highlightChip}>
+            <Chip
+              label={formatOrderStatus(showHighlight, highlightItems)}
+              tone={orderStatusTone(showHighlight)}
+            />
+          </View>
+
+          {placed ? (
+            <Text style={styles.body}>{COPY.checkoutSuccessBody}</Text>
+          ) : null}
 
           {highlightItems.length > 0 ? (
-            <View className="mt-4">
-              <Text className="text-center text-sm text-charcoal">
-                {COPY.orderItemsLabel}
-              </Text>
+            <>
+              <View style={styles.divider} />
+              <Text style={styles.itemsLabel}>{COPY.orderItemsLabel}</Text>
               {highlightItems.map((item) => (
-                <Text
-                  key={item.id}
-                  className="mt-2 text-center text-sm text-charcoal"
-                >
+                <Text key={item.id} style={styles.itemLine}>
                   {item.product_name} × {item.quantity} — ₹
                   {(item.unit_price * item.quantity).toLocaleString("en-IN")}
                 </Text>
               ))}
-            </View>
+            </>
           ) : null}
 
-          <Text className="mt-4 text-center text-sm text-coral">
-            {COPY.checkoutViewOrder}
-          </Text>
-        </Pressable>
+          <Text style={styles.viewOrder}>{COPY.checkoutViewOrder} →</Text>
+        </Card>
       ) : null}
 
       {!loading && !message && !placed && orders.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.ordersEmpty}</Text>
+        <Card>
+          <View style={styles.emptyWrap}>
+            <EmptyBox width={120} height={120} />
+            <Text style={styles.emptyBody}>{COPY.ordersEmpty}</Text>
+          </View>
+        </Card>
       ) : null}
 
-      {!loading && !message && orders.length > 0 && !placed ? (
-        <Text className="mt-6 text-center text-sm text-charcoal">
-          {COPY.ordersTapForDetail}
-        </Text>
-      ) : null}
-
-      {!loading && !message && orders.length > 0 ? (
-        <View className="mt-4">
-          {orders
-            .filter((order) => !placed || order.id !== highlightOrderId)
-            .map((order) => (
+      {!loading && !message && listOrders.length > 0 ? (
+        <>
+          {/* The header already says "Your orders" unless this is the
+              post-checkout success view, so only repeat it when it is. */}
+          {placed ? (
+            <SectionTitle
+              title={COPY.ordersTitle}
+              subtitle={COPY.ordersTapForDetail}
+            />
+          ) : (
+            <Text
+              style={[
+                styles.listHint,
+                showHighlight ? styles.listHintAfterCard : null,
+              ]}
+            >
+              {COPY.ordersTapForDetail}
+            </Text>
+          )}
+          <View style={styles.stack}>
+            {listOrders.map((order) => (
               <OrderListCard
                 key={order.id}
                 order={order}
@@ -234,22 +264,105 @@ export default function OrdersScreen() {
                 }}
               />
             ))}
-        </View>
+          </View>
+          <Text style={styles.footnote}>{COPY.ordersWebhookNote}</Text>
+        </>
       ) : null}
 
-      <Button
-        title={COPY.orderBackStore}
-        onPress={() => {
-          router.replace(routes.store);
-        }}
-      />
-      <Button
-        title={COPY.orderBackHome}
-        variant="ghost"
-        onPress={() => {
-          router.replace(routes.home);
-        }}
-      />
+      <View style={styles.footer}>
+        <PrimaryButton
+          title={COPY.orderBackStore}
+          icon="shopping-bag"
+          onPress={() => {
+            router.replace(routes.store);
+          }}
+        />
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  body: {
+    marginTop: Space.md,
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  highlightTotal: {
+    ...typeStyle("dataBig"),
+    color: Colors.orange,
+  },
+  highlightChip: {
+    marginTop: Space.sm,
+  },
+  divider: {
+    marginVertical: Space.md,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+  },
+  itemsLabel: {
+    ...typeStyle("label"),
+    color: Colors.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  itemLine: {
+    marginTop: Space.sm,
+    ...typeStyle("secondary"),
+    color: Colors.body,
+  },
+  viewOrder: {
+    marginTop: Space.md,
+    ...typeStyle("label"),
+    color: Colors.orangeDeep,
+  },
+  emptyWrap: {
+    alignItems: "center",
+    paddingVertical: Space.sm,
+  },
+  emptyBody: {
+    marginTop: Space.lg,
+    ...typeStyle("body"),
+    color: Colors.body,
+    textAlign: "center",
+  },
+  listHint: {
+    marginBottom: Gap.cards,
+    ...typeStyle("label"),
+    color: Colors.muted,
+  },
+  listHintAfterCard: {
+    marginTop: Gap.sections,
+  },
+  stack: {
+    gap: Gap.cards,
+  },
+  rowHead: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
+  },
+  orderTotal: {
+    flexShrink: 1,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  orderDate: {
+    marginTop: Space.sm,
+    ...typeStyle("caption"),
+    color: Colors.muted,
+  },
+  footnote: {
+    marginTop: Space.md,
+    ...typeStyle("caption"),
+    color: Colors.muted,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter - Space.md,
+  },
+});

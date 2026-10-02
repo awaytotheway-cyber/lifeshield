@@ -1,8 +1,17 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { PressScale } from "@/components/ui/PressScale";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
@@ -21,9 +30,8 @@ import {
   type ChatMessageRow,
   type ConnectionRow,
 } from "@/lib/buddies";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Radius, Size, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 const POLL_MS = 10_000;
@@ -105,16 +113,17 @@ export default function BuddyChatScreen() {
   const isStale = connection
     ? isStaleConnection(connection, messages.at(-1)?.created_at ?? null)
     : false;
+  const sendDisabled = busy || draft.trim().length === 0;
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen centered={false}>
       <ScreenHeader
         title={buddy?.display_name ?? COPY.buddiesChatTitle}
         onBack={() => router.replace(routes.buddies)}
         backLabel={COPY.buddiesTitle}
       />
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
+      {loading ? <StaticSkeleton rows={3} /> : null}
 
       {isStale ? (
         <View style={styles.staleCard}>
@@ -150,6 +159,7 @@ export default function BuddyChatScreen() {
             data={messages}
             keyExtractor={(m) => m.id}
             contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <Text style={styles.empty}>{COPY.buddiesChatEmpty}</Text>
             }
@@ -174,7 +184,7 @@ export default function BuddyChatScreen() {
           />
 
           <View style={styles.inputRow}>
-            <View style={{ flex: 1 }}>
+            <View style={styles.inputFlex}>
               <TextInput
                 label=""
                 value={draft}
@@ -184,25 +194,23 @@ export default function BuddyChatScreen() {
                 numberOfLines={2}
               />
             </View>
-            <Pressable
+            <PressScale
               accessibilityRole="button"
               accessibilityLabel={COPY.buddiesChatSend}
+              accessibilityState={{ disabled: sendDisabled }}
               onPress={send}
-              disabled={busy || draft.trim().length === 0}
-              style={({ pressed }) => [
-                styles.sendBtn,
-                (busy || draft.trim().length === 0) && styles.sendBtnDisabled,
-                pressed && { opacity: 0.85 },
-              ]}
+              disabled={sendDisabled}
+              haptic="medium"
+              style={[styles.sendBtn, sendDisabled ? styles.sendBtnOff : null]}
             >
-              <Text style={styles.sendText}>{COPY.buddiesChatSend}</Text>
-            </Pressable>
+              <Feather name="send" size={20} color={Colors.white} />
+            </PressScale>
           </View>
         </KeyboardAvoidingView>
       ) : null}
 
       {!loading && connection && connection.status !== "active" ? (
-        <View style={{ marginTop: spacing.base }}>
+        <View style={styles.closed}>
           <Text style={styles.empty}>
             This connection is {connection.status}. Reactivate it to chat.
           </Text>
@@ -221,85 +229,90 @@ export default function BuddyChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  chatWrap: { flex: 1, marginTop: spacing.sm },
+  chatWrap: {
+    flex: 1,
+  },
   list: {
-    padding: spacing.sm,
-    gap: spacing.sm,
+    gap: Space.sm,
+    paddingBottom: Space.md,
     flexGrow: 1,
     justifyContent: "flex-end",
   },
   bubble: {
     maxWidth: "82%",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 18,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.sm,
+    borderRadius: 20,
   },
   bubbleMine: {
     alignSelf: "flex-end",
-    backgroundColor: colors.primaryBlue,
+    backgroundColor: Colors.orange,
+    borderBottomRightRadius: Space.xs,
   },
   bubbleTheirs: {
     alignSelf: "flex-start",
-    backgroundColor: colors.iceBlue,
+    backgroundColor: Colors.cloud,
+    borderBottomLeftRadius: Space.xs,
   },
   bubbleText: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    color: Colors.ink,
   },
   bubbleTextMine: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.white,
+    ...typeStyle("body"),
+    color: Colors.white,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: spacing.sm,
-    paddingTop: spacing.sm,
+    gap: Space.sm,
+    paddingTop: Space.sm,
+  },
+  inputFlex: {
+    flex: 1,
   },
   sendBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: radius.button,
-    backgroundColor: colors.primaryBlue,
+    width: Size.circleButton,
+    height: Size.circleButton,
+    borderRadius: Size.circleButton / 2,
+    backgroundColor: Colors.orange,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
   },
-  sendBtnDisabled: { opacity: 0.5 },
-  sendText: {
-    fontFamily: fontFamily.bodySemi,
-    color: colors.white,
+  sendBtnOff: {
+    backgroundColor: Colors.faint,
   },
   empty: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.slate,
+    ...typeStyle("body"),
+    color: Colors.muted,
     textAlign: "center",
   },
+  closed: {
+    marginTop: Gap.sections,
+  },
   staleCard: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    backgroundColor: colors.amberLight,
-    borderRadius: radius.card,
+    marginBottom: Gap.cards,
+    padding: Space.cardPad,
+    backgroundColor: Colors.amberTint,
+    borderRadius: Radius.card,
   },
   staleTitle: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   staleBody: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   staleActions: {
-    marginTop: spacing.sm,
     flexDirection: "row",
-    gap: spacing.mdSm,
+    gap: Space.md,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.red,
   },
 });

@@ -3,17 +3,15 @@ import {
   Animated,
   StyleSheet,
   Text,
-  View,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radius, Shadow, Space, typeStyle } from "@/lib/theme";
 
 type ToastProps = {
   message: string | null;
-  /** success = teal, danger = coral (destructive confirms only). */
+  /** success = green, danger = red (destructive confirms only), info = ink. */
   tone?: "success" | "danger" | "info";
   style?: StyleProp<ViewStyle>;
   onHide?: () => void;
@@ -59,16 +57,21 @@ export function Toast({
 
   const bg =
     tone === "danger"
-      ? colors.riskHigh
+      ? Colors.red
       : tone === "info"
-        ? colors.deepNavy
-        : colors.riskLow;
+        ? Colors.ink
+        : Colors.green;
 
   return (
     <Animated.View
       pointerEvents="none"
       accessibilityLiveRegion="polite"
-      style={[styles.wrap, { backgroundColor: bg, opacity }, style]}
+      style={[
+        styles.wrap,
+        Shadow.lift,
+        { backgroundColor: bg, opacity },
+        style,
+      ]}
     >
       <Text style={styles.text}>{message}</Text>
     </Animated.View>
@@ -78,19 +81,17 @@ export function Toast({
 const styles = StyleSheet.create({
   wrap: {
     position: "absolute",
-    left: spacing.screenX,
-    right: spacing.screenX,
-    bottom: spacing.lg,
-    borderRadius: radius.alert,
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.mdSm,
+    left: Space.screenH,
+    right: Space.screenH,
+    bottom: Space.xl,
+    borderRadius: Radius.button,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.md - 2,
     zIndex: 50,
   },
   text: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.white,
+    ...typeStyle("secondary"),
+    color: Colors.white,
     textAlign: "center",
   },
 });

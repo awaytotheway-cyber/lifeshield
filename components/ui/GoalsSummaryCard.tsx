@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
+import { Card } from "@/components/ui/Card";
+import { PressScale } from "@/components/ui/PressScale";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { TextButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { Colors, Font, Gap, Space, typeStyle } from "@/lib/theme";
 import { goalDetailHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import {
   activeGoals,
   goalTypeLabel,
@@ -53,35 +55,34 @@ export function GoalsSummaryCard({ userId, maxRows = 2 }: GoalsSummaryCardProps)
   const active = activeGoals(rows).slice(0, maxRows);
 
   return (
-    <View style={styles.card}>
+    <Card>
       <View style={styles.header}>
         <Text style={styles.title}>{COPY.goalsHomeHeader}</Text>
-        <Pressable
-          accessibilityRole="button"
+        <TextButton
+          title={COPY.goalsHomeSeeAll}
+          style={styles.headerLink}
           onPress={() => router.push(routes.goals)}
-        >
-          <Text style={styles.link}>{COPY.goalsHomeSeeAll}</Text>
-        </Pressable>
+        />
       </View>
 
       {active.length === 0 ? (
         <>
           <Text style={styles.empty}>{COPY.goalsEmptyBody}</Text>
-          <Pressable
-            accessibilityRole="button"
+          <TextButton
+            title={COPY.goalsNewCta}
+            style={styles.emptyCta}
             onPress={() => router.push(routes.newGoal)}
-          >
-            <Text style={styles.cta}>{COPY.goalsNewCta}</Text>
-          </Pressable>
+          />
         </>
       ) : (
         active.map((row) => (
-          <Pressable
+          <PressScale
             key={row.id}
             accessibilityRole="button"
             accessibilityLabel={`${row.title}, ${progressPercent(row)}% progress`}
             onPress={() => router.push(goalDetailHref(row.id))}
-            style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+            haptic="light"
+            style={styles.row}
           >
             <Text style={styles.type}>{goalTypeLabel(row.goal_type)}</Text>
             <Text style={styles.rowTitle}>{row.title}</Text>
@@ -89,77 +90,58 @@ export function GoalsSummaryCard({ userId, maxRows = 2 }: GoalsSummaryCardProps)
             <Text style={styles.meta}>
               {row.progress} / {row.target} {row.unit} · ends {row.end_date}
             </Text>
-          </Pressable>
+          </PressScale>
         ))
       )}
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginTop: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
-  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: spacing.sm,
+    gap: Space.sm,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    lineHeight: 24,
-    color: colors.charcoal,
+    flex: 1,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
-  link: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
-    color: colors.primaryBlue,
+  headerLink: {
+    marginTop: 0,
+    width: "auto",
   },
   empty: {
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
-    marginBottom: spacing.sm,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
-  cta: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
-    color: colors.primaryBlue,
+  emptyCta: {
+    alignSelf: "flex-start",
+    paddingHorizontal: 0,
   },
   row: {
-    marginTop: spacing.sm,
-    paddingTop: spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  rowPressed: {
-    opacity: 0.85,
+    marginTop: Gap.rowY,
+    paddingTop: Gap.rowY,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.line,
   },
   type: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
-    letterSpacing: 0.4,
-    color: colors.slate,
-    textTransform: "uppercase",
+    ...typeStyle("label"),
+    color: Colors.muted,
   },
   rowTitle: {
-    marginTop: spacing.micro,
-    marginBottom: spacing.micro,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    marginTop: Space.xs,
+    fontFamily: Font.semibold,
+    fontSize: 16,
+    lineHeight: 22,
+    color: Colors.ink,
   },
   meta: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.muted,
   },
 });

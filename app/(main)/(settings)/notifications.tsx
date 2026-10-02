@@ -1,17 +1,17 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Linking, Platform, StyleSheet, Text } from "react-native";
+import { Linking, Platform, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { ColorSwitch } from "@/components/ui/ColorSwitch";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TimePicker } from "@/components/ui/TimePicker";
 import { Toast } from "@/components/ui/Toast";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import {
   loadExtendedProfile,
@@ -26,7 +26,7 @@ import {
   registerForPushNotifications,
 } from "@/lib/push-notifications";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -128,83 +128,93 @@ export default function NotificationsSettingsScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.settingsNotifyTitle}
+        subtitle={COPY.settingsNotifyBody}
         onBack={() => router.replace(routes.settings)}
+        backLabel={COPY.settingsTitle}
       />
-      <Text style={styles.body}>{COPY.settingsNotifyBody}</Text>
+
       {loading ? <StaticSkeleton rows={3} /> : null}
+
       {!loading ? (
-        <GlassCard intensity="card" style={styles.card}>
-          <ColorSwitch
-            label={COPY.settingsNotifyReminders}
-            value={prefs.notify_reminders}
-            onChange={(next) => update({ notify_reminders: next })}
-          />
-          <ColorSwitch
-            label={COPY.settingsNotifyResults}
-            value={prefs.notify_results}
-            onChange={(next) => update({ notify_results: next })}
-          />
-          <ColorSwitch
-            label={COPY.settingsNotifyPlan}
-            value={prefs.notify_plan}
-            onChange={(next) => update({ notify_plan: next })}
-          />
-          <ColorSwitch
-            label={COPY.settingsNotifyMarketing}
-            value={prefs.notify_marketing}
-            onChange={(next) => update({ notify_marketing: next })}
-          />
-          <TimePicker
-            label={COPY.settingsNotifyTime}
-            hint={COPY.settingsNotifyTimeHint}
-            value={prefs.preferred_notify_time ?? ""}
-            onChange={(next) => update({ preferred_notify_time: next || null })}
-          />
-        </GlassCard>
+        <>
+          <Card>
+            <ColorSwitch
+              label={COPY.settingsNotifyReminders}
+              value={prefs.notify_reminders}
+              onChange={(next) => update({ notify_reminders: next })}
+            />
+            <View style={styles.divider} />
+            <ColorSwitch
+              label={COPY.settingsNotifyResults}
+              value={prefs.notify_results}
+              onChange={(next) => update({ notify_results: next })}
+            />
+            <View style={styles.divider} />
+            <ColorSwitch
+              label={COPY.settingsNotifyPlan}
+              value={prefs.notify_plan}
+              onChange={(next) => update({ notify_plan: next })}
+            />
+            <View style={styles.divider} />
+            <ColorSwitch
+              label={COPY.settingsNotifyMarketing}
+              value={prefs.notify_marketing}
+              onChange={(next) => update({ notify_marketing: next })}
+            />
+          </Card>
+
+          <SectionTitle title="Timing" />
+          <Card>
+            <TimePicker
+              label={COPY.settingsNotifyTime}
+              hint={COPY.settingsNotifyTimeHint}
+              value={prefs.preferred_notify_time ?? ""}
+              onChange={(next) => update({ preferred_notify_time: next || null })}
+            />
+          </Card>
+        </>
       ) : null}
+
       {pushNote ? <Text style={styles.note}>{pushNote}</Text> : null}
       {message ? <Text style={styles.error}>{message}</Text> : null}
-      <PrimaryButton
-        title={COPY.settingsNotifySave}
-        loading={saving}
-        disabled={saving || !dirty || loading}
-        onPress={() => void save()}
-      />
-      <TextButton
-        title={COPY.settingsNotifySystem}
-        onPress={() => void openSystemSettings()}
-      />
+
+      <View style={styles.footer}>
+        <PrimaryButton
+          title={COPY.settingsNotifySave}
+          loading={saving}
+          disabled={saving || !dirty || loading}
+          onPress={() => void save()}
+        />
+        <TextButton
+          title={COPY.settingsNotifySystem}
+          onPress={() => void openSystemSettings()}
+        />
+      </View>
+
       <Toast message={toast} onHide={() => setToast(null)} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-  },
-  card: {
-    marginTop: spacing.md,
-    padding: spacing.base,
-    marginBottom: spacing.md,
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
   },
   note: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.body,
   },
   error: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.red,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter,
   },
 });
