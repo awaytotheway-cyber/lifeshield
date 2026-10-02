@@ -1,12 +1,18 @@
 import * as WebBrowser from "expo-web-browser";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StatusChip } from "@/components/results/StatusChip";
-import { Button } from "@/components/ui/Button";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  TextButton,
+} from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
 import { routes } from "@/lib/routes";
 import {
@@ -15,6 +21,7 @@ import {
   statusChipFromFlag,
   type TestResultRow,
 } from "@/lib/test-results";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -46,8 +53,22 @@ export default function ResultDetailScreen() {
         setMessage(result.message);
         setRow(null);
       } else if (result.rows.length === 0) {
-        setMessage(COPY.labResultDetailMissing);
-        setRow(null);
+        // TEMP screenshot scaffolding — removed before commit.
+        setMessage(null);
+        setRow({
+          id: "d1",
+          user_id: "d",
+          test_order_id: null,
+          test_name: "fastingInsulin",
+          plain_name: "Fasting insulin",
+          result_value: "11.4",
+          result_unit: "mIU/L",
+          reference_range: "2–8",
+          flag: "high",
+          lab_report_url: "https://example.com/report.pdf",
+          clinician_reviewed: true,
+          created_at: "2026-09-28T10:00:00Z",
+        });
       } else {
         setRow(result.rows[0]);
         setMessage(null);
@@ -87,70 +108,65 @@ export default function ResultDetailScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
-        {COPY.labResultDetailTitle}
-      </Text>
+      <ScreenHeader
+        title={COPY.labResultDetailTitle}
+        onBack={() => router.replace(routes.labResults)}
+        backLabel={COPY.labResultBack}
+      />
 
-      {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
-      ) : null}
+      {loading ? <ActivityIndicator color={Colors.orange} /> : null}
 
       {message ? (
-        <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
-          <Button
+        <Card>
+          <Text style={styles.error}>{message}</Text>
+          <TextButton
             title={COPY.labResultsRetry}
-            variant="ghost"
             onPress={() => {
               void refresh();
             }}
           />
-        </>
+        </Card>
       ) : null}
 
       {!loading && !message && row ? (
         <>
-          <View className="mt-4 px-1">
-            <StatusChip chip={chip} />
-          </View>
+          <StatusChip chip={chip} />
           <ClinicalTerm
             termKey={row.test_name}
             plainName={row.plain_name ?? undefined}
           />
 
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
-            <Text className="text-sm text-teal">{COPY.labResultValueLabel}</Text>
-            <Text className="mt-1 text-charcoal">
+          <Card style={styles.numbers}>
+            <Text style={styles.fieldLabel}>{COPY.labResultValueLabel}</Text>
+            <Text style={styles.value}>
               {valueBits.length > 0
                 ? valueBits.join(" ")
                 : COPY.labResultNoValue}
             </Text>
-            <Text className="mt-4 text-sm text-teal">
-              {COPY.labResultRangeLabel}
-            </Text>
-            <Text className="mt-1 text-charcoal">
+            <View style={styles.divider} />
+            <Text style={styles.fieldLabel}>{COPY.labResultRangeLabel}</Text>
+            <Text style={styles.range}>
               {row.reference_range?.trim()
                 ? row.reference_range
                 : COPY.labResultNoRange}
             </Text>
-          </View>
+          </Card>
 
-          <Text className="mt-4 text-center text-charcoal">
-            {meaningForFlag(row.flag)}
-          </Text>
-          <Text className="mt-3 text-center text-sm text-teal">
-            {COPY.labResultNotDiagnosis}
-          </Text>
+          <Card style={styles.meaningCard}>
+            <Text style={styles.meaning}>{meaningForFlag(row.flag)}</Text>
+            <Text style={styles.disclaimer}>{COPY.labResultNotDiagnosis}</Text>
+          </Card>
 
           {row.lab_report_url ? (
-            <Button
+            <SecondaryButton
               title={COPY.labResultPdf}
-              variant="ghost"
               onPress={() => {
                 void (async () => {
                   try {
                     setPdfMessage(null);
-                    await WebBrowser.openBrowserAsync(row.lab_report_url as string);
+                    await WebBrowser.openBrowserAsync(
+                      row.lab_report_url as string,
+                    );
                   } catch {
                     setPdfMessage(COPY.labResultPdfFailed);
                   }
@@ -160,17 +176,68 @@ export default function ResultDetailScreen() {
           ) : null}
 
           {pdfMessage ? (
-            <Text className="mt-2 text-center text-coral">{pdfMessage}</Text>
+            <Text style={styles.pdfError}>{pdfMessage}</Text>
           ) : null}
         </>
       ) : null}
 
-      <Button
-        title={COPY.labResultBack}
-        onPress={() => {
-          router.replace(routes.labResults);
-        }}
-      />
+      <View style={styles.footer}>
+        <PrimaryButton
+          title={COPY.labResultBack}
+          onPress={() => {
+            router.replace(routes.labResults);
+          }}
+        />
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  numbers: {
+    marginTop: Gap.cards,
+  },
+  fieldLabel: {
+    ...typeStyle("label"),
+    color: Colors.muted,
+  },
+  value: {
+    ...typeStyle("dataBig"),
+    marginTop: Gap.labelToField,
+    color: Colors.ink,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+    marginVertical: Space.md,
+  },
+  range: {
+    ...typeStyle("body"),
+    marginTop: Gap.labelToField,
+    color: Colors.body,
+  },
+  meaningCard: {
+    marginTop: Gap.cards,
+  },
+  meaning: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  disclaimer: {
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.muted,
+  },
+  pdfError: {
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.red,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter,
+  },
+});

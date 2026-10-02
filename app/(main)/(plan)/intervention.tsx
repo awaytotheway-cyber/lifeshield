@@ -1,11 +1,14 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
 import { termKeyForFinding } from "@/lib/plan-groups";
 import {
@@ -14,6 +17,7 @@ import {
   type InterventionRow,
 } from "@/lib/plan";
 import { routes } from "@/lib/routes";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -88,68 +92,66 @@ export default function PlanItemScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
-        {COPY.planDetailTitle}
-      </Text>
-      <View className="mt-4 rounded-xl border border-teal bg-white px-4 py-3">
-        <Text className="text-center text-charcoal">{bannerText}</Text>
-      </View>
+      <ScreenHeader
+        title={COPY.planDetailTitle}
+        onBack={() => router.replace(routes.plan)}
+        backLabel={COPY.planDetailBack}
+      />
+
+      <Card>
+        <Text style={styles.banner}>{bannerText}</Text>
+      </Card>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <ActivityIndicator style={styles.spinner} color={Colors.orange} />
       ) : null}
 
       {message ? (
-        <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
-          <Button
+        <Card style={styles.block}>
+          <Text style={styles.error}>{message}</Text>
+          <TextButton
             title={COPY.planRetry}
-            variant="ghost"
             onPress={() => {
               void refresh();
             }}
           />
-        </>
+        </Card>
       ) : null}
 
       {!loading && !message && row ? (
         <>
-          <Text className="mt-4 text-center text-xl text-charcoal">
-            {row.title}
-          </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailWhat}</Text>
-          <Text className="mt-1 text-charcoal">
-            {row.description?.trim() ||
-              row.plain_reason?.trim() ||
-              COPY.planDetailNotInstruction}
-          </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planWhyLabel}</Text>
-          <Text className="mt-1 text-charcoal">
-            {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
-          </Text>
+          <Card style={styles.block}>
+            <Text style={styles.itemTitle}>{row.title}</Text>
+            {row.clinician_interaction_check ? (
+              <View style={styles.flag}>
+                <Chip label={COPY.planNeedsCheck} tone="amber" />
+              </View>
+            ) : null}
 
-          {row.clinician_interaction_check ? (
-            <View
-              className="mt-3 self-start rounded-full px-3 py-1"
-              style={{ backgroundColor: "#FDE68A" }}
-            >
-              <Text className="text-sm text-charcoal">{COPY.planNeedsCheck}</Text>
-            </View>
-          ) : null}
+            <Text style={styles.fieldLabel}>{COPY.planDetailWhat}</Text>
+            <Text style={styles.fieldValue}>
+              {row.description?.trim() ||
+                row.plain_reason?.trim() ||
+                COPY.planDetailNotInstruction}
+            </Text>
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailReview}</Text>
-          <Text className="mt-1 text-charcoal">
-            {reviewStatusLabel(row.status)}
-          </Text>
+            <Text style={styles.fieldLabel}>{COPY.planWhyLabel}</Text>
+            <Text style={styles.fieldValue}>
+              {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
+            </Text>
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planClinicalBasis}</Text>
-          <Text className="mt-1 text-charcoal">
-            {row.clinical_basis?.trim() || row.trigger_finding}
-          </Text>
+            <Text style={styles.fieldLabel}>{COPY.planDetailReview}</Text>
+            <Text style={styles.fieldValue}>{reviewStatusLabel(row.status)}</Text>
 
-          <Text className="mt-6 text-center text-sm text-teal">
-            {COPY.planDetailFinding}
-          </Text>
+            <View style={styles.divider} />
+
+            <Text style={styles.fieldLabel}>{COPY.planClinicalBasis}</Text>
+            <Text style={styles.fieldValue}>
+              {row.clinical_basis?.trim() || row.trigger_finding}
+            </Text>
+          </Card>
+
+          <Text style={styles.findingLabel}>{COPY.planDetailFinding}</Text>
           <ClinicalTerm
             termKey={termKey}
             plainName={row.title}
@@ -157,7 +159,7 @@ export default function PlanItemScreen() {
             medicalName={row.trigger_finding}
           />
 
-          <Text className="mt-4 text-center text-sm text-teal">
+          <Text style={styles.disclaimer}>
             {COPY.planDetailNotInstruction}
           </Text>
 
@@ -172,12 +174,66 @@ export default function PlanItemScreen() {
         </>
       ) : null}
 
-      <Button
-        title={COPY.planDetailBack}
-        onPress={() => {
-          router.replace(routes.plan);
-        }}
-      />
+      <View style={styles.footer}>
+        <PrimaryButton
+          title={COPY.planDetailBack}
+          onPress={() => {
+            router.replace(routes.plan);
+          }}
+        />
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  banner: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  spinner: {
+    marginTop: Gap.cards,
+  },
+  block: {
+    marginTop: Gap.cards,
+  },
+  itemTitle: {
+    ...typeStyle("section"),
+    color: Colors.ink,
+  },
+  flag: {
+    marginTop: Space.sm,
+  },
+  fieldLabel: {
+    ...typeStyle("label"),
+    marginTop: Space.lg,
+    color: Colors.muted,
+  },
+  fieldValue: {
+    ...typeStyle("body"),
+    marginTop: Gap.labelToField,
+    color: Colors.body,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+    marginTop: Space.lg,
+  },
+  findingLabel: {
+    ...typeStyle("label"),
+    marginTop: Gap.sections,
+    color: Colors.muted,
+  },
+  disclaimer: {
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.muted,
+  },
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter,
+  },
+});

@@ -2,12 +2,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Redirect, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton, SecondaryButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { SelectPicker } from "@/components/ui/SelectPicker";
+import { TextInput } from "@/components/ui/TextInput";
 import { TextField } from "@/components/ui/TextField";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
@@ -25,6 +29,7 @@ import {
   type ResultEntryParsed,
 } from "@/lib/result-entry";
 import { routes } from "@/lib/routes";
+import { Colors, Gap, Radius, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -74,18 +79,22 @@ export default function EnterResultsScreen() {
   if (!isAdmin) {
     return (
       <Screen scroll>
-        <Text className="text-center text-2xl text-charcoal">
-          {COPY.enterResultsTitle}
-        </Text>
-        <Text className="mt-4 text-center text-charcoal">
-          {COPY.enterResultsDenied}
-        </Text>
-        <Button
-          title={COPY.enterResultsGoHome}
-          onPress={() => {
-            router.replace(routes.home);
-          }}
+        <ScreenHeader
+          title={COPY.enterResultsTitle}
+          onBack={() => router.replace(routes.home)}
+          backLabel={COPY.enterResultsGoHome}
         />
+        <Card>
+          <Text style={styles.body}>{COPY.enterResultsDenied}</Text>
+        </Card>
+        <View style={styles.footer}>
+          <PrimaryButton
+            title={COPY.enterResultsGoHome}
+            onPress={() => {
+              router.replace(routes.home);
+            }}
+          />
+        </View>
       </Screen>
     );
   }
@@ -190,16 +199,19 @@ export default function EnterResultsScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
-        {COPY.enterResultsTitle}
-      </Text>
-      <Text className="mt-3 text-center text-charcoal">
-        {COPY.enterResultsBody}
-      </Text>
-      <Text className="mt-3 text-center text-sm text-teal">
-        Signed in as {session.user.email}. For founder testing, leave the user
-        id as your own so a row appears for you.
-      </Text>
+      <ScreenHeader
+        title={COPY.enterResultsTitle}
+        onBack={() => router.replace(routes.home)}
+        backLabel={COPY.resultsBackHome}
+      />
+
+      <Card>
+        <Text style={styles.body}>{COPY.enterResultsBody}</Text>
+        <Text style={styles.note}>
+          Signed in as {session.user.email}. For founder testing, leave the user
+          id as your own so a row appears for you.
+        </Text>
+      </Card>
 
       <Controller
         control={control}
@@ -328,14 +340,12 @@ export default function EnterResultsScreen() {
       />
 
       {formMessage ? (
-        <Text
-          className={`mt-4 text-center ${formOk ? "text-teal" : "text-coral"}`}
-        >
+        <Text style={[styles.formMessage, formOk ? styles.ok : styles.error]}>
           {formMessage}
         </Text>
       ) : null}
 
-      <Button
+      <PrimaryButton
         title={COPY.enterResultsSave}
         loading={isSubmitting}
         onPress={() => {
@@ -343,49 +353,69 @@ export default function EnterResultsScreen() {
         }}
       />
 
-      <View className="mt-8">
-        <Text className="text-center text-xl text-charcoal">
-          {COPY.enterResultsCsvTitle}
-        </Text>
-        <Text className="mt-2 text-center text-sm text-teal">
-          {COPY.enterResultsCsvHint}
-        </Text>
-        <TextInput
-          className="mt-3 min-h-[120px] rounded-xl border border-sage bg-white px-4 py-3 text-charcoal"
-          placeholderTextColor="#2D343699"
-          multiline
-          textAlignVertical="top"
-          value={csvText}
-          onChangeText={setCsvText}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <Button
-          title={COPY.enterResultsCsvImport}
-          variant="ghost"
-          loading={csvBusy}
-          onPress={() => {
-            void onImportCsv();
-          }}
-        />
-      </View>
-
-      {formOk && savedForSelf ? (
-        <Button
-          title={COPY.enterResultsViewDashboard}
-          onPress={() => {
-            router.push(routes.labResults);
-          }}
-        />
-      ) : null}
-
-      <Button
-        title={COPY.resultsBackHome}
-        variant="ghost"
+      <SectionTitle
+        title={COPY.enterResultsCsvTitle}
+        subtitle={COPY.enterResultsCsvHint}
+      />
+      <TextInput
+        label={COPY.enterResultsCsvLabel}
+        style={styles.csvBox}
+        multiline
+        textAlignVertical="top"
+        value={csvText}
+        onChangeText={setCsvText}
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+      <SecondaryButton
+        title={COPY.enterResultsCsvImport}
+        loading={csvBusy}
         onPress={() => {
-          router.replace(routes.home);
+          void onImportCsv();
         }}
       />
+
+      {formOk && savedForSelf ? (
+        <View style={styles.footer}>
+          <PrimaryButton
+            title={COPY.enterResultsViewDashboard}
+            onPress={() => {
+              router.push(routes.labResults);
+            }}
+          />
+        </View>
+      ) : null}
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  body: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  note: {
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.muted,
+  },
+  formMessage: {
+    ...typeStyle("body"),
+    marginTop: Space.lg,
+  },
+  ok: {
+    color: Colors.green,
+  },
+  error: {
+    color: Colors.red,
+  },
+  csvBox: {
+    minHeight: 140,
+    paddingTop: Space.md,
+    paddingBottom: Space.md,
+    borderRadius: Radius.input,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter,
+  },
+});

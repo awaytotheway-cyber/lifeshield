@@ -1,18 +1,21 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
-import { PlanRoadmap } from "@/components/illustrations";
+import { BackButton } from "@/components/ui/BackButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { InterventionCard } from "@/components/ui/InterventionCard";
-import { Screen } from "@/components/ui/Screen";
-import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
+import { Hero } from "@/components/ui/Hero";
+import {
+  InterventionCard,
+  type InterventionTone,
+} from "@/components/ui/InterventionCard";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
-import type { StatusChipKind } from "@/components/ui/StatusChip";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { groupInterventions } from "@/lib/plan-groups";
+import { groupInterventions, type PlanGroupKey } from "@/lib/plan-groups";
 import {
   planBannerForState,
   planReviewState,
@@ -24,41 +27,33 @@ import {
   type InterventionRow,
 } from "@/lib/plan";
 import { planItemHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
-type ListRow =
-  | { kind: "heading"; id: string; title: string }
-  | { kind: "item"; id: string; row: InterventionRow };
+/** One Feather icon per plan group, shown in the section title's orange square. */
+const GROUP_ICONS: Record<PlanGroupKey, keyof typeof Feather.glyphMap> = {
+  habits: "sun",
+  food: "coffee",
+  supplements: "droplet",
+  followup: "refresh-cw",
+  referrals: "user-check",
+};
 
+/**
+ * Chips hold a short status only — a pill truncates anything longer than a
+ * couple of words. The full review sentence stays on the item detail screen.
+ */
 function planChip(
   row: InterventionRow,
-): { status: Extract<StatusChipKind, "approved" | "draft" | "critical">; label: string } {
+): { tone: InterventionTone; label: string } {
   if (row.clinician_interaction_check) {
-    return { status: "critical", label: COPY.planNeedsCheck };
+    return { tone: "check", label: COPY.planNeedsCheck };
   }
   if (row.status === "clinician_approved" || row.status === "active") {
-    return { status: "approved", label: COPY.planStatusReviewed };
+    return { tone: "approved", label: "Practitioner approved" };
   }
-  return { status: "draft", label: "Pending review" };
-}
-
-function categoryIcon(
-  category: string,
-): "supplement" | "diet" | "lifestyle" | "therapy" | "referral" | "coaching" | "retest" {
-  if (
-    category === "supplement" ||
-    category === "diet" ||
-    category === "lifestyle" ||
-    category === "therapy" ||
-    category === "referral" ||
-    category === "coaching" ||
-    category === "retest"
-  ) {
-    return category;
-  }
-  return "lifestyle";
+  return { tone: "pending", label: "Pending review" };
 }
 
 export default function PlanScreen() {
@@ -69,8 +64,6 @@ export default function PlanScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [rows, setRows] = useState<InterventionRow[]>([]);
-  const windowWidth = useWindowDimensions().width;
-  const roadmapWidth = Math.max(160, windowWidth - spacing.screenX * 2);
 
   const applyRows = useCallback((next: InterventionRow[]) => {
     setRows(next);
@@ -144,17 +137,6 @@ export default function PlanScreen() {
     [reviewState],
   );
 
-  const listData = useMemo<ListRow[]>(() => {
-    const out: ListRow[] = [];
-    for (const group of grouped) {
-      out.push({ kind: "heading", id: `h-${group.key}`, title: group.label });
-      for (const row of group.items) {
-        out.push({ kind: "item", id: row.id, row });
-      }
-    }
-    return out;
-  }, [grouped]);
-
   if (!session) {
     return <Redirect href={routes.login} />;
   }
@@ -167,140 +149,179 @@ export default function PlanScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
+  const reviewed =
+    reviewState === "approved_pending" || reviewState === "finalised";
+  const showGroups = !loading && !message && rows.length > 0;
+  const showEmpty = !loading && !message && rows.length === 0;
+
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
-      <ScreenHeader
-        title={planTitle}
-        onBack={() => router.replace(routes.labResults)}
-        backLabel={COPY.planBackResults}
-      />
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>{planBanner}</Text>
-      </View>
-      <Text style={styles.body}>{COPY.planBody}</Text>
+    <View style={styles.root}>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <Hero>
+          <BackButton
+            onPress={() => router.replace(routes.labResults)}
+            accessibilityLabel={COPY.planBackResults}
+          />
+          <Text style={styles.heroTitle} accessibilityRole="header">
+            {planTitle}
+          </Text>
+          <View style={styles.heroChip}>
+            <Chip
+              label={reviewed ? "Practitioner approved" : "Pending review"}
+              tone={reviewed ? "green" : "neutral"}
+            />
+          </View>
+        </Hero>
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
+        <View style={styles.body}>
+          <Card>
+            <Text style={styles.banner}>{planBanner}</Text>
+            <Text style={styles.bannerBody}>{COPY.planBody}</Text>
+          </Card>
 
-      {message ? (
-        <>
-          <Text style={styles.error}>{message}</Text>
-          <TextButton title={COPY.planRetry} onPress={() => void loadExisting()} />
-        </>
-      ) : null}
+          {loading ? <StaticSkeleton rows={4} /> : null}
 
-      {!loading && !message && rows.length === 0 ? (
-        <EmptyState
-          icon="list"
-          heading={COPY.planEmptyHeading}
-          explanation={COPY.planEmpty}
-        />
-      ) : null}
+          {message ? (
+            <Card style={styles.block}>
+              <Text style={styles.error}>{message}</Text>
+              <TextButton
+                title={COPY.planRetry}
+                onPress={() => void loadExisting()}
+              />
+            </Card>
+          ) : null}
 
-      {!loading && !message && rows.length > 0 ? (
-        <FlatList
-          data={listData}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          ListHeaderComponent={
-            <View style={styles.roadmap}>
-              <PlanRoadmap width={roadmapWidth} height={120} />
-            </View>
-          }
-          renderItem={({ item }) => {
-            if (item.kind === "heading") {
-              return <Text style={styles.group}>{item.title}</Text>;
-            }
-            const chip = planChip(item.row);
-            return (
-              <View style={styles.cardGap}>
-                <InterventionCard
-                  title={item.row.title}
-                  why={
-                    item.row.plain_reason?.trim() || COPY.planDetailNotInstruction
-                  }
-                  clinicalBasis={
-                    item.row.clinical_basis?.trim() || item.row.trigger_finding
-                  }
-                  category={categoryIcon(String(item.row.category))}
-                  status={chip.status}
-                  statusLabel={chip.label}
-                  onPress={() => {
-                    router.push(planItemHref(item.row.id));
-                  }}
-                />
-              </View>
-            );
-          }}
-        />
-      ) : null}
+          {showEmpty ? (
+            <Card style={styles.block}>
+              <Text style={styles.emptyHeading}>{COPY.planEmptyHeading}</Text>
+              <Text style={styles.emptyBody}>{COPY.planEmpty}</Text>
+            </Card>
+          ) : null}
 
-      <PrimaryButton
-        title={COPY.planBrowseStore}
-        onPress={() => {
-          router.push(routes.store);
-        }}
-      />
-      <TextButton
-        title={COPY.planOpenFollowUp}
-        onPress={() => {
-          router.push(routes.followUp);
-        }}
-      />
-      <TextButton
-        title={COPY.planRefresh}
-        loading={refreshing}
-        onPress={() => {
-          void refreshDrafts();
-        }}
-      />
-    </Screen>
+          {showGroups
+            ? grouped.map((group) => (
+                <View key={group.key}>
+                  <SectionTitle
+                    title={group.label}
+                    icon={GROUP_ICONS[group.key]}
+                  />
+                  <View style={styles.cardStack}>
+                    {group.items.map((row) => {
+                      const chip = planChip(row);
+                      return (
+                        <InterventionCard
+                          key={row.id}
+                          title={row.title}
+                          why={
+                            row.plain_reason?.trim() ||
+                            COPY.planDetailNotInstruction
+                          }
+                          clinicalBasis={
+                            row.clinical_basis?.trim() || row.trigger_finding
+                          }
+                          tone={chip.tone}
+                          statusLabel={chip.label}
+                          actionLabel={
+                            group.key === "supplements"
+                              ? COPY.planBrowseStore
+                              : undefined
+                          }
+                          onAction={
+                            group.key === "supplements"
+                              ? () => router.push(routes.store)
+                              : undefined
+                          }
+                          onPress={() => {
+                            router.push(planItemHref(row.id));
+                          }}
+                        />
+                      );
+                    })}
+                  </View>
+                </View>
+              ))
+            : null}
+
+          <View style={styles.footer}>
+            <PrimaryButton
+              title={COPY.planBrowseStore}
+              onPress={() => {
+                router.push(routes.store);
+              }}
+            />
+            <TextButton
+              title={COPY.planOpenFollowUp}
+              onPress={() => {
+                router.push(routes.followUp);
+              }}
+            />
+            <TextButton
+              title={COPY.planRefresh}
+              loading={refreshing}
+              onPress={() => {
+                void refreshDrafts();
+              }}
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  banner: {
-    marginTop: 8,
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.alert,
-    padding: spacing.base,
+  root: {
+    flex: 1,
+    backgroundColor: Colors.background,
   },
-  bannerText: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
-    textAlign: "center",
+  scroll: {
+    paddingBottom: Gap.screenBottom,
+  },
+  heroTitle: {
+    ...typeStyle("hero"),
+    marginTop: Space.lg,
+    color: Colors.ink,
+  },
+  heroChip: {
+    marginTop: Space.md,
   },
   body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "center",
+    paddingHorizontal: Space.screenH,
+    // Section 8: 40px between the hero and the first content.
+    paddingTop: Gap.sections,
+  },
+  banner: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  bannerBody: {
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.muted,
+  },
+  block: {
+    marginTop: Gap.cards,
+  },
+  cardStack: {
+    gap: Gap.cards,
+  },
+  emptyHeading: {
+    ...typeStyle("section"),
+    color: Colors.ink,
+  },
+  emptyBody: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-    textAlign: "center",
+    ...typeStyle("body"),
+    color: Colors.red,
   },
-  roadmap: {
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  list: {
-    paddingBottom: 16,
-  },
-  group: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.deepTeal,
-  },
-  cardGap: {
-    marginBottom: 12,
+  footer: {
+    marginTop: Gap.screenBottom,
   },
 });

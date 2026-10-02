@@ -1,126 +1,174 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
-import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Card } from "@/components/ui/Card";
+import { Chip, type ChipTone } from "@/components/ui/Chip";
+import { PressScale } from "@/components/ui/PressScale";
+import { COPY } from "@/lib/copy";
+import { Colors, Radius, Size, Space, typeStyle } from "@/lib/theme";
 
-const CATEGORY_ICONS = {
-  supplement: "droplet",
-  diet: "coffee",
-  lifestyle: "sun",
-  therapy: "activity",
-  referral: "user-check",
-  coaching: "message-circle",
-  retest: "refresh-cw",
-} as const;
+/** Where a plan item sits with the practitioner. */
+export type InterventionTone = "approved" | "pending" | "check";
+
+/** Soft green for approved, amber for "ask a practitioner", quiet grey for drafts. */
+const CHIP_TONES: Record<InterventionTone, ChipTone> = {
+  approved: "green",
+  pending: "neutral",
+  check: "amber",
+};
 
 type InterventionCardProps = {
   title: string;
   why: string;
   clinicalBasis?: string;
-  category?: keyof typeof CATEGORY_ICONS;
-  status: Extract<StatusChipKind, "approved" | "draft" | "critical">;
+  tone: InterventionTone;
   statusLabel: string;
+  /** Supply both to show the orange pill — supplements only. */
+  actionLabel?: string;
+  onAction?: () => void;
   onPress?: () => void;
 };
 
 /**
  * Plan item card. Clinical wording stays collapsed until someone asks.
+ *
+ * PLAIN ENGLISH: a roomy white card — what the idea is, why it is here, and a
+ * "Clinical basis" line that unfolds in place when tapped. The title area, the
+ * unfold line and the orange pill are separate taps, never nested in each other.
  */
 export function InterventionCard({
   title,
   why,
   clinicalBasis,
-  category = "lifestyle",
-  status,
+  tone,
   statusLabel,
+  actionLabel,
+  onAction,
   onPress,
 }: InterventionCardProps) {
   const [open, setOpen] = useState(false);
-  const icon = CATEGORY_ICONS[category];
+
+  const summary = (
+    <>
+      <Chip label={statusLabel} tone={CHIP_TONES[tone]} />
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.whyLabel}>{COPY.planWhyLabel}</Text>
+      <Text style={styles.why}>{why}</Text>
+    </>
+  );
 
   return (
-    <Pressable
-      accessibilityRole={onPress ? "button" : undefined}
-      accessibilityLabel={title}
-      onPress={onPress}
-      disabled={!onPress}
-    >
-      <GlassSurface intensity="card" style={styles.card}>
-      <View style={styles.top}>
-        <Feather name={icon} size={20} color={colors.deepTeal} />
-        <View style={styles.topText}>
-          <Text style={styles.title}>{title}</Text>
-          <StatusChip kind={status} label={statusLabel} />
-        </View>
-      </View>
-      <Text style={styles.whyLabel}>Why you're seeing this:</Text>
-      <Text style={styles.why}>{why}</Text>
-      {clinicalBasis ? (
-        <Pressable
+    <Card>
+      {onPress ? (
+        <PressScale
           accessibilityRole="button"
-          accessibilityLabel="Clinical basis"
-          onPress={() => setOpen((current) => !current)}
-          style={styles.expand}
+          accessibilityLabel={title}
+          onPress={onPress}
+          haptic="light"
         >
-          <Text style={styles.expandLabel}>Clinical basis ›</Text>
-        </Pressable>
+          {summary}
+        </PressScale>
+      ) : (
+        summary
+      )}
+
+      {clinicalBasis ? (
+        <>
+          <View style={styles.divider} />
+          <PressScale
+            accessibilityRole="button"
+            accessibilityState={{ expanded: open }}
+            accessibilityLabel={
+              open ? COPY.planClinicalBasisHide : COPY.planClinicalBasis
+            }
+            onPress={() => setOpen((current) => !current)}
+            haptic="light"
+            style={styles.expandHit}
+          >
+            <Text style={styles.expandLabel}>
+              {open ? COPY.planClinicalBasisHide : COPY.planClinicalBasis}
+            </Text>
+            <Feather
+              name={open ? "chevron-up" : "chevron-down"}
+              size={18}
+              color={Colors.muted}
+            />
+          </PressScale>
+          {open ? <Text style={styles.basis}>{clinicalBasis}</Text> : null}
+        </>
       ) : null}
-      {open && clinicalBasis ? (
-        <Text style={styles.basis}>{clinicalBasis}</Text>
+
+      {actionLabel && onAction ? (
+        <View style={styles.actionRow}>
+          <PressScale
+            accessibilityRole="button"
+            accessibilityLabel={`${actionLabel}: ${title}`}
+            onPress={onAction}
+            haptic="medium"
+            style={styles.pill}
+          >
+            <Text style={styles.pillLabel}>{actionLabel}</Text>
+          </PressScale>
+        </View>
       ) : null}
-      </GlassSurface>
-    </Pressable>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: spacing.base,
-  },
-  top: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  topText: {
-    flex: 1,
-    gap: 8,
-  },
   title: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    marginTop: Space.sm,
+    color: Colors.ink,
   },
   whyLabel: {
-    marginTop: 12,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
+    ...typeStyle("caption"),
+    marginTop: Space.md,
+    color: Colors.muted,
   },
   why: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    marginTop: Space.xs,
+    color: Colors.body,
   },
-  expand: {
-    marginTop: 8,
-    minHeight: 44,
-    justifyContent: "center",
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+    marginTop: Space.md,
+  },
+  expandHit: {
+    minHeight: Size.tap,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
   },
   expandLabel: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
+    flex: 1,
+    ...typeStyle("secondary"),
+    color: Colors.body,
   },
   basis: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginBottom: Space.xs,
+    color: Colors.muted,
+  },
+  actionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginTop: Space.md,
+  },
+  pill: {
+    minHeight: Size.tap,
+    justifyContent: "center",
+    paddingHorizontal: Space.lg,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.orange,
+  },
+  pillLabel: {
+    ...typeStyle("label"),
+    color: Colors.white,
   },
 });

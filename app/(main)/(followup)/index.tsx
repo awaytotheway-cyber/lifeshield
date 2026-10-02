@@ -1,15 +1,14 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { CalendarCheck, FollowUpCalendar } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   reminderNoteFor,
   requestFollowUpReminderPermission,
@@ -31,7 +30,7 @@ import {
   type FollowUpRow,
 } from "@/lib/follow-ups";
 import { followUpSymptomHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -59,11 +58,15 @@ function FollowUpCard({
   onComplete: () => void;
 }) {
   const isSymptom = row.type === "symptom_check";
+  const due = dueLabel(row.due_date);
+  const dueToday = due === COPY.followUpDueToday;
   return (
-    <View style={styles.card}>
-      <Text style={styles.type}>{typeLabel(row.type)}</Text>
+    <Card>
+      <View style={styles.cardTop}>
+        <Chip label={typeLabel(row.type)} />
+        <Chip label={due} tone={dueToday ? "amber" : "neutral"} />
+      </View>
       <Text style={styles.cardTitle}>{row.title}</Text>
-      <Text style={styles.due}>{dueLabel(row.due_date)}</Text>
       {row.plain_note ? <Text style={styles.note}>{row.plain_note}</Text> : null}
       {isSymptom ? (
         <Text style={styles.hint}>{COPY.followUpDoSymptom}</Text>
@@ -75,7 +78,7 @@ function FollowUpCard({
           onPress={onComplete}
         />
       )}
-    </View>
+    </Card>
   );
 }
 
@@ -192,35 +195,39 @@ export default function FollowUpHubScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
+  const reminderNote = reminderStatus ? reminderNoteFor(reminderStatus) : null;
+  const pushNote = pushRegistrationNoteFor(pushStatus);
+
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.followUpTitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.followUpBackHome}
       />
-      <View style={styles.calendar}>
-        <FollowUpCalendar width={100} height={80} />
-      </View>
-      <Text style={styles.body}>{COPY.followUpBody}</Text>
+
+      <Card>
+        <Text style={styles.body}>{COPY.followUpBody}</Text>
+      </Card>
 
       {loading ? <StaticSkeleton rows={3} /> : null}
 
       {message ? (
-        <>
+        <Card style={styles.block}>
           <Text style={styles.error}>{message}</Text>
-          <TextButton title={COPY.followUpRetry} onPress={() => void loadList()} />
-        </>
+          <TextButton
+            title={COPY.followUpRetry}
+            onPress={() => void loadList()}
+          />
+        </Card>
       ) : null}
 
       {showEmpty ? (
         <>
-          <EmptyState
-            icon="check-circle"
-            heading={COPY.followUpEmptyHeading}
-            explanation={COPY.followUpEmpty}
-            illustration={<CalendarCheck width={100} height={100} />}
-          />
+          <Card style={styles.block}>
+            <Text style={styles.emptyHeading}>{COPY.followUpEmptyHeading}</Text>
+            <Text style={styles.emptyBody}>{COPY.followUpEmpty}</Text>
+          </Card>
           <PrimaryButton
             title={COPY.followUpSeedNow}
             onPress={() => {
@@ -230,133 +237,124 @@ export default function FollowUpHubScreen() {
         </>
       ) : null}
 
-      {showList ? (
-        <FlatList
-          data={pending}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+      {showList && pending.length > 0 ? (
+        <View style={styles.cardStack}>
+          {pending.map((item) => (
             <FollowUpCard
+              key={item.id}
               row={item}
               busyId={busyId}
               onComplete={() => {
                 void markDone(item.id);
               }}
             />
-          )}
-          contentContainerStyle={styles.list}
-        />
+          ))}
+        </View>
       ) : null}
 
-      {loadState !== "loading" && reminderStatus === null ? (
-        <>
-          <Text style={styles.body}>{COPY.followUpRemindersAsk}</Text>
-          <TextButton
-            title={COPY.followUpRemindersAllow}
-            loading={askingReminders}
+      {loadState !== "loading" ? (
+        <Card style={styles.remindersCard}>
+          {reminderNote === null ? (
+            <>
+              <Text style={styles.body}>{COPY.followUpRemindersAsk}</Text>
+              <TextButton
+                title={COPY.followUpRemindersAllow}
+                loading={askingReminders}
+                onPress={() => {
+                  void askReminders();
+                }}
+              />
+              {isExpoGo() ? (
+                <Text style={styles.note}>
+                  {pushRegistrationNoteFor("expo_go")}
+                </Text>
+              ) : null}
+            </>
+          ) : (
+            <>
+              <Text style={styles.ok}>{reminderNote}</Text>
+              {pushNote ? <Text style={styles.note}>{pushNote}</Text> : null}
+            </>
+          )}
+        </Card>
+      ) : null}
+
+      <View style={styles.footer}>
+        {symptom && showList ? (
+          <PrimaryButton
+            title={COPY.followUpDoSymptom}
             onPress={() => {
-              void askReminders();
+              router.push(followUpSymptomHref(symptom.id));
             }}
           />
-        </>
-      ) : loadState !== "loading" && reminderStatus !== null ? (
-        <>
-          <Text style={styles.ok}>{reminderNoteFor(reminderStatus)}</Text>
-          {pushRegistrationNoteFor(pushStatus) ? (
-            <Text style={styles.note}>{pushRegistrationNoteFor(pushStatus)}</Text>
-          ) : null}
-        </>
-      ) : null}
-
-      {loadState !== "loading" && isExpoGo() && reminderStatus === null ? (
-        <Text style={styles.note}>{pushRegistrationNoteFor("expo_go")}</Text>
-      ) : null}
-
-      {symptom && showList ? (
-        <PrimaryButton
-          title={COPY.followUpDoSymptom}
-          onPress={() => {
-            router.push(followUpSymptomHref(symptom.id));
-          }}
-        />
-      ) : (
-        <PrimaryButton
-          title={COPY.followUpBackHome}
-          disabled={loading}
-          onPress={() => {
-            router.replace(routes.home);
-          }}
-        />
-      )}
+        ) : (
+          <PrimaryButton
+            title={COPY.followUpBackHome}
+            disabled={loading}
+            onPress={() => {
+              router.replace(routes.home);
+            }}
+          />
+        )}
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  calendar: {
-    alignItems: "center",
-    marginTop: 8,
-  },
   body: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "center",
+    ...typeStyle("body"),
+    color: Colors.body,
   },
-  error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-    textAlign: "center",
+  block: {
+    marginTop: Gap.cards,
   },
-  ok: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.sage,
-    textAlign: "center",
+  cardStack: {
+    marginTop: Gap.sections,
+    gap: Gap.cards,
   },
-  note: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
-    textAlign: "center",
-  },
-  hint: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
-  },
-  list: {
-    paddingBottom: 16,
-  },
-  card: {
-    marginTop: 12,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
-  },
-  type: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
+  cardTop: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    gap: Space.sm,
   },
   cardTitle: {
-    marginTop: 4,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    marginTop: Space.md,
+    color: Colors.ink,
   },
-  due: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+  note: {
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.muted,
+  },
+  hint: {
+    ...typeStyle("body"),
+    marginTop: Space.md,
+    color: Colors.body,
+  },
+  ok: {
+    ...typeStyle("body"),
+    color: Colors.green,
+  },
+  emptyHeading: {
+    ...typeStyle("section"),
+    color: Colors.ink,
+  },
+  emptyBody: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  remindersCard: {
+    marginTop: Gap.sections,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter,
   },
 });
