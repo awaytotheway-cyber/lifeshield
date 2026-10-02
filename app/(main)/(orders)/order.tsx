@@ -1,9 +1,14 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip, type ChipTone } from "@/components/ui/Chip";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
 import {
   buildOrderTimeline,
@@ -15,23 +20,58 @@ import {
 } from "@/lib/orders";
 import { formatPaymentTotalForDisplay } from "@/lib/payment-intent-format";
 import { routes } from "@/lib/routes";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
-function TimelineRow({ step }: { step: OrderTimelineStep }) {
-  const dotClass = step.current
-    ? "bg-coral"
-    : step.done
-      ? "bg-teal"
-      : "bg-sage";
-  const textClass = step.current ? "text-coral" : "text-charcoal";
+/** Same semantic mapping as the orders list: green done, amber moving, red stopped. */
+function orderStatusTone(order: StoreOrderRow): ChipTone {
+  if (order.payment_status === "failed" || order.fulfilment_status === "cancelled") {
+    return "red";
+  }
+  if (order.payment_status === "paid") {
+    if (
+      order.fulfilment_status === "delivered" ||
+      order.fulfilment_status === "sample_collected"
+    ) {
+      return "green";
+    }
+    if (order.fulfilment_status === "shipped") {
+      return "amber";
+    }
+  }
+  return "neutral";
+}
+
+function TimelineRow({ step, last }: { step: OrderTimelineStep; last: boolean }) {
+  const stopped =
+    step.label === COPY.orderTimelinePaymentFailed ||
+    step.label === COPY.orderTimelineCancelled;
+  const dotColor = stopped
+    ? Colors.red
+    : step.current
+      ? Colors.orange
+      : step.done
+        ? Colors.green
+        : Colors.line;
 
   return (
-    <View className="mt-4 flex-row">
-      <View className={`mt-1 h-3 w-3 rounded-full ${dotClass}`} />
-      <View className="ml-3 flex-1">
-        <Text className={`text-base ${textClass}`}>{step.label}</Text>
-        <Text className="mt-1 text-sm text-charcoal">{step.detail}</Text>
+    <View style={styles.timelineRow}>
+      <View style={styles.rail}>
+        <View style={[styles.dot, { backgroundColor: dotColor }]} />
+        {last ? null : <View style={styles.railLine} />}
+      </View>
+      <View style={styles.timelineText}>
+        <Text
+          style={[
+            styles.stepLabel,
+            step.current ? styles.stepLabelCurrent : null,
+            stopped ? styles.stepLabelStopped : null,
+          ]}
+        >
+          {step.label}
+        </Text>
+        <Text style={styles.stepDetail}>{step.detail}</Text>
       </View>
     </View>
   );
@@ -107,95 +147,222 @@ export default function OrderDetailScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
-        {COPY.orderDetailTitle}
-      </Text>
+      <ScreenHeader
+        title={COPY.orderDetailTitle}
+        onBack={() => router.replace(routes.orders)}
+        backLabel={COPY.orderBackOrders}
+      />
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <StaticSkeleton rows={3} /> : null}
 
       {message ? (
-        <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
-          <Button title={COPY.storeRetry} variant="ghost" onPress={() => void refresh()} />
-        </>
+        <Card>
+          <Text style={styles.error}>{message}</Text>
+          <TextButton title={COPY.storeRetry} onPress={() => void refresh()} />
+        </Card>
       ) : null}
 
       {!loading && !message && order ? (
         <>
-          <View className="mt-6 rounded-xl bg-white px-4 py-4">
-            <Text className="text-center text-xl text-charcoal">
+          <Card elevated>
+            <Text style={styles.total}>
               {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
             </Text>
-            <Text className="mt-2 text-center text-teal">
-              {formatOrderStatus(order, items)}
-            </Text>
+            <View style={styles.statusChip}>
+              <Chip
+                label={formatOrderStatus(order, items)}
+                tone={orderStatusTone(order)}
+              />
+            </View>
             {order.created_at ? (
-              <Text className="mt-2 text-center text-xs text-charcoal">
+              <Text style={styles.placedOn}>
                 {new Date(order.created_at).toLocaleString()}
               </Text>
             ) : null}
-          </View>
+          </Card>
 
-          <Text className="mt-6 text-center text-lg text-charcoal">
-            {COPY.orderItemsLabel}
-          </Text>
+          <SectionTitle title={COPY.orderItemsLabel} icon="package" />
           {items.length === 0 ? (
-            <Text className="mt-2 text-center text-charcoal">
-              {COPY.ordersEmpty}
-            </Text>
+            <Card>
+              <Text style={styles.body}>{COPY.ordersEmpty}</Text>
+            </Card>
           ) : (
-            items.map((item) => (
-              <View
-                key={item.id}
-                className="mt-3 rounded-xl border border-sage bg-white px-4 py-3"
-              >
-                <Text className="text-charcoal">{item.product_name}</Text>
-                <Text className="mt-1 text-sm text-charcoal">
-                  {item.quantity} × ₹
-                  {item.unit_price.toLocaleString("en-IN")} = ₹
-                  {(item.unit_price * item.quantity).toLocaleString("en-IN")}
-                </Text>
-              </View>
-            ))
+            <View style={styles.stack}>
+              {items.map((item) => (
+                <Card key={item.id}>
+                  <Text style={styles.itemName}>{item.product_name}</Text>
+                  <View style={styles.itemFoot}>
+                    <Text style={styles.itemUnit}>
+                      {item.quantity} × ₹
+                      {item.unit_price.toLocaleString("en-IN")}
+                    </Text>
+                    <Text style={styles.itemTotal}>
+                      ₹
+                      {(item.unit_price * item.quantity).toLocaleString(
+                        "en-IN",
+                      )}
+                    </Text>
+                  </View>
+                </Card>
+              ))}
+            </View>
           )}
 
-          <Text className="mt-8 text-center text-lg text-charcoal">
-            {COPY.orderTimelineTitle}
-          </Text>
-          <Text className="mt-1 text-center text-xs text-charcoal">
-            {COPY.ordersWebhookNote}
-          </Text>
-
-          <View className="mt-2 rounded-xl bg-white px-4 py-2">
-            {timeline.map((step) => (
-              <TimelineRow key={step.label} step={step} />
+          <SectionTitle
+            title={COPY.orderTimelineTitle}
+            subtitle={COPY.ordersWebhookNote}
+            icon="truck"
+          />
+          <Card>
+            {timeline.map((step, index) => (
+              <TimelineRow
+                key={step.label}
+                step={step}
+                last={index === timeline.length - 1}
+              />
             ))}
-          </View>
+          </Card>
 
-          <View className="mt-6 rounded-xl bg-cream px-4 py-3">
-            <Text className="text-sm text-charcoal">
-              {COPY.orderPaymentLabel}: {order.payment_status}
-            </Text>
-            <Text className="mt-1 text-sm text-charcoal">
-              {COPY.orderFulfilmentLabel}: {order.fulfilment_status}
-            </Text>
+          <View style={styles.metaWrap}>
+            <Card>
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>{COPY.orderPaymentLabel}</Text>
+                <Text style={styles.metaValue}>{order.payment_status}</Text>
+              </View>
+              <View style={styles.metaDivider} />
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>
+                  {COPY.orderFulfilmentLabel}
+                </Text>
+                <Text style={styles.metaValue}>{order.fulfilment_status}</Text>
+              </View>
+            </Card>
           </View>
         </>
       ) : null}
 
-      <Button
-        title={COPY.orderBackOrders}
-        onPress={() => {
-          router.replace(routes.orders);
-        }}
-      />
-      <Button
-        title={COPY.orderBackHome}
-        variant="ghost"
-        onPress={() => {
-          router.replace(routes.home);
-        }}
-      />
+      <View style={styles.footer}>
+        <PrimaryButton
+          title={COPY.orderBackOrders}
+          onPress={() => {
+            router.replace(routes.orders);
+          }}
+        />
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  error: {
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  body: {
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  total: {
+    ...typeStyle("dataBig"),
+    color: Colors.orange,
+  },
+  statusChip: {
+    marginTop: Space.sm,
+  },
+  placedOn: {
+    marginTop: Space.md,
+    ...typeStyle("caption"),
+    color: Colors.muted,
+  },
+  stack: {
+    gap: Gap.cards,
+  },
+  itemName: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  itemFoot: {
+    marginTop: Space.md,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
+  },
+  itemUnit: {
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  itemTotal: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  timelineRow: {
+    flexDirection: "row",
+    gap: Space.md,
+  },
+  rail: {
+    width: 12,
+    alignItems: "center",
+  },
+  dot: {
+    marginTop: 6,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  railLine: {
+    flex: 1,
+    width: 2,
+    marginTop: Space.xs,
+    marginBottom: -Space.xs,
+    backgroundColor: Colors.line,
+  },
+  timelineText: {
+    flex: 1,
+    paddingBottom: Gap.rowY,
+  },
+  stepLabel: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  stepLabelCurrent: {
+    color: Colors.orangeDeep,
+  },
+  stepLabelStopped: {
+    color: Colors.red,
+  },
+  stepDetail: {
+    marginTop: 2,
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  metaWrap: {
+    marginTop: Gap.sections,
+  },
+  metaDivider: {
+    marginVertical: Space.sm,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Space.sm,
+    paddingVertical: Space.xs,
+  },
+  metaLabel: {
+    ...typeStyle("label"),
+    color: Colors.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  metaValue: {
+    ...typeStyle("secondary"),
+    color: Colors.ink,
+    textTransform: "capitalize",
+  },
+  footer: {
+    marginTop: Gap.beforeFooter - Space.md,
+  },
+});

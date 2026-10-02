@@ -4,10 +4,9 @@ import { IodineHardStop } from "@/components/ui/IodineHardStop";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
 import { ProductCard as CatalogCard } from "@/components/ui/ProductCard";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing } from "@/lib/design-tokens";
 import { formatProductPrice, type ProductRow } from "@/lib/store";
 import type { PurchaseGateResult } from "@/lib/purchase-gates";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radius, Space, typeStyle } from "@/lib/theme";
 
 type PurchaseStatusProps = {
   gate: PurchaseGateResult;
@@ -81,18 +80,16 @@ export function ProductCard({
 
 const styles = StyleSheet.create({
   flagWrap: {
-    marginTop: spacing.sm,
+    marginTop: Space.md,
   },
   infoBadge: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.amberLight,
-    borderRadius: radius.alert,
-    padding: spacing.mdSm,
+    marginTop: Space.md,
+    backgroundColor: Colors.amberTint,
+    borderRadius: Radius.input,
+    padding: Space.md,
   },
   infoText: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.charcoal,
+    ...typeStyle("secondary"),
+    color: Colors.body,
   },
 });

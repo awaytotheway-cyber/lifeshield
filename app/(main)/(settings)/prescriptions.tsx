@@ -1,12 +1,13 @@
 import { Redirect, useRouter } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 import { EmptyBox } from "@/components/illustrations";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
-import { spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
+import { Colors, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -27,16 +28,37 @@ export default function PrescriptionsScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.prescriptionsTitle}
         onBack={() => router.back()}
       />
-      <EmptyState
-        heading={COPY.prescriptionsEmptyHeading}
-        explanation={COPY.prescriptionsEmptyBody}
-        illustration={<EmptyBox width={180} />}
-      />
+      <Card>
+        <View style={styles.wrap}>
+          <EmptyBox width={160} height={160} />
+          <Text style={styles.heading}>{COPY.prescriptionsEmptyHeading}</Text>
+          <Text style={styles.body}>{COPY.prescriptionsEmptyBody}</Text>
+        </View>
+      </Card>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: {
+    alignItems: "center",
+    paddingVertical: Space.sm,
+  },
+  heading: {
+    marginTop: Space.lg,
+    ...typeStyle("section"),
+    color: Colors.ink,
+    textAlign: "center",
+  },
+  body: {
+    marginTop: Space.sm,
+    ...typeStyle("body"),
+    color: Colors.body,
+    textAlign: "center",
+  },
+});

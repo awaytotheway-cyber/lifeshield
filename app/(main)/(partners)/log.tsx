@@ -1,17 +1,19 @@
 import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { ChoiceToggle } from "@/components/ui/ChoiceToggle";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { logActivity, type ActivityType } from "@/lib/partners";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
+
 import { useAuthStore } from "@/stores/auth-store";
 
 const TYPE_OPTIONS = [
@@ -63,24 +65,29 @@ export default function LogActivityScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.partnersLogActivityCta}
         onBack={() => router.back()}
         backLabel={COPY.partnersTitle}
       />
 
-      <View style={{ marginTop: spacing.base }}>
-        <ChoiceToggle
-          label={COPY.activityFormType}
-          options={TYPE_OPTIONS}
-          value={type}
-          onChange={(v) => setType(v || "walk")}
-          allowClear={false}
-        />
-      </View>
+      <View style={styles.fields}>
+        {/* Eight options do not fit a segmented control, so they wrap as chips. */}
+        <View>
+          <Text style={styles.fieldLabel}>{COPY.activityFormType}</Text>
+          <View style={styles.chipRow}>
+            {TYPE_OPTIONS.map((option) => (
+              <Chip
+                key={option.value}
+                label={option.label}
+                selected={type === option.value}
+                onPress={() => setType(option.value)}
+              />
+            ))}
+          </View>
+        </View>
 
-      <View style={{ marginTop: spacing.base }}>
         <TextInput
           label={COPY.activityFormMinutes}
           value={minutes}
@@ -88,9 +95,7 @@ export default function LogActivityScreen() {
           keyboardType="numeric"
           placeholder="e.g. 30"
         />
-      </View>
 
-      <View style={{ marginTop: spacing.base }}>
         <ChoiceToggle
           label={COPY.activityFormIntensity}
           options={INTENSITY_OPTIONS}
@@ -98,9 +103,7 @@ export default function LogActivityScreen() {
           onChange={(v) => setIntensity(v || "moderate")}
           allowClear={false}
         />
-      </View>
 
-      <View style={{ marginTop: spacing.base }}>
         <TextInput
           label={COPY.activityFormNote}
           value={note}
@@ -111,10 +114,20 @@ export default function LogActivityScreen() {
         />
       </View>
 
-      {message ? <Text style={styles.error}>{message}</Text> : null}
+      {message ? (
+        <View style={styles.errorWrap}>
+          <Card>
+            <Text style={styles.error}>{message}</Text>
+          </Card>
+        </View>
+      ) : null}
 
-      <View style={{ marginTop: spacing.md }}>
-        <PrimaryButton title={COPY.activityFormSave} loading={busy} onPress={save} />
+      <View style={styles.footer}>
+        <PrimaryButton
+          title={COPY.activityFormSave}
+          loading={busy}
+          onPress={save}
+        />
         <TextButton title="Cancel" onPress={() => router.back()} />
       </View>
     </Screen>
@@ -122,9 +135,28 @@ export default function LogActivityScreen() {
 }
 
 const styles = StyleSheet.create({
+  fields: {
+    // TextInput and ChoiceToggle already carry 24px of their own top margin.
+    gap: Gap.cards,
+  },
+  fieldLabel: {
+    marginBottom: Gap.labelToField,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  chipRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Space.sm,
+  },
+  errorWrap: {
+    marginTop: Gap.cards,
+  },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("body"),
+    color: Colors.red,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter - Space.md,
   },
 });
