@@ -1,7 +1,7 @@
 import Svg, { Circle, G, Path } from "react-native-svg";
 
 import { IllustrationFrame } from "@/components/illustrations/IllustrationFrame";
-import { colors } from "@/lib/design-tokens";
+import { art } from "@/components/illustrations/palette";
 
 type PlanRoadmapProps = {
   width?: number;
@@ -27,7 +27,7 @@ export function PlanRoadmap({ width = 280, height = 120 }: PlanRoadmapProps) {
     >
       <Path
         d="M8 92h264"
-        stroke={colors.lightTeal}
+        stroke={art.wash}
         strokeWidth="8"
         strokeLinecap="round"
       />
@@ -35,22 +35,22 @@ export function PlanRoadmap({ width = 280, height = 120 }: PlanRoadmapProps) {
       {/* Winding path — progress, not a race */}
       <Path
         d="M16 86C48 86 56 38 96 42c36 4 40 52 88 46 40-5 48-40 80-36"
-        stroke={colors.midTeal}
+        stroke={art.solid}
         strokeWidth="2.4"
         strokeLinecap="round"
       />
 
       {/* Diet — leaf */}
       <G>
-        <Circle cx="56" cy="70" r="16" fill={colors.sageLight} />
-        <Circle cx="56" cy="70" r="16" stroke={colors.sage} strokeWidth="1.6" />
+        <Circle cx="56" cy="70" r="16" fill={art.wash} />
+        <Circle cx="56" cy="70" r="16" stroke={art.solid} strokeWidth="1.6" />
         <Path
           d="M56 80c-8-8-8-18 0-26 8 8 8 18 0 26z"
-          fill={colors.sage}
+          fill={art.solid}
         />
         <Path
           d="M56 80V56"
-          stroke={colors.white}
+          stroke={art.paper}
           strokeWidth="1.4"
           strokeLinecap="round"
         />
@@ -58,35 +58,35 @@ export function PlanRoadmap({ width = 280, height = 120 }: PlanRoadmapProps) {
 
       {/* Supplements — droplet */}
       <G>
-        <Circle cx="140" cy="78" r="16" fill={colors.lightTeal} />
+        <Circle cx="140" cy="78" r="16" fill={art.washDeep} />
         <Circle
           cx="140"
           cy="78"
           r="16"
-          stroke={colors.midTeal}
+          stroke={art.solid}
           strokeWidth="1.6"
         />
         <Path
           d="M140 66c6 8 8 12 8 16a8 8 0 1 1-16 0c0-4 2-8 8-16z"
-          fill={colors.midTeal}
+          fill={art.outline}
         />
-        <Circle cx="138" cy="80" r="1.6" fill={colors.white} />
+        <Circle cx="138" cy="80" r="1.6" fill={art.paper} />
       </G>
 
       {/* Lifestyle — sun */}
       <G>
-        <Circle cx="228" cy="56" r="16" fill={colors.cream} />
+        <Circle cx="228" cy="56" r="16" fill={art.wash} />
         <Circle
           cx="228"
           cy="56"
           r="16"
-          stroke={colors.amber}
+          stroke={art.solid}
           strokeWidth="1.6"
         />
-        <Circle cx="228" cy="56" r="5.2" fill={colors.amber} />
+        <Circle cx="228" cy="56" r="5.2" fill={art.solid} />
         <Path
           d="M228 42v4M228 66v4M214 56h4M238 56h4M218.2 46.2l2.8 2.8M235 63l2.8 2.8M235 46.2L232.2 49M221 63l-2.8 2.8"
-          stroke={colors.amber}
+          stroke={art.solid}
           strokeWidth="1.6"
           strokeLinecap="round"
         />

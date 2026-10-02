@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily, typography } from "@/lib/typography";
+import { Card } from "@/components/ui/Card";
+import { Colors, Space, typeStyle } from "@/lib/theme";
 
 export type MilestoneStat = {
   id: string;
@@ -15,31 +14,32 @@ type MilestoneStatStripProps = {
 };
 
 /**
- * Three oversized display numbers — risk score, days-until-check, progress, etc.
+ * Three big orange numbers in one white card — progress, days until a check,
+ * steps complete. The numbers are the screen's accent; everything else is quiet.
  */
 export function MilestoneStatStrip({ stats }: MilestoneStatStripProps) {
   return (
-    <GlassCard intensity="card" style={styles.card}>
+    <Card>
       <View style={styles.row}>
         {stats.map((stat, index) => (
           <View
             key={stat.id}
             style={[styles.cell, index < 2 ? styles.cellBorder : null]}
           >
-            <Text style={styles.value}>{stat.value}</Text>
-            <Text style={styles.label}>{stat.label}</Text>
+            <Text style={styles.value} numberOfLines={1}>
+              {stat.value}
+            </Text>
+            <Text style={styles.label} numberOfLines={2}>
+              {stat.label}
+            </Text>
           </View>
         ))}
       </View>
-    </GlassCard>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    paddingVertical: spacing.base,
-    paddingHorizontal: spacing.sm,
-  },
   row: {
     flexDirection: "row",
     alignItems: "stretch",
@@ -47,22 +47,21 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     alignItems: "center",
-    paddingHorizontal: spacing.sm,
+    justifyContent: "flex-start",
+    paddingHorizontal: Space.sm,
   },
   cellBorder: {
     borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: colors.border,
+    borderRightColor: Colors.line,
   },
   value: {
-    ...typography.heroStat,
-    color: colors.primaryBlue,
+    ...typeStyle("dataBig"),
+    color: Colors.orange,
   },
   label: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    lineHeight: 16,
-    color: colors.slate,
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.muted,
     textAlign: "center",
   },
 });

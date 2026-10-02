@@ -2,17 +2,21 @@ import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { Linking, StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, DangerButton, TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import {
+  DangerButton,
+  PrimaryButton,
+  SecondaryButton,
+  TextButton,
+} from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextField } from "@/components/ui/TextField";
 import { COPY } from "@/lib/copy";
 import { requestAccountDeletion } from "@/lib/data-export";
-import { colors, spacing } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Radius, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -57,16 +61,20 @@ export default function DeleteAccountScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.privacyDeleteTitle}
+        subtitle={COPY.privacyDeleteBody}
         onBack={() => router.replace(routes.settingsPrivacy)}
+        backLabel={COPY.privacyTitle}
       />
-      <Text style={styles.body}>{COPY.privacyDeleteBody}</Text>
-      <Text style={styles.warning}>{COPY.privacyDeleteWarning}</Text>
+
+      <View style={styles.warning}>
+        <Text style={styles.warningText}>{COPY.privacyDeleteWarning}</Text>
+      </View>
 
       {done ? (
-        <GlassCard intensity="card" style={styles.card}>
+        <Card style={styles.card}>
           <Text style={styles.done}>{COPY.privacyDeleteSubmitted}</Text>
           <PrimaryButton
             title={COPY.signOut}
@@ -74,22 +82,26 @@ export default function DeleteAccountScreen() {
               void signOut();
             }}
           />
-        </GlassCard>
+        </Card>
       ) : (
-        <GlassCard intensity="card" style={styles.card}>
-          <TextField
-            label={COPY.privacyDeleteReason}
-            value={reason}
-            onChangeText={setReason}
-            multiline
-          />
-          <TextField
-            label='Type DELETE to confirm'
-            value={confirmText}
-            onChangeText={setConfirmText}
-            autoCapitalize="characters"
-          />
+        <>
+          <Card style={styles.card}>
+            <TextField
+              label={COPY.privacyDeleteReason}
+              value={reason}
+              onChangeText={setReason}
+              multiline
+            />
+            <TextField
+              label="Type DELETE to confirm"
+              value={confirmText}
+              onChangeText={setConfirmText}
+              autoCapitalize="characters"
+            />
+          </Card>
+
           {message ? <Text style={styles.error}>{message}</Text> : null}
+
           <View style={styles.actions}>
             <DangerButton
               title={COPY.privacyDeleteConfirm}
@@ -97,7 +109,7 @@ export default function DeleteAccountScreen() {
               disabled={!canSubmit}
               onPress={() => void submit()}
             />
-            <TextButton
+            <SecondaryButton
               title={COPY.privacyExport}
               onPress={() => router.push(routes.settingsPrivacy)}
             />
@@ -108,45 +120,35 @@ export default function DeleteAccountScreen() {
               }}
             />
           </View>
-        </GlassCard>
+        </>
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-  },
   warning: {
-    marginTop: 12,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
-    lineHeight: 22,
-    color: colors.coral,
+    borderRadius: Radius.card,
+    backgroundColor: Colors.redTint,
+    padding: Space.cardPad,
+  },
+  warningText: {
+    ...typeStyle("body"),
+    color: Colors.red,
   },
   card: {
-    marginTop: spacing.md,
-    padding: spacing.base,
-  },
-  actions: {
-    marginTop: spacing.md,
-    gap: 8,
-  },
-  error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    marginTop: Gap.cards,
   },
   done: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
-    marginBottom: spacing.md,
+    ...typeStyle("body"),
+    color: Colors.body,
+  },
+  error: {
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.red,
+  },
+  actions: {
+    marginTop: Gap.beforeFooter,
   },
 });

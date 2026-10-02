@@ -1,7 +1,7 @@
 import Svg, { Circle, Path } from "react-native-svg";
 
 import { IllustrationFrame } from "@/components/illustrations/IllustrationFrame";
-import { colors } from "@/lib/design-tokens";
+import { art } from "@/components/illustrations/palette";
 
 type JourneyTrailProps = {
   /** How wide the drawing should be on screen. Full-width feels natural. */
@@ -30,28 +30,28 @@ export function JourneyTrail({
       viewBox="0 0 320 140"
     >
       {/* Soft sky / ground washes so the path has air around it */}
-      <Circle cx="48" cy="108" r="36" fill={colors.sageLight} />
-      <Circle cx="168" cy="72" r="42" fill={colors.lightTeal} />
-      <Circle cx="268" cy="36" r="30" fill={colors.cream} />
+      <Circle cx="48" cy="108" r="36" fill={art.wash} />
+      <Circle cx="168" cy="72" r="42" fill={art.washDeep} />
+      <Circle cx="268" cy="36" r="30" fill={art.wash} />
 
       {/* Abstract leaves — simple two-lobe shapes, not botanical drawings */}
       <Path
         d="M36 86 C44 70 62 72 58 88 C62 102 44 104 36 86 Z"
-        fill={colors.sage}
+        fill={art.solid}
       />
       <Path
         d="M198 44 C208 30 224 34 218 48 C224 60 206 62 198 44 Z"
-        fill={colors.sage}
+        fill={art.solid}
       />
       <Path
         d="M292 22 C300 10 314 14 308 26 C314 36 298 38 292 22 Z"
-        fill={colors.midTeal}
+        fill={art.outline}
       />
 
       {/* Small nature dots along the hillside */}
-      <Circle cx="72" cy="54" r="5" fill={colors.sageLight} />
-      <Circle cx="132" cy="28" r="4" fill={colors.lightTeal} />
-      <Circle cx="236" cy="88" r="6" fill={colors.sageLight} />
+      <Circle cx="72" cy="54" r="5" fill={art.washDeep} />
+      <Circle cx="132" cy="28" r="4" fill={art.washDeep} />
+      <Circle cx="236" cy="88" r="6" fill={art.washDeep} />
 
       {/* The trail itself — winds up from left to right */}
       <Path
@@ -61,7 +61,7 @@ export function JourneyTrail({
            C204 88 214 52 248 46
            C276 41 288 28 304 22"
         fill="none"
-        stroke={colors.deepTeal}
+        stroke={art.outline}
         strokeWidth="3.2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -73,8 +73,8 @@ export function JourneyTrail({
         cx="32"
         cy="118"
         r="8"
-        fill={colors.sage}
-        stroke={colors.white}
+        fill={art.done}
+        stroke={art.paper}
         strokeWidth="2"
       />
       {/* Done */}
@@ -82,8 +82,8 @@ export function JourneyTrail({
         cx="96"
         cy="88"
         r="8"
-        fill={colors.sage}
-        stroke={colors.white}
+        fill={art.done}
+        stroke={art.paper}
         strokeWidth="2"
       />
       {/* Current */}
@@ -91,8 +91,8 @@ export function JourneyTrail({
         cx="172"
         cy="100"
         r="9"
-        fill={colors.midTeal}
-        stroke={colors.white}
+        fill={art.solid}
+        stroke={art.paper}
         strokeWidth="2.2"
       />
       {/* Upcoming */}
@@ -100,8 +100,8 @@ export function JourneyTrail({
         cx="248"
         cy="46"
         r="8"
-        fill={colors.white}
-        stroke={colors.deepTeal}
+        fill={art.paper}
+        stroke={art.outline}
         strokeWidth="2.2"
       />
       {/* Goal */}
@@ -109,8 +109,8 @@ export function JourneyTrail({
         cx="304"
         cy="22"
         r="7"
-        fill={colors.cream}
-        stroke={colors.amber}
+        fill={art.paper}
+        stroke={art.waiting}
         strokeWidth="2"
       />
     </Svg>

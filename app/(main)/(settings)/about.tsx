@@ -1,19 +1,29 @@
 import Constants from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
 import { Redirect, useRouter } from "expo-router";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Card } from "@/components/ui/Card";
+import { ListRow } from "@/components/ui/ListRow";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Font, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** One quiet label with its value underneath. */
+function Fact({ label, value }: { label: string; value: string }) {
+  return (
+    <View>
+      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.value}>{value}</Text>
+    </View>
+  );
+}
 
 export default function AboutSettingsScreen() {
   const router = useRouter();
@@ -35,73 +45,85 @@ export default function AboutSettingsScreen() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.aboutTitle}
+        subtitle={COPY.aboutBody}
         onBack={() => router.replace(routes.settings)}
+        backLabel={COPY.settingsTitle}
       />
-      <Text style={styles.brand} accessibilityRole="header">
-        PRESCOPE
-      </Text>
-      <Text style={styles.body}>{COPY.aboutBody}</Text>
 
-      <GlassCard intensity="card" style={styles.card}>
-        <Text style={styles.label}>{COPY.aboutVersion}</Text>
-        <Text style={styles.value}>{version}</Text>
-        <Text style={[styles.label, styles.gap]}>{COPY.aboutCompany}</Text>
-        <Text style={styles.value}>{COPY.aboutCompany}</Text>
-        <Text style={[styles.label, styles.gap]}>{COPY.aboutWhatsNew}</Text>
-        <Text style={styles.value}>{COPY.aboutWhatsNewBody}</Text>
-        <Text style={[styles.label, styles.gap]}>{COPY.aboutOss}</Text>
-        <Text style={styles.value}>{COPY.aboutOssBody}</Text>
-        <TextButton
-          title={COPY.privacyPolicyLink}
+      <Card style={styles.brandCard}>
+        <Text style={styles.brand} accessibilityRole="header">
+          PRESCOPE
+        </Text>
+        <Text style={styles.brandVersion}>
+          {COPY.aboutVersion} {version}
+        </Text>
+      </Card>
+
+      <SectionTitle title="Details" />
+      <Card>
+        <View style={styles.facts}>
+          <Fact label={COPY.aboutCompany} value={COPY.aboutCompany} />
+          <Fact label={COPY.aboutWhatsNew} value={COPY.aboutWhatsNewBody} />
+          <Fact label={COPY.aboutOss} value={COPY.aboutOssBody} />
+        </View>
+      </Card>
+
+      <SectionTitle title="Legal" />
+      <Card padded={false} style={styles.rowsCard}>
+        <ListRow
+          label={COPY.privacyPolicyLink}
+          icon="file-text"
           onPress={() => {
             void WebBrowser.openBrowserAsync(legalPageUrl("privacy"));
           }}
         />
-        <TextButton
-          title={COPY.privacyTermsLink}
+        <ListRow
+          label={COPY.privacyTermsLink}
+          icon="file"
+          divider={false}
           onPress={() => {
             void WebBrowser.openBrowserAsync(legalPageUrl("terms"));
           }}
         />
-      </GlassCard>
+      </Card>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  brandCard: {
+    alignItems: "center",
+    paddingVertical: Space.xl,
+  },
   brand: {
-    fontFamily: fontFamily.display,
-    fontSize: 40,
-    letterSpacing: -0.8,
-    color: colors.primaryBlue,
+    fontFamily: Font.serif,
+    fontSize: 36,
+    lineHeight: 44,
+    letterSpacing: 1.5,
+    color: Colors.orange,
   },
-  body: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+  brandVersion: {
+    ...typeStyle("secondary"),
+    marginTop: Space.sm,
+    color: Colors.muted,
   },
-  card: {
-    marginTop: spacing.md,
-    padding: spacing.base,
+  facts: {
+    gap: Gap.rowY + 6,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
-  },
-  gap: {
-    marginTop: 16,
+    ...typeStyle("label"),
+    color: Colors.muted,
   },
   value: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
-    color: colors.charcoal,
+    ...typeStyle("body"),
+    marginTop: Space.xs,
+    color: Colors.body,
+  },
+  rowsCard: {
+    paddingHorizontal: Space.cardPad,
+    paddingVertical: Space.xs,
   },
 });

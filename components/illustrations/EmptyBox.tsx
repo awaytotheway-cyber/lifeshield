@@ -1,7 +1,7 @@
 import Svg, { Path } from "react-native-svg";
 
 import { IllustrationFrame } from "@/components/illustrations/IllustrationFrame";
-import { colors } from "@/lib/design-tokens";
+import { art } from "@/components/illustrations/palette";
 
 type EmptyBoxProps = {
   width?: number;
@@ -28,11 +28,11 @@ export function EmptyBox({ width = 100, height = 100 }: EmptyBoxProps) {
       {/* Inner floor */}
       <Path
         d="M22 46L50 58l28-12v28L50 86 22 74V46z"
-        fill={colors.lightTeal}
+        fill={art.wash}
       />
       <Path
         d="M22 46L50 58l28-12v28L50 86 22 74V46z"
-        stroke={colors.deepTeal}
+        stroke={art.outline}
         strokeWidth="2"
         strokeLinejoin="round"
       />
@@ -40,15 +40,15 @@ export function EmptyBox({ width = 100, height = 100 }: EmptyBoxProps) {
       {/* Open flaps */}
       <Path
         d="M22 46L12 28l38-10 10 28"
-        fill={colors.cream}
-        stroke={colors.midTeal}
+        fill={art.surface}
+        stroke={art.solid}
         strokeWidth="2"
         strokeLinejoin="round"
       />
       <Path
         d="M50 18l38 10-10 18H50"
-        fill={colors.sageLight}
-        stroke={colors.sage}
+        fill={art.washDeep}
+        stroke={art.solid}
         strokeWidth="2"
         strokeLinejoin="round"
       />
@@ -56,7 +56,7 @@ export function EmptyBox({ width = 100, height = 100 }: EmptyBoxProps) {
       {/* Front crease */}
       <Path
         d="M50 58v28"
-        stroke={colors.midTeal}
+        stroke={art.solid}
         strokeWidth="1.6"
         strokeLinecap="round"
       />
@@ -64,7 +64,7 @@ export function EmptyBox({ width = 100, height = 100 }: EmptyBoxProps) {
       {/* Gentle smile on the open floor */}
       <Path
         d="M40 68c3 5 17 5 20 0"
-        stroke={colors.deepTeal}
+        stroke={art.outline}
         strokeWidth="2"
         strokeLinecap="round"
       />

@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Card } from "@/components/ui/Card";
+import { Colors, Radius, Space, typeStyle } from "@/lib/theme";
 
 type EmptyStateProps = {
   icon?: keyof typeof Feather.glyphMap;
@@ -22,38 +21,42 @@ export function EmptyState({
   illustration,
 }: EmptyStateProps) {
   return (
-    <GlassCard intensity="card" style={styles.wrap}>
+    <Card style={styles.wrap}>
       {illustration ?? (
-        <Feather name={icon} size={32} color={colors.primaryBlue} />
+        <View style={styles.iconHalo}>
+          <Feather name={icon} size={28} color={Colors.orange} />
+        </View>
       )}
       <Text style={styles.heading}>{heading}</Text>
       <Text style={styles.body}>{explanation}</Text>
-    </GlassCard>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: spacing.md,
     alignItems: "center",
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.md,
+    // Taller than a normal card: an empty state should feel like calm space.
+    paddingVertical: Space.xl,
+  },
+  iconHalo: {
+    width: 72,
+    height: 72,
+    borderRadius: Radius.chip,
+    backgroundColor: Colors.orangeTint,
+    alignItems: "center",
+    justifyContent: "center",
   },
   heading: {
-    marginTop: 16,
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.primaryBlue,
+    ...typeStyle("section"),
+    marginTop: Space.lg,
+    color: Colors.ink,
     textAlign: "center",
   },
   body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
     textAlign: "center",
   },
 });

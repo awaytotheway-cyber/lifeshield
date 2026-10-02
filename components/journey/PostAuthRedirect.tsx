@@ -1,14 +1,15 @@
 import { Redirect } from "expo-router";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 import { useJourney } from "@/lib/use-journey";
+import { Colors, Space, typeStyle } from "@/lib/theme";
 
 /** Shared spinner so every gate looks the same. */
 function GateLoading() {
   return (
-    <View className="flex-1 items-center justify-center bg-cream">
-      <ActivityIndicator color="#1A535C" />
-      <Text className="mt-3 text-charcoal">Loading…</Text>
+    <View style={styles.wrap}>
+      <ActivityIndicator color={Colors.orange} />
+      <Text style={styles.label}>Loading…</Text>
     </View>
   );
 }
@@ -28,3 +29,17 @@ export function PostAuthRedirect() {
 }
 
 export { GateLoading };
+
+const styles = StyleSheet.create({
+  wrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.background,
+  },
+  label: {
+    ...typeStyle("body"),
+    marginTop: Space.md,
+    color: Colors.body,
+  },
+});

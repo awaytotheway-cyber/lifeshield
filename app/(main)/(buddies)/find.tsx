@@ -2,10 +2,17 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import {
+  PrimaryButton,
+  SecondaryButton,
+  TextButton,
+} from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
@@ -14,9 +21,8 @@ import {
   sendBuddyRequest,
   type PotentialBuddyRow,
 } from "@/lib/buddies";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 
 export default function FindBuddiesScreen() {
@@ -67,99 +73,120 @@ export default function FindBuddiesScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.buddiesFindTitle}
         onBack={() => router.back()}
         backLabel={COPY.buddiesTitle}
       />
 
-      <View style={styles.searchWrap}>
-        <TextInput
-          label="Search"
-          placeholder={COPY.buddiesSearchPlaceholder}
-          value={q}
-          onChangeText={setQ}
-          onSubmitEditing={() => void search(q)}
-          returnKeyType="search"
-        />
-        <View style={{ marginTop: spacing.sm }}>
-          <PrimaryButton title="Search" onPress={() => void search(q)} loading={busy} />
-        </View>
-      </View>
+      <TextInput
+        label="Search"
+        placeholder={COPY.buddiesSearchPlaceholder}
+        value={q}
+        onChangeText={setQ}
+        onSubmitEditing={() => void search(q)}
+        returnKeyType="search"
+      />
+      <PrimaryButton
+        title="Search"
+        icon="search"
+        loading={busy}
+        onPress={() => void search(q)}
+      />
 
       {message ? <Text style={styles.error}>{message}</Text> : null}
 
-      {busy && rows === null ? <StaticSkeleton rows={3} /> : null}
-
-      {rows !== null && rows.length === 0 && !busy ? (
-        <EmptyState
-          icon="search"
-          heading={COPY.buddiesFindTitle}
-          explanation={COPY.buddiesFindEmpty}
-        />
+      {busy && rows === null ? (
+        <View style={styles.loading}>
+          <StaticSkeleton rows={3} />
+        </View>
       ) : null}
 
-      {(rows ?? []).map((row) => {
-        const sent = sentIds.has(row.user_id);
-        return (
-          <View key={row.user_id} style={styles.card}>
-            <View style={styles.headRow}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.name}>{row.display_name}</Text>
-                {row.city ? <Text style={styles.meta}>{row.city}</Text> : null}
-              </View>
-              {row.match_score > 0 ? (
-                <View style={styles.matchPill}>
-                  <Text style={styles.matchText}>
-                    {row.match_score}% {COPY.buddiesMatchLabel}
-                  </Text>
-                </View>
-              ) : null}
-            </View>
+      {rows !== null && rows.length === 0 && !busy ? (
+        <View style={styles.loading}>
+          <EmptyState
+            icon="search"
+            heading={COPY.buddiesFindTitle}
+            explanation={COPY.buddiesFindEmpty}
+          />
+        </View>
+      ) : null}
 
-            {row.shared_interests.length > 0 ? (
-              <>
-                <Text style={styles.subLabel}>
-                  {COPY.buddiesSharedInterestsLabel}
-                </Text>
-                <Text style={styles.subText}>
-                  {row.shared_interests.join(" · ")}
-                </Text>
-              </>
-            ) : null}
-            {row.interests.length > 0 ? (
-              <Text style={styles.metaLight}>{row.interests.join(" · ")}</Text>
-            ) : null}
+      {rows !== null && rows.length > 0 ? (
+        <>
+          <SectionTitle title="People with similar goals" />
+          <View style={styles.list}>
+            {rows.map((row) => {
+              const sent = sentIds.has(row.user_id);
+              return (
+                <Card key={row.user_id}>
+                  <View style={styles.headRow}>
+                    <View style={styles.headText}>
+                      <Text style={styles.name}>{row.display_name}</Text>
+                      {row.city ? (
+                        <Text style={styles.meta}>{row.city}</Text>
+                      ) : null}
+                    </View>
+                    {row.match_score > 0 ? (
+                      <Chip
+                        label={`${row.match_score}% ${COPY.buddiesMatchLabel}`}
+                        tone="orange"
+                      />
+                    ) : null}
+                  </View>
 
-            {sent ? (
-              <Text style={styles.sentBadge}>{COPY.buddiesRequestSent}</Text>
-            ) : (
-              <>
-                <View style={{ marginTop: spacing.sm }}>
-                  <TextInput
-                    label={COPY.buddiesRequestNoteLabel}
-                    placeholder={COPY.buddiesRequestNotePlaceholder}
-                    value={notes[row.user_id] ?? ""}
-                    onChangeText={(t) =>
-                      setNotes((prev) => ({ ...prev, [row.user_id]: t }))
-                    }
-                    multiline
-                    numberOfLines={2}
-                  />
-                </View>
-                <View style={{ marginTop: spacing.sm }}>
-                  <PrimaryButton
-                    title={COPY.buddiesSendRequest}
-                    loading={sending === row.user_id}
-                    onPress={() => submit(row)}
-                  />
-                </View>
-              </>
-            )}
+                  {row.shared_interests.length > 0 ? (
+                    <>
+                      <Text style={styles.subLabel}>
+                        {COPY.buddiesSharedInterestsLabel}
+                      </Text>
+                      <View style={styles.tags}>
+                        {row.shared_interests.map((interest) => (
+                          <Chip key={interest} label={interest} tone="orange" />
+                        ))}
+                      </View>
+                    </>
+                  ) : null}
+
+                  {row.interests.length > 0 ? (
+                    <View style={styles.tags}>
+                      {row.interests.slice(0, 5).map((interest) => (
+                        <Chip key={interest} label={interest} />
+                      ))}
+                    </View>
+                  ) : null}
+
+                  {sent ? (
+                    <View style={styles.sent}>
+                      <Chip label={COPY.buddiesRequestSent} tone="green" />
+                    </View>
+                  ) : (
+                    <>
+                      <TextInput
+                        label={COPY.buddiesRequestNoteLabel}
+                        placeholder={COPY.buddiesRequestNotePlaceholder}
+                        value={notes[row.user_id] ?? ""}
+                        onChangeText={(t) =>
+                          setNotes((prev) => ({ ...prev, [row.user_id]: t }))
+                        }
+                        multiline
+                        numberOfLines={2}
+                      />
+                      <SecondaryButton
+                        title={COPY.buddiesSendRequest}
+                        icon="send"
+                        loading={sending === row.user_id}
+                        onPress={() => submit(row)}
+                      />
+                    </>
+                  )}
+                </Card>
+              );
+            })}
           </View>
-        );
-      })}
+        </>
+      ) : null}
 
       <TextButton title="Back to buddies" onPress={() => router.back()} />
     </Screen>
@@ -167,73 +194,47 @@ export default function FindBuddiesScreen() {
 }
 
 const styles = StyleSheet.create({
-  searchWrap: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.base,
+  loading: {
+    marginTop: Gap.sections,
   },
-  card: {
-    marginBottom: spacing.sm,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+  list: {
+    gap: Gap.cards,
   },
   headRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: spacing.sm,
+    gap: Space.sm,
+  },
+  headText: {
+    flex: 1,
   },
   name: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 17,
-    color: colors.charcoal,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   meta: {
+    ...typeStyle("secondary"),
     marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
-  },
-  metaLight: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
-  },
-  matchPill: {
-    backgroundColor: colors.riskLowLight,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: radius.chip,
-  },
-  matchText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.riskLow,
+    color: Colors.muted,
   },
   subLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
-    letterSpacing: 0.4,
-    color: colors.slate,
-    textTransform: "uppercase",
+    ...typeStyle("label"),
+    marginTop: Space.md,
+    color: Colors.muted,
   },
-  subText: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.charcoal,
+  tags: {
+    marginTop: Space.sm,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Space.sm,
   },
-  sentBadge: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
-    color: colors.primaryBlue,
+  sent: {
+    marginTop: Space.md,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.red,
   },
 });

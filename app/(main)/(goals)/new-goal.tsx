@@ -3,14 +3,13 @@ import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { ChoiceToggle } from "@/components/ui/ChoiceToggle";
+import { ChoiceCard } from "@/components/ui/ChoiceCard";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { createGoal, type GoalType } from "@/lib/weekly-goals";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -27,6 +26,35 @@ const DURATION_OPTIONS = [
   { value: "14", label: COPY.goalsFormDuration14 },
   { value: "30", label: COPY.goalsFormDuration30 },
 ] as const;
+
+/** One question: a label, then a stack of ChoiceCards — never radio dots. */
+function ChoiceGroup({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: readonly { value: string; label: string }[];
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  return (
+    <View style={styles.group}>
+      <Text style={styles.groupLabel}>{label}</Text>
+      <View style={styles.choices}>
+        {options.map((option) => (
+          <ChoiceCard
+            key={option.value}
+            label={option.label}
+            selected={value === option.value}
+            onPress={() => onChange(option.value)}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
 
 export default function NewGoalScreen() {
   const router = useRouter();
@@ -80,111 +108,109 @@ export default function NewGoalScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen
+      scroll
+      footer={
+        <PrimaryButton
+          title={COPY.goalsSaveGoal}
+          loading={busy}
+          style={styles.saveButton}
+          onPress={submit}
+        />
+      }
+    >
       <ScreenHeader
         title={COPY.goalsNewCta}
         onBack={() => router.back()}
         backLabel={COPY.goalsTitle}
       />
-      <View style={styles.form}>
-        <TextInput
-          label={COPY.goalsFormTitleLabel}
-          placeholder={COPY.goalsFormTitlePlaceholder}
-          value={title}
-          onChangeText={setTitle}
-          autoCapitalize="sentences"
-        />
 
-        <View style={styles.field}>
-          <ChoiceToggle
-            label={COPY.goalsFormTypeLabel}
-            options={TYPE_OPTIONS}
-            value={goalType}
-            onChange={(next) => setGoalType(next || "habit")}
-            allowClear={false}
-          />
-        </View>
+      <TextInput
+        label={COPY.goalsFormTitleLabel}
+        placeholder={COPY.goalsFormTitlePlaceholder}
+        value={title}
+        onChangeText={setTitle}
+        autoCapitalize="sentences"
+      />
 
-        <View style={styles.row}>
-          <View style={styles.rowItem}>
-            <TextInput
-              label={COPY.goalsFormTargetLabel}
-              value={target}
-              onChangeText={setTarget}
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <TextInput
-              label={COPY.goalsFormUnitLabel}
-              placeholder={COPY.goalsFormUnitPlaceholder}
-              value={unit}
-              onChangeText={setUnit}
-              autoCapitalize="none"
-            />
-          </View>
-        </View>
+      <ChoiceGroup
+        label={COPY.goalsFormTypeLabel}
+        options={TYPE_OPTIONS}
+        value={goalType}
+        onChange={setGoalType}
+      />
 
-        <View style={styles.field}>
-          <ChoiceToggle
-            label={COPY.goalsFormDurationLabel}
-            options={DURATION_OPTIONS}
-            value={duration}
-            onChange={(next) => setDuration(next || "7")}
-            allowClear={false}
-          />
-        </View>
-
-        <View style={styles.field}>
+      <View style={styles.row}>
+        <View style={styles.rowItem}>
           <TextInput
-            label={COPY.goalsFormNoteLabel}
-            placeholder={COPY.goalsFormNotePlaceholder}
-            value={note}
-            onChangeText={setNote}
-            multiline
-            numberOfLines={3}
-            autoCapitalize="sentences"
+            label={COPY.goalsFormTargetLabel}
+            value={target}
+            onChangeText={setTarget}
+            keyboardType="numeric"
           />
         </View>
-
-        {message ? <Text style={styles.error}>{message}</Text> : null}
-
-        <View style={styles.actions}>
-          <PrimaryButton
-            title={COPY.goalsSaveGoal}
-            loading={busy}
-            onPress={submit}
+        <View style={styles.rowItem}>
+          <TextInput
+            label={COPY.goalsFormUnitLabel}
+            placeholder={COPY.goalsFormUnitPlaceholder}
+            value={unit}
+            onChangeText={setUnit}
+            autoCapitalize="none"
           />
-          <TextButton title="Cancel" onPress={() => router.back()} />
         </View>
       </View>
+
+      <ChoiceGroup
+        label={COPY.goalsFormDurationLabel}
+        options={DURATION_OPTIONS}
+        value={duration}
+        onChange={setDuration}
+      />
+
+      <TextInput
+        label={COPY.goalsFormNoteLabel}
+        placeholder={COPY.goalsFormNotePlaceholder}
+        value={note}
+        onChangeText={setNote}
+        multiline
+        numberOfLines={3}
+        autoCapitalize="sentences"
+      />
+
+      {message ? <Text style={styles.error}>{message}</Text> : null}
+
+      <TextButton title="Cancel" onPress={() => router.back()} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  form: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
+  group: {
+    // Section 8: 40px of air between question groups.
+    marginTop: Gap.sections,
   },
-  field: {
-    marginTop: spacing.base,
+  groupLabel: {
+    ...typeStyle("cardTitle"),
+    marginBottom: Space.md - 2,
+    color: Colors.ink,
+  },
+  choices: {
+    gap: Space.sm,
   },
   row: {
     flexDirection: "row",
-    gap: spacing.mdSm,
-    marginTop: spacing.base,
+    gap: Space.md,
+    marginTop: Gap.sections - Space.lg,
   },
   rowItem: {
     flex: 1,
   },
-  actions: {
-    marginTop: spacing.lg,
-    gap: spacing.sm,
-  },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    ...typeStyle("secondary"),
+    marginTop: Space.lg,
+    color: Colors.red,
+  },
+  saveButton: {
+    marginTop: 0,
   },
 });

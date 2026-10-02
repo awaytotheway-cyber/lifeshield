@@ -2,8 +2,10 @@ import { useState } from "react";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
+import { PressScale } from "@/components/ui/PressScale";
+import { TextButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
 import {
   dateToHHmm,
@@ -12,6 +14,14 @@ import {
   isHHmm,
   type TimePickerFieldProps,
 } from "@/lib/datetime";
+import {
+  Colors,
+  Gap,
+  Radius,
+  Size,
+  Space,
+  typeStyle,
+} from "@/lib/theme";
 
 /**
  * iOS: spinning wheels (same idea as setting an alarm).
@@ -39,28 +49,30 @@ export function TimePicker({
   };
 
   return (
-    <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
-      {hint ? <Text className="mt-1 text-sm text-charcoal">{hint}</Text> : null}
-      <Pressable
+    <View style={styles.wrap}>
+      <Text style={styles.label}>{label}</Text>
+      {hint ? <Text style={styles.hint}>{hint}</Text> : null}
+      <PressScale
         accessibilityRole="button"
         accessibilityLabel={label}
+        accessibilityState={{ expanded: open }}
         onPress={() => setOpen((current) => !current)}
-        className="mt-2 rounded-xl border border-sage bg-white px-4 py-3"
+        haptic="light"
+        style={[styles.field, error ? styles.fieldError : null]}
       >
-        <Text className="text-charcoal">
+        <Text style={styles.fieldText}>
           {isHHmm(value)
             ? `${value} (${formatDisplayDuration(value)})`
             : COPY.pickTime}
         </Text>
-      </Pressable>
+      </PressScale>
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-coral">
+        <Text style={styles.warning}>
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
         </Text>
       ) : null}
       {open ? (
-        <View className="mt-2 items-center rounded-xl bg-white px-2 py-2">
+        <View style={styles.sheet}>
           <DateTimePicker
             value={selected}
             mode="time"
@@ -69,20 +81,61 @@ export function TimePicker({
             minuteInterval={5}
             onChange={onPickerChange}
             themeVariant="light"
-            accentColor="#1A535C"
+            accentColor={Colors.orange}
           />
           {Platform.OS === "ios" ? (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => setOpen(false)}
-              className="mt-2 items-center px-4 py-2"
-            >
-              <Text className="text-teal">{COPY.pickerDone}</Text>
-            </Pressable>
+            <TextButton title={COPY.pickerDone} onPress={() => setOpen(false)} />
           ) : null}
         </View>
       ) : null}
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: {
+    marginTop: Space.lg,
+    width: "100%",
+    gap: Gap.labelToField,
+  },
+  label: {
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
+  },
+  hint: {
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  field: {
+    minHeight: Size.input,
+    justifyContent: "center",
+    borderRadius: Radius.input,
+    borderWidth: 1.5,
+    borderColor: Colors.line,
+    backgroundColor: Colors.white,
+    paddingHorizontal: Space.md,
+  },
+  fieldError: {
+    borderColor: Colors.red,
+  },
+  fieldText: {
+    ...typeStyle("body"),
+    color: Colors.ink,
+  },
+  sheet: {
+    alignItems: "center",
+    borderRadius: Radius.input,
+    backgroundColor: Colors.white,
+    paddingVertical: Space.sm,
+    paddingHorizontal: Space.sm,
+  },
+  warning: {
+    ...typeStyle("secondary"),
+    color: Colors.amber,
+  },
+  error: {
+    ...typeStyle("secondary"),
+    color: Colors.red,
+  },
+});

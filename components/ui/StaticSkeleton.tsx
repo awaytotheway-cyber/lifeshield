@@ -1,17 +1,17 @@
 import { StyleSheet, View } from "react-native";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { Colors, Gap, Radius, Shadow, Space } from "@/lib/theme";
 
 type StaticSkeletonProps = {
   rows?: number;
 };
 
-/** Ghost layout with no pulse — used on Results and Plan while data loads. */
+/** Ghost layout with no pulse — stands in for white cards while data loads. */
 export function StaticSkeleton({ rows = 3 }: StaticSkeletonProps) {
   return (
     <View style={styles.wrap} accessibilityLabel="Loading">
       {Array.from({ length: rows }).map((_, index) => (
-        <View key={index} style={styles.card}>
+        <View key={index} style={[styles.card, Shadow.soft]}>
           <View style={styles.bar} />
           <View style={styles.lineWide} />
           <View style={styles.lineShort} />
@@ -23,34 +23,32 @@ export function StaticSkeleton({ rows = 3 }: StaticSkeletonProps) {
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: spacing.md,
-    gap: 12,
+    // Matches the 16px gap real stacked cards use, so nothing jumps on load.
+    gap: Gap.cards,
   },
   card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
-    padding: spacing.base,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.card,
+    padding: Space.cardPad,
   },
   bar: {
     height: 12,
-    width: 88,
+    width: 96,
     borderRadius: 6,
-    backgroundColor: colors.border,
-    marginBottom: 12,
+    backgroundColor: Colors.orangeTint,
   },
   lineWide: {
+    marginTop: Space.md,
     height: 10,
     width: "100%",
-    borderRadius: 4,
-    backgroundColor: colors.border,
+    borderRadius: 5,
+    backgroundColor: Colors.line,
   },
   lineShort: {
-    marginTop: 8,
+    marginTop: Gap.labelToField,
     height: 10,
     width: "55%",
-    borderRadius: 4,
-    backgroundColor: colors.border,
+    borderRadius: 5,
+    backgroundColor: Colors.line,
   },
 });

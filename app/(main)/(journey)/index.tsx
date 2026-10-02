@@ -1,14 +1,18 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import type { Href } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
+import { DotProgress, type DotState } from "@/components/ui/DotProgress";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   buildTenStepRows,
   completedCount,
@@ -22,13 +26,19 @@ import { hasOwnInterventions } from "@/lib/plan";
 import { hasOwnTestResults } from "@/lib/test-results";
 import { loadOwnGoals } from "@/lib/weekly-goals";
 import { loadUserContext } from "@/lib/user-context";
-import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
+import { Colors, Gap, Radius, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import {
   completedSectionCount,
   useQuestionnaireStore,
 } from "@/stores/questionnaire-store";
+
+const STATE_LABEL: Record<TenStepRow["state"], string> = {
+  complete: "Complete",
+  current: "Current",
+  upcoming: "Upcoming",
+};
 
 export default function JourneyDashboardScreen() {
   const router = useRouter();
@@ -115,196 +125,153 @@ export default function JourneyDashboardScreen() {
   const done = completedCount(rows);
   const total = rows.length;
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const dots: DotState[] = rows.map((row) => row.state);
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.journeyDashTitle}
+        subtitle={COPY.journeyDashSubtitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.orderBackHome}
       />
-      <Text style={styles.body}>{COPY.journeyDashSubtitle}</Text>
 
-      <View style={styles.progressCard}>
-        <Text style={styles.progressValue}>{done}/{total}</Text>
+      <Card elevated>
+        <Text style={styles.progressValue}>
+          {done}/{total || 10}
+        </Text>
         <Text style={styles.progressLabel}>
           {COPY.journeyDashProgress} · {pct}%
         </Text>
-      </View>
+        <ProgressBar current={done} total={total || 10} />
+        {dots.length > 0 ? (
+          <View style={styles.dots}>
+            <DotProgress
+              states={dots}
+              accessibilityLabel={`${done} of ${total} ${COPY.journeyDashProgress}`}
+            />
+          </View>
+        ) : null}
+      </Card>
 
       {done >= 3 ? (
         <View style={styles.celebrate}>
-          <Feather name="star" size={16} color={colors.riskModerate} />
+          <Feather name="star" size={18} color={Colors.amber} />
           <Text style={styles.celebrateText}>{COPY.journeyDashCelebrate}</Text>
         </View>
       ) : null}
 
+      <SectionTitle title="Your milestones" />
+
       {loading && rows.length === 0 ? <StaticSkeleton rows={5} /> : null}
 
-      {rows.map((row) => (
-        <Pressable
-          key={row.id}
-          accessibilityRole="button"
-          accessibilityLabel={`${row.title}, ${row.state}`}
-          onPress={() => row.href && router.push(row.href as unknown as Href)}
-          style={({ pressed }) => [
-            styles.card,
-            row.state === "complete" && styles.cardComplete,
-            row.state === "current" && styles.cardCurrent,
-            pressed && styles.cardPressed,
-          ]}
-        >
-          <View style={styles.rowTop}>
-            <View style={{ flex: 1 }}>
+      <View style={styles.list}>
+        {rows.map((row) => (
+          <Card
+            key={row.id}
+            onPress={
+              row.href
+                ? () => router.push(row.href as unknown as Href)
+                : undefined
+            }
+            accessibilityLabel={`${row.title}, ${STATE_LABEL[row.state]}`}
+            style={row.state === "current" ? styles.cardCurrent : undefined}
+          >
+            <View style={styles.rowTop}>
               <Text style={styles.title}>{row.title}</Text>
-              <Text style={styles.desc}>{row.body}</Text>
+              <Chip
+                label={STATE_LABEL[row.state]}
+                tone={
+                  row.state === "complete"
+                    ? "green"
+                    : row.state === "current"
+                      ? "orange"
+                      : "neutral"
+                }
+              />
             </View>
-            <StateBadge state={row.state} />
-          </View>
-          {row.metrics.length > 0 ? (
-            <View style={styles.metricsRow}>
-              {row.metrics.map((m) => (
-                <View key={m.label} style={styles.metric}>
-                  <Text style={styles.metricValue}>{m.value}</Text>
-                  <Text style={styles.metricLabel}>{m.label}</Text>
-                </View>
-              ))}
-            </View>
-          ) : null}
-        </Pressable>
-      ))}
+            <Text style={styles.desc}>{row.body}</Text>
+            {row.metrics.length > 0 ? (
+              <View style={styles.metricsRow}>
+                {row.metrics.map((m) => (
+                  <View key={m.label} style={styles.metric}>
+                    <Text style={styles.metricValue}>{m.value}</Text>
+                    <Text style={styles.metricLabel}>{m.label}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : null}
+          </Card>
+        ))}
+      </View>
     </Screen>
   );
 }
 
-function StateBadge({ state }: { state: "complete" | "current" | "upcoming" }) {
-  const bg =
-    state === "complete"
-      ? colors.riskLowLight
-      : state === "current"
-        ? colors.iceBlue
-        : "transparent";
-  const fg =
-    state === "complete"
-      ? colors.riskLow
-      : state === "current"
-        ? colors.primaryBlue
-        : colors.mist;
-  const icon =
-    state === "complete" ? "check-circle" : state === "current" ? "play-circle" : "circle";
-  return (
-    <View style={[badgeStyles.wrap, { backgroundColor: bg }]}>
-      <Feather name={icon} size={14} color={fg} />
-      <Text style={[badgeStyles.text, { color: fg }]}>{state}</Text>
-    </View>
-  );
-}
-
-const badgeStyles = StyleSheet.create({
-  wrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: radius.chip,
-  },
-  text: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 11,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
-  },
-});
-
 const styles = StyleSheet.create({
-  body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
-  },
-  progressCard: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.iceBlue,
-    alignItems: "center",
-  },
   progressValue: {
-    fontFamily: fontFamily.heroStat,
-    fontSize: 44,
-    color: colors.primaryBlue,
+    ...typeStyle("dataBig"),
+    color: Colors.orange,
   },
   progressLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.muted,
+  },
+  dots: {
+    marginTop: Space.md,
   },
   celebrate: {
-    marginTop: spacing.sm,
-    padding: spacing.sm,
+    marginTop: Gap.cards,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    borderRadius: radius.alert,
-    backgroundColor: colors.amberLight,
+    gap: Space.sm,
+    padding: Space.md,
+    borderRadius: Radius.input,
+    backgroundColor: Colors.amberTint,
   },
   celebrateText: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.charcoal,
+    flex: 1,
+    ...typeStyle("secondary"),
+    color: Colors.body,
   },
-  card: {
-    marginTop: spacing.sm,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.white,
-    ...shadows.card,
+  list: {
+    gap: Gap.cards,
   },
-  cardComplete: { opacity: 0.9 },
   cardCurrent: {
     borderWidth: 2,
-    borderColor: colors.primaryBlue,
+    borderColor: Colors.orange,
   },
-  cardPressed: { opacity: 0.85 },
   rowTop: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    gap: spacing.sm,
+    alignItems: "center",
+    gap: Space.sm,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+    flex: 1,
+    ...typeStyle("cardTitle"),
+    color: Colors.ink,
   },
   desc: {
-    marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
   },
   metricsRow: {
-    marginTop: spacing.sm,
+    marginTop: Space.md,
     flexDirection: "row",
-    gap: spacing.md,
+    gap: Space.xl,
   },
-  metric: { alignItems: "flex-start" },
+  metric: {
+    alignItems: "flex-start",
+  },
   metricValue: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.primaryBlue,
+    ...typeStyle("section"),
+    color: Colors.orange,
   },
   metricLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
-    color: colors.slate,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
+    ...typeStyle("caption"),
+    marginTop: 2,
+    color: Colors.muted,
   },
 });

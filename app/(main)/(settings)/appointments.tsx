@@ -5,7 +5,6 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
-import { spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -27,7 +26,7 @@ export default function AppointmentsScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX}>
+    <Screen scroll>
       <ScreenHeader
         title={COPY.appointmentsTitle}
         onBack={() => router.back()}
@@ -35,7 +34,7 @@ export default function AppointmentsScreen() {
       <EmptyState
         heading={COPY.appointmentsEmptyHeading}
         explanation={COPY.appointmentsEmptyBody}
-        illustration={<FollowUpCalendar width={200} />}
+        illustration={<FollowUpCalendar width={180} height={144} />}
       />
     </Screen>
   );

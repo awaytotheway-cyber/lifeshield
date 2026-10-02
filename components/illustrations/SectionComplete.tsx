@@ -1,7 +1,7 @@
 import Svg, { Circle, Line } from "react-native-svg";
 
 import { IllustrationFrame } from "@/components/illustrations/IllustrationFrame";
-import { colors } from "@/lib/design-tokens";
+import { art } from "@/components/illustrations/palette";
 
 type SectionCompleteProps = {
   width?: number;
@@ -9,7 +9,7 @@ type SectionCompleteProps = {
 };
 
 /**
- * Quiet sage starburst for a finished questionnaire section.
+ * Quiet starburst for a finished questionnaire section.
  * Contained and calm — not a party or confetti explosion.
  */
 export function SectionComplete({
@@ -27,16 +27,16 @@ export function SectionComplete({
       height={height}
       viewBox="0 0 80 80"
     >
-      <Circle cx={40} cy={40} r={22} fill={colors.sageLight} />
-      <Circle cx={40} cy={40} r={10} fill={colors.sage} />
-      <Circle cx={40} cy={40} r={4} fill={colors.white} />
+      <Circle cx={40} cy={40} r={22} fill={art.doneWash} />
+      <Circle cx={40} cy={40} r={10} fill={art.done} />
+      <Circle cx={40} cy={40} r={4} fill={art.paper} />
 
       <Line
         x1={40}
         y1={10}
         x2={40}
         y2={20}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
@@ -45,7 +45,7 @@ export function SectionComplete({
         y1={60}
         x2={40}
         y2={70}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
@@ -54,7 +54,7 @@ export function SectionComplete({
         y1={40}
         x2={20}
         y2={40}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
@@ -63,7 +63,7 @@ export function SectionComplete({
         y1={40}
         x2={70}
         y2={40}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
@@ -72,7 +72,7 @@ export function SectionComplete({
         y1={18}
         x2={25}
         y2={25}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2}
         strokeLinecap="round"
       />
@@ -81,7 +81,7 @@ export function SectionComplete({
         y1={55}
         x2={62}
         y2={62}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2}
         strokeLinecap="round"
       />
@@ -90,7 +90,7 @@ export function SectionComplete({
         y1={18}
         x2={55}
         y2={25}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2}
         strokeLinecap="round"
       />
@@ -99,15 +99,15 @@ export function SectionComplete({
         y1={55}
         x2={18}
         y2={62}
-        stroke={colors.sage}
+        stroke={art.done}
         strokeWidth={2}
         strokeLinecap="round"
       />
 
-      <Circle cx={28} cy={14} r={2} fill={colors.sage} />
-      <Circle cx={66} cy={32} r={1.8} fill={colors.sage} />
-      <Circle cx={52} cy={68} r={2} fill={colors.sage} />
-      <Circle cx={14} cy={48} r={1.6} fill={colors.sage} />
+      <Circle cx={28} cy={14} r={2} fill={art.done} />
+      <Circle cx={66} cy={32} r={1.8} fill={art.done} />
+      <Circle cx={52} cy={68} r={2} fill={art.done} />
+      <Circle cx={14} cy={48} r={1.6} fill={art.done} />
     </Svg>
     </IllustrationFrame>
   );

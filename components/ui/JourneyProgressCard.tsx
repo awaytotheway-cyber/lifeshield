@@ -1,16 +1,8 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import Animated, {
-  useAnimatedStyle,
-  useReducedMotion,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from "react-native-reanimated";
+import { StyleSheet, Text, View } from "react-native";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Card } from "@/components/ui/Card";
+import { Chip } from "@/components/ui/Chip";
+import { Colors, Font, Space, typeStyle } from "@/lib/theme";
 
 export type JourneyStepState = "complete" | "current" | "upcoming";
 
@@ -26,117 +18,115 @@ type JourneyProgressCardProps = {
 };
 
 /**
- * Home-style vertical timeline. Built now so later screens can drop it in.
+ * Vertical journey timeline inside a white card.
+ *
+ * PLAIN ENGLISH: a rail of dots down the left with one step per row. The step
+ * you are on is a bigger orange dot with a tinted ring, finished steps are a
+ * calm green, and steps still to come are a quiet warm line colour. There is no
+ * looping animation — Section 9 of the brief asks for stillness.
  */
-export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardProps) {
-  const reduceMotion = useReducedMotion();
-  const pulse = useAnimatedStyle(() => {
-    if (reduceMotion) {
-      return { opacity: 1 };
-    }
-    return {
-      opacity: withRepeat(
-        withSequence(withTiming(1, { duration: 700 }), withTiming(0.45, { duration: 700 })),
-        -1,
-        true,
-      ),
-    };
-  });
-
+export function JourneyProgressCard({
+  steps,
+  onContinue,
+}: JourneyProgressCardProps) {
   return (
-    <GlassCard intensity="card" style={styles.card}>
+    <Card>
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
-        const color =
-          step.state === "complete"
-            ? colors.riskLow
-            : step.state === "current"
-              ? colors.primaryBlue
-              : colors.border;
-        const textColor =
-          step.state === "upcoming" ? colors.mist : colors.deepNavy;
-        const weight = step.state === "current" ? fontFamily.bodySemi : fontFamily.body;
+        const current = step.state === "current";
 
         return (
           <View key={step.id} style={styles.row}>
             <View style={styles.rail}>
-              {step.state === "current" ? (
-                <Animated.View style={[styles.dot, { backgroundColor: color }, pulse]} />
-              ) : (
-                <View style={[styles.dot, { backgroundColor: color }]} />
-              )}
+              <View
+                style={[
+                  styles.dot,
+                  step.state === "complete" ? styles.dotComplete : null,
+                  current ? styles.dotCurrent : null,
+                  step.state === "upcoming" ? styles.dotUpcoming : null,
+                ]}
+              />
               {isLast ? null : <View style={styles.line} />}
             </View>
-            <View style={styles.body}>
-              <Text style={[styles.title, { color: textColor, fontFamily: weight }]}>
+            <View style={[styles.body, isLast ? styles.bodyLast : null]}>
+              <Text
+                style={[
+                  styles.title,
+                  current ? styles.titleCurrent : null,
+                  step.state === "upcoming" ? styles.titleUpcoming : null,
+                ]}
+              >
                 {step.title}
               </Text>
-              {step.state === "current" && onContinue ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Continue"
-                  onPress={onContinue}
-                  style={styles.chip}
-                >
-                  <Text style={styles.chipText}>Continue</Text>
-                  <Feather name="chevron-right" size={14} color={colors.primaryBlue} />
-                </Pressable>
+              {current && onContinue ? (
+                <View style={styles.continue}>
+                  <Chip label="Continue" tone="orange" onPress={onContinue} />
+                </View>
               ) : null}
             </View>
           </View>
         );
       })}
-    </GlassCard>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: spacing.base,
-  },
   row: {
     flexDirection: "row",
-    minHeight: 44,
   },
   rail: {
-    width: 24,
+    width: Space.lg,
     alignItems: "center",
   },
   dot: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    marginTop: 4,
+    // Centres the dot against the first line of the title.
+    marginTop: 8,
+  },
+  dotComplete: {
+    backgroundColor: Colors.green,
+  },
+  dotCurrent: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginTop: 6,
+    backgroundColor: Colors.orange,
+    borderWidth: 3,
+    borderColor: Colors.orangeTintDeep,
+  },
+  dotUpcoming: {
+    backgroundColor: Colors.line,
   },
   line: {
     flex: 1,
     width: 2,
-    backgroundColor: colors.border,
-    marginVertical: 4,
+    backgroundColor: Colors.line,
+    marginVertical: Space.xs,
   },
   body: {
     flex: 1,
-    paddingBottom: 16,
-    paddingLeft: 8,
+    paddingLeft: Space.sm,
+    paddingBottom: Space.lg,
+  },
+  bodyLast: {
+    paddingBottom: 0,
   },
   title: {
-    fontSize: 15,
-    lineHeight: 24,
+    ...typeStyle("body"),
+    color: Colors.body,
   },
-  chip: {
-    marginTop: 8,
-    alignSelf: "flex-start",
-    minHeight: 32,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    backgroundColor: colors.lightTeal,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
+  titleCurrent: {
+    fontFamily: Font.semibold,
+    color: Colors.ink,
   },
-  chipText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.primaryBlue,
+  titleUpcoming: {
+    color: Colors.muted,
+  },
+  continue: {
+    marginTop: Space.sm,
   },
 });

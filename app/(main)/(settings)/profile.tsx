@@ -4,18 +4,20 @@ import * as ImagePicker from "expo-image-picker";
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
+import { Chip } from "@/components/ui/Chip";
 import { DatePicker } from "@/components/ui/DatePicker";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { NumberInput } from "@/components/ui/NumberInput";
+import { PressScale } from "@/components/ui/PressScale";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextField } from "@/components/ui/TextField";
@@ -23,7 +25,6 @@ import { Toast } from "@/components/ui/Toast";
 import { isAdminEmail, SEX_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
-import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import {
   ALLERGY_OPTIONS,
@@ -45,9 +46,19 @@ import {
   type ProfileFormParsed,
 } from "@/lib/profile-extended";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Gap, Space, typeStyle } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** One derived, read-only number — big and orange, per Section 8. */
+function DerivedReadout({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.derived}>
+      <Text style={styles.derivedLabel}>{label}</Text>
+      <Text style={styles.derivedValue}>{value}</Text>
+    </View>
+  );
+}
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -173,18 +184,13 @@ export default function ProfileScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <View style={styles.topRow}>
-        <MenuButton />
-        <View style={styles.headerFlex}>
-          <ScreenHeader
-            title={COPY.profileTitle}
-            onBack={() => router.replace(routes.settings)}
-            backLabel="Back to settings"
-          />
-        </View>
-      </View>
-      <Text style={styles.body}>{COPY.profileBody}</Text>
+    <Screen scroll>
+      <ScreenHeader
+        title={COPY.profileTitle}
+        subtitle={COPY.profileBody}
+        onBack={() => router.replace(routes.settings)}
+        backLabel="Back to settings"
+      />
 
       {loading ? <StaticSkeleton rows={4} /> : null}
       {loadMessage ? <Text style={styles.error}>{loadMessage}</Text> : null}
@@ -192,14 +198,14 @@ export default function ProfileScreen() {
 
       {!loading ? (
         <>
-          <GlassCard intensity="card" style={styles.photoCard}>
-            <Pressable
+          <Card style={styles.photoCard}>
+            <PressScale
               accessibilityRole="button"
               accessibilityLabel={
                 avatarUri ? COPY.profilePhotoChange : COPY.profilePhotoAdd
               }
               onPress={() => void pickPhoto()}
-              style={styles.avatarHit}
+              haptic="light"
             >
               {avatarUri ? (
                 <Image
@@ -209,20 +215,24 @@ export default function ProfileScreen() {
                 />
               ) : (
                 <View style={styles.avatarPlaceholder}>
-                  <Feather name="camera" size={28} color={colors.primaryBlue} />
+                  <Feather name="camera" size={28} color={Colors.orange} />
                 </View>
               )}
-            </Pressable>
+            </PressScale>
             <TextButton
               title={avatarUri ? COPY.profilePhotoChange : COPY.profilePhotoAdd}
               onPress={() => void pickPhoto()}
             />
             {avatarUri ? (
-              <TextButton title={COPY.profilePhotoRemove} onPress={() => void removePhoto()} />
+              <TextButton
+                title={COPY.profilePhotoRemove}
+                onPress={() => void removePhoto()}
+              />
             ) : null}
-          </GlassCard>
+          </Card>
 
-          <GlassCard intensity="card" style={styles.formCard}>
+          <SectionTitle title="About you" />
+          <Card>
             <Controller
               control={control}
               name="fullName"
@@ -237,16 +247,20 @@ export default function ProfileScreen() {
               )}
             />
 
-            <Text style={styles.label}>{COPY.profileEmailLabel} *</Text>
-            <Text style={styles.value}>
-              {email.length > 0 ? email : COPY.profileEmailEmpty}
-            </Text>
-            <Text style={styles.hint}>{COPY.profileEmailReadonly}</Text>
-            {isAdminEmail(email) ? (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{COPY.profileAdminBadge}</Text>
-              </View>
-            ) : null}
+            <View style={styles.readonlyBlock}>
+              <Text style={styles.readonlyLabel}>
+                {COPY.profileEmailLabel} *
+              </Text>
+              <Text style={styles.readonlyValue}>
+                {email.length > 0 ? email : COPY.profileEmailEmpty}
+              </Text>
+              <Text style={styles.hint}>{COPY.profileEmailReadonly}</Text>
+              {isAdminEmail(email) ? (
+                <View style={styles.badge}>
+                  <Chip label={COPY.profileAdminBadge} tone="green" />
+                </View>
+              ) : null}
+            </View>
 
             <Controller
               control={control}
@@ -276,9 +290,6 @@ export default function ProfileScreen() {
                 />
               )}
             />
-            <Text style={styles.computed}>
-              {COPY.profileAgeLabel}: {displayAge(dateOfBirth ?? "")}
-            </Text>
 
             <Controller
               control={control}
@@ -333,11 +344,25 @@ export default function ProfileScreen() {
                 />
               )}
             />
-            <Text style={styles.computed}>
-              {COPY.profileBmiLabel}: {displayBmi(heightCm, weightKg)}
-            </Text>
+          </Card>
 
-            <Text style={styles.section}>{COPY.profileEmergencyHeading}</Text>
+          <SectionTitle title="Your numbers" />
+          <Card>
+            <View style={styles.derivedRow}>
+              <DerivedReadout
+                label={COPY.profileAgeLabel}
+                value={displayAge(dateOfBirth ?? "")}
+              />
+              <View style={styles.derivedDivider} />
+              <DerivedReadout
+                label={COPY.profileBmiLabel}
+                value={displayBmi(heightCm, weightKg)}
+              />
+            </View>
+          </Card>
+
+          <SectionTitle title={COPY.profileEmergencyHeading} />
+          <Card>
             <Controller
               control={control}
               name="emergencyName"
@@ -377,7 +402,10 @@ export default function ProfileScreen() {
                 />
               )}
             />
+          </Card>
 
+          <SectionTitle title="Health background" />
+          <Card>
             <Controller
               control={control}
               name="conditions"
@@ -404,45 +432,49 @@ export default function ProfileScreen() {
                 />
               )}
             />
-          </GlassCard>
+          </Card>
 
           {saveMessage ? <Text style={styles.error}>{saveMessage}</Text> : null}
 
-          <PrimaryButton
-            title={COPY.profileSave}
-            loading={isSubmitting}
-            disabled={isSubmitting || !isDirty}
-            onPress={() => void onSave()}
-            accessibilityLabel={COPY.profileSave}
-          />
+          <View style={styles.footer}>
+            <PrimaryButton
+              title={COPY.profileSave}
+              loading={isSubmitting}
+              disabled={isSubmitting || !isDirty}
+              onPress={() => void onSave()}
+              accessibilityLabel={COPY.profileSave}
+            />
 
-          {signOutMessage ? (
-            <Text style={styles.error}>{signOutMessage}</Text>
-          ) : null}
+            {signOutMessage ? (
+              <Text style={styles.error}>{signOutMessage}</Text>
+            ) : null}
 
-          <TextButton
-            title={COPY.signOut}
-            loading={signingOut}
-            disabled={signingOut}
-            onPress={() => {
-              void (async () => {
-                setSigningOut(true);
-                setSignOutMessage(null);
-                try {
-                  const result = await signOut();
-                  if (!result.ok) {
-                    setSignOutMessage(result.message ?? COPY.profileSignOutFailed);
+            <TextButton
+              title={COPY.signOut}
+              loading={signingOut}
+              disabled={signingOut}
+              onPress={() => {
+                void (async () => {
+                  setSigningOut(true);
+                  setSignOutMessage(null);
+                  try {
+                    const result = await signOut();
+                    if (!result.ok) {
+                      setSignOutMessage(
+                        result.message ?? COPY.profileSignOutFailed,
+                      );
+                    }
+                  } catch (error) {
+                    setSignOutMessage(
+                      messageFromUnknown(error, COPY.profileSignOutFailed),
+                    );
+                  } finally {
+                    setSigningOut(false);
                   }
-                } catch (error) {
-                  setSignOutMessage(
-                    messageFromUnknown(error, COPY.profileSignOutFailed),
-                  );
-                } finally {
-                  setSigningOut(false);
-                }
-              })();
-            }}
-          />
+                })();
+              }}
+            />
+          </View>
         </>
       ) : null}
 
@@ -452,102 +484,74 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  topRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  headerFlex: {
-    flex: 1,
-  },
-  body: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-  },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.red,
   },
   note: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.amber,
+    ...typeStyle("secondary"),
+    marginTop: Space.md,
+    color: Colors.amber,
   },
   photoCard: {
-    marginTop: spacing.md,
     alignItems: "center",
-    padding: spacing.base,
-  },
-  avatarHit: {
-    minWidth: tapTarget,
-    minHeight: tapTarget,
   },
   avatar: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 104,
+    height: 104,
+    borderRadius: 52,
   },
   avatarPlaceholder: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: colors.lightTeal,
+    width: 104,
+    height: 104,
+    borderRadius: 52,
+    backgroundColor: Colors.orangeTint,
     alignItems: "center",
     justifyContent: "center",
   },
-  formCard: {
-    marginTop: spacing.md,
-    padding: spacing.base,
-    marginBottom: spacing.md,
+  readonlyBlock: {
+    marginTop: Space.lg,
   },
-  label: {
-    marginTop: 16,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
+  readonlyLabel: {
+    ...typeStyle("cardTitle"),
+    marginBottom: Gap.labelToField,
+    color: Colors.ink,
   },
-  value: {
-    marginTop: 4,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    color: colors.charcoal,
+  readonlyValue: {
+    ...typeStyle("body"),
+    color: Colors.ink,
   },
   hint: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
-  },
-  computed: {
-    marginTop: 8,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
-    color: colors.primaryBlue,
-  },
-  section: {
-    marginTop: 24,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.deepNavy,
+    ...typeStyle("secondary"),
+    marginTop: Space.xs,
+    color: Colors.muted,
   },
   badge: {
-    marginTop: 12,
-    alignSelf: "flex-start",
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.chip,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+    marginTop: Space.sm,
   },
-  badgeText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.sage,
+  derivedRow: {
+    flexDirection: "row",
+    alignItems: "stretch",
+  },
+  derived: {
+    flex: 1,
+  },
+  derivedDivider: {
+    width: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.line,
+    marginHorizontal: Space.md,
+  },
+  derivedLabel: {
+    ...typeStyle("secondary"),
+    color: Colors.muted,
+  },
+  derivedValue: {
+    ...typeStyle("dataBig"),
+    marginTop: Space.xs,
+    color: Colors.orange,
+  },
+  footer: {
+    marginTop: Gap.beforeFooter,
   },
 });
