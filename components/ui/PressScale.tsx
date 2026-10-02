@@ -1,5 +1,7 @@
 import {
   Pressable,
+  type AccessibilityRole,
+  type AccessibilityState,
   type PressableProps,
   type PressableStateCallbackType,
   type StyleProp,
@@ -20,6 +22,53 @@ type PressScaleProps = Omit<PressableProps, "style"> & {
   haptic?: "none" | "light" | "medium";
 };
 
+type AriaProps = {
+  "aria-checked"?: boolean;
+  "aria-expanded"?: boolean;
+  "aria-pressed"?: boolean;
+  "aria-selected"?: boolean;
+};
+
+/**
+ * react-native-web 0.21 no longer turns `accessibilityState` into `aria-*`
+ * attributes, so a tapped choice would announce itself as unchecked. We keep
+ * `accessibilityState` for native and emit the matching `aria-*` prop here.
+ *
+ * Which attribute is correct depends on the role: radios, checkboxes and
+ * switches take `aria-checked`, a toggling button takes `aria-pressed`, and
+ * only list/tab style roles take `aria-selected`.
+ */
+function ariaFromState(
+  state: AccessibilityState | undefined,
+  role: AccessibilityRole | undefined,
+): AriaProps {
+  if (!state) {
+    return {};
+  }
+
+  const aria: AriaProps = {};
+
+  if (state.expanded !== undefined) {
+    aria["aria-expanded"] = state.expanded;
+  }
+
+  const on = state.checked === true || state.selected === true;
+  const hasToggle = state.checked !== undefined || state.selected !== undefined;
+  if (!hasToggle || state.checked === "mixed") {
+    return aria;
+  }
+
+  if (role === "radio" || role === "checkbox" || role === "switch") {
+    aria["aria-checked"] = on;
+  } else if (role === "tab" || role === "menuitem") {
+    aria["aria-selected"] = on;
+  } else {
+    aria["aria-pressed"] = on;
+  }
+
+  return aria;
+}
+
 /**
  * Tiny press shrink. Turns off when the phone asks for less motion.
  *
@@ -39,6 +88,7 @@ export function PressScale({
 
   return (
     <Pressable
+      {...ariaFromState(rest.accessibilityState, rest.accessibilityRole)}
       {...rest}
       style={(state) => {
         const resolved = typeof style === "function" ? style(state) : style;
