@@ -11,6 +11,8 @@ type SectionTitleProps = {
   icon?: keyof typeof Feather.glyphMap;
   /** Drop the 40px top margin when the title is the first thing on a screen. */
   first?: boolean;
+  /** Override the 40px top margin (Home uses 48px between its sections). */
+  topGap?: number;
 };
 
 /**
@@ -24,9 +26,16 @@ export function SectionTitle({
   subtitle,
   icon,
   first = false,
+  topGap,
 }: SectionTitleProps) {
   return (
-    <View style={[styles.wrap, first ? styles.first : null]}>
+    <View
+      style={[
+        styles.wrap,
+        first ? styles.first : null,
+        typeof topGap === "number" ? { marginTop: topGap } : null,
+      ]}
+    >
       <View style={styles.row}>
         {icon ? (
           <View style={styles.iconSquare}>
