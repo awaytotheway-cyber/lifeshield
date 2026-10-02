@@ -1,11 +1,9 @@
-import { Redirect, Tabs, usePathname } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import { Redirect, Stack, usePathname } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
-import { AppDrawer } from "@/components/navigation/AppDrawer";
 import { DrawerProvider } from "@/components/navigation/DrawerContext";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { MenuDrawer } from "@/components/navigation/MenuDrawer";
 import {
   allConsentsAgreed,
   firstIncompleteConsent,
@@ -13,12 +11,19 @@ import {
   redirectIfConsentOutOfOrder,
   type SequentialConsent,
 } from "@/lib/consent-flow";
-import { colors } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Motion } from "@/lib/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/**
+ * Home sits underneath every other screen in this stack, so a deep link or a
+ * refresh still has somewhere to go back to.
+ */
+export const unstable_settings = {
+  initialRouteName: "home",
+};
 
 function consentScreenFromPath(pathname: string): SequentialConsent | null {
   if (pathname.includes("brca")) {
@@ -34,9 +39,12 @@ function consentScreenFromPath(pathname: string): SequentialConsent | null {
 }
 
 /**
- * Home / Questionnaire / More. Symptom check and consents live here too
- * but are hidden from the tab bar. Locked users never see these tabs.
- * Side drawer overlays the tabs without replacing journey safety gates.
+ * The signed-in shell. Home is the root of a Stack — there is NO bottom tab
+ * bar anymore (Section 7). Everything else is reached from Home's content cards
+ * or from the menu drawer, and pushes onto this stack.
+ *
+ * The journey safety gates below are unchanged: auth → terms → onboarding →
+ * triage (pending / locked) → sequential consents. Do not reorder them.
  */
 export default function MainLayout() {
   const session = useAuthStore((state) => state.session);
@@ -49,7 +57,7 @@ export default function MainLayout() {
   const agreed = useConsentStore((state) => state.agreed);
   const pathname = usePathname();
 
-  // Only block the tab shell until the first consent fetch finishes.
+  // Only block the shell until the first consent fetch finishes.
   // Later refreshes must not trap users on a spinner when opening Follow-up.
   const waitingConsents =
     Boolean(session) &&
@@ -85,16 +93,6 @@ export default function MainLayout() {
   const onFollowup = pathname.includes("followup");
   const onStore = pathname.includes("/(store)") || pathname.includes("/store");
   const onOrders = pathname.includes("/(orders)") || pathname.includes("/orders");
-  const onTermPreview = pathname.includes("clinical-term-preview");
-  const onSettingsDeep =
-    pathname.includes("(settings)") &&
-    !pathname.endsWith("(settings)") &&
-    !pathname.endsWith("/settings") &&
-    pathname !== "/(main)/(settings)" &&
-    !pathname.endsWith("/(settings)/");
-  const questionnaireHub =
-    pathname === "/questionnaire" || pathname.endsWith("/questionnaire");
-  const onQuestionnaireSection = onQuestionnaire && !questionnaireHub;
   const consentScreen = consentScreenFromPath(pathname);
   const consentsDone = allConsentsAgreed(agreed);
 
@@ -128,130 +126,41 @@ export default function MainLayout() {
     }
   }
 
-  const hideTabBar =
-    onSymptomCheck ||
-    Boolean(consentScreen) ||
-    onQuestionnaireSection ||
-    onResults ||
-    onPlan ||
-    onFollowup ||
-    onStore ||
-    onOrders ||
-    onTermPreview ||
-    onSettingsDeep;
-
   return (
     <DrawerProvider>
       <View style={styles.shell}>
-        <Tabs
+        <Stack
           screenOptions={{
             headerShown: false,
-            tabBarActiveTintColor: colors.primaryBlue,
-            tabBarInactiveTintColor: colors.slate,
-            tabBarLabelStyle: {
-              fontFamily: fontFamily.body,
-              fontSize: 13,
-            },
-            tabBarBackground: () =>
-              hideTabBar ? null : (
-                <GlassCard intensity="chrome" style={StyleSheet.absoluteFill} />
-              ),
-            tabBarStyle: hideTabBar
-              ? { display: "none" }
-              : {
-                  backgroundColor: "transparent",
-                  borderTopWidth: StyleSheet.hairlineWidth,
-                  borderTopColor: colors.glassBorder,
-                  elevation: 0,
-                  minHeight: 52,
-                },
+            // Section 9 motion: slide, ~300ms, ease-out.
+            animation: "slide_from_right",
+            animationDuration: Motion.screen,
+            contentStyle: { backgroundColor: Colors.background },
           }}
         >
-          <Tabs.Screen
-            name="home"
-            options={{
-              title: "Home",
-              tabBarIcon: ({ color }) => (
-                <Feather name="home" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="questionnaire"
-            options={{
-              title: "Questionnaire",
-              tabBarIcon: ({ color }) => (
-                <Feather name="clipboard" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="(settings)"
-            options={{
-              title: "More",
-              tabBarIcon: ({ color }) => (
-                <Feather name="menu" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
+          {/* Home is the hub — the root of the stack. */}
+          <Stack.Screen name="home" />
+          <Stack.Screen name="questionnaire" />
+          <Stack.Screen name="(settings)" />
+          <Stack.Screen
             name="(triage)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
+            options={{ gestureEnabled: false, animation: "none" }}
           />
-          <Tabs.Screen
-            name="(consent)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(results)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(plan)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(followup)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(store)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(orders)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="clinical-term-preview"
-            options={{
-              href: null,
-              title: "Preview",
-            }}
-          />
-        </Tabs>
-        <AppDrawer unreadCount={0} />
+          <Stack.Screen name="(consent)" options={{ gestureEnabled: false }} />
+          <Stack.Screen name="(results)" />
+          <Stack.Screen name="(plan)" />
+          <Stack.Screen name="(followup)" />
+          <Stack.Screen name="(store)" />
+          <Stack.Screen name="(orders)" />
+          <Stack.Screen name="(goals)" />
+          <Stack.Screen name="(buddies)" />
+          <Stack.Screen name="(recipes)" />
+          <Stack.Screen name="(partners)" />
+          <Stack.Screen name="(journey)" />
+          <Stack.Screen name="(plugins)" />
+          <Stack.Screen name="clinical-term-preview" />
+        </Stack>
+        <MenuDrawer unreadCount={0} />
       </View>
     </DrawerProvider>
   );

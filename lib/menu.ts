@@ -1,6 +1,14 @@
 /**
- * Side-drawer menu items. Routes map to real screens or honest empty shells.
- * Optional reorder: persist ordered ids in AsyncStorage (see AppDrawer).
+ * Menu-drawer items (Section 7.2 of .cursorrules-redesign).
+ *
+ * PLAIN ENGLISH: this is the list you see when you tap the menu button on Home.
+ * To rename a row, change its `label`. To reorder the default list, reorder
+ * DEFAULT_MENU_ORDER. Every `href` points at a real screen in lib/routes.ts —
+ * please keep it that way so no row is a dead end.
+ *
+ * The first eleven items are the brief's list, in the brief's order. The items
+ * after them are extra PRESCOPE features that already exist; they live below so
+ * no functionality is lost.
  */
 import type { Href } from "expo-router";
 import type { Feather } from "@expo/vector-icons";
@@ -8,21 +16,23 @@ import type { Feather } from "@expo/vector-icons";
 import { routes } from "@/lib/routes";
 
 export type MenuItemId =
-  | "home"
   | "journey"
+  | "results"
   | "plan"
+  | "orders"
+  | "appointments"
+  | "shop"
   | "goals"
-  | "buddies"
   | "recipes"
+  | "profile"
+  | "settings"
+  | "help"
+  | "home"
+  | "buddies"
   | "partners"
   | "plugins"
-  | "appointments"
-  | "results"
-  | "prescriptions"
-  | "shop"
   | "notifications"
-  | "profile"
-  | "settings";
+  | "prescriptions";
 
 export type MenuItem = {
   id: MenuItemId;
@@ -34,79 +44,55 @@ export type MenuItem = {
 };
 
 export const DEFAULT_MENU_ORDER: MenuItemId[] = [
-  "home",
+  // ——— Section 7.2 list, in order ———
   "journey",
-  "plan",
-  "goals",
-  "buddies",
-  "recipes",
-  "partners",
-  "plugins",
-  "appointments",
   "results",
-  "prescriptions",
+  "plan",
+  "orders",
+  "appointments",
   "shop",
-  "notifications",
+  "goals",
+  "recipes",
   "profile",
   "settings",
+  "help",
+  // ——— Extra existing PRESCOPE features, kept below ———
+  "home",
+  "buddies",
+  "partners",
+  "plugins",
+  "notifications",
+  "prescriptions",
 ];
 
 export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
-  home: {
-    id: "home",
-    label: "Home",
-    icon: "home",
-    href: routes.home,
-    match: ["/home"],
-  },
   journey: {
     id: "journey",
-    label: "Journey",
-    icon: "compass",
+    label: "My Journey",
+    icon: "map",
     href: routes.journey,
-    match: ["/journey", "(journey)"],
+    match: ["/journey", "(journey)", "/questionnaire"],
+  },
+  results: {
+    id: "results",
+    label: "My Results",
+    icon: "bar-chart-2",
+    href: routes.labResults,
+    match: ["results", "lab-results"],
   },
   plan: {
     id: "plan",
     label: "My Plan",
-    icon: "map",
+    icon: "list",
     href: routes.plan,
-    match: ["/plan"],
+    match: ["/plan", "(plan)"],
   },
-  goals: {
-    id: "goals",
-    label: "My Goals",
-    icon: "target",
-    href: routes.goals,
-    match: ["/goals", "(goals)"],
-  },
-  buddies: {
-    id: "buddies",
-    label: "Buddies",
-    icon: "users",
-    href: routes.buddies,
-    match: ["/buddies", "(buddies)"],
-  },
-  recipes: {
-    id: "recipes",
-    label: "Recipes",
-    icon: "book-open",
-    href: routes.recipes,
-    match: ["/recipes", "(recipes)"],
-  },
-  partners: {
-    id: "partners",
-    label: "Partner apps",
-    icon: "grid",
-    href: routes.partners,
-    match: ["/partners", "(partners)"],
-  },
-  plugins: {
-    id: "plugins",
-    label: "Plugins",
-    icon: "toggle-right",
-    href: routes.plugins,
-    match: ["/plugins", "(plugins)"],
+  orders: {
+    id: "orders",
+    label: "My Orders",
+    icon: "shopping-bag",
+    href: routes.orders,
+    match: ["/orders", "(orders)"],
   },
   appointments: {
     id: "appointments",
@@ -115,33 +101,26 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     href: routes.appointments,
     match: ["appointments"],
   },
-  results: {
-    id: "results",
-    label: "Test Results",
-    icon: "activity",
-    href: routes.labResults,
-    match: ["results", "lab-results"],
-  },
-  prescriptions: {
-    id: "prescriptions",
-    label: "Prescriptions",
-    icon: "file-text",
-    href: routes.prescriptions,
-    match: ["prescriptions"],
-  },
   shop: {
     id: "shop",
     label: "Shop",
-    icon: "shopping-bag",
+    icon: "grid",
     href: routes.store,
     match: ["/store", "(store)"],
   },
-  notifications: {
-    id: "notifications",
-    label: "Notifications",
-    icon: "bell",
-    href: routes.notificationsInbox,
-    match: ["notifications-inbox", "notif-inbox"],
+  goals: {
+    id: "goals",
+    label: "Weekly Goals",
+    icon: "target",
+    href: routes.goals,
+    match: ["/goals", "(goals)"],
+  },
+  recipes: {
+    id: "recipes",
+    label: "Recipes",
+    icon: "coffee",
+    href: routes.recipes,
+    match: ["/recipes", "(recipes)"],
   },
   profile: {
     id: "profile",
@@ -156,6 +135,55 @@ export const MENU_ITEMS: Record<MenuItemId, MenuItem> = {
     icon: "settings",
     href: routes.settings,
     match: ["/(settings)", "/settings"],
+  },
+  help: {
+    id: "help",
+    label: "Help & Support",
+    icon: "help-circle",
+    href: routes.settingsHelp,
+    match: ["/help"],
+  },
+  home: {
+    id: "home",
+    label: "Home",
+    icon: "home",
+    href: routes.home,
+    match: ["/home"],
+  },
+  buddies: {
+    id: "buddies",
+    label: "Buddies",
+    icon: "users",
+    href: routes.buddies,
+    match: ["/buddies", "(buddies)"],
+  },
+  partners: {
+    id: "partners",
+    label: "Partner apps",
+    icon: "activity",
+    href: routes.partners,
+    match: ["/partners", "(partners)"],
+  },
+  plugins: {
+    id: "plugins",
+    label: "Plugins",
+    icon: "toggle-right",
+    href: routes.plugins,
+    match: ["/plugins", "(plugins)"],
+  },
+  notifications: {
+    id: "notifications",
+    label: "Notifications",
+    icon: "bell",
+    href: routes.notificationsInbox,
+    match: ["notifications-inbox", "notif-inbox"],
+  },
+  prescriptions: {
+    id: "prescriptions",
+    label: "Prescriptions",
+    icon: "file-text",
+    href: routes.prescriptions,
+    match: ["prescriptions"],
   },
 };
 
@@ -178,25 +206,36 @@ export function orderedMenuItems(order: MenuItemId[]): MenuItem[] {
 
 export function menuItemIsActive(item: MenuItem, pathname: string): boolean {
   const path = pathname.toLowerCase();
+  if (item.id === "help") {
+    return path.includes("/help");
+  }
   if (item.id === "settings") {
     const settingsLeaves = [
       "notifications",
       "privacy",
-      "help",
       "about",
       "delete-account",
       "consents",
     ];
-    if (settingsLeaves.some((leaf) => path.includes(leaf) && !path.includes("notifications-inbox"))) {
+    if (
+      settingsLeaves.some(
+        (leaf) => path.includes(leaf) && !path.includes("notifications-inbox"),
+      )
+    ) {
       return true;
     }
-    // Settings hub (More tab index) — groups are often omitted from pathname.
+    // Settings hub — groups are often omitted from pathname.
     if (
       path.includes("(settings)") ||
       path.endsWith("/settings") ||
       path === "/(main)/(settings)"
     ) {
-      return !path.includes("profile") && !path.includes("appointments") && !path.includes("prescriptions");
+      return (
+        !path.includes("profile") &&
+        !path.includes("appointments") &&
+        !path.includes("prescriptions") &&
+        !path.includes("help")
+      );
     }
     return false;
   }
