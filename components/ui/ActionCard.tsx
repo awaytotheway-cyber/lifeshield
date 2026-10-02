@@ -31,8 +31,14 @@ export function ActionCard({
           <Feather name={icon} size={20} color={Colors.orange} />
         </View>
         <View style={styles.text}>
-          <Text style={styles.title}>{title}</Text>
-          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+          <Text style={styles.title} numberOfLines={2}>
+            {title}
+          </Text>
+          {subtitle ? (
+            <Text style={styles.subtitle} numberOfLines={2}>
+              {subtitle}
+            </Text>
+          ) : null}
         </View>
         {value ? <Text style={styles.value}>{value}</Text> : null}
         <Feather name="chevron-right" size={20} color={Colors.faint} />

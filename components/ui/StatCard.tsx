@@ -23,10 +23,12 @@ export function StatCard({ value, label, onPress }: StatCardProps) {
       style={styles.card}
     >
       <View>
-        <Text style={styles.value} numberOfLines={1} adjustsFontSizeToFit>
+        <Text style={styles.value} numberOfLines={1}>
           {value}
         </Text>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.label} numberOfLines={2}>
+          {label}
+        </Text>
       </View>
     </Card>
   );

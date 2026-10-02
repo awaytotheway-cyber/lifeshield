@@ -80,6 +80,26 @@ function headlineFor(step: JourneyStepId): string {
   }
 }
 
+/** Short card subtitle for the current step. The long version stays on the journey card. */
+function subtitleFor(step: JourneyStepId, questionnaireCount: number): string {
+  switch (step) {
+    case "consents":
+      return COPY.homeTodaySubConsents;
+    case "questionnaire":
+      return `${COPY.homeTodaySubQuestionnaire} — ${questionnaireCount}/10`;
+    case "tests":
+      return COPY.homeTodaySubTests;
+    case "results":
+      return COPY.homeTodaySubResults;
+    case "plan":
+      return COPY.homeTodaySubPlan;
+    case "store":
+      return COPY.homeTodaySubStore;
+    case "followup":
+      return COPY.homeTodaySubFollowUp;
+  }
+}
+
 function greeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) {
@@ -276,7 +296,7 @@ export default function HomeScreen() {
     {
       id: "next",
       title: COPY[primary.titleKey],
-      subtitle: headlineFor(current),
+      subtitle: subtitleFor(current, questionnaireCount),
       icon: STEP_ICONS[current],
       onPress: goPrimary,
     },
@@ -346,6 +366,7 @@ export default function HomeScreen() {
               {currentStepLabel}
               {questionnaireSuffix}
             </Text>
+            <Text style={styles.stepBody}>{headlineFor(current)}</Text>
             <PressScale
               accessibilityRole="button"
               accessibilityLabel={COPY[primary.titleKey]}
@@ -379,33 +400,40 @@ export default function HomeScreen() {
           </View>
 
           <SectionTitle title={COPY.homeNumbersTitle} topGap={Space.xxl + 4} />
-          <View style={styles.statRow}>
-            <StatCard
-              value={`${questionnaireCount}/10`}
-              label={COPY.homeNumberQuestionnaire}
-              onPress={
-                consentsDone
-                  ? () => router.replace(routes.questionnaire)
-                  : undefined
-              }
-            />
-            <StatCard
-              value={`${consentCount}/3`}
-              label={COPY.homeNumberConsents}
-            />
-            <StatCard
-              value={
-                hasRecommendations
-                  ? COPY.homeTestPlanReady
-                  : COPY.homeNumberPending
-              }
-              label={COPY.homeNumberTestPlan}
-              onPress={
-                hasRecommendations
-                  ? () => router.replace(routes.results)
-                  : undefined
-              }
-            />
+          {/* Two roomy cards per row; a third wraps to a full-width card. */}
+          <View style={styles.statGrid}>
+            <View style={styles.statCell}>
+              <StatCard
+                value={`${questionnaireCount}/10`}
+                label={COPY.homeNumberQuestionnaire}
+                onPress={
+                  consentsDone
+                    ? () => router.replace(routes.questionnaire)
+                    : undefined
+                }
+              />
+            </View>
+            <View style={styles.statCell}>
+              <StatCard
+                value={`${consentCount}/3`}
+                label={COPY.homeNumberConsents}
+              />
+            </View>
+            <View style={styles.statCell}>
+              <StatCard
+                value={
+                  hasRecommendations
+                    ? COPY.homeTestPlanReady
+                    : COPY.homeNumberPending
+                }
+                label={COPY.homeNumberTestPlan}
+                onPress={
+                  hasRecommendations
+                    ? () => router.replace(routes.results)
+                    : undefined
+                }
+              />
+            </View>
           </View>
 
           {isAdminEmail(session.user.email) ? (
@@ -476,6 +504,11 @@ const styles = StyleSheet.create({
     marginTop: Space.xs,
     color: Colors.ink,
   },
+  stepBody: {
+    ...typeStyle("body"),
+    marginTop: Space.sm,
+    color: Colors.body,
+  },
   continueHit: {
     marginTop: Space.md,
     alignSelf: "flex-start",
@@ -499,9 +532,16 @@ const styles = StyleSheet.create({
     // Section 10: 16px minimum between stacked cards.
     gap: Gap.cards,
   },
-  statRow: {
+  statGrid: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: Gap.cards,
+  },
+  statCell: {
+    flexGrow: 1,
+    flexBasis: 0,
+    // Keeps two cards per row on a phone and stops numbers being clipped.
+    minWidth: 140,
   },
   adminBlock: {
     marginTop: Gap.sections,

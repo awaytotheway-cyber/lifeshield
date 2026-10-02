@@ -13,6 +13,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import Animated, {
   Easing,
+  runOnJS,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
@@ -84,32 +85,25 @@ export function MenuDrawer({ unreadCount = 0 }: MenuDrawerProps) {
   const panelWidth = Math.min(Math.round(width * WIDTH_RATIO), 420);
   const progress = useSharedValue(0);
 
-  // Keep the Modal mounted through the closing animation so it slides out.
+  // Keep the Modal mounted through the closing animation so the panel slides
+  // out instead of vanishing. Mounting is derived from `open` during render;
+  // unmounting waits for the slide-out to finish.
   const [visible, setVisible] = useState(open);
+  if (open && !visible) {
+    setVisible(true);
+  }
 
   useEffect(() => {
-    if (open) {
-      setVisible(true);
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (reduceMotion) {
-      progress.value = open ? 1 : 0;
-      if (!open) {
-        setVisible(false);
-      }
-      return;
-    }
-    progress.value = withTiming(open ? 1 : 0, {
-      duration: Motion.drawer,
-      easing: Easing.out(Easing.cubic),
-    });
-    if (!open) {
-      const timer = setTimeout(() => setVisible(false), Motion.drawer);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
+    const duration = reduceMotion ? 0 : Motion.drawer;
+    progress.value = withTiming(
+      open ? 1 : 0,
+      { duration, easing: Easing.out(Easing.cubic) },
+      (finished) => {
+        if (finished && !open) {
+          runOnJS(setVisible)(false);
+        }
+      },
+    );
   }, [open, progress, reduceMotion]);
 
   const panelStyle = useAnimatedStyle(() => ({
@@ -327,9 +321,9 @@ const styles = StyleSheet.create({
     gap: Space.md - 2,
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: Colors.orange,
     alignItems: "center",
     justifyContent: "center",
@@ -344,13 +338,13 @@ const styles = StyleSheet.create({
   /** Name in the Fraunces serif, per Section 7.2. */
   name: {
     fontFamily: Font.serif,
-    fontSize: 20,
-    lineHeight: 28,
+    fontSize: 18,
+    lineHeight: 26,
     letterSpacing: -0.2,
     color: Colors.ink,
   },
   email: {
-    ...typeStyle("secondary"),
+    ...typeStyle("caption"),
     marginTop: 2,
     color: Colors.muted,
   },
