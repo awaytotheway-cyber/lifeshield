@@ -2,6 +2,7 @@ import { Redirect, useRouter } from "expo-router";
 import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { BackBar } from "@/components/ui/BackBar";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -23,6 +24,7 @@ export default function ClinicalTermPreviewScreen() {
 
   return (
     <Screen scroll>
+      <BackBar onPress={() => router.back()} label="Back" />
       <Text className="text-center text-2xl text-charcoal">
         {COPY.clinicalTermPreviewTitle}
       </Text>

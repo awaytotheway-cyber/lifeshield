@@ -175,7 +175,11 @@ export default function PlanScreen() {
   return (
     <View style={styles.root}>
       <View style={{ position: "relative" }}>
-        <GradientHero height={200}>
+        <GradientHero
+          height={200}
+          onBack={() => router.replace(routes.labResults)}
+          backLabel={COPY.planBackResults}
+        >
           <View style={styles.heroInner}>
             <Text style={styles.heroTitle}>{planTitle}</Text>
             <Text style={styles.heroSub}>{COPY.planBody}</Text>

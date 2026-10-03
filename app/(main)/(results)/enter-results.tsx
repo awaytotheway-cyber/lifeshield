@@ -74,6 +74,7 @@ export default function EnterResultsScreen() {
   if (!isAdmin) {
     return (
       <Screen scroll>
+        <BackBar onPress={() => router.back()} label="Back" />
         <Text className="text-center text-2xl text-charcoal">
           {COPY.enterResultsTitle}
         </Text>

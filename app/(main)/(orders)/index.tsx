@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 
+import { BackBar } from "@/components/ui/BackBar";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -142,6 +143,7 @@ export default function OrdersScreen() {
 
   return (
     <Screen scroll>
+      <BackBar onPress={() => router.back()} label="Back" />
       <Text className="text-center text-2xl text-charcoal">
         {placed ? COPY.checkoutSuccessTitle : COPY.ordersTitle}
       </Text>

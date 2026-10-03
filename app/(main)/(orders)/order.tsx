@@ -2,6 +2,7 @@ import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
+import { BackBar } from "@/components/ui/BackBar";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -107,6 +108,7 @@ export default function OrderDetailScreen() {
 
   return (
     <Screen scroll>
+      <BackBar onPress={() => router.back()} label="Orders" />
       <Text className="text-center text-2xl text-charcoal">
         {COPY.orderDetailTitle}
       </Text>

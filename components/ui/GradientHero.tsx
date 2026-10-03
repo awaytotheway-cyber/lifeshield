@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Colors, Radii, Spacing } from "@/lib/design-tokens";
@@ -13,6 +15,10 @@ type GradientHeroProps = {
   bottomRadius?: number;
   /** Horizontal padding inside the hero. Default Spacing.screenH. */
   paddingH?: number;
+  /** Renders a glass back chevron in the top-left when provided. */
+  onBack?: () => void;
+  /** Accessibility label for the back control. */
+  backLabel?: string;
 };
 
 /**
@@ -27,8 +33,18 @@ export function GradientHero({
   height = 220,
   bottomRadius = Radii.hero,
   paddingH = Spacing.screenH,
+  onBack,
+  backLabel = "Go back",
 }: GradientHeroProps) {
   const insets = useSafeAreaInsets();
+
+  const back = () => {
+    if (Platform.OS !== "web") {
+      void Haptics.selectionAsync().catch(() => {});
+    }
+    onBack?.();
+  };
+
   return (
     <View
       style={[
@@ -48,6 +64,20 @@ export function GradientHero({
       />
       <SafeAreaView edges={["top"]} style={styles.inner}>
         <View style={[styles.content, { paddingHorizontal: paddingH }]}>
+          {onBack ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={backLabel}
+              onPress={back}
+              hitSlop={10}
+              style={({ pressed }) => [
+                styles.backBtn,
+                pressed ? { opacity: 0.75 } : null,
+              ]}
+            >
+              <Feather name="chevron-left" size={22} color={Colors.pureWhite} />
+            </Pressable>
+          ) : null}
           {children}
         </View>
       </SafeAreaView>
@@ -66,5 +96,16 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 8,
     paddingBottom: 20,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginBottom: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.20)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.30)",
   },
 });

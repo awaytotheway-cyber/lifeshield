@@ -41,6 +41,7 @@ export default function ConsentTermsScreen() {
   return (
     <OnboardingShell
       step={3}
+      onBack={() => router.back()}
       icon="lock"
       title={COPY.termsTitle}
       body={COPY.termsBody}

@@ -4,6 +4,7 @@ import { ActivityIndicator, Platform, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StripePayButton } from "@/components/checkout/StripePayButton";
+import { BackBar } from "@/components/ui/BackBar";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -111,6 +112,7 @@ export default function CheckoutScreen() {
 
   return (
     <Screen scroll>
+      <BackBar onPress={() => router.back()} label="Cart" />
       <Text className="text-center text-2xl text-charcoal">{COPY.checkoutTitle}</Text>
       <Text className="mt-4 text-center text-charcoal">{COPY.checkoutBody}</Text>
 

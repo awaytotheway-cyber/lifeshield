@@ -162,7 +162,11 @@ export default function LabResultsScreen() {
 
   return (
     <View style={styles.root}>
-      <GradientHero height={210}>
+      <GradientHero
+        height={210}
+        onBack={() => router.replace(routes.home)}
+        backLabel={COPY.resultsBackHome}
+      >
         <View style={styles.heroRow}>
           <View style={styles.heroText}>
             <Text style={styles.heroTitle}>{COPY.labResultsTitle}</Text>

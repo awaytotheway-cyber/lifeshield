@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { EmptyBox } from "@/components/illustrations";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
+import { BackBar } from "@/components/ui/BackBar";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -182,6 +183,7 @@ export default function CartScreen() {
 
   return (
     <Screen scroll>
+      <BackBar onPress={() => router.back()} label="Store" />
       <Text className="text-center text-2xl text-charcoal">{COPY.cartTitle}</Text>
       <Text className="mt-3 text-center text-charcoal">{COPY.cartBody}</Text>
 

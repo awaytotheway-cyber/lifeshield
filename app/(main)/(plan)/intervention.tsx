@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { BackBar } from "@/components/ui/BackBar";
 import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
@@ -88,6 +89,7 @@ export default function PlanItemScreen() {
 
   return (
     <Screen scroll>
+      <BackBar onPress={() => router.back()} label="Plan" />
       <Text className="text-center text-2xl text-charcoal">
         {COPY.planDetailTitle}
       </Text>

@@ -187,7 +187,11 @@ export default function ProfileScreen() {
   return (
     <Screen scroll contentPadding={0}>
       {/* Taller hero — profile deserves the space. */}
-      <GradientHero height={260}>
+      <GradientHero
+        height={260}
+        onBack={() => router.replace(routes.settings)}
+        backLabel="Back to settings"
+      >
         <View style={styles.heroTopRow}>
           <MenuButton />
         </View>

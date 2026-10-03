@@ -11,6 +11,7 @@ export default function DisclaimerScreen() {
   return (
     <OnboardingShell
       step={2}
+      onBack={() => router.back()}
       icon="info"
       title={COPY.disclaimerTitle}
       body={COPY.disclaimerBody}

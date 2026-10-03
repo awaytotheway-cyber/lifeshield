@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { TextButton } from "@/components/ui/Button";
@@ -24,6 +24,8 @@ type OnboardingShellProps = {
   footer: ReactNode;
   /** Show solid trust banner (welcome). */
   showTrustBanner?: boolean;
+  /** Renders a back chevron on the left of the top row. */
+  onBack?: () => void;
 };
 
 /**
@@ -39,17 +41,37 @@ export function OnboardingShell({
   children,
   footer,
   showTrustBanner = false,
+  onBack,
 }: OnboardingShellProps) {
   return (
     <Screen scroll contentPadding={spacing.screenX}>
-      {onSkip ? (
-        <View style={styles.skipRow}>
-          <TextButton
-            title={COPY.onboardingSkip}
-            onPress={onSkip}
-            style={styles.skipBtn}
-            accessibilityLabel={COPY.onboardingSkip}
-          />
+      {onBack || onSkip ? (
+        <View style={styles.topRow}>
+          {onBack ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+              onPress={onBack}
+              hitSlop={8}
+              style={styles.backHit}
+            >
+              <Feather
+                name="chevron-left"
+                size={22}
+                color={colors.orangeDark}
+              />
+            </Pressable>
+          ) : (
+            <View style={styles.skipSpacer} />
+          )}
+          {onSkip ? (
+            <TextButton
+              title={COPY.onboardingSkip}
+              onPress={onSkip}
+              style={styles.skipBtn}
+              accessibilityLabel={COPY.onboardingSkip}
+            />
+          ) : null}
         </View>
       ) : (
         <View style={styles.skipSpacer} />
@@ -95,9 +117,16 @@ export function OnboardingShell({
 }
 
 const styles = StyleSheet.create({
-  skipRow: {
-    alignItems: "flex-end",
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     minHeight: 44,
+  },
+  backHit: {
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: "center",
   },
   skipBtn: {
     marginTop: 0,
