@@ -7,7 +7,12 @@ import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { InterventionCard } from "@/components/ui/InterventionCard";
 import { Screen } from "@/components/ui/Screen";
-import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { GradientHero } from "@/components/ui/GradientHero";
+import { PrimaryButton as GradientButton } from "@/components/ui/PrimaryButton";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { Feather } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import type { StatusChipKind } from "@/components/ui/StatusChip";
 import { COPY } from "@/lib/copy";
@@ -168,32 +173,50 @@ export default function PlanScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
-      <ScreenHeader
-        title={planTitle}
-        onBack={() => router.replace(routes.labResults)}
-        backLabel={COPY.planBackResults}
-      />
-      <View style={styles.banner}>
-        <Text style={styles.bannerText}>{planBanner}</Text>
+    <View style={styles.root}>
+      <View style={{ position: "relative" }}>
+        <GradientHero height={200}>
+          <View style={styles.heroInner}>
+            <Text style={styles.heroTitle}>{planTitle}</Text>
+            <Text style={styles.heroSub}>{COPY.planBody}</Text>
+          </View>
+        </GradientHero>
+        {/* Glass-dark approval strip pinned to the hero bottom. */}
+        <View style={styles.approvalStrip}>
+          <BlurView
+            intensity={30}
+            tint="dark"
+            style={StyleSheet.absoluteFillObject}
+          />
+          <View style={styles.approvalFill} />
+          <View style={styles.approvalRow}>
+            <Feather name="check-circle" size={14} color="#FFFFFF" />
+            <Text style={styles.approvalText}>{planBanner}</Text>
+          </View>
+        </View>
       </View>
-      <Text style={styles.body}>{COPY.planBody}</Text>
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
+      {loading ? (
+        <View style={styles.pad}>
+          <StaticSkeleton rows={4} />
+        </View>
+      ) : null}
 
       {message ? (
-        <>
+        <View style={styles.pad}>
           <Text style={styles.error}>{message}</Text>
           <TextButton title={COPY.planRetry} onPress={() => void loadExisting()} />
-        </>
+        </View>
       ) : null}
 
       {!loading && !message && rows.length === 0 ? (
-        <EmptyState
-          icon="list"
-          heading={COPY.planEmptyHeading}
-          explanation={COPY.planEmpty}
-        />
+        <View style={styles.pad}>
+          <EmptyState
+            icon="list"
+            heading={COPY.planEmptyHeading}
+            explanation={COPY.planEmpty}
+          />
+        </View>
       ) : null}
 
       {!loading && !message && rows.length > 0 ? (
@@ -208,7 +231,11 @@ export default function PlanScreen() {
           }
           renderItem={({ item }) => {
             if (item.kind === "heading") {
-              return <Text style={styles.group}>{item.title}</Text>;
+              return (
+                <View style={styles.groupWrap}>
+                  <SectionHeader title={item.title} />
+                </View>
+              );
             }
             const chip = planChip(item.row);
             return (
@@ -234,56 +261,90 @@ export default function PlanScreen() {
         />
       ) : null}
 
-      <PrimaryButton
-        title={COPY.planBrowseStore}
-        onPress={() => {
-          router.push(routes.store);
-        }}
-      />
-      <TextButton
-        title={COPY.planOpenFollowUp}
-        onPress={() => {
-          router.push(routes.followUp);
-        }}
-      />
-      <TextButton
-        title={COPY.planRefresh}
-        loading={refreshing}
-        onPress={() => {
-          void refreshDrafts();
-        }}
-      />
-    </Screen>
+      <SafeAreaView edges={["bottom"]} style={styles.footer}>
+        <GradientButton
+          label={COPY.planBrowseStore}
+          onPress={() => {
+            router.push(routes.store);
+          }}
+        />
+        <TextButton
+          title={COPY.planOpenFollowUp}
+          onPress={() => {
+            router.push(routes.followUp);
+          }}
+        />
+        <TextButton
+          title={COPY.planRefresh}
+          loading={refreshing}
+          onPress={() => {
+            void refreshDrafts();
+          }}
+        />
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  banner: {
+  root: {
+    flex: 1,
+    backgroundColor: colors.softWhite,
+  },
+  pad: {
+    paddingHorizontal: spacing.screenX,
+  },
+  heroInner: {
+    flex: 1,
+    justifyContent: "center",
+    paddingBottom: 28,
+  },
+  heroTitle: {
+    fontFamily: fontFamily.heading,
+    fontSize: 32,
+    lineHeight: 38,
+    letterSpacing: -0.6,
+    color: colors.pureWhite,
+  },
+  heroSub: {
     marginTop: 8,
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.alert,
-    padding: spacing.base,
-  },
-  bannerText: {
-    fontFamily: fontFamily.body,
+    fontFamily: fontFamily.regular,
     fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
-    textAlign: "center",
+    lineHeight: 22,
+    color: "rgba(255,255,255,0.75)",
   },
-  body: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "center",
+  approvalStrip: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 40,
+    overflow: "hidden",
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    justifyContent: "center",
+  },
+  approvalFill: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.20)",
+  },
+  approvalRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: spacing.screenX,
+  },
+  approvalText: {
+    flex: 1,
+    fontFamily: fontFamily.semibold,
+    fontSize: 13,
+    color: colors.pureWhite,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: fontFamily.regular,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.dangerRed,
     textAlign: "center",
   },
   roadmap: {
@@ -291,14 +352,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   list: {
+    paddingHorizontal: spacing.screenX,
+    paddingTop: 20,
     paddingBottom: 16,
   },
-  group: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.deepTeal,
+  groupWrap: {
+    marginTop: 24,
+  },
+  footer: {
+    paddingHorizontal: spacing.screenX,
+    paddingTop: 8,
+    gap: 4,
   },
   cardGap: {
     marginBottom: 12,

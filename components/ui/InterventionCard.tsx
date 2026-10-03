@@ -1,11 +1,25 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  UIManager,
+  View,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
+
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const CATEGORY_ICONS = {
   supplement: "droplet",
@@ -25,10 +39,16 @@ type InterventionCardProps = {
   status: Extract<StatusChipKind, "approved" | "draft" | "critical">;
   statusLabel: string;
   onPress?: () => void;
+  /** Flagged items render on the tint surface instead of white glass. */
+  flagged?: boolean;
 };
 
 /**
- * Plan item card. Clinical wording stays collapsed until someone asks.
+ * Plan item card — PRESCOPE v2.
+ *
+ * "Clinical basis" expands inline with LayoutAnimation rather than
+ * pushing a new screen; keeping the reader in place is what makes the
+ * plan feel considered rather than bureaucratic.
  */
 export function InterventionCard({
   title,
@@ -38,9 +58,16 @@ export function InterventionCard({
   status,
   statusLabel,
   onPress,
+  flagged = false,
 }: InterventionCardProps) {
   const [open, setOpen] = useState(false);
   const icon = CATEGORY_ICONS[category];
+
+  const toggle = () => {
+    // LayoutAnimation must be configured BEFORE the state change.
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setOpen((current) => !current);
+  };
 
   return (
     <Pressable
@@ -48,79 +75,97 @@ export function InterventionCard({
       accessibilityLabel={title}
       onPress={onPress}
       disabled={!onPress}
+      style={({ pressed }) => (pressed && onPress ? { opacity: 0.92 } : null)}
     >
-      <GlassSurface intensity="card" style={styles.card}>
-      <View style={styles.top}>
-        <Feather name={icon} size={20} color={colors.deepTeal} />
-        <View style={styles.topText}>
-          <Text style={styles.title}>{title}</Text>
-          <StatusChip kind={status} label={statusLabel} />
+      <GlassCard
+        variant={flagged ? "tint" : "onWhite"}
+        radius={Radii.card}
+        padding={Spacing.card}
+      >
+        <View style={styles.top}>
+          <Feather name={icon} size={20} color={Colors.orangeDark} />
+          <View style={styles.topText}>
+            <Text style={styles.title}>{title}</Text>
+            <StatusChip kind={status} label={statusLabel} />
+          </View>
         </View>
-      </View>
-      <Text style={styles.whyLabel}>Why you're seeing this:</Text>
-      <Text style={styles.why}>{why}</Text>
-      {clinicalBasis ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Clinical basis"
-          onPress={() => setOpen((current) => !current)}
-          style={styles.expand}
-        >
-          <Text style={styles.expandLabel}>Clinical basis ›</Text>
-        </Pressable>
-      ) : null}
-      {open && clinicalBasis ? (
-        <Text style={styles.basis}>{clinicalBasis}</Text>
-      ) : null}
-      </GlassSurface>
+
+        <Text style={styles.whyLabel}>WHY YOU'RE SEEING THIS</Text>
+        <Text style={styles.why} numberOfLines={open ? undefined : 2}>
+          {why}
+        </Text>
+
+        {clinicalBasis ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Clinical basis"
+            accessibilityState={{ expanded: open }}
+            onPress={toggle}
+            style={styles.expand}
+          >
+            <Feather
+              name={open ? "chevron-down" : "chevron-right"}
+              size={14}
+              color={Colors.orangeDark}
+            />
+            <Text style={styles.expandLabel}>Clinical basis</Text>
+          </Pressable>
+        ) : null}
+
+        {open && clinicalBasis ? (
+          <Text style={styles.basis}>{clinicalBasis}</Text>
+        ) : null}
+      </GlassCard>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: spacing.base,
-  },
   top: {
     flexDirection: "row",
-    gap: 12,
+    gap: Spacing.md,
   },
   topText: {
     flex: 1,
-    gap: 8,
+    gap: Spacing.sm,
+    alignItems: "flex-start",
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+    fontFamily: Typography.semibold,
+    fontSize: Typography.bodyLarge,
+    lineHeight: 23,
+    color: Colors.charcoal,
   },
   whyLabel: {
-    marginTop: 12,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
+    marginTop: Spacing.md,
+    fontFamily: Typography.medium,
+    fontSize: Typography.micro,
+    letterSpacing: 0.6,
+    color: Colors.mutedText,
   },
   why: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    marginTop: Spacing.xs,
+    fontFamily: Typography.regular,
+    fontSize: 14,
+    lineHeight: 22,
+    color: Colors.bodyText,
   },
   expand: {
-    marginTop: 8,
+    marginTop: Spacing.md,
     minHeight: 44,
-    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   expandLabel: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
+    fontFamily: Typography.semibold,
+    fontSize: 14,
+    color: Colors.orangeDark,
   },
   basis: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    fontFamily: Typography.regular,
+    fontSize: Typography.secondary,
+    lineHeight: 21,
+    color: Colors.bodyText,
   },
 });
