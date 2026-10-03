@@ -8,10 +8,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors, Typography } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 
-type TabId = "home" | "journey" | "results" | "plan" | "more";
-
 type TabSpec = {
-  id: TabId;
+  id: string;
   label: string;
   icon: keyof typeof Feather.glyphMap;
   href: string;
@@ -24,7 +22,7 @@ const TABS: TabSpec[] = [
     label: "Home",
     icon: "home",
     href: routes.home as string,
-    match: (p) => p.includes("/home"),
+    match: (p) => p.includes("/home") || p.endsWith("home"),
   },
   {
     id: "journey",
@@ -37,15 +35,15 @@ const TABS: TabSpec[] = [
     id: "results",
     label: "Results",
     icon: "bar-chart-2",
-    href: routes.results as string,
-    match: (p) => p.includes("(results)") || p.includes("/results"),
+    href: routes.labResults as string,
+    match: (p) => p.includes("(results)") || p.includes("results"),
   },
   {
     id: "plan",
     label: "Plan",
     icon: "list",
     href: routes.plan as string,
-    match: (p) => p.includes("(plan)") || p.includes("/plan"),
+    match: (p) => p.includes("(plan)") || p.endsWith("/plan"),
   },
   {
     id: "more",
@@ -57,24 +55,25 @@ const TABS: TabSpec[] = [
 ];
 
 /**
- * PRESCOPE v2 bottom tab bar. Translucent white, blurred, with an
- * orange pill above the active tab's icon — the above-icon pill is the
- * key differentiator from a default-colour tabbar.
+ * PRESCOPE v2 bottom tab bar.
+ *
+ * The 4×4 orange pill sits ABOVE the active icon rather than
+ * underlining the label — that small placement choice is what stops the
+ * nav reading as a stock colour-swap tab bar.
  */
 export function BottomNav() {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
 
-  const go = async (tab: TabSpec) => {
+  const go = (tab: TabSpec) => {
     if (Platform.OS !== "web") {
-      try {
-        await Haptics.selectionAsync();
-      } catch {
-        // non-fatal
-      }
+      void Haptics.selectionAsync().catch(() => {});
     }
     router.navigate(tab.href as never);
   };
+
+  // First match wins, so a deep results route doesn't also light up Home.
+  const activeId = TABS.find((t) => t.match(pathname))?.id ?? null;
 
   return (
     <View style={styles.wrap}>
@@ -87,7 +86,7 @@ export function BottomNav() {
       <SafeAreaView edges={["bottom"]} style={styles.safe}>
         <View style={styles.row}>
           {TABS.map((tab) => {
-            const active = tab.match(pathname || "");
+            const active = tab.id === activeId;
             const color = active ? Colors.orangeDark : Colors.mutedText;
             return (
               <Pressable
@@ -95,18 +94,14 @@ export function BottomNav() {
                 accessibilityRole="tab"
                 accessibilityState={{ selected: active }}
                 accessibilityLabel={tab.label}
-                onPress={() => void go(tab)}
+                onPress={() => go(tab)}
                 style={styles.tab}
               >
                 <View style={styles.pillRow}>
                   <View
                     style={[
                       styles.pill,
-                      {
-                        backgroundColor: active
-                          ? Colors.orangeDark
-                          : "transparent",
-                      },
+                      active ? styles.pillOn : styles.pillOff,
                     ]}
                   />
                 </View>
@@ -123,16 +118,12 @@ export function BottomNav() {
 
 const styles = StyleSheet.create({
   wrap: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: Colors.borderLight,
   },
   whiteOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255,255,255,0.60)",
+    backgroundColor: "rgba(255,255,255,0.72)",
   },
   safe: {
     paddingHorizontal: 8,
@@ -140,7 +131,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingTop: 4,
+    paddingTop: 2,
     paddingBottom: 4,
   },
   tab: {
@@ -149,20 +140,23 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   pillRow: {
-    height: 6,
-    width: 20,
-    marginBottom: 2,
-    alignItems: "center",
+    height: 8,
     justifyContent: "center",
   },
   pill: {
-    width: 20,
+    width: 4,
     height: 4,
     borderRadius: 2,
   },
+  pillOn: {
+    backgroundColor: Colors.orangeDark,
+  },
+  pillOff: {
+    backgroundColor: "transparent",
+  },
   label: {
-    marginTop: 2,
+    marginTop: 3,
     fontFamily: Typography.semibold,
-    fontSize: 12,
+    fontSize: Typography.label,
   },
 });

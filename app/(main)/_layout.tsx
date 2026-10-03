@@ -1,11 +1,10 @@
 import { Redirect, Tabs, usePathname } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
 import { AppDrawer } from "@/components/navigation/AppDrawer";
+import { BottomNav } from "@/components/navigation/BottomNav";
 import { DrawerProvider } from "@/components/navigation/DrawerContext";
-import { GlassCard } from "@/components/ui/GlassCard";
 import {
   allConsentsAgreed,
   firstIncompleteConsent,
@@ -13,9 +12,7 @@ import {
   redirectIfConsentOutOfOrder,
   type SequentialConsent,
 } from "@/lib/consent-flow";
-import { colors } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -128,72 +125,36 @@ export default function MainLayout() {
     }
   }
 
+  // Results and Plan are primary tabs in v2, so the bar stays visible
+  // there. Only genuinely focused task flows hide it.
   const hideTabBar =
     onSymptomCheck ||
     Boolean(consentScreen) ||
     onQuestionnaireSection ||
-    onResults ||
-    onPlan ||
-    onFollowup ||
-    onStore ||
-    onOrders ||
     onTermPreview ||
     onSettingsDeep;
+
+  // Referenced by the gating logic above; kept explicit so the intent of
+  // each route check stays readable.
+  void onResults;
+  void onPlan;
+  void onFollowup;
+  void onStore;
+  void onOrders;
 
   return (
     <DrawerProvider>
       <View style={styles.shell}>
         <Tabs
+          // v2 custom tab bar: orange pill ABOVE the active icon.
+          tabBar={() => (hideTabBar ? null : <BottomNav />)}
           screenOptions={{
             headerShown: false,
-            tabBarActiveTintColor: colors.primaryBlue,
-            tabBarInactiveTintColor: colors.slate,
-            tabBarLabelStyle: {
-              fontFamily: fontFamily.body,
-              fontSize: 13,
-            },
-            tabBarBackground: () =>
-              hideTabBar ? null : (
-                <GlassCard intensity="chrome" style={StyleSheet.absoluteFill} />
-              ),
-            tabBarStyle: hideTabBar
-              ? { display: "none" }
-              : {
-                  backgroundColor: "transparent",
-                  borderTopWidth: StyleSheet.hairlineWidth,
-                  borderTopColor: colors.glassBorder,
-                  elevation: 0,
-                  minHeight: 52,
-                },
           }}
         >
-          <Tabs.Screen
-            name="home"
-            options={{
-              title: "Home",
-              tabBarIcon: ({ color }) => (
-                <Feather name="home" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="questionnaire"
-            options={{
-              title: "Questionnaire",
-              tabBarIcon: ({ color }) => (
-                <Feather name="clipboard" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="(settings)"
-            options={{
-              title: "More",
-              tabBarIcon: ({ color }) => (
-                <Feather name="menu" size={24} color={color} />
-              ),
-            }}
-          />
+          <Tabs.Screen name="home" options={{ title: "Home" }} />
+          <Tabs.Screen name="questionnaire" options={{ title: "Questionnaire" }} />
+          <Tabs.Screen name="(settings)" options={{ title: "More" }} />
           <Tabs.Screen
             name="(triage)"
             options={{
@@ -250,6 +211,14 @@ export default function MainLayout() {
               title: "Preview",
             }}
           />
+          {/* Feature groups added after the original tab set. Declared
+              with href: null so expo-router does not auto-add them. */}
+          <Tabs.Screen name="(goals)" options={{ href: null }} />
+          <Tabs.Screen name="(buddies)" options={{ href: null }} />
+          <Tabs.Screen name="(recipes)" options={{ href: null }} />
+          <Tabs.Screen name="(partners)" options={{ href: null }} />
+          <Tabs.Screen name="(journey)" options={{ href: null }} />
+          <Tabs.Screen name="(plugins)" options={{ href: null }} />
         </Tabs>
         <AppDrawer unreadCount={0} />
       </View>

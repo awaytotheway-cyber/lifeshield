@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { StyleSheet, Text } from "react-native";
+import { Platform, StyleSheet, Text } from "react-native";
+import * as Haptics from "expo-haptics";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -29,6 +30,12 @@ export function SectionCompleteCard({
   const appear = useSharedValue(reduceMotion ? 1 : 0);
 
   useEffect(() => {
+    // Celebrate the milestone — success notification, once per mount.
+    if (Platform.OS !== "web") {
+      void Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success,
+      ).catch(() => {});
+    }
     appear.value = reduceMotion ? 1 : withTiming(1, { duration: 200 });
     let fadeTimer: ReturnType<typeof setTimeout> | undefined;
     const hold = setTimeout(() => {

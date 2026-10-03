@@ -1,4 +1,5 @@
-import { Pressable, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
+import * as Haptics from "expo-haptics";
 
 import { SWITCH_PALETTE, type SwitchColor } from "@/lib/switch-colors";
 
@@ -48,6 +49,11 @@ export function ChoiceToggle({
               accessibilityRole="button"
               accessibilityState={{ selected }}
               onPress={() => {
+                if (Platform.OS !== "web") {
+                  void Haptics.impactAsync(
+                    Haptics.ImpactFeedbackStyle.Light,
+                  ).catch(() => {});
+                }
                 if (selected && allowClear) {
                   onChange("");
                   return;
