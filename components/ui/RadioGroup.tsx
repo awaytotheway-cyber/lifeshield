@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";
 import { colors, radius } from "@/lib/design-tokens";
@@ -51,6 +52,11 @@ export function RadioGroup({
               accessibilityLabel={option.label}
               accessibilityState={{ selected }}
               onPress={() => {
+                if (Platform.OS !== "web") {
+                  void Haptics.impactAsync(
+                    Haptics.ImpactFeedbackStyle.Light,
+                  ).catch(() => {});
+                }
                 onChange(selected && allowClear ? "" : option.value);
               }}
               style={[
@@ -68,8 +74,8 @@ export function RadioGroup({
               {selected ? (
                 <Feather
                   name="check"
-                  size={20}
-                  color={dangerSelected ? colors.coral : colors.midTeal}
+                  size={18}
+                  color={dangerSelected ? colors.dangerRed : colors.orangeDark}
                 />
               ) : null}
             </Pressable>
@@ -89,37 +95,37 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   card: {
-    minHeight: 56,
-    borderRadius: radius.radioCard,
-    paddingHorizontal: 16,
+    minHeight: 58,
+    borderRadius: radius.card,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   cardIdle: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.pureWhite,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.borderLight,
   },
   cardSelected: {
-    backgroundColor: colors.lightTeal,
+    backgroundColor: colors.orangeTint,
     borderWidth: 2,
-    borderColor: colors.midTeal,
+    borderColor: colors.orangeDark,
   },
   cardDanger: {
     backgroundColor: colors.coralLight,
     borderWidth: 2,
-    borderColor: colors.coral,
+    borderColor: colors.dangerRed,
   },
   cardText: {
     flex: 1,
     paddingRight: 12,
   },
   optionLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    color: colors.charcoal,
+    fontFamily: fontFamily.semibold,
+    fontSize: 17,
+    color: colors.darkText,
   },
   optionDesc: {
     marginTop: 4,

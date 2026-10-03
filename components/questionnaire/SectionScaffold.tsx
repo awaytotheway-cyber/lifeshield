@@ -1,22 +1,32 @@
 import { Redirect, useRouter } from "expo-router";
 import type { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { QuestionnaireStepper } from "@/components/questionnaire/QuestionnaireStepper";
 import { SectionCompleteCard } from "@/components/questionnaire/SectionCompleteCard";
-import { IconButton, PrimaryButton } from "@/components/ui/Button";
-import { Screen } from "@/components/ui/Screen";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
+import { Colors, Spacing, Typography } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
 
 type SectionScaffoldProps = {
   title: string;
+  /** Optional one-line intro under the title. */
+  subtitle?: string;
   step: number;
   total?: number;
   loading?: boolean;
@@ -29,14 +39,21 @@ type SectionScaffoldProps = {
   showComplete?: boolean;
   onCompleteDone?: () => void;
   errorMessage?: string | null;
+  /** Shown as a "Skip" affordance in the header when provided. */
+  onSkip?: () => void;
 };
 
 /**
- * Shared chrome for questionnaire sections. Locked users never stay here.
- * Stepper stays at the top; Save & continue stays at the bottom.
+ * Shared chrome for questionnaire sections — PRESCOPE v2.
+ *
+ * Deliberately NOT a GradientHero: this is a focused task screen with a
+ * white sticky header, a FLUSH edge-to-edge progress bar (no horizontal
+ * padding — the editorial detail that keeps it from looking generic),
+ * and a sticky gradient Continue button that stays above the keyboard.
  */
 export function SectionScaffold({
   title,
+  subtitle,
   step,
   total = 10,
   loading = false,
@@ -49,6 +66,7 @@ export function SectionScaffold({
   showComplete = false,
   onCompleteDone,
   errorMessage,
+  onSkip,
 }: SectionScaffoldProps) {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
@@ -64,27 +82,28 @@ export function SectionScaffold({
   if (!session) {
     return <Redirect href={routes.login} />;
   }
-
   if (triageStatus === "locked") {
     return <Redirect href={routes.pathwayB} />;
   }
-
   if (triageStatus === "pending") {
     return <Redirect href={routes.symptomCheck} />;
   }
 
   if (!hubHydrated) {
     return (
-      <Screen contentPadding={spacing.screenX}>
-        <StaticSkeleton rows={4} />
-      </Screen>
+      <View style={styles.root}>
+        <SafeAreaView edges={["top"]} style={styles.flex}>
+          <View style={styles.pad}>
+            <StaticSkeleton rows={4} />
+          </View>
+        </SafeAreaView>
+      </View>
     );
   }
 
   if (interruptPendingReproductive && step !== 2) {
     return <Redirect href={routes.qReproductive} />;
   }
-
   if (interruptPendingFamily && step !== 5) {
     return <Redirect href={routes.qFamilyHistory} />;
   }
@@ -93,84 +112,200 @@ export function SectionScaffold({
     .replace("{current}", String(step))
     .replace("{total}", String(total));
 
-  const header = (
-    <View>
-      {hideBack ? null : (
-        <IconButton
-          icon="arrow-left"
-          accessibilityLabel={COPY.hubBack}
-          onPress={() => {
-            router.replace(routes.questionnaire);
-          }}
-        />
-      )}
-      <QuestionnaireStepper current={step} total={total} />
-      <Text style={styles.title} accessibilityRole="header">
-        {title}
-      </Text>
+  const Header = (
+    <View style={styles.headerWrap}>
+      <View style={styles.headerRow}>
+        {hideBack ? (
+          <View style={styles.headerSide} />
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={COPY.hubBack}
+            hitSlop={12}
+            onPress={() => router.replace(routes.questionnaire)}
+            style={styles.headerSide}
+          >
+            <Feather name="chevron-left" size={24} color={Colors.charcoal} />
+          </Pressable>
+        )}
+
+        <Text style={styles.headerTitle}>
+          Section {step} of {total}
+        </Text>
+
+        {onSkip ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={COPY.onboardingSkip}
+            hitSlop={12}
+            onPress={onSkip}
+            style={[styles.headerSide, styles.headerSideRight]}
+          >
+            <Text style={styles.skip}>Skip</Text>
+          </Pressable>
+        ) : (
+          <View style={styles.headerSide} />
+        )}
+      </View>
+
+      {/* Flush, edge-to-edge progress bar — no horizontal padding. */}
+      <ProgressBar
+        progress={total > 0 ? step / total : 0}
+        height={6}
+        rounded={false}
+      />
     </View>
   );
 
-  if (loading) {
-    return (
-      <Screen contentPadding={spacing.screenX} header={header}>
-        <StaticSkeleton rows={5} />
-      </Screen>
-    );
-  }
-
   if (showComplete) {
     return (
-      <Screen contentPadding={spacing.screenX} header={header}>
-        <View style={styles.completeWrap}>
-          <SectionCompleteCard
-            subtitle={completeSubtitle}
-            onDone={onCompleteDone}
-          />
-        </View>
-      </Screen>
+      <View style={styles.root}>
+        <SafeAreaView edges={["top"]} style={styles.flex}>
+          {Header}
+          <View style={[styles.pad, styles.completeWrap]}>
+            <SectionCompleteCard
+              subtitle={completeSubtitle}
+              onDone={onCompleteDone}
+            />
+          </View>
+        </SafeAreaView>
+      </View>
     );
   }
 
-  const footer = onFooterPress ? (
-    <View>
-      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-      <PrimaryButton
-        title={footerTitle}
-        onPress={onFooterPress}
-        loading={footerLoading}
-        disabled={footerDisabled}
-        accessibilityLabel={footerTitle}
-      />
-    </View>
-  ) : errorMessage ? (
-    <Text style={styles.error}>{errorMessage}</Text>
-  ) : null;
-
   return (
-    <Screen scroll contentPadding={spacing.screenX} header={header} footer={footer}>
-      {children}
-    </Screen>
+    <View style={styles.root}>
+      <SafeAreaView edges={["top"]} style={styles.flex}>
+        {Header}
+
+        {loading ? (
+          <View style={styles.pad}>
+            <StaticSkeleton rows={5} />
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.flex}
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+          >
+            <Text style={styles.title} accessibilityRole="header">
+              {title}
+            </Text>
+            {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+            <View style={styles.body}>{children}</View>
+            {/* Breathing room so nobody fat-fingers Continue. */}
+            <View style={{ height: 52 }} />
+          </ScrollView>
+        )}
+
+        {onFooterPress ? (
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+          >
+            <View style={styles.footerWrap}>
+              <SafeAreaView edges={["bottom"]}>
+                {errorMessage ? (
+                  <Text style={styles.error}>{errorMessage}</Text>
+                ) : null}
+                <PrimaryButton
+                  label={footerTitle}
+                  onPress={onFooterPress}
+                  loading={footerLoading}
+                  disabled={footerDisabled}
+                  accessibilityLabel={footerTitle}
+                />
+              </SafeAreaView>
+            </View>
+          </KeyboardAvoidingView>
+        ) : errorMessage ? (
+          <View style={styles.footerWrap}>
+            <SafeAreaView edges={["bottom"]}>
+              <Text style={styles.error}>{errorMessage}</Text>
+            </SafeAreaView>
+          </View>
+        ) : null}
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: Colors.softWhite,
+  },
+  flex: { flex: 1 },
+  pad: { paddingHorizontal: Spacing.screenH },
+
+  headerWrap: {
+    backgroundColor: Colors.pureWhite,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.borderLight,
+  },
+  headerRow: {
+    height: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: Spacing.base,
+  },
+  headerSide: {
+    minWidth: 56,
+    justifyContent: "center",
+  },
+  headerSideRight: {
+    alignItems: "flex-end",
+  },
+  headerTitle: {
+    fontFamily: Typography.semibold,
+    fontSize: Typography.body,
+    color: Colors.charcoal,
+  },
+  skip: {
+    fontFamily: Typography.semibold,
+    fontSize: 14,
+    color: Colors.orangeDark,
+  },
+
+  scrollContent: {
+    paddingHorizontal: Spacing.screenH,
+    paddingBottom: 24,
+  },
   title: {
-    marginTop: 8,
-    marginBottom: 8,
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
+    marginTop: 28,
+    fontFamily: Typography.heading,
+    fontSize: 28,
+    lineHeight: 34,
     letterSpacing: -0.5,
-    color: colors.deepTeal,
+    color: Colors.charcoal,
+  },
+  subtitle: {
+    marginTop: 8,
+    fontFamily: Typography.regular,
+    fontSize: Typography.body,
+    lineHeight: 25,
+    color: Colors.bodyText,
+  },
+  body: {
+    marginTop: 24,
+  },
+
+  footerWrap: {
+    backgroundColor: Colors.pureWhite,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.borderLight,
+    paddingHorizontal: Spacing.screenH,
+    paddingTop: Spacing.base,
+    paddingBottom: Spacing.sm,
   },
   error: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontFamily: Typography.regular,
+    fontSize: Typography.secondary,
     lineHeight: 20,
-    color: colors.coral,
+    color: Colors.dangerRed,
     textAlign: "center",
-    marginBottom: 4,
+    marginBottom: Spacing.sm,
   },
   completeWrap: {
     flex: 1,

@@ -29,7 +29,7 @@ export function WhyAskButton({
         onPress={() => setOpen(true)}
         style={styles.infoHit}
       >
-        <Feather name="info" size={16} color={colors.midTeal} />
+        <Feather name="info" size={16} color={colors.orangeDark} />
       </Pressable>
       <Modal
         visible={open}

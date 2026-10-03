@@ -3,8 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { WhyAskButton } from "@/components/ui/WhyAskSheet";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Spacing, Typography } from "@/lib/design-tokens";
 
 type QuestionCardProps = {
   title: string;
@@ -13,6 +12,13 @@ type QuestionCardProps = {
   children: ReactNode;
 };
 
+/**
+ * A question group — PRESCOPE v2.
+ *
+ * Deliberately not a card. Questions read as editorial groups: 17px
+ * semibold prompt, an inline "why we ask" info icon (a trust feature),
+ * a 12px gap, then the input. 28px separates groups.
+ */
 export function QuestionCard({
   title,
   hint,
@@ -20,7 +26,7 @@ export function QuestionCard({
   children,
 }: QuestionCardProps) {
   return (
-    <View style={styles.card}>
+    <View style={styles.group}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {hint ? (
@@ -30,27 +36,28 @@ export function QuestionCard({
           />
         ) : null}
       </View>
-      {children}
+      <View style={styles.input}>{children}</View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginTop: 16,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+  group: {
+    marginBottom: 28,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
+    gap: Spacing.sm,
   },
   title: {
     flex: 1,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    fontFamily: Typography.semibold,
+    fontSize: Typography.bodyLarge,
+    lineHeight: 24,
+    color: Colors.charcoal,
+  },
+  input: {
+    marginTop: Spacing.md,
   },
 });
