@@ -7,6 +7,8 @@ import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { FeaturedBanner } from "@/components/store/FeaturedBanner";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { hrefForConsent } from "@/lib/consent-flow";
 import { COPY } from "@/lib/copy";
@@ -205,7 +207,13 @@ export default function StoreScreen() {
           columnWrapperStyle={styles.columns}
           ListHeaderComponent={
             <View>
-              <Text style={styles.group}>{COPY.storeRecommended}</Text>
+              <FeaturedBanner
+                title="Curated for your plan"
+                subtitle="Supplements, tests and everyday swaps chosen from your results."
+                ctaLabel="Browse all"
+              />
+              <View style={styles.bannerGap} />
+              <SectionHeader title={COPY.storeRecommended} />
               {recommended.length === 0 ? (
                 <EmptyState
                   icon="shopping-bag"
@@ -230,7 +238,9 @@ export default function StoreScreen() {
                   </View>
                 ))
               )}
-              <Text style={styles.group}>{COPY.storeFullCatalog}</Text>
+              <View style={styles.catalogHead}>
+                <SectionHeader title={COPY.storeFullCatalog} />
+              </View>
               {availableTypes.length > 1 ? (
                 <View style={styles.filterRow}>
                   {[
@@ -336,6 +346,12 @@ const styles = StyleSheet.create({
   },
   recGap: {
     marginBottom: 12,
+  },
+  bannerGap: {
+    height: 24,
+  },
+  catalogHead: {
+    marginTop: 24,
   },
   filterRow: {
     flexDirection: "row",
