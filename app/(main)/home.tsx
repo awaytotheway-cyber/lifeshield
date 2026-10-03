@@ -3,13 +3,17 @@ import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { ActionCard } from "@/components/home/ActionCard";
+import { HeroStatsRow, type HeroStat } from "@/components/home/HeroStatsRow";
+import { JourneyCard, type JourneyNode } from "@/components/home/JourneyCard";
+import { PrimaryButton as LegacyPrimaryButton, TextButton } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { GoalsSummaryCard } from "@/components/ui/GoalsSummaryCard";
-import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
-import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
-import { TrustBanner } from "@/components/ui/TrustBanner";
+import { GradientHero } from "@/components/ui/GradientHero";
+import { IconContainer } from "@/components/ui/IconContainer";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
 import { Screen } from "@/components/ui/Screen";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import {
   allConsentsAgreed,
@@ -18,7 +22,7 @@ import {
 } from "@/lib/consent-flow";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
+import { Colors, Spacing, colors, spacing } from "@/lib/design-tokens";
 import {
   currentJourneyStep,
   isJourneyStepComplete,
@@ -277,42 +281,99 @@ export default function HomeScreen() {
     { id: "track", label: "Track your journey", icon: "map" as const },
   ];
 
+  const heroStats: [HeroStat, HeroStat, HeroStat] = [
+    { id: "sections", value: `${questionnaireCount}/10`, label: "Assessment" },
+    { id: "consents", value: `${consentCount}/3`, label: "Consents" },
+    {
+      id: "tests",
+      value: hasRecommendations ? "Ready" : "Soon",
+      label: "Test plan",
+    },
+  ];
+
+  const journeyNodes: JourneyNode[] = timeline.slice(0, 5).map((step) => ({
+    id: step.id,
+    label: step.title.split(" — ")[0],
+    state: step.state === "complete"
+      ? "complete"
+      : step.state === "current"
+        ? "current"
+        : "upcoming",
+  }));
+
+  const nextActions = buildNextActions({
+    current,
+    router,
+    routes,
+    questionnaireCount,
+    hasRecommendations,
+    hasLabResults,
+    hasPlan,
+    hasStoreOrders,
+    consentsDone,
+  });
+
+  const greetingName = (session.user.email ?? "")
+    .split("@")[0]
+    ?.split(".")[0]
+    ?.replace(/^./, (c) => c.toUpperCase()) || "there";
+
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <View style={styles.menuRow}>
-        <MenuButton />
-        <Text style={styles.brand}>{COPY.appName}</Text>
-      </View>
-      <Text style={styles.tagline}>{COPY.tagline}</Text>
-      <Text style={styles.headline}>{headlineFor(current)}</Text>
+    <View style={{ flex: 1, backgroundColor: Colors.softWhite }}>
+      <Screen scroll contentPadding={0}>
+        {/* Hero: greeting + brand + bridging stats */}
+        <View style={{ position: "relative" }}>
+          <GradientHero height={220}>
+            <View style={styles.heroRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.greeting}>Good day</Text>
+                <Text style={styles.name}>{greetingName}</Text>
+              </View>
+              <IconContainer icon="bell" size="md" variant="glass" />
+              <MenuButton />
+            </View>
+            <Text style={styles.heroTag}>{COPY.tagline}</Text>
+          </GradientHero>
+          <HeroStatsRow stats={heroStats} />
+        </View>
 
-      <View style={styles.trust}>
-        <TrustBanner />
-      </View>
+        <View style={styles.content}>
+          <JourneyCard
+            nodes={journeyNodes}
+            currentDescription={headlineFor(current)}
+            onViewPress={goPrimary}
+          />
 
-      <View style={styles.stats}>
-        <MilestoneStatStrip stats={milestoneStats} />
-      </View>
+          <View style={styles.section}>
+            <SectionHeader title="Next up" />
+            {nextActions.length === 0 ? (
+              <Text style={styles.helper}>You're all caught up.</Text>
+            ) : (
+              nextActions.map((a) => (
+                <View key={a.id} style={{ marginBottom: 10 }}>
+                  <ActionCard
+                    icon={a.icon}
+                    title={a.title}
+                    subtitle={a.subtitle}
+                    onPress={a.onPress}
+                    isNew={a.isNew}
+                  />
+                </View>
+              ))
+            )}
+          </View>
 
-      <View style={styles.features}>
-        <PillFeatureGrid features={homeFeatures} />
-      </View>
+          {consentsDone ? <GoalsSummaryCard userId={session.user.id} /> : null}
 
-      <Text style={styles.section}>{COPY.homeJourneyTitle}</Text>
-      <View style={styles.timeline}>
-        <JourneyProgressCard steps={timeline} onContinue={goPrimary} />
-      </View>
+          {labCheckMessage ? (
+            <Text style={styles.error}>{labCheckMessage}</Text>
+          ) : null}
 
-      {consentsDone ? <GoalsSummaryCard userId={session.user.id} /> : null}
+          <SetupBanners />
 
-      {labCheckMessage ? (
-        <Text style={styles.error}>{labCheckMessage}</Text>
-      ) : null}
-
-      <SetupBanners />
-
-      <Text style={styles.hint}>{COPY.homePrimaryHint}</Text>
-      <PrimaryButton title={COPY[primary.titleKey]} onPress={goPrimary} />
+          <View style={{ marginTop: 20 }}>
+            <PrimaryButton label={COPY[primary.titleKey]} onPress={goPrimary} />
+          </View>
 
       {consentsDone ? (
         <>
@@ -395,14 +456,94 @@ export default function HomeScreen() {
         </>
       ) : null}
 
-      <TextButton
-        title={COPY.signOut}
-        onPress={() => {
-          void signOut();
-        }}
-      />
-    </Screen>
+          <TextButton
+            title={COPY.signOut}
+            onPress={() => {
+              void signOut();
+            }}
+          />
+        </View>
+      </Screen>
+    </View>
   );
+}
+
+type NextActionsInput = {
+  current: JourneyStepId;
+  router: ReturnType<typeof useRouter>;
+  routes: typeof import("@/lib/routes").routes;
+  questionnaireCount: number;
+  hasRecommendations: boolean;
+  hasLabResults: boolean;
+  hasPlan: boolean;
+  hasStoreOrders: boolean;
+  consentsDone: boolean;
+};
+
+type NextAction = {
+  id: string;
+  icon: keyof typeof import("@expo/vector-icons").Feather.glyphMap;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+  isNew?: boolean;
+};
+
+function buildNextActions(input: NextActionsInput): NextAction[] {
+  const { current, router, routes: r, questionnaireCount } = input;
+  const actions: NextAction[] = [];
+  if (!input.consentsDone) {
+    actions.push({
+      id: "consents",
+      icon: "shield",
+      title: "Finish your consents",
+      subtitle: "Required before we can personalise anything",
+      onPress: () => router.push(r.consentBrca),
+    });
+  } else if (current === "questionnaire" || questionnaireCount < 10) {
+    actions.push({
+      id: "questionnaire",
+      icon: "edit-3",
+      title: "Continue your assessment",
+      subtitle: `${questionnaireCount}/10 sections complete`,
+      onPress: () => router.replace(r.questionnaire),
+      isNew: questionnaireCount === 0,
+    });
+  }
+  if (input.hasRecommendations && current !== "tests") {
+    actions.push({
+      id: "tests",
+      icon: "activity",
+      title: "Your recommended tests",
+      subtitle: "Order the ones that fit your plan",
+      onPress: () => router.push(r.results),
+    });
+  }
+  if (input.hasLabResults && current !== "results") {
+    actions.push({
+      id: "lab-results",
+      icon: "file-text",
+      title: "Your lab results",
+      onPress: () => router.push(r.labResults),
+    });
+  }
+  if (input.hasPlan && current !== "plan") {
+    actions.push({
+      id: "plan",
+      icon: "list",
+      title: "Open your plan",
+      onPress: () => router.push(r.plan),
+    });
+  }
+  if (input.hasStoreOrders && current !== "followup") {
+    actions.push({
+      id: "orders",
+      icon: "package",
+      title: "Track your orders",
+      onPress: () => router.push(r.orders),
+    });
+  }
+  return actions.slice(0, 3);
 }
 
 const styles = StyleSheet.create({
@@ -416,6 +557,40 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
+  },
+  heroRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  greeting: {
+    fontFamily: fontFamily.regular,
+    fontSize: 14,
+    color: "rgba(255,255,255,0.75)",
+  },
+  name: {
+    marginTop: 4,
+    fontFamily: fontFamily.display,
+    fontSize: 28,
+    letterSpacing: -0.5,
+    color: Colors.pureWhite,
+  },
+  heroTag: {
+    marginTop: 12,
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    lineHeight: 18,
+    color: "rgba(255,255,255,0.8)",
+  },
+  content: {
+    paddingTop: 48,
+    paddingHorizontal: Spacing.screenH,
+    paddingBottom: 32,
+  },
+  helper: {
+    fontFamily: fontFamily.body,
+    fontSize: 14,
+    color: colors.slate,
   },
   brand: {
     flex: 1,
