@@ -1,15 +1,19 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { TextButton } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { DonutRing } from "@/components/ui/DonutRing";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { FilterChips, type FilterChip } from "@/components/ui/FilterChips";
+import { GradientHero } from "@/components/ui/GradientHero";
 import { ResultCard } from "@/components/ui/ResultCard";
-import { Screen } from "@/components/ui/Screen";
-import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
+import { Colors, Spacing, Typography } from "@/lib/design-tokens";
 import { getTerm } from "@/lib/plain-language";
 import { resultDetailHref, routes } from "@/lib/routes";
 import {
@@ -18,7 +22,6 @@ import {
   statusChipFromFlag,
   type TestResultRow,
 } from "@/lib/test-results";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 import type { StatusChipKind } from "@/components/ui/StatusChip";
@@ -44,6 +47,7 @@ export default function LabResultsScreen() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [rows, setRows] = useState<TestResultRow[]>([]);
+  const [filter, setFilter] = useState<string>("all");
 
   const refresh = useCallback(async () => {
     if (!session?.user.id) {
@@ -74,7 +78,41 @@ export default function LabResultsScreen() {
     void refresh();
   }, [session?.user.id, refresh]);
 
+  const counts = useMemo(() => {
+    let attention = 0;
+    let watching = 0;
+    let normal = 0;
+    for (const row of rows) {
+      const tone = statusChipFromFlag(row.flag).tone;
+      if (tone === "needs_attention") attention += 1;
+      else if (tone === "worth_watching") watching += 1;
+      else normal += 1;
+    }
+    return { attention, watching, normal, total: rows.length };
+  }, [rows]);
+
+  const filterChips = useMemo<FilterChip[]>(
+    () => [
+      { value: "all", label: `All (${counts.total})` },
+      { value: "attention", label: `Needs attention (${counts.attention})` },
+      { value: "watching", label: `Worth watching (${counts.watching})` },
+      { value: "normal", label: `In range (${counts.normal})` },
+    ],
+    [counts],
+  );
+
+  const visibleRows = useMemo(() => {
+    if (filter === "all") return rows;
+    return rows.filter((row) => {
+      const tone = statusChipFromFlag(row.flag).tone;
+      if (filter === "attention") return tone === "needs_attention";
+      if (filter === "watching") return tone === "worth_watching";
+      return tone === "within_range";
+    });
+  }, [rows, filter]);
+
   const listData = useMemo<ListRow[]>(() => {
+    const rows = visibleRows;
     const watching = rows.filter((row) => {
       const tone = statusChipFromFlag(row.flag).tone;
       return tone === "worth_watching" || tone === "needs_attention";
@@ -105,7 +143,7 @@ export default function LabResultsScreen() {
       }
     }
     return out;
-  }, [rows]);
+  }, [visibleRows]);
 
   if (!session) {
     return <Redirect href={routes.login} />;
@@ -119,30 +157,52 @@ export default function LabResultsScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
-  return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
-      <ScreenHeader
-        title={COPY.labResultsTitle}
-        onBack={() => router.replace(routes.home)}
-        backLabel={COPY.resultsBackHome}
-      />
-      <Text style={styles.body}>{COPY.labResultsSummary}</Text>
+  const allNormal = counts.attention === 0 && counts.watching === 0;
+  const ringProgress = counts.total > 0 ? counts.normal / counts.total : 0;
 
-      {loading ? <StaticSkeleton rows={4} /> : null}
+  return (
+    <View style={styles.root}>
+      <GradientHero height={210}>
+        <View style={styles.heroRow}>
+          <View style={styles.heroText}>
+            <Text style={styles.heroTitle}>{COPY.labResultsTitle}</Text>
+            <Text style={styles.heroSub}>{COPY.labResultsSummary}</Text>
+          </View>
+          <DonutRing
+            progress={ringProgress}
+            value={counts.total}
+            caption="results"
+            size={100}
+            color={allNormal ? "rgba(255,255,255,0.90)" : "rgba(255,255,255,0.50)"}
+          />
+        </View>
+      </GradientHero>
+
+      <View style={styles.chipsWrap}>
+        <FilterChips chips={filterChips} value={filter} onChange={setFilter} />
+      </View>
+
+      {loading ? (
+        <View style={styles.pad}>
+          <StaticSkeleton rows={4} />
+        </View>
+      ) : null}
 
       {message ? (
-        <>
+        <View style={styles.pad}>
           <Text style={styles.error}>{message}</Text>
           <TextButton title={COPY.labResultsRetry} onPress={() => void refresh()} />
-        </>
+        </View>
       ) : null}
 
       {!loading && !message && rows.length === 0 ? (
-        <EmptyState
-          icon="bar-chart-2"
-          heading={COPY.labResultsEmptyHeading}
-          explanation={COPY.labResultsEmpty}
-        />
+        <View style={styles.pad}>
+          <EmptyState
+            icon="bar-chart-2"
+            heading={COPY.labResultsEmptyHeading}
+            explanation={COPY.labResultsEmpty}
+          />
+        </View>
       ) : null}
 
       {!loading && !message && rows.length > 0 ? (
@@ -152,7 +212,11 @@ export default function LabResultsScreen() {
           contentContainerStyle={styles.list}
           renderItem={({ item }) => {
             if (item.kind === "heading") {
-              return <Text style={styles.group}>{item.title}</Text>;
+              return (
+                <View style={styles.groupWrap}>
+                  <SectionHeader title={item.title} />
+                </View>
+              );
             }
             const chip = statusChipFromFlag(item.row.flag);
             const term = getTerm(item.row.test_name);
@@ -172,44 +236,73 @@ export default function LabResultsScreen() {
             );
           }}
           ListFooterComponent={
-            <PrimaryButton
-              title={COPY.labResultsSeePlan}
-              onPress={() => {
-                router.push(routes.plan);
-              }}
-            />
+            <SafeAreaView edges={["bottom"]} style={styles.footer}>
+              <PrimaryButton
+                label={COPY.labResultsSeePlan}
+                onPress={() => {
+                  router.push(routes.plan);
+                }}
+              />
+            </SafeAreaView>
           }
         />
       ) : null}
-    </Screen>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
-    textAlign: "center",
-    marginBottom: 8,
+  root: {
+    flex: 1,
+    backgroundColor: Colors.softWhite,
+  },
+  heroRow: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Spacing.base,
+  },
+  heroText: {
+    flex: 1,
+  },
+  heroTitle: {
+    fontFamily: Typography.heading,
+    fontSize: Typography.screenTitle,
+    lineHeight: 38,
+    letterSpacing: -0.6,
+    color: Colors.pureWhite,
+  },
+  heroSub: {
+    marginTop: 8,
+    fontFamily: Typography.regular,
+    fontSize: 14,
+    lineHeight: 21,
+    color: "rgba(255,255,255,0.75)",
+  },
+  chipsWrap: {
+    marginTop: Spacing.xl,
+    marginBottom: Spacing.sm,
+  },
+  pad: {
+    paddingHorizontal: Spacing.screenH,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    marginTop: Spacing.md,
+    fontFamily: Typography.regular,
+    fontSize: Typography.secondary,
+    color: Colors.dangerRed,
     textAlign: "center",
   },
   list: {
+    paddingHorizontal: Spacing.screenH,
     paddingBottom: 32,
   },
-  group: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.deepTeal,
+  groupWrap: {
+    marginTop: Spacing.base,
+  },
+  footer: {
+    marginTop: Spacing.base,
   },
   cardGap: {
     marginBottom: 12,

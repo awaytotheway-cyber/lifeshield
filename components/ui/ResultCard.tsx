@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { DataValue } from "@/components/ui/DataValue";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
 
 type ResultCardProps = {
   plainName: string;
@@ -15,8 +15,10 @@ type ResultCardProps = {
 };
 
 /**
- * Results list row — polished glass card with risk-color accent.
- * Teal = calm/normal, amber = discuss, coral = genuine high-risk only.
+ * Results list row — PRESCOPE v2.
+ *
+ * The 4px full-height coloured left edge is the fastest visual scan
+ * signal: the reader clocks status before reading a single word.
  */
 export function ResultCard({
   plainName,
@@ -26,42 +28,44 @@ export function ResultCard({
   statusLabel,
   onPress,
 }: ResultCardProps) {
-  const barColor =
+  const edgeColor =
     status === "critical"
-      ? colors.riskHigh
+      ? Colors.dangerRed
       : status === "attention"
-        ? colors.riskModerate
-        : colors.riskLow;
-
-  const tintWash =
-    status === "critical"
-      ? "rgba(242,109,109,0.12)"
-      : status === "attention"
-        ? "rgba(245,166,35,0.12)"
-        : "rgba(47,184,166,0.12)";
+        ? Colors.warningAmber
+        : Colors.successGreen;
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={plainName}
+      accessibilityLabel={`${plainName} — ${statusLabel}`}
       onPress={onPress}
       disabled={!onPress}
+      style={({ pressed }) => (pressed ? { opacity: 0.92 } : null)}
     >
-      <GlassCard intensity="card" style={styles.card}>
-        <View
-          pointerEvents="none"
-          style={[styles.wash, { backgroundColor: tintWash }]}
-        />
-        <View style={[styles.bar, { backgroundColor: barColor }]} />
-        <View style={styles.body}>
-          <Text style={styles.name}>{plainName}</Text>
-          <View style={styles.row2}>
+      <GlassCard variant="onWhite" radius={Radii.card} padding={0}>
+        <View style={styles.inner}>
+          <View style={[styles.edge, { backgroundColor: edgeColor }]} />
+
+          <View style={styles.topRow}>
+            <Text style={styles.name}>{plainName}</Text>
             <StatusChip kind={status} label={statusLabel} />
-            <Text style={styles.meaning}>{meaning}</Text>
           </View>
-          <Text style={styles.medicalLabel}>
-            Medical name: <Text style={styles.medical}>{medicalName}</Text>
+
+          <Text style={styles.meaning} numberOfLines={2}>
+            {meaning}
           </Text>
+
+          <View style={styles.divider} />
+
+          <View style={styles.bottomRow}>
+            <Text style={styles.clinicalLabel}>Clinical name</Text>
+            <DataValue
+              value={medicalName}
+              size="small"
+              color={Colors.orangeDark}
+            />
+          </View>
         </View>
       </GlassCard>
     </Pressable>
@@ -69,56 +73,52 @@ export function ResultCard({
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: radius.radioCard,
-    padding: spacing.base,
-    paddingLeft: spacing.base + 4,
-    overflow: "hidden",
+  inner: {
+    paddingLeft: 24,
+    paddingRight: Spacing.lg,
+    paddingVertical: Spacing.base,
   },
-  wash: {
-    ...StyleSheet.absoluteFill,
-  },
-  bar: {
+  edge: {
     position: "absolute",
     left: 0,
     top: 0,
     bottom: 0,
     width: 4,
-    zIndex: 2,
-    borderTopLeftRadius: radius.radioCard,
-    borderBottomLeftRadius: radius.radioCard,
   },
-  body: {
-    position: "relative",
-    zIndex: 1,
-  },
-  name: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: colors.deepNavy,
-  },
-  row2: {
-    marginTop: 8,
+  topRow: {
     flexDirection: "row",
     alignItems: "center",
-    flexWrap: "wrap",
-    gap: 8,
+    justifyContent: "space-between",
+    gap: Spacing.sm,
+  },
+  name: {
+    flex: 1,
+    fontFamily: Typography.semibold,
+    fontSize: Typography.bodyLarge,
+    color: Colors.charcoal,
   },
   meaning: {
-    flex: 1,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    marginTop: Spacing.sm,
+    fontFamily: Typography.regular,
+    fontSize: 14,
+    lineHeight: 21,
+    color: Colors.bodyText,
   },
-  medicalLabel: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
+  divider: {
+    marginTop: Spacing.base,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.borderLight,
   },
-  medical: {
-    fontFamily: fontFamily.medical,
-    fontSize: 13,
-    color: colors.slate,
+  bottomRow: {
+    marginTop: Spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Spacing.sm,
+  },
+  clinicalLabel: {
+    fontFamily: Typography.regular,
+    fontSize: Typography.micro,
+    color: Colors.mutedText,
   },
 });
