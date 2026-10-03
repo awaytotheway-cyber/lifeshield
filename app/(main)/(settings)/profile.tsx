@@ -8,7 +8,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { TextButton } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -16,6 +17,8 @@ import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { GradientHero } from "@/components/ui/GradientHero";
+import { InitialsAvatar } from "@/components/ui/InitialsAvatar";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextField } from "@/components/ui/TextField";
@@ -74,6 +77,7 @@ export default function ProfileScreen() {
     defaultValues: emptyProfileForm(),
   });
 
+  const watchedFullName = useWatch({ control, name: "fullName" });
   const dateOfBirth = useWatch({ control, name: "dateOfBirth" });
   const heightCm = useWatch({ control, name: "heightCm" });
   const weightKg = useWatch({ control, name: "weightKg" });
@@ -172,18 +176,32 @@ export default function ProfileScreen() {
     await setLocalAvatarUri(session.user.id, null);
   };
 
+  const displayName = watchedFullName?.trim() || email.split("@")[0] || "You";
+  const memberSince = session?.user.created_at
+    ? new Date(session.user.created_at).toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+      })
+    : null;
+
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <View style={styles.topRow}>
-        <MenuButton />
-        <View style={styles.headerFlex}>
-          <ScreenHeader
-            title={COPY.profileTitle}
-            onBack={() => router.replace(routes.settings)}
-            backLabel="Back to settings"
-          />
+    <Screen scroll contentPadding={0}>
+      {/* Taller hero — profile deserves the space. */}
+      <GradientHero height={260}>
+        <View style={styles.heroTopRow}>
+          <MenuButton />
         </View>
-      </View>
+        <View style={styles.heroCentre}>
+          <InitialsAvatar name={displayName} uri={avatarUri} size={80} />
+          <Text style={styles.heroName}>{displayName}</Text>
+          {email ? <Text style={styles.heroEmail}>{email}</Text> : null}
+          {memberSince ? (
+            <Text style={styles.heroSince}>Member since {memberSince}</Text>
+          ) : null}
+        </View>
+      </GradientHero>
+
+      <View style={styles.profileBodyPad}>
       <Text style={styles.body}>{COPY.profileBody}</Text>
 
       {loading ? <StaticSkeleton rows={4} /> : null}
@@ -408,13 +426,16 @@ export default function ProfileScreen() {
 
           {saveMessage ? <Text style={styles.error}>{saveMessage}</Text> : null}
 
-          <PrimaryButton
-            title={COPY.profileSave}
-            loading={isSubmitting}
-            disabled={isSubmitting || !isDirty}
-            onPress={() => void onSave()}
-            accessibilityLabel={COPY.profileSave}
-          />
+          {/* Save only appears once the form is actually dirty. */}
+          {isDirty ? (
+            <PrimaryButton
+              label={COPY.profileSave}
+              loading={isSubmitting}
+              disabled={isSubmitting}
+              onPress={() => void onSave()}
+              accessibilityLabel={COPY.profileSave}
+            />
+          ) : null}
 
           {signOutMessage ? (
             <Text style={styles.error}>{signOutMessage}</Text>
@@ -447,11 +468,44 @@ export default function ProfileScreen() {
       ) : null}
 
       <Toast message={toast} onHide={() => setToast(null)} />
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  heroTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  heroCentre: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  heroName: {
+    marginTop: 12,
+    fontFamily: fontFamily.heading,
+    fontSize: 24,
+    letterSpacing: -0.4,
+    color: colors.pureWhite,
+  },
+  heroEmail: {
+    marginTop: 6,
+    fontFamily: fontFamily.regular,
+    fontSize: 14,
+    color: "rgba(255,255,255,0.75)",
+  },
+  heroSince: {
+    marginTop: 4,
+    fontFamily: fontFamily.regular,
+    fontSize: 12,
+    color: "rgba(255,255,255,0.55)",
+  },
+  profileBodyPad: {
+    paddingHorizontal: spacing.screenX,
+    paddingTop: spacing.base,
+  },
   topRow: {
     flexDirection: "row",
     alignItems: "center",
