@@ -10,6 +10,7 @@ import {
 import { IconButton } from "@/components/ui/Button";
 import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Accent, Ink, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 type FieldProps = RNTextInputProps & {
   label: string;
@@ -42,7 +43,7 @@ export function TextInput({
       <View>
         <RNTextInput
           accessibilityLabel={label}
-          placeholderTextColor={colors.mist}
+          placeholderTextColor={Ink.ghost}
           autoCapitalize="none"
           autoCorrect={false}
           secureTextEntry={showEye ? passwordHidden : false}
@@ -89,28 +90,30 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    letterSpacing: TRACK.label,
+    color: Ink.faint,
+    marginBottom: 7,
   },
   hint: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.midTeal,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    lineHeight: 17,
+    color: Ink.faint,
     marginBottom: 8,
   },
   input: {
     minHeight: inputHeight,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    paddingHorizontal: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+    borderRadius: 0,
+    borderWidth: 0,
+    borderBottomWidth: Rule.medium,
+    borderBottomColor: Ink.ruleStrong,
+    backgroundColor: Paper.mount,
+    paddingHorizontal: 12,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.body,
+    color: Ink.full,
   },
   inputWithEye: {
     paddingRight: 52,
@@ -121,16 +124,16 @@ const styles = StyleSheet.create({
     top: 6,
   },
   inputFocus: {
-    borderColor: colors.midTeal,
-    ...shadows.focusGlow,
+    borderBottomColor: Ink.full,
+    backgroundColor: Paper.sheetDeep,
   },
   inputError: {
-    borderColor: colors.coral,
+    borderBottomColor: Accent.tag,
   },
   error: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    marginTop: 7,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    color: Accent.tag,
   },
 });

@@ -1,43 +1,42 @@
 import type { ReactNode } from "react";
-import { Platform, Pressable, StyleSheet, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import * as Haptics from "expo-haptics";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors, Radii, Spacing } from "@/lib/design-tokens";
+import { SpecimenIcon } from "@/components/specimen/SpecimenIcon";
+import {
+  Ink,
+  Measure,
+  Paper,
+  Rule,
+  SpecimenType,
+  TRACK,
+} from "@/lib/specimen-tokens";
 
 type GradientHeroProps = {
   children?: ReactNode;
-  /** Default 220. */
   height?: number;
-  /** Default Radii.hero (28). */
   bottomRadius?: number;
-  /** Horizontal padding inside the hero. Default Spacing.screenH. */
   paddingH?: number;
-  /** Renders a glass back chevron in the top-left when provided. */
   onBack?: () => void;
-  /** Accessibility label for the back control. */
   backLabel?: string;
 };
 
 /**
- * The signature PRESCOPE hero — top of most main screens. Full-bleed
- * 3-stop orange gradient, flush top corners, 28px bottom corners.
+ * Formerly the orange gradient hero. In SPECIMEN there is no gradient:
+ * a page opens on paper under the signature heavy-over-hair double rule.
  *
- * Never add shadows to the hero itself; the dropshadow bleeds oddly on
- * iOS at full width. Place content (stats, hero numbers) inside.
+ * The component keeps its name and props so the screens that already
+ * call it convert without edits. `height` is now a minimum, because a
+ * paper head sizes to its content rather than reserving a slab.
  */
 export function GradientHero({
   children,
-  height = 220,
-  bottomRadius = Radii.hero,
-  paddingH = Spacing.screenH,
+  height = 180,
+  paddingH = Measure.gutter,
   onBack,
-  backLabel = "Go back",
+  backLabel = "Back",
 }: GradientHeroProps) {
-  const insets = useSafeAreaInsets();
-
   const back = () => {
     if (Platform.OS !== "web") {
       void Haptics.selectionAsync().catch(() => {});
@@ -46,23 +45,8 @@ export function GradientHero({
   };
 
   return (
-    <View
-      style={[
-        styles.outer,
-        {
-          height: height + insets.top,
-          borderBottomLeftRadius: bottomRadius,
-          borderBottomRightRadius: bottomRadius,
-        },
-      ]}
-    >
-      <LinearGradient
-        colors={[...Colors.gradientOrange]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <SafeAreaView edges={["top"]} style={styles.inner}>
+    <View style={styles.outer}>
+      <SafeAreaView edges={["top"]}>
         <View style={[styles.content, { paddingHorizontal: paddingH }]}>
           {onBack ? (
             <Pressable
@@ -71,14 +55,21 @@ export function GradientHero({
               onPress={back}
               hitSlop={10}
               style={({ pressed }) => [
-                styles.backBtn,
-                pressed ? { opacity: 0.75 } : null,
+                styles.backRow,
+                pressed ? { opacity: 0.55 } : null,
               ]}
             >
-              <Feather name="chevron-left" size={22} color={Colors.pureWhite} />
+              <SpecimenIcon name="chevronLeft" size={15} color={Ink.soft} />
+              <Text style={styles.backText}>{backLabel.toUpperCase()}</Text>
             </Pressable>
           ) : null}
-          {children}
+
+          <View style={styles.ruleHeavy} />
+          <View style={styles.ruleHair} />
+
+          <View style={[styles.body, { minHeight: Math.max(0, height - 110) }]}>
+            {children}
+          </View>
         </View>
       </SafeAreaView>
     </View>
@@ -87,25 +78,36 @@ export function GradientHero({
 
 const styles = StyleSheet.create({
   outer: {
-    overflow: "hidden",
-  },
-  inner: {
-    flex: 1,
+    backgroundColor: Paper.sheet,
   },
   content: {
-    flex: 1,
-    paddingTop: 8,
-    paddingBottom: 20,
+    paddingTop: Measure.tight,
+    paddingBottom: Measure.loose,
   },
-  backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginBottom: 4,
+  backRow: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255,255,255,0.20)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.30)",
+    gap: 4,
+    minHeight: 40,
+    alignSelf: "flex-start",
+  },
+  backText: {
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    letterSpacing: TRACK.label,
+    color: Ink.soft,
+  },
+  ruleHeavy: {
+    height: Rule.heavy,
+    backgroundColor: Ink.full,
+  },
+  ruleHair: {
+    height: Rule.hair,
+    backgroundColor: Ink.full,
+    marginTop: 2.5,
+  },
+  body: {
+    paddingTop: Measure.base,
+    justifyContent: "flex-end",
   },
 });

@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { DataValue } from "@/components/ui/DataValue";
-import { GlassCard } from "@/components/ui/GlassCard";
-import { Colors, Spacing, Typography } from "@/lib/design-tokens";
+import { Reading } from "@/components/specimen/Primitives";
+import { Ink, Measure, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 export type HeroStat = {
   id: string;
@@ -16,45 +15,60 @@ type HeroStatsRowProps = {
 };
 
 /**
- * Three equal-width glass tiles that bridge the orange hero and the
- * white content below (position: absolute, bottom: -28). This bridging
- * row is one of the key v2 visual signatures.
+ * The register — three readings on one ruled row.
+ *
+ * Previously three glass tiles bridging a gradient edge. On paper that
+ * move has nothing to bridge, so this is now what it should always have
+ * been: a ruled register, vertical hairlines between columns, closed by
+ * a heavier rule beneath.
  */
 export function HeroStatsRow({ stats }: HeroStatsRowProps) {
   return (
-    <View style={styles.wrap} pointerEvents="box-none">
-      {stats.map((s) => (
-        <GlassCard
-          key={s.id}
-          variant="onGradient"
-          radius={20}
-          padding={14}
-          style={styles.tile}
-        >
-          <DataValue value={s.value} unit={s.unit} size="hero" color={Colors.pureWhite} unitColor="rgba(255,255,255,0.7)" />
-          <Text style={styles.label}>{s.label}</Text>
-        </GlassCard>
-      ))}
+    <View>
+      <View style={styles.row}>
+        {stats.map((s, i) => (
+          <View key={s.id} style={styles.cellWrap}>
+            {i > 0 ? <View style={styles.divider} /> : null}
+            <View style={styles.cell}>
+              <Text style={styles.label}>{s.label.toUpperCase()}</Text>
+              <View style={{ marginTop: 5 }}>
+                <Reading value={s.value} unit={s.unit} size="readingLarge" />
+              </View>
+            </View>
+          </View>
+        ))}
+      </View>
+      <View style={styles.closingRule} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    position: "absolute",
-    left: Spacing.screenH,
-    right: Spacing.screenH,
-    bottom: -28,
+  row: {
     flexDirection: "row",
-    gap: 10,
+    alignItems: "stretch",
+    paddingBottom: Measure.base,
   },
-  tile: {
+  cellWrap: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  divider: {
+    width: Rule.hair,
+    backgroundColor: Ink.rule,
+    marginRight: Measure.snug,
+  },
+  cell: {
     flex: 1,
   },
   label: {
-    marginTop: 4,
-    fontFamily: Typography.medium,
-    fontSize: Typography.label,
-    color: "rgba(255,255,255,0.72)",
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    letterSpacing: TRACK.label,
+    color: Ink.faint,
+  },
+  closingRule: {
+    height: Rule.medium,
+    backgroundColor: Ink.ruleStrong,
   },
 });

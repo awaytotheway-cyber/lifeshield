@@ -23,6 +23,7 @@ import {
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { Colors, Spacing, colors, spacing } from "@/lib/design-tokens";
+import { Accent, Ink } from "@/lib/specimen-tokens";
 import {
   currentJourneyStep,
   isJourneyStepComplete,
@@ -457,10 +458,6 @@ export default function HomeScreen() {
       ) : null}
 
           <TextButton
-            title="◇  Preview the SPECIMEN design"
-            onPress={() => router.push("/(main)/specimen-home" as never)}
-          />
-          <TextButton
             title={COPY.signOut}
             onPress={() => {
               void signOut();
@@ -570,14 +567,14 @@ const styles = StyleSheet.create({
   greeting: {
     fontFamily: fontFamily.regular,
     fontSize: 14,
-    color: "rgba(255,255,255,0.75)",
+    color: Ink.soft,
   },
   name: {
     marginTop: 4,
     fontFamily: fontFamily.display,
     fontSize: 28,
     letterSpacing: -0.5,
-    color: Colors.pureWhite,
+    color: Ink.full,
   },
   heroTag: {
     marginTop: 12,

@@ -9,7 +9,7 @@ import {
   View,
   type ViewStyle,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 import * as Haptics from "expo-haptics";
 
 import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { colors, radius, spacing } from "@/lib/design-tokens";

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/TextInput";

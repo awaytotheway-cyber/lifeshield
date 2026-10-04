@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 
-import { Colors, Typography } from "@/lib/design-tokens";
+import { Ink, Paper, Rule, SpecimenType } from "@/lib/specimen-tokens";
 
 type InitialsAvatarProps = {
   /** Full name or email — initials are derived from it. */
@@ -40,12 +39,6 @@ export function InitialsAvatar({
   const dim = { width: size, height: size, borderRadius: size / 2 };
   return (
     <View style={[styles.wrap, dim, style]}>
-      <LinearGradient
-        colors={[Colors.orangeDark, Colors.orangeBright]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFillObject}
-      />
       {uri ? (
         <Image
           source={{ uri }}
@@ -66,12 +59,12 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "rgba(255,255,255,0.45)",
+    backgroundColor: Ink.full,
+    borderWidth: Rule.medium,
+    borderColor: Ink.full,
   },
   initials: {
-    fontFamily: Typography.heading,
-    color: Colors.pureWhite,
-    letterSpacing: 0.5,
+    fontFamily: SpecimenType.serif,
+    color: Paper.sheet,
   },
 });

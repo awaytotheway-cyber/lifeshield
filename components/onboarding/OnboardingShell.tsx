@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { TextButton } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";

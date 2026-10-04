@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";

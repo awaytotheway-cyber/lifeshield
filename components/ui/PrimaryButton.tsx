@@ -1,40 +1,43 @@
-import { useRef } from "react";
 import {
   ActivityIndicator,
-  Animated,
-  Easing,
   Platform,
   Pressable,
   StyleSheet,
   Text,
+  View,
   type ViewStyle,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 
 import {
-  Colors,
-  Radii,
-  Shadows,
-  Typography,
-  primaryButtonHeight,
-} from "@/lib/design-tokens";
+  Accent,
+  Edge,
+  Ink,
+  Measure,
+  Paper,
+  Rule,
+  SpecimenType,
+  TRACK,
+} from "@/lib/specimen-tokens";
 
 type PrimaryButtonProps = {
   label: string;
   onPress: () => void | Promise<void>;
   disabled?: boolean;
   loading?: boolean;
-  /** Default 'full'. */
   size?: "full" | "auto";
+  /** 'ink' is the default solid block; 'outline' is a ruled alternative. */
+  tone?: "ink" | "outline" | "tag";
   style?: ViewStyle;
   accessibilityLabel?: string;
 };
 
 /**
- * The orange-gradient primary button. 58px tall, orange-tinted shadow,
- * medium haptic on press. Never a flat colour — the gradient is the
- * brand signature.
+ * The action — SPECIMEN.
+ *
+ * A solid block of ink with a tracked small-caps label. No gradient, no
+ * glow, no rounded pill: on paper an action is set, not rendered. The
+ * press state darkens the block rather than scaling it.
  */
 export function PrimaryButton({
   label,
@@ -42,103 +45,94 @@ export function PrimaryButton({
   disabled = false,
   loading = false,
   size = "full",
+  tone = "ink",
   style,
   accessibilityLabel,
 }: PrimaryButtonProps) {
-  const scale = useRef(new Animated.Value(1)).current;
+  const isDisabled = disabled || loading;
 
   const press = async () => {
-    if (disabled || loading) return;
+    if (isDisabled) return;
     if (Platform.OS !== "web") {
       try {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       } catch {
-        // Haptics unavailable (simulator, old devices) — not fatal.
+        // Haptics unavailable — not fatal.
       }
     }
     await onPress();
   };
 
-  const isDisabled = disabled || loading;
+  const outline = tone === "outline";
+  const base = tone === "tag" ? Accent.tag : Ink.full;
+  const pressedFill = tone === "tag" ? "#8C2C1A" : "#36332D";
 
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ disabled: isDisabled, busy: loading }}
-        accessibilityLabel={accessibilityLabel ?? label}
-        onPressIn={() =>
-          Animated.timing(scale, {
-            toValue: 0.97,
-            duration: 90,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }).start()
-        }
-        onPressOut={() =>
-          Animated.spring(scale, {
-            toValue: 1,
-            useNativeDriver: true,
-          }).start()
-        }
-        onPress={press}
-        disabled={isDisabled}
-        style={[
-          styles.wrap,
-          size === "full" && styles.full,
-          isDisabled ? styles.disabledShadow : Shadows.button,
-          style,
-        ]}
-      >
-        {isDisabled && !loading ? (
-          <>
-            <Text style={[styles.text, styles.textDisabled]}>{label}</Text>
-          </>
-        ) : (
-          <LinearGradient
-            colors={[Colors.orangeDark, Colors.orangeBright]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={StyleSheet.absoluteFillObject}
-          />
-        )}
-        {!isDisabled || loading ? (
-          <Text style={styles.text}>
-            {loading ? "" : label}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
+      accessibilityLabel={accessibilityLabel ?? label}
+      onPress={press}
+      disabled={isDisabled}
+      style={({ pressed }) => [
+        styles.wrap,
+        size === "full" && styles.full,
+        outline
+          ? {
+              backgroundColor: "transparent",
+              borderWidth: Rule.medium,
+              borderColor: isDisabled ? Ink.ghost : base,
+            }
+          : {
+              backgroundColor: isDisabled
+                ? Ink.ruleStrong
+                : pressed
+                  ? pressedFill
+                  : base,
+            },
+        style,
+      ]}
+    >
+      {loading ? (
+        <ActivityIndicator
+          size="small"
+          color={outline ? Ink.full : Paper.sheet}
+        />
+      ) : (
+        <View style={styles.row}>
+          <Text
+            style={[
+              styles.label,
+              { color: outline ? (isDisabled ? Ink.ghost : base) : Paper.sheet },
+            ]}
+          >
+            {label.toUpperCase()}
           </Text>
-        ) : null}
-        {loading ? (
-          <ActivityIndicator color={Colors.pureWhite} size="small" />
-        ) : null}
-      </Pressable>
-    </Animated.View>
+        </View>
+      )}
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    height: primaryButtonHeight,
-    borderRadius: Radii.button,
-    overflow: "hidden",
+    height: 52,
+    borderRadius: Edge.none,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 20,
-    backgroundColor: Colors.borderLight,
+    paddingHorizontal: Measure.loose,
   },
   full: {
     alignSelf: "stretch",
   },
-  text: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.bodyLarge,
-    color: Colors.pureWhite,
-    letterSpacing: 0.1,
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Measure.tight,
   },
-  textDisabled: {
-    color: "#C0A898",
-  },
-  disabledShadow: {
-    shadowOpacity: 0,
-    elevation: 0,
+  label: {
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.label,
+    letterSpacing: TRACK.label,
   },
 });

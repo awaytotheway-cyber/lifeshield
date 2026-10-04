@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Animated, Easing, View, type ViewStyle } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
-import { Colors } from "@/lib/design-tokens";
+import { Accent, Ink, Paper, Rule } from "@/lib/specimen-tokens";
 
 type ProgressBarProps = {
   /** v2: direct fraction 0–1. */
@@ -59,7 +58,7 @@ export function ProgressBar({
     outputRange: ["0%", "100%"],
   });
 
-  const r = rounded ? height / 2 : 0;
+  const r = rounded ? 1 : 0;
 
   return (
     <View
@@ -67,21 +66,22 @@ export function ProgressBar({
         {
           width: "100%",
           height,
-          backgroundColor: Colors.borderLight,
+          backgroundColor: Paper.sheetDeep,
+          borderWidth: Rule.hair,
+          borderColor: Ink.rule,
           borderRadius: r,
           overflow: "hidden",
         },
         style,
       ]}
     >
-      <Animated.View style={{ height, width, borderRadius: r, overflow: "hidden" }}>
-        <LinearGradient
-          colors={[Colors.orangeDark, Colors.orangeBright]}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={{ flex: 1, borderRadius: r }}
-        />
-      </Animated.View>
+      <Animated.View
+        style={{
+          height: "100%",
+          width,
+          backgroundColor: Accent.sage,
+        }}
+      />
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { useDrawer } from "@/components/navigation/DrawerContext";
 import { colors, tapTarget } from "@/lib/design-tokens";

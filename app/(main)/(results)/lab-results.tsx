@@ -14,6 +14,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
 import { Colors, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Ink } from "@/lib/specimen-tokens";
 import { getTerm } from "@/lib/plain-language";
 import { resultDetailHref, routes } from "@/lib/routes";
 import {
@@ -177,7 +178,7 @@ export default function LabResultsScreen() {
             value={counts.total}
             caption="results"
             size={100}
-            color={allNormal ? "rgba(255,255,255,0.90)" : "rgba(255,255,255,0.50)"}
+            color={allNormal ? Accent.sage : Accent.ochre}
           />
         </View>
       </GradientHero>
@@ -275,14 +276,14 @@ const styles = StyleSheet.create({
     fontSize: Typography.screenTitle,
     lineHeight: 38,
     letterSpacing: -0.6,
-    color: Colors.pureWhite,
+    color: Ink.full,
   },
   heroSub: {
     marginTop: 8,
     fontFamily: Typography.regular,
     fontSize: 14,
     lineHeight: 21,
-    color: "rgba(255,255,255,0.75)",
+    color: Ink.soft,
   },
   chipsWrap: {
     marginTop: Spacing.xl,

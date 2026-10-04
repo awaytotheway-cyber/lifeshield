@@ -8,7 +8,7 @@ import {
   UIManager,
   View,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";

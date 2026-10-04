@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import * as Haptics from "expo-haptics";
 
-import { IconButton } from "@/components/ui/Button";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { SpecimenIcon } from "@/components/specimen/SpecimenIcon";
+import { Ink, Measure, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 type ScreenHeaderProps = {
   title: string;
@@ -10,48 +10,82 @@ type ScreenHeaderProps = {
   backLabel?: string;
 };
 
-/** Stack-style heading with an optional back arrow. */
+/**
+ * Catalogue head — SPECIMEN.
+ * Back affordance, signature heavy-over-hair double rule, serif title.
+ */
 export function ScreenHeader({
   title,
   onBack,
-  backLabel = "Go back",
+  backLabel = "Back",
 }: ScreenHeaderProps) {
+  const back = () => {
+    if (Platform.OS !== "web") {
+      void Haptics.selectionAsync().catch(() => {});
+    }
+    onBack?.();
+  };
+
   return (
-    <View style={styles.row}>
+    <View style={styles.wrap}>
       {onBack ? (
-        <IconButton
-          icon="arrow-left"
+        <Pressable
+          accessibilityRole="button"
           accessibilityLabel={backLabel}
-          onPress={onBack}
-        />
-      ) : (
-        <View style={styles.spacer} />
-      )}
+          onPress={back}
+          hitSlop={10}
+          style={({ pressed }) => [
+            styles.backRow,
+            pressed ? { opacity: 0.55 } : null,
+          ]}
+        >
+          <SpecimenIcon name="chevronLeft" size={15} color={Ink.soft} />
+          <Text style={styles.backText}>{backLabel.toUpperCase()}</Text>
+        </Pressable>
+      ) : null}
+
+      <View style={styles.ruleHeavy} />
+      <View style={styles.ruleHair} />
+
       <Text style={styles.title} accessibilityRole="header">
         {title}
       </Text>
-      <View style={styles.spacer} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
+  wrap: {
+    paddingBottom: Measure.base,
+  },
+  backRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingBottom: spacing.sm,
+    gap: 4,
+    minHeight: 40,
+    alignSelf: "flex-start",
+  },
+  backText: {
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    letterSpacing: TRACK.label,
+    color: Ink.soft,
+  },
+  ruleHeavy: {
+    height: Rule.heavy,
+    backgroundColor: Ink.full,
+  },
+  ruleHair: {
+    height: Rule.hair,
+    backgroundColor: Ink.full,
+    marginTop: 2.5,
   },
   title: {
-    flex: 1,
-    textAlign: "center",
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
-  },
-  spacer: {
-    width: 44,
-    height: 44,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.serif,
+    fontSize: SpecimenType.plateTitle,
+    lineHeight: SpecimenType.plateTitle * 1.1,
+    letterSpacing: TRACK.title,
+    color: Ink.full,
   },
 });

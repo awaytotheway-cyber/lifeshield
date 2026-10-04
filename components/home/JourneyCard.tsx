@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { SpecimenIcon } from "@/components/specimen/SpecimenIcon";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Ink } from "@/lib/specimen-tokens";
 
 export type JourneyNodeState = "complete" | "current" | "upcoming";
 
@@ -91,14 +91,14 @@ function Node({ state }: { state: JourneyNodeState }) {
   if (state === "complete") {
     return (
       <View style={styles.nodeWrap}>
-        <LinearGradient
-          colors={[Colors.orangeDark, Colors.orangeBright]}
-          style={[styles.nodeDot, { width: 20, height: 20, borderRadius: 10 }]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+        <View
+          style={[
+            styles.nodeDot,
+            { width: 20, height: 20, borderRadius: 10, backgroundColor: Accent.sage },
+          ]}
         >
-          <Feather name="check" size={12} color={Colors.pureWhite} />
-        </LinearGradient>
+          <SpecimenIcon name="check" size={11} color={Paper.sheet} />
+        </View>
       </View>
     );
   }

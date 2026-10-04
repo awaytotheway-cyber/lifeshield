@@ -1,6 +1,6 @@
 /**
- * Backward-compatible alias — same glass look as GlassCard.
- * Prefer importing GlassCard in new code.
+ * Backward-compatible alias — a mounted paper sheet (see GlassCard).
+ * Prefer importing GlassCard, or Mount from components/specimen.
  */
 export {
   GlassCard as GlassSurface,

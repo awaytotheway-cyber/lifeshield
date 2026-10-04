@@ -10,13 +10,13 @@ import { Screen } from "@/components/ui/Screen";
 import { GradientHero } from "@/components/ui/GradientHero";
 import { PrimaryButton as GradientButton } from "@/components/ui/PrimaryButton";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { Feather } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
+import { Feather } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import type { StatusChipKind } from "@/components/ui/StatusChip";
 import { COPY } from "@/lib/copy";
 import { colors, radius, spacing } from "@/lib/design-tokens";
+import { Accent, Ink } from "@/lib/specimen-tokens";
 import { groupInterventions } from "@/lib/plan-groups";
 import {
   planBannerForState,
@@ -187,14 +187,9 @@ export default function PlanScreen() {
         </GradientHero>
         {/* Glass-dark approval strip pinned to the hero bottom. */}
         <View style={styles.approvalStrip}>
-          <BlurView
-            intensity={30}
-            tint="dark"
-            style={StyleSheet.absoluteFillObject}
-          />
           <View style={styles.approvalFill} />
           <View style={styles.approvalRow}>
-            <Feather name="check-circle" size={14} color="#FFFFFF" />
+            <Feather name="check-circle" size={13} color={colors.pureWhite} />
             <Text style={styles.approvalText}>{planBanner}</Text>
           </View>
         </View>
@@ -308,29 +303,27 @@ const styles = StyleSheet.create({
     fontSize: 32,
     lineHeight: 38,
     letterSpacing: -0.6,
-    color: colors.pureWhite,
+    color: Ink.full,
   },
   heroSub: {
     marginTop: 8,
     fontFamily: fontFamily.regular,
     fontSize: 15,
     lineHeight: 22,
-    color: "rgba(255,255,255,0.75)",
+    color: Ink.soft,
   },
   approvalStrip: {
     position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
-    height: 40,
+    height: 36,
     overflow: "hidden",
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
     justifyContent: "center",
   },
   approvalFill: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.20)",
+    backgroundColor: colors.charcoal,
   },
   approvalRow: {
     flexDirection: "row",
@@ -342,7 +335,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.semibold,
     fontSize: 13,
-    color: colors.pureWhite,
+    color: Ink.full,
   },
   error: {
     marginTop: 12,

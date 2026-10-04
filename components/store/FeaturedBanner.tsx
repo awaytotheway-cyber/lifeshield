@@ -1,7 +1,17 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import { Image } from "expo-image";
 
-import { Colors, Radii, Shadows, Spacing, Typography } from "@/lib/design-tokens";
+import { SpecimenIcon } from "@/components/specimen/SpecimenIcon";
+import {
+  Edge,
+  Ink,
+  Measure,
+  PLATES,
+  Paper,
+  Rule,
+  SpecimenType,
+  TRACK,
+} from "@/lib/specimen-tokens";
 
 type FeaturedBannerProps = {
   title: string;
@@ -11,11 +21,12 @@ type FeaturedBannerProps = {
 };
 
 /**
- * Standalone gradient card for the store's featured collection.
+ * The featured collection — SPECIMEN.
  *
- * Not a GradientHero — that component is reserved for screen tops. This
- * is a 160px card with all four corners rounded, sitting inside the
- * normal content flow.
+ * Was a gradient card with decorative circles. It is now a mounted
+ * plate: an archival image on the left, typeset copy on the right,
+ * hairline frame, source credited underneath like any other plate in
+ * the record.
  */
 export function FeaturedBanner({
   title,
@@ -23,6 +34,8 @@ export function FeaturedBanner({
   ctaLabel,
   onPress,
 }: FeaturedBannerProps) {
+  const plate = PLATES.herbariumAllium;
+
   return (
     <Pressable
       accessibilityRole={onPress ? "button" : undefined}
@@ -31,107 +44,101 @@ export function FeaturedBanner({
       disabled={!onPress}
       style={({ pressed }) => [
         styles.wrap,
-        Shadows.floatingCard,
-        pressed && onPress ? { opacity: 0.94 } : null,
+        pressed && onPress ? { opacity: 0.92 } : null,
       ]}
     >
-      <LinearGradient
-        colors={[...Colors.gradientOrange]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFillObject}
-      />
+      <View style={styles.row}>
+        <View style={styles.window}>
+          <Image
+            source={{ uri: plate.uri }}
+            style={StyleSheet.absoluteFillObject}
+            contentFit="cover"
+            transition={240}
+          />
+        </View>
 
-      {/* Decorative product circles on the right. */}
-      <View style={styles.circles} pointerEvents="none">
-        <View style={[styles.circle, styles.circleBack]} />
-        <View style={[styles.circle, styles.circleMid]} />
-        <View style={[styles.circle, styles.circleFront]} />
+        <View style={styles.copy}>
+          <Text style={styles.eyebrow}>SELECTED</Text>
+          <Text style={styles.title}>{title}</Text>
+          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+          {ctaLabel ? (
+            <View style={styles.ctaRow}>
+              <Text style={styles.cta}>{ctaLabel.toUpperCase()}</Text>
+              <SpecimenIcon name="chevronRight" size={13} color={Ink.full} />
+            </View>
+          ) : null}
+        </View>
       </View>
 
-      <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
-        {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-        {ctaLabel ? (
-          <View style={styles.cta}>
-            <Text style={styles.ctaText}>{ctaLabel}</Text>
-          </View>
-        ) : null}
-      </View>
+      <Text style={styles.credit}>{plate.credit}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    height: 160,
-    borderRadius: Radii.cardLarge,
-    overflow: "hidden",
-    justifyContent: "center",
+    backgroundColor: Paper.mount,
+    borderWidth: Rule.hair,
+    borderColor: Ink.ruleStrong,
+    borderRadius: Edge.mount,
+    padding: 10,
   },
-  content: {
-    paddingHorizontal: Spacing.lg,
-    maxWidth: "68%",
+  row: {
+    flexDirection: "row",
+    gap: Measure.base,
+  },
+  window: {
+    width: 104,
+    alignSelf: "stretch",
+    minHeight: 132,
+    backgroundColor: Paper.sheetDeep,
+    borderWidth: Rule.hair,
+    borderColor: Ink.rule,
+    overflow: "hidden",
+  },
+  copy: {
+    flex: 1,
+    paddingVertical: 2,
+  },
+  eyebrow: {
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.catalogue,
+    letterSpacing: TRACK.label,
+    color: Ink.faint,
   },
   title: {
-    fontFamily: Typography.heading,
-    fontSize: 22,
-    lineHeight: 28,
-    letterSpacing: -0.3,
-    color: Colors.pureWhite,
+    marginTop: 6,
+    fontFamily: SpecimenType.serif,
+    fontSize: 21,
+    lineHeight: 25,
+    letterSpacing: TRACK.title,
+    color: Ink.full,
   },
   subtitle: {
-    marginTop: 6,
-    fontFamily: Typography.regular,
-    fontSize: Typography.secondary,
-    lineHeight: 19,
-    color: "rgba(255,255,255,0.80)",
+    marginTop: 7,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    lineHeight: 18,
+    color: Ink.soft,
+  },
+  ctaRow: {
+    marginTop: Measure.snug,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
   },
   cta: {
-    marginTop: Spacing.md,
-    alignSelf: "flex-start",
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: Radii.chip,
-    backgroundColor: "rgba(255,255,255,0.22)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.35)",
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.catalogue,
+    letterSpacing: TRACK.label,
+    color: Ink.full,
+    textDecorationLine: "underline",
   },
-  ctaText: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.label,
-    color: Colors.pureWhite,
-  },
-  circles: {
-    position: "absolute",
-    right: -10,
-    top: 0,
-    bottom: 0,
-    width: 150,
-    justifyContent: "center",
-  },
-  circle: {
-    position: "absolute",
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.16)",
-  },
-  circleBack: {
-    width: 120,
-    height: 120,
-    right: 10,
-  },
-  circleMid: {
-    width: 76,
-    height: 76,
-    right: 76,
-    top: 18,
-    backgroundColor: "rgba(255,255,255,0.12)",
-  },
-  circleFront: {
-    width: 54,
-    height: 54,
-    right: 34,
-    bottom: 16,
-    backgroundColor: "rgba(255,255,255,0.22)",
+  credit: {
+    marginTop: Measure.snug,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.catalogue,
+    letterSpacing: TRACK.catalogue,
+    color: Ink.ghost,
   },
 });

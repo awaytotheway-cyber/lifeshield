@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PressScale } from "@/components/ui/PressScale";
@@ -20,6 +20,7 @@ import {
   tapTarget,
 } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Accent, Ink, Paper, Rule, TRACK } from "@/lib/specimen-tokens";
 
 export type ButtonVariant =
   | "primary"
@@ -39,12 +40,13 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   style?: StyleProp<ViewStyle>;
 };
 
-function darkerPrimary(pressed: boolean) {
-  return pressed ? "#234FBF" : colors.primaryBlue;
+/** Primary is a solid ink block; pressing lifts it slightly, not a hue shift. */
+function inkFill(pressed: boolean) {
+  return pressed ? "#36332D" : Ink.full;
 }
 
-function darkerCoral(pressed: boolean) {
-  return pressed ? "#E05555" : colors.riskHigh;
+function tagFill(pressed: boolean) {
+  return pressed ? "#8C2C1A" : Accent.tag;
 }
 
 /**
@@ -99,7 +101,7 @@ export function Button({
                 isDisabled && styles.disabledText,
               ]}
             >
-              {title}
+              {title.toUpperCase()}
             </Text>
           )
         }
@@ -123,10 +125,10 @@ export function Button({
       >
         <GlassCard intensity="button" style={styles.secondaryGlass}>
           {loading ? (
-            <ActivityIndicator color={colors.primaryBlue} />
+            <ActivityIndicator color={Ink.full} />
           ) : (
             <Text style={[styles.secondaryLabel, isDisabled && styles.disabledText]}>
-              {title}
+              {title.toUpperCase()}
             </Text>
           )}
         </GlassCard>
@@ -144,26 +146,26 @@ export function Button({
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.primary,
-        { backgroundColor: isDanger ? darkerCoral(pressed) : darkerPrimary(pressed) },
+        { backgroundColor: isDanger ? tagFill(pressed) : inkFill(pressed) },
         !isDisabled ? shadows.button : null,
         isDisabled && styles.primaryDisabled,
         style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={colors.white} />
+        <ActivityIndicator color={Paper.sheet} />
       ) : (
         <View style={styles.row}>
           {icon ? (
             <Feather
               name={icon}
               size={18}
-              color={isDisabled ? colors.mist : colors.white}
+              color={isDisabled ? Ink.ghost : Paper.sheet}
               style={styles.iconGap}
             />
           ) : null}
           <Text style={[styles.primaryLabel, isDisabled && styles.disabledText]}>
-            {title}
+            {title.toUpperCase()}
           </Text>
         </View>
       )}
@@ -202,14 +204,15 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   primaryDisabled: {
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderMedium,
     shadowOpacity: 0,
     elevation: 0,
   },
   primaryLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.white,
+    fontFamily: fontFamily.mono,
+    fontSize: 12,
+    letterSpacing: TRACK.label,
+    color: Paper.sheet,
   },
   secondaryWrap: {
     marginTop: 16,
@@ -219,6 +222,9 @@ const styles = StyleSheet.create({
   },
   secondaryGlass: {
     minHeight: secondaryButtonHeight,
+    borderWidth: Rule.medium,
+    borderColor: Ink.full,
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
@@ -228,9 +234,10 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   secondaryLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.primaryBlue,
+    fontFamily: fontFamily.mono,
+    fontSize: 12,
+    letterSpacing: TRACK.label,
+    color: Ink.full,
   },
   textBtn: {
     marginTop: 8,
@@ -240,12 +247,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   textLabel: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.skyBlue,
+    fontFamily: fontFamily.mono,
+    fontSize: 12,
+    letterSpacing: TRACK.label,
+    color: Accent.tag,
+    textDecorationLine: "underline",
   },
   textLabelPressed: {
-    textDecorationLine: "underline",
+    opacity: 0.6,
   },
   iconBtn: {
     width: tapTarget,

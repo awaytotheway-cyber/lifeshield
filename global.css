@@ -1,54 +1,66 @@
-/* NativeWind v5 + Tailwind CSS v4: import layers instead of @tailwind directives. */
+/* NativeWind v5 + Tailwind CSS v4 */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
 
-/* Keep the JS config so brand colours stay editable in tailwind.config.js */
 @config "./tailwind.config.js";
 
-/*
-  PRESCOPE v2 brand colours — must match tailwind.config.js and
-  lib/design-tokens.ts.  v5 reads these CSS variables to create classes
-  like text-orangeDark and bg-softWhite.
-*/
+/* PRESCOPE — SPECIMEN. Paper and ink.
+   Must match tailwind.config.js and lib/specimen-tokens.ts. */
 @theme {
-  --color-orangeDark: #c84b11;
-  --color-orangeBright: #e8650a;
-  --color-orangeLight: #ff8c42;
-  --color-softWhite: #fdf9f7;
-  --color-pureWhite: #ffffff;
-  --color-orangeTint: #fff3ec;
-  --color-orangeTintDeep: #ffe8d6;
-  --color-charcoal: #1a1a1a;
-  --color-darkText: #2d2d2d;
-  --color-bodyText: #5c5c5c;
-  --color-mutedText: #9b9b9b;
-  --color-placeholderText: #c0b8b3;
-  --color-borderLight: #f0e8e3;
-  --color-borderMedium: #e0d5ce;
-  --color-successGreen: #2db87a;
-  --color-warningAmber: #f5a623;
-  --color-dangerRed: #e63b3b;
-
-  /* Legacy aliases → new orange palette */
-  --color-primaryBlue: #c84b11;
-  --color-deepNavy: #1a1a1a;
-  --color-skyBlue: #ff8c42;
-  --color-iceBlue: #fdf9f7;
-  --color-deepTeal: #c84b11;
-  --color-midTeal: #ff8c42;
-  --color-lightTeal: #fff3ec;
-  --color-teal: #c84b11;
-  --color-sage: #2db87a;
-  --color-sageLight: #e8f8f1;
-  --color-coral: #e63b3b;
-  --color-coralLight: #fff0f0;
-  --color-amber: #f5a623;
-  --color-amberLight: #fff8ec;
-  --color-cream: #fdf9f7;
-  --color-white: #ffffff;
-  --color-slate: #5c5c5c;
-  --color-mist: #9b9b9b;
-  --color-border: #f0e8e3;
+  --color-paperSheet: #f5f2eb;
+  --color-paperMount: #fcfbf7;
+  --color-paperDeep: #eae5d8;
+  --color-paperPlate: #e3ddce;
+  --color-inkFull: #1b1a17;
+  --color-inkSoft: #56524a;
+  --color-inkFaint: #8c8678;
+  --color-inkGhost: #b4ae9f;
+  --color-rule: #d8d2c4;
+  --color-ruleStrong: #bdb5a2;
+  --color-tag: #a4341f;
+  --color-tagWash: #f3e4e0;
+  --color-sage: #5f6b4c;
+  --color-sageWash: #e7eade;
+  --color-ochre: #9a6b28;
+  --color-ochreWash: #f4ebda;
+  --color-primaryBlue: #a4341f;
+  --color-deepNavy: #1b1a17;
+  --color-skyBlue: #a4341f;
+  --color-iceBlue: #f5f2eb;
+  --color-deepTeal: #a4341f;
+  --color-midTeal: #a4341f;
+  --color-lightTeal: #f3e4e0;
+  --color-teal: #a4341f;
+  --color-sageLight: #e7eade;
+  --color-coral: #a4341f;
+  --color-coralLight: #f3e4e0;
+  --color-amber: #9a6b28;
+  --color-amberLight: #f4ebda;
+  --color-cream: #f5f2eb;
+  --color-white: #fcfbf7;
+  --color-slate: #56524a;
+  --color-mist: #8c8678;
+  --color-border: #d8d2c4;
+  --color-charcoal: #1b1a17;
+  --color-orangeDark: #a4341f;
+  --color-orangeBright: #a4341f;
+  --color-orangeLight: #a4341f;
+  --color-softWhite: #f5f2eb;
+  --color-pureWhite: #fcfbf7;
+  --color-orangeTint: #f3e4e0;
+  --color-orangeTintDeep: #eae5d8;
+  --color-darkText: #1b1a17;
+  --color-bodyText: #56524a;
+  --color-mutedText: #8c8678;
+  --color-placeholderText: #b4ae9f;
+  --color-borderLight: #d8d2c4;
+  --color-borderMedium: #bdb5a2;
+  --color-successGreen: #5f6b4c;
+  --color-warningAmber: #9a6b28;
+  --color-dangerRed: #a4341f;
+  --color-riskLow: #5f6b4c;
+  --color-riskModerate: #9a6b28;
+  --color-riskHigh: #a4341f;
 }

@@ -5,7 +5,7 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { TextButton } from "@/components/ui/Button";
@@ -27,6 +27,7 @@ import { isAdminEmail, SEX_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
 import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
+import { Accent, Ink } from "@/lib/specimen-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import {
   ALLERGY_OPTIONS,
@@ -492,19 +493,19 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.heading,
     fontSize: 24,
     letterSpacing: -0.4,
-    color: colors.pureWhite,
+    color: Ink.full,
   },
   heroEmail: {
     marginTop: 6,
     fontFamily: fontFamily.regular,
     fontSize: 14,
-    color: "rgba(255,255,255,0.75)",
+    color: Ink.soft,
   },
   heroSince: {
     marginTop: 4,
     fontFamily: fontFamily.regular,
     fontSize: 12,
-    color: "rgba(255,255,255,0.55)",
+    color: Ink.ghost,
   },
   profileBodyPad: {
     paddingHorizontal: spacing.screenX,

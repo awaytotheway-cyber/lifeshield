@@ -1,5 +1,5 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 import * as Haptics from "expo-haptics";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";

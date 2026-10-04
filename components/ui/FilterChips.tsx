@@ -1,8 +1,7 @@
 import { Platform, Pressable, ScrollView, StyleSheet, Text } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 
-import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
+import { Edge, Ink, Measure, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 export type FilterChip = {
   value: string;
@@ -25,7 +24,7 @@ export function FilterChips({
   chips,
   value,
   onChange,
-  paddingH = Spacing.screenH,
+  paddingH = Measure.gutter,
 }: FilterChipsProps) {
   return (
     <ScrollView
@@ -40,7 +39,7 @@ export function FilterChips({
             key={chip.value}
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
-            accessibilityLabel={chip.label}
+            accessibilityLabel={chip.label.toUpperCase()}
             onPress={() => {
               if (Platform.OS !== "web") {
                 void Haptics.selectionAsync().catch(() => {});
@@ -49,18 +48,10 @@ export function FilterChips({
             }}
             style={[styles.chip, active ? styles.chipActive : styles.chipIdle]}
           >
-            {active ? (
-              <LinearGradient
-                colors={[Colors.orangeDark, Colors.orangeBright]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={StyleSheet.absoluteFillObject}
-              />
-            ) : null}
             <Text
               style={[styles.text, active ? styles.textActive : styles.textIdle]}
             >
-              {chip.label}
+              {chip.label.toUpperCase()}
             </Text>
           </Pressable>
         );
@@ -71,31 +62,32 @@ export function FilterChips({
 
 const styles = StyleSheet.create({
   content: {
-    gap: Spacing.sm,
+    gap: Measure.tight,
     paddingVertical: 4,
   },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: Radii.chip,
-    overflow: "hidden",
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: Edge.tag,
+    borderWidth: Rule.hair,
   },
   chipActive: {
-    backgroundColor: Colors.orangeDark,
+    backgroundColor: Ink.full,
+    borderColor: Ink.full,
   },
   chipIdle: {
-    backgroundColor: Colors.pureWhite,
-    borderWidth: 1,
-    borderColor: Colors.borderLight,
+    backgroundColor: Paper.mount,
+    borderColor: Ink.rule,
   },
   text: {
-    fontFamily: Typography.medium,
-    fontSize: Typography.label,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.catalogue,
+    letterSpacing: TRACK.label,
   },
   textActive: {
-    color: Colors.pureWhite,
+    color: Paper.sheet,
   },
   textIdle: {
-    color: Colors.bodyText,
+    color: Ink.soft,
   },
 });

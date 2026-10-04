@@ -1,17 +1,16 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
 import { useRouter, usePathname } from "expo-router";
-import { Feather } from "@expo/vector-icons";
+import { SpecimenIcon, type SpecimenIconName } from "@/components/specimen/SpecimenIcon";
 import * as Haptics from "expo-haptics";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors, Typography } from "@/lib/design-tokens";
+import { Accent, Ink, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 import { routes } from "@/lib/routes";
 
 type TabSpec = {
   id: string;
   label: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: SpecimenIconName;
   href: string;
   match: (pathname: string) => boolean;
 };
@@ -20,35 +19,35 @@ const TABS: TabSpec[] = [
   {
     id: "home",
     label: "Home",
-    icon: "home",
+    icon: "sheet",
     href: routes.home as string,
     match: (p) => p.includes("/home") || p.endsWith("home"),
   },
   {
     id: "journey",
     label: "Journey",
-    icon: "map",
+    icon: "survey",
     href: routes.journey as string,
     match: (p) => p.includes("(journey)") || p.includes("/journey"),
   },
   {
     id: "results",
     label: "Results",
-    icon: "bar-chart-2",
+    icon: "vial",
     href: routes.labResults as string,
     match: (p) => p.includes("(results)") || p.includes("results"),
   },
   {
     id: "plan",
     label: "Plan",
-    icon: "list",
+    icon: "slip",
     href: routes.plan as string,
     match: (p) => p.includes("(plan)") || p.endsWith("/plan"),
   },
   {
     id: "more",
     label: "More",
-    icon: "menu",
+    icon: "index",
     href: routes.settings as string,
     match: (p) => p.includes("(settings)") || p.includes("/settings"),
   },
@@ -77,17 +76,12 @@ export function BottomNav() {
 
   return (
     <View style={styles.wrap}>
-      <BlurView
-        intensity={60}
-        tint="light"
-        style={StyleSheet.absoluteFillObject}
-      />
-      <View style={styles.whiteOverlay} />
+
       <SafeAreaView edges={["bottom"]} style={styles.safe}>
         <View style={styles.row}>
           {TABS.map((tab) => {
             const active = tab.id === activeId;
-            const color = active ? Colors.orangeDark : Colors.mutedText;
+            const color = active ? Ink.full : Ink.faint;
             return (
               <Pressable
                 key={tab.id}
@@ -105,7 +99,7 @@ export function BottomNav() {
                     ]}
                   />
                 </View>
-                <Feather name={tab.icon} size={22} color={color} />
+                <SpecimenIcon name={tab.icon} size={22} color={color} />
                 <Text style={[styles.label, { color }]}>{tab.label}</Text>
               </Pressable>
             );
@@ -118,12 +112,9 @@ export function BottomNav() {
 
 const styles = StyleSheet.create({
   wrap: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.borderLight,
-  },
-  whiteOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255,255,255,0.72)",
+    backgroundColor: Paper.sheet,
+    borderTopWidth: Rule.medium,
+    borderTopColor: Ink.full,
   },
   safe: {
     paddingHorizontal: 8,
@@ -144,19 +135,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   pill: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: 14,
+    height: 2,
   },
   pillOn: {
-    backgroundColor: Colors.orangeDark,
+    backgroundColor: Accent.tag,
   },
   pillOff: {
     backgroundColor: "transparent",
   },
   label: {
-    marginTop: 3,
-    fontFamily: Typography.semibold,
-    fontSize: Typography.label,
+    marginTop: 4,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.catalogue,
+    letterSpacing: TRACK.label,
   },
 });

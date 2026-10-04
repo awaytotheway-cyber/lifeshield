@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
-import { Colors, Radii, Typography } from "@/lib/design-tokens";
+import { Accent, Edge, Ink, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 /** v2 variant API. */
 export type StatusChipVariant =
@@ -37,15 +36,18 @@ export function StatusChip({ label, variant, kind, style }: StatusChipProps) {
   const resolved = resolveVariant(variant, kind);
 
   if (resolved === "orange") {
+    // The stamped tag: ink block, paper lettering.
     return (
-      <View style={[styles.chip, styles.gradientWrap, style]}>
-        <LinearGradient
-          colors={[Colors.orangeDark, Colors.orangeBright]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={StyleSheet.absoluteFillObject}
-        />
-        <Text style={[styles.text, { color: Colors.pureWhite }]}>{label}</Text>
+      <View
+        style={[
+          styles.chip,
+          { backgroundColor: Ink.full, borderWidth: 0 },
+          style,
+        ]}
+      >
+        <Text style={[styles.text, { color: Paper.sheet }]}>
+          {label.toUpperCase()}
+        </Text>
       </View>
     );
   }
@@ -63,7 +65,8 @@ export function StatusChip({ label, variant, kind, style }: StatusChipProps) {
         style,
       ]}
     >
-      <Text style={[styles.text, { color: p.text }]}>{label}</Text>
+      <View style={[styles.punch, { borderColor: p.text }]} />
+      <Text style={[styles.text, { color: p.text }]}>{label.toUpperCase()}</Text>
     </View>
   );
 }
@@ -93,28 +96,33 @@ const PALETTE: Record<Exclude<StatusChipVariant, "orange">, {
   text: string;
   border?: string;
 }> = {
-  success: { bg: Colors.successTint, text: Colors.successGreen },
-  warning: { bg: Colors.warningTint, text: Colors.warningAmber },
-  danger: { bg: Colors.dangerTint, text: Colors.dangerRed },
-  pending: {
-    bg: "#F5F5F5",
-    text: Colors.mutedText,
-    border: Colors.borderLight,
-  },
+  success: { bg: Accent.sageWash, text: Accent.sage, border: "#CFD6C2" },
+  warning: { bg: Accent.ochreWash, text: Accent.ochre, border: "#E2D2B4" },
+  danger: { bg: Accent.tagWash, text: Accent.tag, border: "#E3C8C1" },
+  pending: { bg: Paper.sheetDeep, text: Ink.soft, border: Ink.rule },
 };
 
 const styles = StyleSheet.create({
   chip: {
     alignSelf: "flex-start",
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: Radii.chip,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingLeft: 7,
+    paddingRight: 10,
+    paddingVertical: 4,
+    borderWidth: Rule.hair,
+    borderRadius: Edge.tag,
   },
-  gradientWrap: {
-    overflow: "hidden",
+  punch: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    borderWidth: Rule.hair,
   },
   text: {
-    fontFamily: Typography.medium,
-    fontSize: Typography.label,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.catalogue,
+    letterSpacing: TRACK.label,
   },
 });

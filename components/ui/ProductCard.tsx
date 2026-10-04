@@ -1,11 +1,10 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { SpecimenIcon } from "@/components/specimen/SpecimenIcon";
 
 import { DataValue } from "@/components/ui/DataValue";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
-import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Edge, Ink, Measure, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 type UiProductCardProps = {
   name: string;
@@ -70,7 +69,7 @@ export function ProductCard({
       disabled={!onOpen}
       style={({ pressed }) => (pressed && onOpen ? { opacity: 0.92 } : null)}
     >
-      <GlassCard variant="onWhite" radius={Radii.card} padding={12}>
+      <GlassCard variant="onWhite" radius={Edge.mount} padding={12}>
         <View style={isGrid ? undefined : styles.rowLayout}>
           {photo}
           <View style={isGrid ? styles.gridBody : styles.rowBody}>
@@ -94,7 +93,7 @@ export function ProductCard({
               <DataValue
                 value={priceLabel}
                 size="inline"
-                color={Colors.orangeDark}
+                color={Accent.tag}
               />
               {showAdd ? (
                 <Pressable
@@ -110,17 +109,7 @@ export function ProductCard({
                     (pressed || adding) && { opacity: 0.8 },
                   ]}
                 >
-                  <LinearGradient
-                    colors={[Colors.orangeDark, Colors.orangeBright]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFillObject}
-                  />
-                  <Feather
-                    name={adding ? "loader" : "plus"}
-                    size={20}
-                    color={Colors.pureWhite}
-                  />
+                  <SpecimenIcon name="plus" size={18} color={Paper.sheet} />
                 </Pressable>
               ) : null}
             </View>
@@ -134,22 +123,22 @@ export function ProductCard({
 const styles = StyleSheet.create({
   rowLayout: {
     flexDirection: "row",
-    gap: Spacing.md,
+    gap: Measure.snug,
   },
   photoRow: {
     width: 84,
     height: 84,
-    borderRadius: Radii.cardSmall,
-    backgroundColor: Colors.orangeTint,
+    borderRadius: Edge.mountSmall,
+    backgroundColor: Accent.tagWash,
     overflow: "hidden",
   },
   photoGrid: {
     width: "100%",
     aspectRatio: 1,
-    borderRadius: Radii.cardSmall,
-    backgroundColor: Colors.orangeTint,
+    borderRadius: Edge.mountSmall,
+    backgroundColor: Accent.tagWash,
     overflow: "hidden",
-    marginBottom: Spacing.sm,
+    marginBottom: Measure.tight,
   },
   categoryOverlay: {
     position: "absolute",
@@ -161,9 +150,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
   },
   categoryText: {
-    fontFamily: Typography.medium,
-    fontSize: Typography.micro,
-    color: Colors.pureWhite,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.catalogue,
+    color: Paper.mount,
   },
   gridBody: {
     flex: 1,
@@ -172,36 +161,36 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.body,
+    fontFamily: SpecimenType.monoBold,
+    fontSize: SpecimenType.body,
     lineHeight: 20,
-    color: Colors.charcoal,
+    color: Ink.full,
   },
   desc: {
     marginTop: 4,
-    fontFamily: Typography.regular,
-    fontSize: Typography.label,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.label,
     lineHeight: 17,
-    color: Colors.mutedText,
+    color: Ink.faint,
   },
   blocked: {
-    marginTop: Spacing.sm,
-    fontFamily: Typography.regular,
-    fontSize: Typography.secondary,
-    color: Colors.bodyText,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
+    fontSize: SpecimenType.annotation,
+    color: Ink.soft,
   },
   bottomRow: {
-    marginTop: Spacing.md,
+    marginTop: Measure.snug,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: Spacing.sm,
+    gap: Measure.tight,
   },
   addCircle: {
     width: 44,
     height: 44,
-    borderRadius: 22,
-    overflow: "hidden",
+    borderRadius: Edge.none,
+    backgroundColor: Ink.full,
     alignItems: "center",
     justifyContent: "center",
   },

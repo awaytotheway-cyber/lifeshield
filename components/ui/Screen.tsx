@@ -6,47 +6,34 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, gradients, spacing } from "@/lib/design-tokens";
+import { Ink, Measure, Paper, Rule } from "@/lib/specimen-tokens";
 
 type ScreenProps = {
   children: ReactNode;
   scroll?: boolean;
-  /** Horizontal padding. Design system default is 20. */
+  /** Horizontal padding. SPECIMEN gutter is 22. */
   contentPadding?: number;
   /** Stays pinned (questionnaire stepper, back row). */
   header?: ReactNode;
-  /** Stays pinned (Save & continue). Keyboard-aware via KeyboardAvoidingView. */
+  /** Stays pinned (Save & continue). Keyboard-aware. */
   footer?: ReactNode;
-  /** Vertically centre non-scrolling content. Default: only when there is no header/footer. */
+  /** Vertically centre non-scrolling content. */
   centered?: boolean;
 };
 
-/** Soft blurred blobs so glass cards never sit on flat white. */
-function Atmosphere() {
-  return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <LinearGradient
-        colors={[...gradients.screen]}
-        locations={[...gradients.screenLocations]}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <View style={[styles.blob, styles.blobTL]} />
-      <View style={[styles.blob, styles.blobBR]} />
-      <View style={[styles.blob, styles.blobMid]} />
-    </View>
-  );
-}
-
+/**
+ * The page — SPECIMEN.
+ *
+ * Flat laboratory paper. The gradient wash and blurred blobs are gone:
+ * in this system depth comes from hairline rules and generous space,
+ * never from atmosphere behind a glass panel.
+ */
 export function Screen({
   children,
   scroll = false,
-  contentPadding = spacing.screenX,
+  contentPadding = Measure.gutter,
   header,
   footer,
   centered,
@@ -64,6 +51,7 @@ export function Screen({
       ]}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
+      showsVerticalScrollIndicator={false}
     >
       {children}
     </ScrollView>
@@ -82,20 +70,19 @@ export function Screen({
 
   return (
     <View style={styles.root}>
-      <Atmosphere />
       <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          {header ? <View style={pad}>{header}</View> : null}
+          {header ? <View style={[pad, styles.header]}>{header}</View> : null}
           {body}
           {footer ? (
-            <GlassCard intensity="chrome" style={styles.footerGlass}>
+            <View style={styles.footerWrap}>
               <SafeAreaView edges={["bottom"]} style={[styles.footer, pad]}>
                 {footer}
               </SafeAreaView>
-            </GlassCard>
+            </View>
           ) : null}
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -106,7 +93,7 @@ export function Screen({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.iceBlue,
+    backgroundColor: Paper.sheet,
   },
   safe: {
     flex: 1,
@@ -115,53 +102,30 @@ const styles = StyleSheet.create({
   flex: {
     flex: 1,
   },
+  header: {
+    paddingTop: Measure.tight,
+  },
   scrollContent: {
-    paddingTop: 16,
-    paddingBottom: 32,
+    paddingTop: Measure.base,
+    paddingBottom: Measure.plate,
   },
   scrollWithFooter: {
-    paddingBottom: 16,
+    paddingBottom: Measure.loose,
   },
   paddedY: {
-    paddingVertical: 32,
+    paddingVertical: Measure.section,
   },
   center: {
     justifyContent: "center",
   },
-  footerGlass: {
-    overflow: "hidden",
+  footerWrap: {
+    backgroundColor: Paper.sheet,
+    borderTopWidth: Rule.hair,
+    borderTopColor: Ink.ruleStrong,
   },
   footer: {
     backgroundColor: "transparent",
-    paddingTop: 8,
-    paddingBottom: 8,
-  },
-  blob: {
-    position: "absolute",
-    borderRadius: 999,
-    opacity: 0.45,
-  },
-  blobTL: {
-    width: 220,
-    height: 220,
-    top: -60,
-    left: -40,
-    backgroundColor: colors.skyBlue,
-  },
-  blobBR: {
-    width: 260,
-    height: 260,
-    bottom: -80,
-    right: -60,
-    backgroundColor: colors.primaryBlue,
-    opacity: 0.18,
-  },
-  blobMid: {
-    width: 160,
-    height: 160,
-    top: 280,
-    right: -30,
-    backgroundColor: "#A8C4F8",
-    opacity: 0.35,
+    paddingTop: Measure.snug,
+    paddingBottom: Measure.tight,
   },
 });

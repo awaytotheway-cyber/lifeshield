@@ -1,6 +1,6 @@
 import { Redirect, useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from "@/components/specimen/Icon";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { GlassCard } from "@/components/ui/GlassCard";

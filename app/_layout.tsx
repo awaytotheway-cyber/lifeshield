@@ -1,24 +1,11 @@
 // Must be the first import so NativeWind styles load before anything renders.
 import "../global.css";
 
-import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 import { DMSerifDisplay_400Regular } from "@expo-google-fonts/dm-serif-display";
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Inter_800ExtraBold,
-} from "@expo-google-fonts/inter";
 import {
   JetBrainsMono_400Regular,
   JetBrainsMono_700Bold,
 } from "@expo-google-fonts/jetbrains-mono";
-import {
-  Manrope_600SemiBold,
-  Manrope_700Bold,
-  Manrope_800ExtraBold,
-} from "@expo-google-fonts/manrope";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -93,16 +80,8 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  // TWO FACES ONLY — DM Serif Display for titles, JetBrains Mono for all else.
   const [fontsLoaded, fontError] = useFonts({
-    Manrope_600SemiBold,
-    Manrope_700Bold,
-    Manrope_800ExtraBold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-    Inter_800ExtraBold,
-    DMMono_400Regular,
     DMSerifDisplay_400Regular,
     JetBrainsMono_400Regular,
     JetBrainsMono_700Bold,

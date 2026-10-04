@@ -1,77 +1,85 @@
 /**
- * Type styles for PRESCOPE v2.
- * Headings: Inter (display / heading / semibold / medium).
- * Body: Inter.
- * Numbers and clinical data values: JetBrains Mono (via DataValue).
- * Legacy aliases keep older screens working while they adopt the new names.
+ * PRESCOPE type — SPECIMEN.
+ *
+ * TWO FACES ONLY: DM Serif Display for titles, JetBrains Mono for
+ * everything else. Every legacy alias below resolves to one of those
+ * two, so screens written against the old names convert automatically.
  */
+import { SpecimenType } from "@/lib/specimen-tokens";
 
 export const fontFamily = {
-  // v2 names
-  display: "Inter_800ExtraBold",
-  heading: "Inter_700Bold",
-  semibold: "Inter_600SemiBold",
-  medium: "Inter_500Medium",
-  regular: "Inter_400Regular",
-  mono: "JetBrainsMono_400Regular",
-  monoBold: "JetBrainsMono_700Bold",
+  // ——— The system ———
+  /** Titles, specimen names, plate headings. */
+  serif: SpecimenType.serif,
+  /** Everything else. */
+  mono: SpecimenType.mono,
+  monoBold: SpecimenType.monoBold,
 
-  // Legacy names (map to the v2 families so existing screens keep rendering)
-  displaySemi: "Inter_700Bold",
-  heroStat: "Inter_800ExtraBold",
-  body: "Inter_400Regular",
-  bodyMedium: "Inter_500Medium",
-  bodySemi: "Inter_600SemiBold",
-  /** Lab / medical names — JetBrains Mono for clinical credibility. */
-  medical: "JetBrainsMono_400Regular",
+  // ——— Legacy aliases → the two faces ———
+  /** Old display face → serif. */
+  display: SpecimenType.serif,
+  displaySemi: SpecimenType.serif,
+  heading: SpecimenType.serif,
+  heroStat: SpecimenType.monoBold,
+
+  /** Old body/UI faces → mono. */
+  regular: SpecimenType.mono,
+  body: SpecimenType.mono,
+  medium: SpecimenType.mono,
+  bodyMedium: SpecimenType.mono,
+  semibold: SpecimenType.monoBold,
+  bodySemi: SpecimenType.monoBold,
+
+  /** Lab / medical names were already mono. */
+  medical: SpecimenType.mono,
 } as const;
 
 export const typography = {
   display: {
-    fontFamily: fontFamily.display,
+    fontFamily: fontFamily.serif,
     fontSize: 32,
-    lineHeight: 38,
-    letterSpacing: -0.5,
+    lineHeight: 36,
+    letterSpacing: -0.4,
     color: undefined as string | undefined,
   },
   heroStat: {
     fontFamily: fontFamily.monoBold,
-    fontSize: 48,
-    lineHeight: 52,
-    letterSpacing: -1,
+    fontSize: 34,
+    lineHeight: 38,
+    letterSpacing: -0.6,
   },
   h1: {
-    fontFamily: fontFamily.heading,
-    fontSize: 32,
-    lineHeight: 38,
-    letterSpacing: -0.5,
+    fontFamily: fontFamily.serif,
+    fontSize: 30,
+    lineHeight: 34,
+    letterSpacing: -0.4,
   },
   h2: {
-    fontFamily: fontFamily.semibold,
-    fontSize: 22,
+    fontFamily: fontFamily.serif,
+    fontSize: 23,
     lineHeight: 28,
     letterSpacing: -0.3,
   },
   h3: {
-    fontFamily: fontFamily.semibold,
-    fontSize: 18,
+    fontFamily: fontFamily.serif,
+    fontSize: 19,
     lineHeight: 24,
   },
   body: {
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.mono,
     fontSize: 15,
-    lineHeight: 26,
+    lineHeight: 25,
   },
   bodySm: {
-    fontFamily: fontFamily.regular,
+    fontFamily: fontFamily.mono,
     fontSize: 13,
-    lineHeight: 20,
+    lineHeight: 21,
   },
   label: {
-    fontFamily: fontFamily.medium,
-    fontSize: 12,
-    lineHeight: 16,
-    letterSpacing: 0.2,
+    fontFamily: fontFamily.mono,
+    fontSize: 11,
+    lineHeight: 15,
+    letterSpacing: 1.2,
   },
   medical: {
     fontFamily: fontFamily.mono,
@@ -79,8 +87,9 @@ export const typography = {
     lineHeight: 18,
   },
   micro: {
-    fontFamily: fontFamily.regular,
-    fontSize: 11,
+    fontFamily: fontFamily.mono,
+    fontSize: 10,
     lineHeight: 14,
+    letterSpacing: 0.8,
   },
 } as const;

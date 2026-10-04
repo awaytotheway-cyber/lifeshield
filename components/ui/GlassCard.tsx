@@ -1,137 +1,75 @@
 import type { ReactNode } from "react";
-import {
-  StyleSheet,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
-import { BlurView } from "expo-blur";
+import { View, type StyleProp, type ViewStyle } from "react-native";
 
-import { Colors, Radii, Shadows, Spacing, radius } from "@/lib/design-tokens";
-import {
-  GLASS_BLUR_INTENSITY,
-  GlassOnGradient,
-  GlassOnWhite,
-  GlassTint,
-} from "@/lib/glass";
+import { Accent, Edge, Ink, Measure, Paper, Rule } from "@/lib/specimen-tokens";
 
-/** v2 variant API — pick where the card lives. */
+/**
+ * A mounted sheet — SPECIMEN.
+ *
+ * Formerly a frosted-glass panel. There is no glass in this system: a
+ * surface is paper with a hairline border and square-ish corners. The
+ * component keeps its old name and full prop surface so the ~40 screens
+ * that import it convert without edits.
+ */
+
 export type GlassVariant = "onGradient" | "onWhite" | "tint";
-
-/** Legacy intensity names kept so older screens keep compiling. */
 export type GlassIntensity = "card" | "chrome" | "sheet" | "button";
 export type GlassTintStyle = "light" | "dark";
+/** Legacy export name kept for older imports. */
+export type GlassTint = GlassTintStyle;
 
 type GlassCardProps = {
   children?: ReactNode;
-  /** v2 preferred. */
   variant?: GlassVariant;
-  /** Legacy — mapped to a sensible variant. */
   intensity?: GlassIntensity;
-  /** Legacy; "dark" still forces a navy tint for chrome strips. */
   tint?: GlassTintStyle;
-  /** Override border-radius. Default picked from variant. */
   radius?: number;
-  /** Override inner padding. Default Spacing.card. */
   padding?: number;
   style?: StyleProp<ViewStyle>;
 };
 
-const RADIUS_FOR_INTENSITY: Record<GlassIntensity, number> = {
-  card: radius.card,
-  chrome: 0,
-  sheet: radius.sheet,
-  button: radius.button,
-};
-
-function resolveVariant(
-  variant: GlassVariant | undefined,
-  intensity: GlassIntensity | undefined,
-  tint: GlassTintStyle | undefined,
-): GlassVariant {
-  if (variant) return variant;
-  if (tint === "dark") return "onGradient";
-  if (intensity === "chrome") return "onGradient";
-  if (intensity === "button") return "tint";
-  return "onWhite";
-}
-
-/**
- * Frosted glass surface. Three v2 variants:
- *   onGradient — sits on the orange hero (strong blur, 0.18 white, white border)
- *   onWhite    — sits on softWhite (moderate blur, 0.85 white, orange glass border)
- *   tint       — subtle orange tint (no blur needed, orange glass border)
- *
- * Legacy prop surface (`intensity`, `tint`) is preserved so screens built
- * before v2 keep working without edits.
- */
 export function GlassCard({
   children,
   variant,
   intensity,
   tint,
-  radius: radiusOverride,
-  padding = Spacing.card,
+  radius,
+  padding = Measure.base,
   style,
 }: GlassCardProps) {
-  const resolved = resolveVariant(variant, intensity, tint);
-  const effectiveRadius =
-    radiusOverride ??
-    (intensity ? RADIUS_FOR_INTENSITY[intensity] : Radii.card);
+  // Dark chrome strips stay dark; everything else is paper.
+  const isDark = tint === "dark";
+  // "chrome" was the full-bleed nav/footer surface — no border, no radius.
+  const isChrome = intensity === "chrome";
 
-  const base =
-    resolved === "onGradient"
-      ? GlassOnGradient.card
-      : resolved === "onWhite"
-        ? GlassOnWhite.card
-        : GlassTint.card;
+  const fill = isDark
+    ? "rgba(27,26,23,0.72)"
+    : variant === "tint"
+      ? Accent.tagWash
+      : intensity === "sheet"
+        ? Paper.sheetDeep
+        : Paper.mount;
 
-  const shadow =
-    resolved === "onGradient"
-      ? Shadows.floatingCard
-      : resolved === "tint"
-        ? Shadows.cardSubtle
-        : Shadows.card;
-
-  // tint variant has no real transparency, so BlurView is unnecessary.
-  if (resolved === "tint") {
-    return (
-      <View
-        style={[
-          { borderRadius: effectiveRadius, overflow: "hidden" },
-          base,
-          shadow,
-          style,
-        ]}
-      >
-        <View style={{ padding }}>{children}</View>
-      </View>
-    );
-  }
+  const border = isDark
+    ? "rgba(255,255,255,0.14)"
+    : variant === "tint"
+      ? "#E3C8C1"
+      : Ink.rule;
 
   return (
-    <View style={[{ borderRadius: effectiveRadius }, shadow, style]}>
-      <BlurView
-        intensity={
-          resolved === "onGradient"
-            ? GLASS_BLUR_INTENSITY.onGradient
-            : GLASS_BLUR_INTENSITY.onWhite
-        }
-        tint="light"
-        style={[
-          { borderRadius: effectiveRadius, overflow: "hidden" },
-          base,
-          tint === "dark" ? styles.dark : null,
-        ]}
-      >
-        <View style={{ padding }}>{children}</View>
-      </BlurView>
+    <View
+      style={[
+        {
+          backgroundColor: fill,
+          borderWidth: isChrome ? 0 : Rule.hair,
+          borderColor: border,
+          borderRadius: radius ?? (isChrome ? Edge.none : Edge.mount),
+          padding,
+        },
+        style,
+      ]}
+    >
+      {children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  dark: {
-    backgroundColor: Colors.glassDark,
-  },
-});

@@ -50,23 +50,38 @@ export const Accent = {
   ochreWash: "#F4EBDA",
 } as const;
 
+/**
+ * TWO FACES ONLY.
+ *
+ *   DM Serif Display — the editorial voice. Titles and specimen names.
+ *   JetBrains Mono    — everything else.
+ *
+ * Mono carries the body and the labels, not just the numbers. That is
+ * not a compromise: a real herbarium label is typewritten, so mono IS
+ * the authentic label face here. JetBrains Mono was drawn for long
+ * reading with a tall x-height, and body copy in this app runs to two
+ * or three lines, never essays.
+ */
 export const SpecimenType = {
   /** Plate titles and specimen names — editorial authority. */
   serif: "DMSerifDisplay_400Regular",
-  /** Labels, body, UI. */
-  sans: "Inter_400Regular",
-  sansMedium: "Inter_500Medium",
-  sansSemi: "Inter_600SemiBold",
-  /** ALL numbers, dates, measurements, catalogue refs. Non-negotiable. */
+  /** Everything that is not a title. Labels, body, data, UI. */
   mono: "JetBrainsMono_400Regular",
   monoBold: "JetBrainsMono_700Bold",
 
-  /** Scale — editorial contrast, set against a 4pt rhythm. */
+  /** Aliases so call sites can still read semantically. */
+  sans: "JetBrainsMono_400Regular",
+  sansMedium: "JetBrainsMono_400Regular",
+  sansSemi: "JetBrainsMono_700Bold",
+
+  /** Scale — editorial contrast, set against a 4pt rhythm.
+   *  Mono runs optically larger than a sans at the same size, so the
+   *  body sizes here sit one notch below where a sans would. */
   plateTitle: 34,
-  specimenName: 26,
-  sectionRule: 13,
-  body: 16,
-  label: 13,
+  specimenName: 25,
+  sectionRule: 12,
+  body: 15,
+  label: 12,
   annotation: 11,
   catalogue: 10,
 
