@@ -2,6 +2,7 @@
 import "../global.css";
 
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
+import { DMSerifDisplay_400Regular } from "@expo-google-fonts/dm-serif-display";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -102,6 +103,7 @@ export default function RootLayout() {
     Inter_700Bold,
     Inter_800ExtraBold,
     DMMono_400Regular,
+    DMSerifDisplay_400Regular,
     JetBrainsMono_400Regular,
     JetBrainsMono_700Bold,
   });

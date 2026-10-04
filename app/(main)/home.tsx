@@ -457,6 +457,10 @@ export default function HomeScreen() {
       ) : null}
 
           <TextButton
+            title="◇  Preview the SPECIMEN design"
+            onPress={() => router.push("/(main)/specimen-home" as never)}
+          />
+          <TextButton
             title={COPY.signOut}
             onPress={() => {
               void signOut();

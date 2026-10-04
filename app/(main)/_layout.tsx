@@ -213,6 +213,7 @@ export default function MainLayout() {
           />
           {/* Feature groups added after the original tab set. Declared
               with href: null so expo-router does not auto-add them. */}
+          <Tabs.Screen name="specimen-home" options={{ href: null }} />
           <Tabs.Screen name="(goals)" options={{ href: null }} />
           <Tabs.Screen name="(buddies)" options={{ href: null }} />
           <Tabs.Screen name="(recipes)" options={{ href: null }} />
