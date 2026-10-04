@@ -186,19 +186,19 @@ const styles = StyleSheet.create({
   },
   name: {
     fontFamily: fontFamily.displaySemi,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.charcoal,
   },
   meta: {
     marginTop: 2,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   metaLight: {
     marginTop: spacing.micro,
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.mist,
   },
   matchPill: {
@@ -209,26 +209,26 @@ const styles = StyleSheet.create({
   },
   matchText: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.riskLow,
   },
   subLabel: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
+    fontSize: 13,
     letterSpacing: 0.4,
     color: colors.slate,
     textTransform: "uppercase",
   },
   subText: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.charcoal,
   },
   sentBadge: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.primaryBlue,
   },
   error: {

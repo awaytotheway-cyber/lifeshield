@@ -498,13 +498,13 @@ const styles = StyleSheet.create({
   heroEmail: {
     marginTop: 6,
     fontFamily: fontFamily.regular,
-    fontSize: 14,
+    fontSize: 16,
     color: Ink.soft,
   },
   heroSince: {
     marginTop: 4,
     fontFamily: fontFamily.regular,
-    fontSize: 12,
+    fontSize: 14,
     color: Ink.ghost,
   },
   profileBodyPad: {
@@ -521,21 +521,21 @@ const styles = StyleSheet.create({
   body: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
   note: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.amber,
   },
   photoCard: {
@@ -568,26 +568,26 @@ const styles = StyleSheet.create({
   label: {
     marginTop: 16,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: 0.2,
     color: colors.slate,
   },
   value: {
     marginTop: 4,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.charcoal,
   },
   hint: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.mist,
   },
   computed: {
     marginTop: 8,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.primaryBlue,
   },
   section: {
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.sage,
   },
 });

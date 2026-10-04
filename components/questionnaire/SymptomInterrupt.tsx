@@ -71,8 +71,8 @@ export function SymptomInterrupt({
         style={{
           marginTop: 12,
           fontFamily: fontFamily.body,
-          fontSize: 15,
-          lineHeight: 24,
+          fontSize: 17,
+          lineHeight: 26,
           color: colors.slate,
         }}
       >
@@ -94,7 +94,7 @@ export function SymptomInterrupt({
             textAlign: "center",
             color: colors.coral,
             fontFamily: fontFamily.body,
-            fontSize: 13,
+            fontSize: 15,
           }}
         >
           {errorMessage}

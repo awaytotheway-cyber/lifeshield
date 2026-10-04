@@ -117,15 +117,15 @@ export default function DeleteAccountScreen() {
 const styles = StyleSheet.create({
   body: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   warning: {
     marginTop: 12,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.coral,
   },
   card: {
@@ -139,13 +139,13 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
   done: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.charcoal,
     marginBottom: spacing.md,
   },

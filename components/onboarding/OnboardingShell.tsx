@@ -167,8 +167,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   dots: {

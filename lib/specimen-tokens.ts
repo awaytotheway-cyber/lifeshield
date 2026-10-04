@@ -74,21 +74,41 @@ export const SpecimenType = {
   sansMedium: "JetBrainsMono_400Regular",
   sansSemi: "JetBrainsMono_700Bold",
 
-  /** Scale — editorial contrast, set against a 4pt rhythm.
-   *  Mono runs optically larger than a sans at the same size, so the
-   *  body sizes here sit one notch below where a sans would. */
-  plateTitle: 34,
-  specimenName: 25,
-  sectionRule: 12,
-  body: 15,
-  label: 12,
-  annotation: 11,
-  catalogue: 10,
+  /** Legacy family names used across older screens. Without these the
+   *  call sites resolved to `undefined` and silently fell back to the
+   *  platform system face, which is how half the app escaped the two-face
+   *  rule. They are aliases, not a third and fourth voice. */
+  regular: "JetBrainsMono_400Regular",
+  medium: "JetBrainsMono_400Regular",
+  semibold: "JetBrainsMono_700Bold",
+  heading: "DMSerifDisplay_400Regular",
+
+  /** Scale — editorial contrast on a 4pt rhythm, set one notch up from
+   *  the original cut so the smallest labels stay legible to a reader
+   *  who is not twenty-five. Nothing in the UI is below 12. */
+  plateTitle: 36,
+  specimenName: 27,
+  sectionRule: 14,
+  body: 17,
+  label: 14,
+  annotation: 14,
+  catalogue: 12,
 
   /** Mono scale. */
-  readingLarge: 30,
-  reading: 18,
-  readingSmall: 13,
+  readingLarge: 32,
+  reading: 20,
+  readingSmall: 15,
+
+  /** Legacy size names. Same scale, older vocabulary. */
+  screenTitle: 28,
+  sectionTitle: 20,
+  bodyLarge: 17,
+  secondary: 15,
+  micro: 12,
+  dataHero: 32,
+  dataCard: 22,
+  dataInline: 17,
+  dataSmall: 15,
 } as const;
 
 /** Letterspacing for the small-caps label style used on every rule. */
@@ -104,6 +124,8 @@ export const Edge = {
   none: 0,
   hair: 2,
   mount: 3,
+  /** Thumbnails and inline chips, a touch tighter than a mounted sheet. */
+  mountSmall: 2,
   tag: 2,
   /** The one exception: circular registration marks and avatars. */
   round: 1000,
@@ -130,35 +152,26 @@ export const Rule = {
 } as const;
 
 /**
- * Archival plates — public-domain source imagery.
- * Europeana (Rijksmuseum herbarium, 1860–1890) and NYPL (Vesalius, 1545).
- * Credit is rendered in-app on the plate caption.
+ * Archival plates — public-domain source imagery (Europeana /
+ * Rijksmuseum herbarium, NYPL). The original archival titles are not
+ * carried into the UI: they are in Dutch and Latin and describe the
+ * source object, not anything the reader is looking at here.
  */
 export const PLATES = {
   herbariumFlowers: {
     uri: "https://images.unsplash.com/photo-1720714411061-ea361e343bfc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    caption: "Collage van bloemen van de berg Rigi",
-    credit: "Rijksmuseum · c.1860–1890 · Public Domain",
   },
   herbariumFerns: {
     uri: "https://images.unsplash.com/photo-1720714411283-4fddb1c74ea9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    caption: "Collage van varens, vermoedelijk uit de Alpen",
-    credit: "Rijksmuseum · c.1860–1890 · Public Domain",
   },
   herbariumAllium: {
     uri: "https://images.unsplash.com/photo-1720714411092-8ea3468777fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    caption: "Allium ursinum L.",
-    credit: "Rippl-Rónai Museum · 1984 · Public Domain",
   },
   herbariumThalictrum: {
     uri: "https://images.unsplash.com/photo-1720714412195-5ea918a09210?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    caption: "Thalictrum minus L.",
-    credit: "Rippl-Rónai Museum · 1991 · Public Domain",
   },
   anatomyNutrition: {
     uri: "https://images.unsplash.com/photo-1715529134960-b49e99668dcc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    caption: "Anatomie der Ernährungsorgane",
-    credit: "Heidelberg University Library · 1832 · Public Domain",
   },
 } as const;
 

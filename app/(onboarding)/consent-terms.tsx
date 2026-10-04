@@ -65,8 +65,8 @@ const styles = StyleSheet.create({
     marginTop: 16,
     textAlign: "center",
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.coral,
   },
 });

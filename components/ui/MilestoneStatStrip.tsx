@@ -60,8 +60,8 @@ const styles = StyleSheet.create({
   label: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 18,
     color: colors.slate,
     textAlign: "center",
   },

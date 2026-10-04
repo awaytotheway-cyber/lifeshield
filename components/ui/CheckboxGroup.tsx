@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: 0.2,
     color: colors.slate,
     marginBottom: 8,
@@ -102,14 +102,14 @@ const styles = StyleSheet.create({
   optionLabel: {
     flex: 1,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
     paddingRight: 12,
   },
   error: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
 });

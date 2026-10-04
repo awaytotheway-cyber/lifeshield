@@ -211,7 +211,7 @@ const badgeStyles = StyleSheet.create({
   },
   text: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 11,
+    fontSize: 13,
     textTransform: "uppercase",
     letterSpacing: 0.3,
   },
@@ -221,8 +221,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 22,
     color: colors.slate,
   },
   progressCard: {
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
     textTransform: "uppercase",
     letterSpacing: 0.3,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   celebrateText: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.charcoal,
   },
   card: {
@@ -279,14 +279,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
+    fontSize: 18,
     color: colors.charcoal,
   },
   desc: {
     marginTop: 2,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.slate,
   },
   metricsRow: {
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   },
   metricLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
+    fontSize: 13,
     color: colors.slate,
     textTransform: "uppercase",
     letterSpacing: 0.3,

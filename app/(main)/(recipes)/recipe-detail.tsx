@@ -190,8 +190,8 @@ const styles = StyleSheet.create({
   },
   desc: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     color: colors.slate,
   },
   metaRow: {
@@ -202,14 +202,14 @@ const styles = StyleSheet.create({
   metaItem: { alignItems: "flex-start" },
   metaLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
+    fontSize: 13,
     letterSpacing: 0.3,
     color: colors.slate,
     textTransform: "uppercase",
   },
   metaValue: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.charcoal,
   },
   portionsRow: {
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   },
   portionsLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.slate,
   },
   portionsControls: {
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     marginBottom: spacing.sm,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
     letterSpacing: 0.4,
     textTransform: "uppercase",
@@ -260,8 +260,8 @@ const styles = StyleSheet.create({
   line: {
     marginBottom: 4,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.charcoal,
   },
   error: {

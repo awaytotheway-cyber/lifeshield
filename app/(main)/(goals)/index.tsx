@@ -160,8 +160,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     color: colors.slate,
   },
   ctaWrap: {
@@ -184,16 +184,16 @@ const styles = StyleSheet.create({
   },
   type: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 18,
     letterSpacing: 0.4,
     color: colors.slate,
     textTransform: "uppercase",
   },
   status: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 14,
+    lineHeight: 18,
   },
   title: {
     fontFamily: fontFamily.displaySemi,
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.micro,
     marginBottom: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 15,
+    lineHeight: 20,
     color: colors.slate,
   },
   sep: {

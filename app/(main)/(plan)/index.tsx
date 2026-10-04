@@ -308,8 +308,8 @@ const styles = StyleSheet.create({
   heroSub: {
     marginTop: 8,
     fontFamily: fontFamily.regular,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     color: Ink.soft,
   },
   approvalStrip: {
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   approvalFill: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: colors.charcoal,
   },
   approvalRow: {
@@ -334,13 +334,13 @@ const styles = StyleSheet.create({
   approvalText: {
     flex: 1,
     fontFamily: fontFamily.semibold,
-    fontSize: 13,
+    fontSize: 15,
     color: Ink.full,
   },
   error: {
     marginTop: 12,
     fontFamily: fontFamily.regular,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.dangerRed,
     textAlign: "center",
   },

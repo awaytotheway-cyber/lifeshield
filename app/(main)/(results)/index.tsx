@@ -211,8 +211,8 @@ export default function ResultsScreen() {
 const styles = StyleSheet.create({
   body: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
     textAlign: "left",
     marginBottom: 8,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
     textAlign: "center",
   },
@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
   discuss: {
     marginTop: 16,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.charcoal,
     textAlign: "center",
   },

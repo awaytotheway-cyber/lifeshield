@@ -55,13 +55,13 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: 4,
     fontFamily: Typography.regular,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: Colors.bodyText,
   },
   action: {
     fontFamily: Typography.semibold,
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.orangeDark,
   },
 });

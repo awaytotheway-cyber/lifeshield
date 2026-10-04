@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   subtitle: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   list: {
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   itemLabel: {
     flex: 1,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 16,
+    fontSize: 18,
     color: colors.charcoal,
   },
   itemLabelActive: {
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   },
   currentHint: {
     fontFamily: fontFamily.body,
-    fontSize: 11,
+    fontSize: 13,
     color: colors.primaryBlue,
   },
   badge: {
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 11,
+    fontSize: 13,
     color: colors.deepNavy,
   },
   reorder: {
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
   },
   reorderToggleText: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.primaryBlue,
   },
 });

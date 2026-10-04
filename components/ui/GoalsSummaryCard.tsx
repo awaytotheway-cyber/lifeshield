@@ -118,19 +118,19 @@ const styles = StyleSheet.create({
   },
   link: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.primaryBlue,
   },
   empty: {
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 22,
     color: colors.slate,
     marginBottom: spacing.sm,
   },
   cta: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.primaryBlue,
   },
   row: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   type: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
+    fontSize: 13,
     letterSpacing: 0.4,
     color: colors.slate,
     textTransform: "uppercase",
@@ -153,13 +153,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.micro,
     marginBottom: spacing.micro,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   meta: {
     marginTop: spacing.micro,
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
   },
 });

@@ -5,6 +5,18 @@ module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      // Type scale raised one notch across the board. The app is read by
+      // people managing their own health, many of them older; nothing in
+      // the UI should sit below 14.
+      fontSize: {
+        xs: ["14px", "20px"],
+        sm: ["16px", "24px"],
+        base: ["18px", "28px"],
+        lg: ["20px", "30px"],
+        xl: ["22px", "30px"],
+        "2xl": ["26px", "34px"],
+        "3xl": ["32px", "38px"],
+      },
       colors: {
         paperSheet: "#f5f2eb",
         paperMount: "#fcfbf7",

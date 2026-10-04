@@ -4,7 +4,6 @@ import { Image } from "expo-image";
 import {
   Edge,
   Ink,
-  Measure,
   PLATES,
   Paper,
   Rule,
@@ -18,24 +17,24 @@ type PlateProps = {
   height?: number;
   /** Catalogue reference printed in the corner, e.g. "PL. 04". */
   figure?: string;
-  /** Hide the caption strip (used for small decorative plates). */
+  /** Retained for call-site compatibility; plates no longer caption. */
   bare?: boolean;
   style?: ViewStyle;
 };
 
 /**
  * An archival plate, mounted the way a print is mounted: deep paper
- * surround, hairline frame, printed caption and source credit beneath.
+ * surround, hairline frame, optional figure reference in the corner.
  *
- * Source imagery is public domain (Europeana / NYPL). The credit line is
- * not optional decoration — it is why this reads as a real archive
- * rather than stock texture, and it keeps attribution honest.
+ * Source imagery is public domain, so no attribution line is rendered —
+ * the originals' Dutch and Latin titles described the source object and
+ * meant nothing to a reader looking at their own health record.
  */
 export function Plate({
   plate,
   height = 190,
   figure,
-  bare = false,
+  bare: _bare = false,
   style,
 }: PlateProps) {
   const p = PLATES[plate];
@@ -44,7 +43,7 @@ export function Plate({
       <View style={[styles.window, { height }]}>
         <Image
           source={{ uri: p.uri }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
           contentFit="cover"
           transition={240}
         />
@@ -56,13 +55,6 @@ export function Plate({
           </View>
         ) : null}
       </View>
-
-      {bare ? null : (
-        <View style={styles.captionBlock}>
-          <Text style={styles.caption}>{p.caption}</Text>
-          <Text style={styles.credit}>{p.credit}</Text>
-        </View>
-      )}
     </View>
   );
 }
@@ -83,7 +75,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   warmth: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: "rgba(245,242,235,0.10)",
   },
   figureTag: {
@@ -102,22 +94,5 @@ const styles = StyleSheet.create({
     fontSize: SpecimenType.catalogue,
     letterSpacing: TRACK.catalogue,
     color: Ink.soft,
-  },
-  captionBlock: {
-    paddingTop: Measure.snug,
-    paddingHorizontal: 2,
-  },
-  caption: {
-    fontFamily: SpecimenType.serif,
-    fontSize: 14,
-    lineHeight: 19,
-    color: Ink.full,
-  },
-  credit: {
-    marginTop: 3,
-    fontFamily: SpecimenType.mono,
-    fontSize: SpecimenType.catalogue,
-    letterSpacing: TRACK.catalogue,
-    color: Ink.ghost,
   },
 });

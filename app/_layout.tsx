@@ -42,7 +42,7 @@ function BrandSplash({ message }: { message: string }) {
           marginTop: 16,
           color: colors.charcoal,
           fontFamily: fontFamily.body,
-          fontSize: 15,
+          fontSize: 17,
         }}
       >
         {message}

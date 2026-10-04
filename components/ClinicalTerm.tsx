@@ -113,8 +113,8 @@ const styles = StyleSheet.create({
   heading: {
     flex: 1,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    lineHeight: 22,
+    fontSize: 19,
+    lineHeight: 24,
     color: colors.charcoal,
   },
   infoHit: {
@@ -126,8 +126,8 @@ const styles = StyleSheet.create({
   explain: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.slate,
   },
   divider: {
@@ -137,13 +137,13 @@ const styles = StyleSheet.create({
   },
   clinicalLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
+    fontSize: 13,
     color: colors.mist,
   },
   medical: {
     marginTop: 4,
     fontFamily: fontFamily.medical,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   backdrop: {
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   closeText: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.midTeal,
   },
 });

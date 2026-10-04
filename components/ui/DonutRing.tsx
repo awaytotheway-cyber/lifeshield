@@ -69,7 +69,7 @@ export function DonutRing({
           fill="none"
         />
       </Svg>
-      <View style={[StyleSheet.absoluteFillObject, styles.center]}>
+      <View style={[StyleSheet.absoluteFill, styles.center]}>
         <DataValue value={value} size="hero" color={textColor} />
         {caption ? (
           <Text style={[styles.caption, { color: textColor }]}>{caption}</Text>

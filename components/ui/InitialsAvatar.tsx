@@ -42,7 +42,7 @@ export function InitialsAvatar({
       {uri ? (
         <Image
           source={{ uri }}
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
           contentFit="cover"
         />
       ) : (

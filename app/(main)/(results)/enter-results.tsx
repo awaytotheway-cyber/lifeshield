@@ -5,6 +5,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Text, TextInput, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { BackBar } from "@/components/ui/BackBar";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { SelectPicker } from "@/components/ui/SelectPicker";

@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
   meaning: {
     marginTop: Spacing.sm,
     fontFamily: Typography.regular,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 16,
+    lineHeight: 23,
     color: Colors.bodyText,
   },
   divider: {

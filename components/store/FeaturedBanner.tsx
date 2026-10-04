@@ -25,8 +25,7 @@ type FeaturedBannerProps = {
  *
  * Was a gradient card with decorative circles. It is now a mounted
  * plate: an archival image on the left, typeset copy on the right,
- * hairline frame, source credited underneath like any other plate in
- * the record.
+ * hairline frame.
  */
 export function FeaturedBanner({
   title,
@@ -51,7 +50,7 @@ export function FeaturedBanner({
         <View style={styles.window}>
           <Image
             source={{ uri: plate.uri }}
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             contentFit="cover"
             transition={240}
           />
@@ -69,8 +68,6 @@ export function FeaturedBanner({
           ) : null}
         </View>
       </View>
-
-      <Text style={styles.credit}>{plate.credit}</Text>
     </Pressable>
   );
 }
@@ -133,12 +130,5 @@ const styles = StyleSheet.create({
     letterSpacing: TRACK.label,
     color: Ink.full,
     textDecorationLine: "underline",
-  },
-  credit: {
-    marginTop: Measure.snug,
-    fontFamily: SpecimenType.mono,
-    fontSize: SpecimenType.catalogue,
-    letterSpacing: TRACK.catalogue,
-    color: Ink.ghost,
   },
 });

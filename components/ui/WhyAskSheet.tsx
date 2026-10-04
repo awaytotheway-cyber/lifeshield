@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   label: {
     flex: 1,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: 0.2,
     color: colors.slate,
   },
@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.deepTeal,
   },
   body: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.charcoal,
   },
   closeHit: {
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   closeText: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.midTeal,
   },
 });

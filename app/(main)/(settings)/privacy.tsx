@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
   body: {
     marginBottom: spacing.md,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   card: {
@@ -119,14 +119,14 @@ const styles = StyleSheet.create({
   retention: {
     marginBottom: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.charcoal,
   },
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
 });

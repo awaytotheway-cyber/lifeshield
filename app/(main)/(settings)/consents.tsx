@@ -109,8 +109,8 @@ export default function ConsentsSettingsScreen() {
 const styles = StyleSheet.create({
   body: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   error: {
@@ -124,13 +124,13 @@ const styles = StyleSheet.create({
   },
   type: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
+    fontSize: 18,
     color: colors.charcoal,
   },
   status: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.slate,
   },
 });

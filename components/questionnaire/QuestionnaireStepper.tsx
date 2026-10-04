@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
     marginBottom: 8,
   },

@@ -113,8 +113,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   banner: {
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   rowLabel: {
     flex: 1,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 16,
+    fontSize: 18,
     color: colors.charcoal,
   },
 });

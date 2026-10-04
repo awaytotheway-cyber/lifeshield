@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
   why: {
     marginTop: Spacing.xs,
     fontFamily: Typography.regular,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: Colors.bodyText,
   },
   expand: {
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
   expandLabel: {
     fontFamily: Typography.semibold,
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.orangeDark,
   },
   basis: {

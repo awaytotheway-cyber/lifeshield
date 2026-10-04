@@ -75,15 +75,15 @@ const styles = StyleSheet.create({
   locked: {
     marginTop: 16,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.slate,
   },
   notice: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.charcoal,
   },
 });

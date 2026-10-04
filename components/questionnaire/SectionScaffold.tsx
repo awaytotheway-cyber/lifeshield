@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   skip: {
     fontFamily: Typography.semibold,
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.orangeDark,
   },
 

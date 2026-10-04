@@ -179,8 +179,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 22,
     color: colors.slate,
   },
   summary: {
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
     textTransform: "uppercase",
     letterSpacing: 0.3,
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
     fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
+    fontSize: 18,
     color: colors.charcoal,
   },
   card: {
@@ -221,16 +221,16 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   headRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  name: { fontFamily: fontFamily.bodySemi, fontSize: 15, color: colors.charcoal },
+  name: { fontFamily: fontFamily.bodySemi, fontSize: 17, color: colors.charcoal },
   linked: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.primaryBlue,
   },
   meta: {
     marginTop: 2,
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
   },
   actions: { justifyContent: "space-between", alignItems: "flex-end" },
@@ -243,18 +243,18 @@ const styles = StyleSheet.create({
   },
   activityType: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.charcoal,
     textTransform: "capitalize",
   },
   activityMeta: {
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
   },
   emptyLine: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   error: {

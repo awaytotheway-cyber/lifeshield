@@ -124,19 +124,19 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     fontFamily: fontFamily.semibold,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.darkText,
   },
   optionDesc: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   error: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
 });

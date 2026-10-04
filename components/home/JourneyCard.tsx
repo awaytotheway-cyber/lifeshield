@@ -5,7 +5,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
-import { Accent, Ink } from "@/lib/specimen-tokens";
+import { Accent, Ink, Paper } from "@/lib/specimen-tokens";
 
 export type JourneyNodeState = "complete" | "current" | "upcoming";
 
@@ -219,13 +219,13 @@ const styles = StyleSheet.create({
   desc: {
     flex: 1,
     fontFamily: Typography.regular,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: Colors.bodyText,
   },
   view: {
     fontFamily: Typography.semibold,
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.orangeDark,
     paddingLeft: 10,
   },

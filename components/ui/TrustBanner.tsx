@@ -52,15 +52,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fontFamily.displaySemi,
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 17,
+    lineHeight: 22,
     color: colors.white,
   },
   body: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: "rgba(255,255,255,0.82)",
   },
 });

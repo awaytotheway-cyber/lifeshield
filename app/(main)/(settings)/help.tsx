@@ -79,8 +79,8 @@ const styles = StyleSheet.create({
   body: {
     marginBottom: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   card: {
@@ -89,14 +89,14 @@ const styles = StyleSheet.create({
   },
   q: {
     fontFamily: fontFamily.displaySemi,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.deepNavy,
   },
   a: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.slate,
   },
 });

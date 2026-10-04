@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 22,
     color: colors.slate,
   },
   chips: {
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   chipOn: { backgroundColor: colors.primaryBlue, borderColor: colors.primaryBlue },
-  chipText: { fontFamily: fontFamily.bodySemi, fontSize: 13, color: colors.charcoal },
+  chipText: { fontFamily: fontFamily.bodySemi, fontSize: 15, color: colors.charcoal },
   chipTextOn: { color: colors.white },
   card: {
     marginBottom: spacing.sm,
@@ -177,13 +177,13 @@ const styles = StyleSheet.create({
   cardPressed: { opacity: 0.85 },
   name: {
     fontFamily: fontFamily.displaySemi,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.charcoal,
   },
   meta: {
     marginTop: 2,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   rowMeta: {
@@ -193,18 +193,18 @@ const styles = StyleSheet.create({
   },
   metaLight: {
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.mist,
   },
   savedBadge: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.primaryBlue,
   },
   tags: {
     marginTop: spacing.micro,
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.mist,
   },
   error: {

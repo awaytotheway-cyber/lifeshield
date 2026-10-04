@@ -161,14 +161,14 @@ const styles = StyleSheet.create({
   },
   consentTitle: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   consentBody: {
     marginTop: spacing.micro,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.slate,
   },
   form: { marginTop: spacing.base },
@@ -183,13 +183,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   hint: {
     marginTop: 2,
     fontFamily: fontFamily.body,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
   },
   field: { marginTop: spacing.base },

@@ -244,12 +244,12 @@ const styles = StyleSheet.create({
   },
   bubbleText: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   bubbleTextMine: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.white,
   },
   inputRow: {
@@ -283,13 +283,13 @@ const styles = StyleSheet.create({
   },
   staleTitle: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   staleBody: {
     marginTop: spacing.micro,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   staleActions: {

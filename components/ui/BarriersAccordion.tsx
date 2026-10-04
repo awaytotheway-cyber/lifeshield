@@ -330,8 +330,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 22,
     color: colors.slate,
   },
   group: {
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   },
   groupTitle: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: 0.4,
     color: colors.slate,
     textTransform: "uppercase",
@@ -361,13 +361,13 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   tryingBadge: {
     marginTop: 2,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
+    fontSize: 13,
     letterSpacing: 0.3,
     color: colors.primaryBlue,
     textTransform: "uppercase",
@@ -379,22 +379,22 @@ const styles = StyleSheet.create({
   },
   strategy: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     color: colors.charcoal,
   },
   subLabel: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
     letterSpacing: 0.4,
     textTransform: "uppercase",
   },
   subText: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.slate,
   },
   error: {
@@ -414,13 +414,13 @@ const fbStyles = StyleSheet.create({
   },
   title: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   body: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.slate,
   },
   row: {
@@ -452,7 +452,7 @@ const fbStyles = StyleSheet.create({
   },
   chipText: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.charcoal,
   },
   chipTextSelected: {
@@ -461,7 +461,7 @@ const fbStyles = StyleSheet.create({
   likelihoodLabel: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
     letterSpacing: 0.3,
     textTransform: "uppercase",

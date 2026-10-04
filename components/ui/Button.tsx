@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   primaryLabel: {
     fontFamily: fontFamily.mono,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: TRACK.label,
     color: Paper.sheet,
   },
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   secondaryLabel: {
     fontFamily: fontFamily.mono,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: TRACK.label,
     color: Ink.full,
   },
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   },
   textLabel: {
     fontFamily: fontFamily.mono,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: TRACK.label,
     color: Accent.tag,
     textDecorationLine: "underline",

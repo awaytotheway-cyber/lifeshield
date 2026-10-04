@@ -281,8 +281,8 @@ const styles = StyleSheet.create({
   heroSub: {
     marginTop: 8,
     fontFamily: Typography.regular,
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 16,
+    lineHeight: 23,
     color: Ink.soft,
   },
   chipsWrap: {

@@ -196,21 +196,21 @@ const styles = StyleSheet.create({
   sub: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.coral,
   },
   loading: {
     textAlign: "center",
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.slate,
   },
 });

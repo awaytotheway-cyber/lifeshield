@@ -550,7 +550,7 @@ function buildNextActions(input: NextActionsInput): NextAction[] {
 const styles = StyleSheet.create({
   loading: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
     textAlign: "center",
   },
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontFamily: fontFamily.regular,
-    fontSize: 14,
+    fontSize: 16,
     color: Ink.soft,
   },
   name: {
@@ -579,8 +579,8 @@ const styles = StyleSheet.create({
   heroTag: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 15,
+    lineHeight: 20,
     color: "rgba(255,255,255,0.8)",
   },
   content: {
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
   },
   helper: {
     fontFamily: fontFamily.body,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.slate,
   },
   brand: {
@@ -614,16 +614,16 @@ const styles = StyleSheet.create({
   tagline: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
     textAlign: "left",
   },
   headline: {
     marginTop: 16,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.charcoal,
     textAlign: "left",
   },
@@ -641,21 +641,21 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
     textAlign: "left",
   },
   hint: {
     marginTop: 16,
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.slate,
     textAlign: "left",
   },
   also: {
     marginTop: 24,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
     textAlign: "left",
   },

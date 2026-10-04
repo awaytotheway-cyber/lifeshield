@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.amber,
   },
   callout: {
@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
   },
   calloutText: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.charcoal,
   },
 });

@@ -49,7 +49,7 @@ export function ProductCard({
   const photo = (
     <View style={isGrid ? styles.photoGrid : styles.photoRow}>
       {imageUri ? (
-        <Image source={{ uri: imageUri }} style={StyleSheet.absoluteFillObject} />
+        <Image source={{ uri: imageUri }} style={StyleSheet.absoluteFill} />
       ) : null}
       {category ? (
         <View style={styles.categoryOverlay}>

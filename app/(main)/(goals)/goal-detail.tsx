@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   type: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: 0.4,
     color: colors.slate,
     textTransform: "uppercase",
@@ -182,14 +182,14 @@ const styles = StyleSheet.create({
   meta: {
     marginTop: spacing.micro,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 15,
+    lineHeight: 20,
     color: colors.slate,
   },
   status: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
+    fontSize: 16,
     color: colors.primaryBlue,
   },
   progressRow: {
@@ -199,19 +199,19 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
   },
   progressValue: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.charcoal,
   },
   note: {
     marginTop: spacing.md,
     fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 16,
+    lineHeight: 24,
     color: colors.slate,
   },
   actions: {

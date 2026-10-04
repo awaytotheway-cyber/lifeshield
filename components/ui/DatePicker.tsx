@@ -50,7 +50,7 @@ export function DatePicker({
           borderColor: colors.border,
           backgroundColor: colors.white,
           color: colors.charcoal,
-          fontSize: 15,
+          fontSize: 17,
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       />
@@ -70,27 +70,27 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: 0.2,
     color: colors.slate,
     marginBottom: 8,
   },
   hint: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
     marginBottom: 8,
   },
   warn: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
   error: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
 });

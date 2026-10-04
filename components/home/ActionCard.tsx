@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: Typography.semibold,
-    fontSize: 16,
+    fontSize: 18,
     color: Colors.charcoal,
   },
   subtitle: {

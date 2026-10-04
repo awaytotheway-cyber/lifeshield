@@ -124,14 +124,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     letterSpacing: 0.2,
     color: colors.slate,
     marginBottom: 8,
   },
   hint: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.slate,
     marginBottom: 8,
   },
@@ -148,26 +148,26 @@ const styles = StyleSheet.create({
   },
   value: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
     flex: 1,
   },
   placeholder: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.mist,
     flex: 1,
   },
   warn: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
   error: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
   backdrop: {
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
   },
   doneText: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.midTeal,
   },
 });

@@ -317,8 +317,8 @@ export default function StoreScreen() {
 const styles = StyleSheet.create({
   body: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
     textAlign: "center",
     marginBottom: 8,
@@ -326,14 +326,14 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
     textAlign: "center",
   },
   ok: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.sage,
     textAlign: "center",
   },
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.charcoal,
     textTransform: "capitalize",
   },

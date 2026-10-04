@@ -59,7 +59,7 @@ export function SpecimenIcon({
     strokeWidth: sw,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
-    fill: "none",
+    fill: "none" as const,
   };
 
   return (

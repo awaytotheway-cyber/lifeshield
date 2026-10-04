@@ -45,7 +45,7 @@ export function TimePicker({
           borderColor: "#A8C5A0",
           backgroundColor: "#FFFFFF",
           color: "#2D3436",
-          fontSize: 16,
+          fontSize: 18,
         }}
       />
       {isHHmm(clockValue) ? (

@@ -166,15 +166,15 @@ const styles = StyleSheet.create({
   sub: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   note: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.slate,
   },
   questions: {
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     textAlign: "center",
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
     color: colors.coral,
   },
   cta: {

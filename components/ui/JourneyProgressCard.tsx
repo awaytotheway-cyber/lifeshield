@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
   },
   title: {
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
   },
   chip: {
     marginTop: 8,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.primaryBlue,
   },
 });

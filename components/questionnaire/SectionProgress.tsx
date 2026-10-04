@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
   },
   status: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 13,
+    fontSize: 15,
   },
   done: {
     color: colors.sage,

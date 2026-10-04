@@ -270,8 +270,8 @@ const styles = StyleSheet.create({
   },
   summaryHeading: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    lineHeight: 22,
+    fontSize: 19,
+    lineHeight: 24,
     color: colors.deepTeal,
     marginBottom: spacing.sm,
   },
@@ -280,14 +280,14 @@ const styles = StyleSheet.create({
   },
   blockTitle: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.charcoal,
     marginBottom: 4,
   },
   blockBody: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   checkCard: {
@@ -314,8 +314,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: 12,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     color: colors.charcoal,
   },
   checkEmpty: {
@@ -325,8 +325,8 @@ const styles = StyleSheet.create({
   error: {
     textAlign: "center",
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: colors.coral,
   },
   backdrop: {
@@ -339,14 +339,14 @@ const styles = StyleSheet.create({
   },
   sheetTitle: {
     fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.deepTeal,
   },
   sheetBody: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.charcoal,
   },
   sheetRow: {
@@ -361,12 +361,12 @@ const styles = StyleSheet.create({
   },
   sheetClose: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.coral,
   },
   sheetBack: {
     fontFamily: fontFamily.body,
-    fontSize: 15,
+    fontSize: 17,
     color: colors.midTeal,
   },
 });

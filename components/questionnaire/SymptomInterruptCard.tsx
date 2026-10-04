@@ -60,14 +60,14 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
+    fontSize: 19,
     color: colors.coral,
   },
   body: {
     marginTop: 12,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.charcoal,
   },
 });

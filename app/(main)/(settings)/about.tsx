@@ -81,8 +81,8 @@ const styles = StyleSheet.create({
   body: {
     marginTop: 8,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 17,
+    lineHeight: 26,
     color: colors.slate,
   },
   card: {
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
+    fontSize: 14,
     color: colors.slate,
   },
   gap: {
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
   value: {
     marginTop: 4,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 17,
+    lineHeight: 24,
     color: colors.charcoal,
   },
 });
