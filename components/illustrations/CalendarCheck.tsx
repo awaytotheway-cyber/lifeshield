@@ -35,19 +35,19 @@ export function CalendarCheck({
         width="68"
         height="60"
         rx="10"
-        stroke={colors.deepTeal}
+        stroke={colors.primaryBlue}
         strokeWidth="2"
       />
 
       {/* Header bar */}
       <Path
         d="M16 22c0-2.2 1.8-4 4-4h60c2.2 0 4 1.8 4 4v16H16V22z"
-        fill={colors.midTeal}
+        fill={colors.skyBlue}
       />
 
       {/* Binding rings */}
-      <Rect x="32" y="14" width="5" height="14" rx="2.5" fill={colors.deepTeal} />
-      <Rect x="63" y="14" width="5" height="14" rx="2.5" fill={colors.deepTeal} />
+      <Rect x="32" y="14" width="5" height="14" rx="2.5" fill={colors.primaryBlue} />
+      <Rect x="63" y="14" width="5" height="14" rx="2.5" fill={colors.primaryBlue} />
 
       {/* Quiet grid — planned empty, not missing */}
       <Path
@@ -58,10 +58,10 @@ export function CalendarCheck({
       />
 
       {/* Check — completion, not urgency */}
-      <Circle cx="62" cy="68" r="14" fill={colors.sageLight} />
+      <Circle cx="62" cy="68" r="14" fill={colors.riskLowLight} />
       <Path
         d="M54 68l5.5 5.5L72 61"
-        stroke={colors.sage}
+        stroke={colors.riskLow}
         strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"

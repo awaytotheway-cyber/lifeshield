@@ -94,9 +94,9 @@ component.** The three sources of truth must stay in sync:
 ### Risk semantics — fills, icons, dots and bars
 | Token | Hex | Usage |
 |---|---|---|
-| `riskLow` / `sage` | `#34C759` | Success, low risk, positive feedback |
-| `riskModerate` / `amber` | `#FFCC00` | Warning, moderate risk, attention needed |
-| `riskHigh` / `coral` | `#FF3B30` | Error, high risk, destructive actions |
+| `riskLow` | `#34C759` | Success, low risk, positive feedback |
+| `riskModerate` | `#FFCC00` | Warning, moderate risk, attention needed |
+| `riskHigh` | `#FF3B30` | Error, high risk, destructive actions |
 
 ### Risk semantics — text
 **Any status spelled out in words uses these, not the vivid tokens above.**
@@ -107,8 +107,8 @@ component.** The three sources of truth must stay in sync:
 | `riskHighText` | `#D70015` | 5.38:1 (Apple's accessible systemRed) |
 
 Why: the system colours are tuned for fills, where WCAG asks only 3:1. As
-text they fail AA outright — `riskModerate` on `amberLight` is **1.42:1**,
-`riskLow` on `sageLight` is **2.02:1**, `riskHigh` on white is **3.55:1**
+text they fail AA outright — `riskModerate` on its own tint is **1.42:1**,
+`riskLow` on its tint is **2.02:1**, `riskHigh` on white is **3.55:1**
 against a 4.5:1 requirement. `scripts/design-audit.mjs` enforces this split.
 
 ### Neutrals
@@ -124,9 +124,15 @@ against a 4.5:1 requirement. `scripts/design-audit.mjs` enforces this split.
 ### Tinted backgrounds
 | Token | Hex |
 |---|---|
-| `sageLight` | `#E8F8ED` |
-| `amberLight` | `#FFF8DB` |
-| `coralLight` | `#FFE5E3` |
+| `riskLowLight` | `#E8F8ED` |
+| `riskModerateLight` | `#FFF8DB` |
+| `riskHighLight` | `#FFE5E3` |
+
+**There is one name per colour.** The old `sage`, `coral`, `amber`, `teal`,
+`cream`, `deepTeal` and `midTeal` aliases have been removed: after two palette
+migrations they no longer described their own values (`deepTeal` was a blue,
+`cream` was `iceBlue`, and `sage` had become the vivid iOS green). The audit
+fails on any of them.
 
 ### Pressed states
 | Token | Hex |
@@ -284,10 +290,10 @@ default field reads as a success state.
 
 ### Status chips
 ```
-Low       bg-sageLight   + deepNavy label + riskLow icon/dot
-Moderate  bg-amberLight  + deepNavy label + riskModerate icon/dot
-High      bg-coralLight  + deepNavy label + riskHigh icon/dot
-Info      bg-iceBlue     + primaryBlue label
+Low       bg-riskLowLight      + deepNavy label + riskLow dot
+Moderate  bg-riskModerateLight + deepNavy label + riskModerate dot
+High      bg-riskHighLight     + deepNavy label + riskHigh dot
+Info      bg-iceBlue           + primaryBlue label
 
 rounded-full, px-3 py-1, chip type token, min-w-[72px], centred text.
 
@@ -486,9 +492,9 @@ Measured, not estimated. Anything marked FAIL must not carry text.
 |---|---|---|
 | `deepNavy` on `white` | 16.07:1 | PASS |
 | `deepNavy` on `iceBlue` | 14.17:1 | PASS |
-| `deepNavy` on `amberLight` | 15.07:1 | PASS |
-| `deepNavy` on `sageLight` | 14.60:1 | PASS |
-| `deepNavy` on `coralLight` | 13.44:1 | PASS |
+| `deepNavy` on `riskModerateLight` | 15.07:1 | PASS |
+| `deepNavy` on `riskLowLight` | 14.60:1 | PASS |
+| `deepNavy` on `riskHighLight` | 13.44:1 | PASS |
 | `white` on `primaryBlue` | 5.50:1 | PASS |
 | `white` on `deepNavy` | 16.07:1 | PASS |
 | `slate` on `white` | 7.53:1 | PASS |
@@ -501,9 +507,9 @@ Measured, not estimated. Anything marked FAIL must not carry text.
 | `riskHigh` on `white` | 3.55:1 | **large text only** |
 | `mist` on `white` | 2.50:1 | **FAIL — placeholder/disabled only** |
 | `skyBlue` on `white` | 2.44:1 | **FAIL — decorative only** |
-| `riskHigh` on `coralLight` | 2.97:1 | **FAIL** |
-| `riskLow` on `sageLight` | 2.02:1 | **FAIL** |
-| `riskModerate` on `amberLight` | 1.42:1 | **FAIL** |
+| `riskHigh` on `riskHighLight` | 2.97:1 | **FAIL** |
+| `riskLow` on `riskLowLight` | 2.02:1 | **FAIL** |
+| `riskModerate` on `riskModerateLight` | 1.42:1 | **FAIL** |
 
 ---
 

@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fontFamily.bodySemi,
     fontSize: 20,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   cardGap: {
     marginBottom: 12,

@@ -27,14 +27,14 @@ export function MolecularStructure({
       height={height}
       viewBox="0 0 100 100"
     >
-      <Circle cx={50} cy={50} r={42} fill={colors.sageLight} />
+      <Circle cx={50} cy={50} r={42} fill={colors.riskLowLight} />
 
       <Line
         x1={50}
         y1={50}
         x2={28}
         y2={28}
-        stroke={colors.midTeal}
+        stroke={colors.skyBlue}
         strokeWidth={3}
         strokeLinecap="round"
       />
@@ -43,7 +43,7 @@ export function MolecularStructure({
         y1={50}
         x2={74}
         y2={30}
-        stroke={colors.midTeal}
+        stroke={colors.skyBlue}
         strokeWidth={3}
         strokeLinecap="round"
       />
@@ -52,7 +52,7 @@ export function MolecularStructure({
         y1={50}
         x2={26}
         y2={68}
-        stroke={colors.midTeal}
+        stroke={colors.skyBlue}
         strokeWidth={3}
         strokeLinecap="round"
       />
@@ -61,7 +61,7 @@ export function MolecularStructure({
         y1={50}
         x2={72}
         y2={72}
-        stroke={colors.midTeal}
+        stroke={colors.skyBlue}
         strokeWidth={3}
         strokeLinecap="round"
       />
@@ -93,14 +93,14 @@ export function MolecularStructure({
         strokeLinecap="round"
       />
 
-      <Circle cx={50} cy={50} r={9} fill={colors.deepTeal} />
-      <Circle cx={28} cy={28} r={7} fill={colors.sage} />
-      <Circle cx={74} cy={30} r={7} fill={colors.midTeal} />
-      <Circle cx={26} cy={68} r={7} fill={colors.sage} />
-      <Circle cx={72} cy={72} r={7} fill={colors.amber} />
+      <Circle cx={50} cy={50} r={9} fill={colors.primaryBlue} />
+      <Circle cx={28} cy={28} r={7} fill={colors.riskLow} />
+      <Circle cx={74} cy={30} r={7} fill={colors.skyBlue} />
+      <Circle cx={26} cy={68} r={7} fill={colors.riskLow} />
+      <Circle cx={72} cy={72} r={7} fill={colors.riskModerate} />
       <Circle cx={16} cy={42} r={4.5} fill={colors.lightTeal} />
       <Circle cx={86} cy={44} r={4.5} fill={colors.lightTeal} />
-      <Circle cx={84} cy={60} r={4.5} fill={colors.cream} />
+      <Circle cx={84} cy={60} r={4.5} fill={colors.iceBlue} />
       <Circle cx={50} cy={50} r={3} fill={colors.white} />
     </Svg>
     </IllustrationFrame>

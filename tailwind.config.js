@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 // PRESCOPE brand colours — "Blue Glass" palette.
+// One name per colour: the old sage/coral/amber/teal/cream aliases are gone,
+// because after two palette migrations they no longer described their values.
 // Keep in sync with lib/design-tokens.ts and global.css.
 // NativeWind v5 also repeats these in global.css (@theme) because v5 is CSS-first.
 //
@@ -37,19 +39,12 @@ module.exports = {
         border: "#D4E0F5",
 
         // ——— Tinted backgrounds for chips and alert boxes ———
-        sageLight: "#E8F8ED",
-        amberLight: "#FFF8DB",
-        coralLight: "#FFE5E3",
+        riskLowLight: "#E8F8ED",
+        riskModerateLight: "#FFF8DB",
+        riskHighLight: "#FFE5E3",
         lightTeal: "#D6E4FF",
 
-        // ——— Legacy aliases → Blue Glass / iOS risk ———
-        sage: "#34C759",
-        amber: "#FFCC00",
-        coral: "#FF3B30",
-        deepTeal: "#2B5FE0",
-        midTeal: "#6FA8F5",
-        teal: "#2B5FE0",
-        cream: "#EAF1FF",
+        // ——— Highlight accent — premium / highlights ———
         purple: "#AF52DE",
       },
     },

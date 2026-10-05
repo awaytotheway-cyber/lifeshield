@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontFamily: fontFamily.bodySemi,
     fontSize: 15,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   desc: {
     marginTop: 4,
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     minHeight: tapTarget,
     paddingHorizontal: 20,
     borderRadius: radius.chip,
-    backgroundColor: colors.deepTeal,
+    backgroundColor: colors.primaryBlue,
     alignItems: "center",
     justifyContent: "center",
     minWidth: tapTarget,

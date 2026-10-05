@@ -30,14 +30,14 @@ export function PathwayBHandoff({
       viewBox="0 0 160 140"
     >
       {/* Warm wash — coral-light so it feels human, not a red stop sign */}
-      <Ellipse cx="78" cy="78" rx="72" ry="56" fill={colors.coralLight} />
+      <Ellipse cx="78" cy="78" rx="72" ry="56" fill={colors.riskHighLight} />
       <Circle cx="118" cy="52" r="28" fill={colors.lightTeal} />
 
       {/* Ground path leading to the door */}
       <Path
         d="M18 118 C48 112 88 116 122 108"
         fill="none"
-        stroke={colors.midTeal}
+        stroke={colors.skyBlue}
         strokeWidth="3"
         strokeLinecap="round"
       />
@@ -48,12 +48,12 @@ export function PathwayBHandoff({
            L118 52
            C118 36 146 36 146 52
            L146 108 Z"
-        fill={colors.cream}
-        stroke={colors.deepTeal}
+        fill={colors.iceBlue}
+        stroke={colors.primaryBlue}
         strokeWidth="2.5"
         strokeLinejoin="round"
       />
-      <Rect x="128" y="70" width="8" height="8" rx="2" fill={colors.sage} />
+      <Rect x="128" y="70" width="8" height="8" rx="2" fill={colors.riskLow} />
 
       {/* Abstract figure walking toward the door — no face, no anatomy */}
       <Circle
@@ -61,7 +61,7 @@ export function PathwayBHandoff({
         cy="58"
         r="9"
         fill={colors.white}
-        stroke={colors.deepTeal}
+        stroke={colors.primaryBlue}
         strokeWidth="2.2"
       />
       <Path
@@ -73,7 +73,7 @@ export function PathwayBHandoff({
            C92 78 90 72 86 70
            C82 68 74 68 70 70 Z"
         fill={colors.white}
-        stroke={colors.deepTeal}
+        stroke={colors.primaryBlue}
         strokeWidth="2.2"
         strokeLinejoin="round"
       />
@@ -81,7 +81,7 @@ export function PathwayBHandoff({
       <Path
         d="M88 90 C96 88 102 92 108 96"
         fill="none"
-        stroke={colors.deepTeal}
+        stroke={colors.primaryBlue}
         strokeWidth="3.2"
         strokeLinecap="round"
       />
@@ -95,8 +95,8 @@ export function PathwayBHandoff({
            C72 66 84 70 82 82
            C92 86 94 100 84 110
            C68 124 28 128 10 118 Z"
-        fill={colors.sageLight}
-        stroke={colors.sage}
+        fill={colors.riskLowLight}
+        stroke={colors.riskLow}
         strokeWidth="2.2"
         strokeLinejoin="round"
       />

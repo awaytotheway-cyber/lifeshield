@@ -32,10 +32,10 @@ import { useTriageStore } from "@/stores/triage-store";
 
 function TimelineRow({ step }: { step: OrderTimelineStep }) {
   const dotClass = step.current
-    ? "bg-coral"
+    ? "bg-primaryBlue"
     : step.done
-      ? "bg-teal"
-      : "bg-sage";
+      ? "bg-riskLow"
+      : "bg-mist";
   const labelColor = step.current ? colors.riskHighText : colors.charcoal;
 
   return (
@@ -184,7 +184,7 @@ export default function OrderDetailScreen() {
             ))}
           </View>
 
-          <View className="mt-6 rounded-2xl bg-cream px-4 py-3">
+          <View className="mt-6 rounded-2xl bg-iceBlue px-4 py-3">
             <BodySmall style={{ color: colors.charcoal }}>
               {COPY.orderPaymentLabel}: {order.payment_status}
             </BodySmall>

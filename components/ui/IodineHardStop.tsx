@@ -18,7 +18,7 @@ export function IodineHardStop({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.amber} />
+        <Feather name="alert-triangle" size={20} color={colors.riskModerate} />
         <Text style={styles.title}>{COPY.iodineHardStopTitle}</Text>
       </View>
       <Text style={styles.body}>{reason}</Text>
@@ -28,9 +28,9 @@ export function IodineHardStop({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.amberLight,
+    backgroundColor: colors.riskModerateLight,
     borderWidth: 1,
-    borderColor: colors.amber,
+    borderColor: colors.riskModerate,
     borderRadius: radius.alert,
     padding: spacing.base,
   },

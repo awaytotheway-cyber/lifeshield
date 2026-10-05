@@ -65,7 +65,7 @@ export function NumberInput({
           onPress={() => nudge(-1)}
           style={styles.stepBtn}
         >
-          <Feather name="minus" size={18} color={colors.deepTeal} />
+          <Feather name="minus" size={18} color={colors.primaryBlue} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -73,7 +73,7 @@ export function NumberInput({
           onPress={() => nudge(1)}
           style={styles.stepBtn}
         >
-          <Feather name="plus" size={18} color={colors.deepTeal} />
+          <Feather name="plus" size={18} color={colors.primaryBlue} />
         </Pressable>
       </View>
     </View>

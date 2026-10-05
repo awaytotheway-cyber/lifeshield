@@ -25,7 +25,7 @@ export function SymptomInterruptCard({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.coral} />
+        <Feather name="alert-triangle" size={20} color={colors.riskHigh} />
         <Text style={styles.title}>{COPY.symptomInterruptTitle}</Text>
       </View>
       <Text style={styles.body}>{question}</Text>
@@ -47,10 +47,10 @@ export function SymptomInterruptCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.coralLight,
+    backgroundColor: colors.riskHighLight,
     borderRadius: radius.alert,
     borderLeftWidth: 2,
-    borderLeftColor: colors.coral,
+    borderLeftColor: colors.riskHigh,
     padding: spacing.base,
   },
   header: {

@@ -35,33 +35,33 @@ export function FollowUpCalendar({
         width="80"
         height="58"
         rx="10"
-        stroke={colors.deepTeal}
+        stroke={colors.primaryBlue}
         strokeWidth="2"
       />
 
       <Path
         d="M10 18c0-2.2 1.8-4 4-4h72c2.2 0 4 1.8 4 4v14H10V18z"
-        fill={colors.midTeal}
+        fill={colors.skyBlue}
       />
 
-      <Rect x="28" y="8" width="4.5" height="12" rx="2.25" fill={colors.deepTeal} />
-      <Rect x="67.5" y="8" width="4.5" height="12" rx="2.25" fill={colors.deepTeal} />
+      <Rect x="28" y="8" width="4.5" height="12" rx="2.25" fill={colors.primaryBlue} />
+      <Rect x="67.5" y="8" width="4.5" height="12" rx="2.25" fill={colors.primaryBlue} />
 
       {/* Soft date cells */}
-      <Rect x="20" y="40" width="12" height="10" rx="3" fill={colors.cream} />
-      <Rect x="36" y="40" width="12" height="10" rx="3" fill={colors.cream} />
-      <Rect x="52" y="40" width="12" height="10" rx="3" fill={colors.cream} />
-      <Rect x="68" y="40" width="12" height="10" rx="3" fill={colors.cream} />
-      <Rect x="20" y="54" width="12" height="10" rx="3" fill={colors.cream} />
-      <Rect x="36" y="54" width="12" height="10" rx="3" fill={colors.cream} />
-      <Rect x="52" y="54" width="12" height="10" rx="3" fill={colors.cream} />
-      <Rect x="68" y="54" width="12" height="10" rx="3" fill={colors.cream} />
+      <Rect x="20" y="40" width="12" height="10" rx="3" fill={colors.iceBlue} />
+      <Rect x="36" y="40" width="12" height="10" rx="3" fill={colors.iceBlue} />
+      <Rect x="52" y="40" width="12" height="10" rx="3" fill={colors.iceBlue} />
+      <Rect x="68" y="40" width="12" height="10" rx="3" fill={colors.iceBlue} />
+      <Rect x="20" y="54" width="12" height="10" rx="3" fill={colors.iceBlue} />
+      <Rect x="36" y="54" width="12" height="10" rx="3" fill={colors.iceBlue} />
+      <Rect x="52" y="54" width="12" height="10" rx="3" fill={colors.iceBlue} />
+      <Rect x="68" y="54" width="12" height="10" rx="3" fill={colors.iceBlue} />
 
       {/* Reminder dots — sage / teal / amber, never coral */}
-      <Circle cx="42" cy="48" r="2.2" fill={colors.sage} />
-      <Circle cx="74" cy="48" r="2.2" fill={colors.midTeal} />
-      <Circle cx="26" cy="62" r="2.2" fill={colors.amber} />
-      <Circle cx="58" cy="62" r="2.2" fill={colors.sage} />
+      <Circle cx="42" cy="48" r="2.2" fill={colors.riskLow} />
+      <Circle cx="74" cy="48" r="2.2" fill={colors.skyBlue} />
+      <Circle cx="26" cy="62" r="2.2" fill={colors.riskModerate} />
+      <Circle cx="58" cy="62" r="2.2" fill={colors.riskLow} />
     </Svg>
     </IllustrationFrame>
   );

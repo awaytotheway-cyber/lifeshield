@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   infoBadge: {
     marginTop: spacing.sm,
-    backgroundColor: colors.amberLight,
+    backgroundColor: colors.riskModerateLight,
     borderRadius: radius.alert,
     padding: spacing.mdSm,
   },

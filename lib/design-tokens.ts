@@ -63,19 +63,8 @@ export const colors = {
   /** Blue-tinted shadow — never plain black. */
   shadow: "rgba(43,95,224,0.08)",
 
-  // ——— Legacy aliases (older screens still reference these names) ———
-  deepTeal: "#2B5FE0",
-  midTeal: "#6FA8F5",
   /** Hover / pressed states, subtle highlights. */
   lightTeal: "#D6E4FF",
-  sage: "#34C759",
-  sageLight: "#E8F8ED",
-  coral: "#FF3B30",
-  coralLight: "#FFE5E3",
-  amber: "#FFCC00",
-  amberLight: "#FFF8DB",
-  cream: "#EAF1FF",
-  teal: "#2B5FE0",
   /** Highlight accent — premium / highlights. */
   purple: "#AF52DE",
 

@@ -138,7 +138,7 @@ export default function PlanItemScreen() {
           </BodyText>
 
           {row.clinician_interaction_check ? (
-            <View className="mt-3 min-w-[72px] self-start rounded-full bg-amberLight px-3 py-1">
+            <View className="mt-3 min-w-[72px] self-start rounded-full bg-riskModerateLight px-3 py-1">
               <BodySmall style={{ color: colors.charcoal }}>
                 {COPY.planNeedsCheck}
               </BodySmall>

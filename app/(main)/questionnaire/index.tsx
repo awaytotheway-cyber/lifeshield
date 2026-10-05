@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     lineHeight: 40,
     letterSpacing: -0.6,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
     textAlign: "left",
   },
   body: {
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: 4,
-    backgroundColor: colors.sage,
+    backgroundColor: colors.riskLow,
   },
   error: {
     marginTop: 12,

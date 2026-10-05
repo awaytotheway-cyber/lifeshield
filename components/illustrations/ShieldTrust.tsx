@@ -30,12 +30,12 @@ export function ShieldTrust({ width = 120, height = 120 }: ShieldTrustProps) {
       <Circle cx="64" cy="62" r="46" fill={colors.lightTeal} />
 
       {/* Data dots — small markers drifting toward the shield */}
-      <Circle cx="14" cy="28" r="3.2" fill={colors.midTeal} />
-      <Circle cx="26" cy="18" r="2.4" fill={colors.sage} />
-      <Circle cx="22" cy="40" r="2" fill={colors.amber} />
-      <Circle cx="36" cy="30" r="2.8" fill={colors.deepTeal} />
-      <Circle cx="32" cy="50" r="1.8" fill={colors.midTeal} />
-      <Circle cx="44" cy="20" r="1.6" fill={colors.sage} />
+      <Circle cx="14" cy="28" r="3.2" fill={colors.skyBlue} />
+      <Circle cx="26" cy="18" r="2.4" fill={colors.riskLow} />
+      <Circle cx="22" cy="40" r="2" fill={colors.riskModerate} />
+      <Circle cx="36" cy="30" r="2.8" fill={colors.primaryBlue} />
+      <Circle cx="32" cy="50" r="1.8" fill={colors.skyBlue} />
+      <Circle cx="44" cy="20" r="1.6" fill={colors.riskLow} />
 
       {/* Shield body — classic but rounded, filled cream for warmth */}
       <Path
@@ -44,8 +44,8 @@ export function ShieldTrust({ width = 120, height = 120 }: ShieldTrustProps) {
            C96 58 88 86 60 104
            C32 86 24 58 24 30
            Z"
-        fill={colors.cream}
-        stroke={colors.deepTeal}
+        fill={colors.iceBlue}
+        stroke={colors.primaryBlue}
         strokeWidth="2.6"
         strokeLinejoin="round"
       />
@@ -57,14 +57,14 @@ export function ShieldTrust({ width = 120, height = 120 }: ShieldTrustProps) {
            C86 58 80 80 60 94
            C40 80 34 58 34 36
            Z"
-        fill={colors.sageLight}
+        fill={colors.riskLowLight}
       />
 
       {/* Gentle check — sage success, not a harsh tick */}
       <Path
         d="M46 62 L56 74 L76 50"
         fill="none"
-        stroke={colors.sage}
+        stroke={colors.riskLow}
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"

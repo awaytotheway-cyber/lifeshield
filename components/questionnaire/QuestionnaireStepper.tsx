@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: 4,
-    backgroundColor: colors.sage,
+    backgroundColor: colors.riskLow,
     borderRadius: 2,
   },
 });

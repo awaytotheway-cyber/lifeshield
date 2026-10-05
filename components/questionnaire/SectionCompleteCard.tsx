@@ -61,7 +61,7 @@ export function SectionCompleteCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.sageLight,
+    backgroundColor: colors.riskLowLight,
     borderRadius: radius.card,
     padding: spacing.md,
     alignItems: "center",

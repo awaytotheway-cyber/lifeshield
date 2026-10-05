@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 8,
     borderRadius: radius.alert,
-    backgroundColor: colors.amberLight,
+    backgroundColor: colors.riskModerateLight,
   },
   celebrateText: {
     fontFamily: fontFamily.body,

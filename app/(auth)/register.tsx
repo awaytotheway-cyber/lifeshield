@@ -184,7 +184,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   brand: {
     ...typography.display,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   title: {
     marginTop: 12,

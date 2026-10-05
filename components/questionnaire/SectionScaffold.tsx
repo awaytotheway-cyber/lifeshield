@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   error: {
     fontFamily: fontFamily.body,

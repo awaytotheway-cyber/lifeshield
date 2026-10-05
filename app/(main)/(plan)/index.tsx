@@ -260,7 +260,7 @@ export default function PlanScreen() {
 const styles = StyleSheet.create({
   banner: {
     marginTop: 8,
-    backgroundColor: colors.sageLight,
+    backgroundColor: colors.riskLowLight,
     borderRadius: radius.alert,
     padding: spacing.base,
   },
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fontFamily.bodySemi,
     fontSize: 20,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   cardGap: {
     marginBottom: 12,

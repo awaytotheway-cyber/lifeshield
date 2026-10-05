@@ -121,11 +121,11 @@ const styles = StyleSheet.create({
     top: 6,
   },
   inputFocus: {
-    borderColor: colors.midTeal,
+    borderColor: colors.skyBlue,
     ...shadows.focusGlow,
   },
   inputError: {
-    borderColor: colors.coral,
+    borderColor: colors.riskHigh,
   },
   error: {
     marginTop: 8,

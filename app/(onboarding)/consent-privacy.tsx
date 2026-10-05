@@ -45,7 +45,7 @@ function CheckCard({ label, checked, onToggle }: CheckCardProps) {
     >
       <Text style={styles.checkLabel}>{label}</Text>
       {checked ? (
-        <Feather name="check" size={20} color={colors.midTeal} />
+        <Feather name="check" size={20} color={colors.skyBlue} />
       ) : (
         <View style={styles.checkEmpty} />
       )}
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h1,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
     textAlign: "center",
     marginBottom: spacing.base,
   },
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
     lineHeight: 22,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
     marginBottom: spacing.sm,
   },
   block: {
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   checkOn: {
     backgroundColor: colors.lightTeal,
     borderWidth: 2,
-    borderColor: colors.midTeal,
+    borderColor: colors.skyBlue,
   },
   checkLabel: {
     flex: 1,
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   sheetTitle: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   sheetBody: {
     marginTop: 12,

@@ -29,49 +29,49 @@ export function DnaHelix({ width = 100, height = 100 }: DnaHelixProps) {
       <Path
         d="M36 18 C52 30, 52 42, 36 50 C20 58, 20 70, 36 82"
         fill="none"
-        stroke={colors.deepTeal}
+        stroke={colors.primaryBlue}
         strokeWidth={3.5}
         strokeLinecap="round"
       />
       <Path
         d="M64 18 C48 30, 48 42, 64 50 C80 58, 80 70, 64 82"
         fill="none"
-        stroke={colors.midTeal}
+        stroke={colors.skyBlue}
         strokeWidth={3.5}
         strokeLinecap="round"
       />
 
       <Path
         d="M40 28 H60"
-        stroke={colors.sage}
+        stroke={colors.riskLow}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
       <Path
         d="M44 40 H56"
-        stroke={colors.sage}
+        stroke={colors.riskLow}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
       <Path
         d="M40 60 H60"
-        stroke={colors.sage}
+        stroke={colors.riskLow}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
       <Path
         d="M44 72 H56"
-        stroke={colors.sage}
+        stroke={colors.riskLow}
         strokeWidth={2.5}
         strokeLinecap="round"
       />
 
-      <Circle cx={36} cy={18} r={4} fill={colors.deepTeal} />
-      <Circle cx={64} cy={18} r={4} fill={colors.midTeal} />
-      <Circle cx={36} cy={50} r={4} fill={colors.deepTeal} />
-      <Circle cx={64} cy={50} r={4} fill={colors.midTeal} />
-      <Circle cx={36} cy={82} r={4} fill={colors.deepTeal} />
-      <Circle cx={64} cy={82} r={4} fill={colors.midTeal} />
+      <Circle cx={36} cy={18} r={4} fill={colors.primaryBlue} />
+      <Circle cx={64} cy={18} r={4} fill={colors.skyBlue} />
+      <Circle cx={36} cy={50} r={4} fill={colors.primaryBlue} />
+      <Circle cx={64} cy={50} r={4} fill={colors.skyBlue} />
+      <Circle cx={36} cy={82} r={4} fill={colors.primaryBlue} />
+      <Circle cx={64} cy={82} r={4} fill={colors.skyBlue} />
     </Svg>
     </IllustrationFrame>
   );

@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   staleCard: {
     marginTop: spacing.base,
     padding: spacing.base,
-    backgroundColor: colors.amberLight,
+    backgroundColor: colors.riskModerateLight,
     borderRadius: radius.card,
   },
   staleTitle: {

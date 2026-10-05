@@ -61,7 +61,7 @@ export function ClinicalTerm({
           onPress={() => setSheetOpen(true)}
           style={styles.infoHit}
         >
-          <Feather name="info" size={16} color={colors.midTeal} />
+          <Feather name="info" size={16} color={colors.skyBlue} />
         </Pressable>
       </View>
       <Text style={styles.explain}>{explanation || "plain explanation coming soon"}</Text>

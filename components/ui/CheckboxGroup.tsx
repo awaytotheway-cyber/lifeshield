@@ -55,7 +55,7 @@ export function CheckboxGroup({
             >
               <Text style={styles.optionLabel}>{option.label}</Text>
               {selected ? (
-                <Feather name="check" size={20} color={colors.midTeal} />
+                <Feather name="check" size={20} color={colors.skyBlue} />
               ) : null}
             </Pressable>
           );
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   cardSelected: {
     backgroundColor: colors.lightTeal,
     borderWidth: 2,
-    borderColor: colors.midTeal,
+    borderColor: colors.skyBlue,
   },
   optionLabel: {
     flex: 1,

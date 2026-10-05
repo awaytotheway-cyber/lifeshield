@@ -62,7 +62,7 @@ export function SymptomInterrupt({
         style={{
           fontFamily: fontFamily.display,
           fontSize: 26,
-          color: colors.deepTeal,
+          color: colors.primaryBlue,
         }}
       >
         {COPY.interruptTitle}

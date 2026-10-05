@@ -69,7 +69,7 @@ export function RadioGroup({
                 <Feather
                   name="check"
                   size={20}
-                  color={dangerSelected ? colors.coral : colors.midTeal}
+                  color={dangerSelected ? colors.riskHigh : colors.skyBlue}
                 />
               ) : null}
             </Pressable>
@@ -105,12 +105,12 @@ const styles = StyleSheet.create({
   cardSelected: {
     backgroundColor: colors.lightTeal,
     borderWidth: 2,
-    borderColor: colors.midTeal,
+    borderColor: colors.skyBlue,
   },
   cardDanger: {
-    backgroundColor: colors.coralLight,
+    backgroundColor: colors.riskHighLight,
     borderWidth: 2,
-    borderColor: colors.coral,
+    borderColor: colors.riskHigh,
   },
   cardText: {
     flex: 1,

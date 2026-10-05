@@ -28,7 +28,7 @@ type FallbackProps = {
  */
 function ErrorFallback({ onRetry, hint }: FallbackProps) {
   return (
-    <View className="flex-1 items-center justify-center bg-cream px-6">
+    <View className="flex-1 items-center justify-center bg-iceBlue px-6">
       <GlassSurface intensity="card" style={{ padding: 24, width: "100%" }}>
         <SectionTitle centered>
           {COPY.errorBoundaryTitle}

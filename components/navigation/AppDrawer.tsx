@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.amber,
+    backgroundColor: colors.riskModerate,
   },
   badgeText: {
     fontFamily: fontFamily.bodySemi,

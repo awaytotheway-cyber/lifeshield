@@ -26,7 +26,7 @@ export function InsightLens({ width = 120, height = 100 }: InsightLensProps) {
       fill="none"
     >
       {/* Soft ground so the mark sits on cream, not empty space */}
-      <Circle cx="46" cy="44" r="34" fill={colors.cream} />
+      <Circle cx="46" cy="44" r="34" fill={colors.iceBlue} />
 
       {/* Lens glass */}
       <Circle cx="46" cy="44" r="26" fill={colors.lightTeal} />
@@ -34,7 +34,7 @@ export function InsightLens({ width = 120, height = 100 }: InsightLensProps) {
         cx="46"
         cy="44"
         r="26"
-        stroke={colors.deepTeal}
+        stroke={colors.primaryBlue}
         strokeWidth="2.4"
       />
 
@@ -47,10 +47,10 @@ export function InsightLens({ width = 120, height = 100 }: InsightLensProps) {
       />
 
       {/* Observation dots (sage / teal / amber — curiosity, not risk) */}
-      <Circle cx="38" cy="40" r="4.2" fill={colors.sage} />
-      <Circle cx="52" cy="38" r="3.4" fill={colors.midTeal} />
-      <Circle cx="48" cy="50" r="3.8" fill={colors.amber} />
-      <Circle cx="36" cy="52" r="2.4" fill={colors.deepTeal} />
+      <Circle cx="38" cy="40" r="4.2" fill={colors.riskLow} />
+      <Circle cx="52" cy="38" r="3.4" fill={colors.skyBlue} />
+      <Circle cx="48" cy="50" r="3.8" fill={colors.riskModerate} />
+      <Circle cx="36" cy="52" r="2.4" fill={colors.primaryBlue} />
 
       {/* Handle */}
       <G>
@@ -59,7 +59,7 @@ export function InsightLens({ width = 120, height = 100 }: InsightLensProps) {
           y1="62"
           x2="92"
           y2="88"
-          stroke={colors.deepTeal}
+          stroke={colors.primaryBlue}
           strokeWidth="5"
           strokeLinecap="round"
         />
@@ -68,7 +68,7 @@ export function InsightLens({ width = 120, height = 100 }: InsightLensProps) {
           y1="64"
           x2="90"
           y2="86"
-          stroke={colors.midTeal}
+          stroke={colors.skyBlue}
           strokeWidth="1.6"
           strokeLinecap="round"
         />

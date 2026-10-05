@@ -34,7 +34,7 @@ export function SectionProgress({
             <View
               style={[
                 styles.dot,
-                { backgroundColor: done ? colors.sage : colors.border },
+                { backgroundColor: done ? colors.riskLow : colors.border },
               ]}
             />
             <View style={styles.text}>
@@ -43,7 +43,7 @@ export function SectionProgress({
                 {done ? COPY.hubStatusDone : COPY.hubStatusNotStarted}
               </Text>
             </View>
-            <Feather name="chevron-right" size={20} color={colors.midTeal} />
+            <Feather name="chevron-right" size={20} color={colors.skyBlue} />
             </GlassSurface>
           </Pressable>
         );

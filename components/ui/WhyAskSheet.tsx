@@ -29,7 +29,7 @@ export function WhyAskButton({
         onPress={() => setOpen(true)}
         style={styles.infoHit}
       >
-        <Feather name="info" size={16} color={colors.midTeal} />
+        <Feather name="info" size={16} color={colors.skyBlue} />
       </Pressable>
       <Modal
         visible={open}
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
   },
   body: {
     marginTop: 12,

@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.cream,
+    backgroundColor: colors.iceBlue,
     paddingHorizontal: 20,
   },
   panel: {
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     ...typography.display,
     fontSize: 36,
     lineHeight: 42,
-    color: colors.deepTeal,
+    color: colors.primaryBlue,
     textAlign: "center",
   },
   tagline: {

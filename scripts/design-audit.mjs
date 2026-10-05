@@ -213,6 +213,18 @@ const RULES = [
     },
   },
   {
+    id: "legacy-alias",
+    severity: 1,
+    label: "Removed colour alias (sage/coral/amber/teal/cream/deepTeal/midTeal) — use the real token name",
+    // These aliases survived two palette migrations and stopped describing
+    // their own values: deepTeal was #2B5FE0 blue, cream was iceBlue, and sage
+    // became the vivid iOS green, which is how a progress-bar track ended up
+    // bright green. One name per colour now.
+    test: (line) =>
+      /\b(?:bg|text|border)-(?:deepTeal|midTeal|teal|cream|sage|coral|amber)\b(?!Light)/.test(line)
+      || /\bcolors\.(?:deepTeal|midTeal|teal|cream|sage|coral|amber)\b(?!Light)/.test(line),
+  },
+  {
     id: "console",
     severity: 3,
     label: "console.log left in a component",

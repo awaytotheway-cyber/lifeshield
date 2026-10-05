@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   badge: {
     marginTop: 12,
     alignSelf: "flex-start",
-    backgroundColor: colors.sageLight,
+    backgroundColor: colors.riskLowLight,
     borderRadius: radius.chip,
     paddingHorizontal: 12,
     paddingVertical: 4,

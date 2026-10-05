@@ -33,7 +33,7 @@ export function InteractionFlag({
 const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
-    backgroundColor: colors.amberLight,
+    backgroundColor: colors.riskModerateLight,
     paddingHorizontal: 6,
     paddingVertical: 4,
     borderRadius: 20,
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   },
   callout: {
     marginTop: spacing.sm,
-    backgroundColor: colors.amberLight,
+    backgroundColor: colors.riskModerateLight,
     borderRadius: radius.alert,
     padding: spacing.mdSm,
   },

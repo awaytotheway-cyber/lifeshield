@@ -36,18 +36,11 @@
   --color-border: #d4e0f5;
 
   /* ——— Tinted backgrounds ——— */
-  --color-sageLight: #e8f8ed;
-  --color-amberLight: #fff8db;
-  --color-coralLight: #ffe5e3;
+  --color-riskLowLight: #e8f8ed;
+  --color-riskModerateLight: #fff8db;
+  --color-riskHighLight: #ffe5e3;
   --color-lightTeal: #d6e4ff;
 
-  /* ——— Legacy aliases ——— */
-  --color-sage: #34c759;
-  --color-amber: #ffcc00;
-  --color-coral: #ff3b30;
-  --color-deepTeal: #2b5fe0;
-  --color-midTeal: #6fa8f5;
-  --color-teal: #2b5fe0;
-  --color-cream: #eaf1ff;
+  /* ——— Highlight accent ——— */
   --color-purple: #af52de;
 }
