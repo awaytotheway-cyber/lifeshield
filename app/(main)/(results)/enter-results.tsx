@@ -28,6 +28,8 @@ import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
+import { colors } from "@/lib/design-tokens";
+
 export default function EnterResultsScreen() {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
@@ -347,12 +349,12 @@ export default function EnterResultsScreen() {
         <Text className="text-center text-xl text-charcoal">
           {COPY.enterResultsCsvTitle}
         </Text>
-        <Text className="mt-2 text-center text-sm text-teal">
+        <Text className="mt-2 text-center text-sm text-slate">
           {COPY.enterResultsCsvHint}
         </Text>
         <TextInput
-          className="mt-3 min-h-[120px] rounded-xl border border-sage bg-white px-4 py-3 text-charcoal"
-          placeholderTextColor="#2D343699"
+          className="mt-3 min-h-[120px] rounded-xl border border-border bg-white px-4 py-3 text-charcoal"
+          placeholderTextColor={colors.mist}
           multiline
           textAlignVertical="top"
           value={csvText}

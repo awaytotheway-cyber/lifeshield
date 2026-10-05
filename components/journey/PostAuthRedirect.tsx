@@ -1,14 +1,24 @@
 import { Redirect } from "expo-router";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
+import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
+import { fontFamily } from "@/lib/typography";
 import { useJourney } from "@/lib/use-journey";
 
-/** Shared spinner so every gate looks the same. */
+/**
+ * Shared loading state so every gate looks the same.
+ *
+ * This is a route gate, not a content view: we do not yet know which screen
+ * the user is headed for, so there is no layout to ghost with a skeleton. A
+ * calm centred spinner on the brand background is the right affordance, and
+ * it is usually on screen for only a moment.
+ */
 function GateLoading() {
   return (
-    <View className="flex-1 items-center justify-center bg-cream">
-      <ActivityIndicator color="#1A535C" />
-      <Text className="mt-3 text-charcoal">Loading…</Text>
+    <View style={styles.wrap}>
+      <ActivityIndicator color={colors.primaryBlue} />
+      <Text style={styles.label}>{COPY.authLoading}</Text>
     </View>
   );
 }
@@ -28,3 +38,18 @@ export function PostAuthRedirect() {
 }
 
 export { GateLoading };
+
+const styles = StyleSheet.create({
+  wrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.iceBlue,
+  },
+  label: {
+    marginTop: 12,
+    fontFamily: fontFamily.body,
+    fontSize: 15,
+    color: colors.slate,
+  },
+});

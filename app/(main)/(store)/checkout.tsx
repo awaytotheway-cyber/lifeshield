@@ -1,9 +1,10 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Platform, Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StripePayButton } from "@/components/checkout/StripePayButton";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -126,7 +127,7 @@ export default function CheckoutScreen() {
         </Text>
       ) : null}
 
-      {loadingCart ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loadingCart ? <SkeletonCardList rows={3} /> : null}
 
       {cartMessage ? (
         <>

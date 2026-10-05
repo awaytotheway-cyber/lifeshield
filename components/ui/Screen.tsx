@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     height: 160,
     top: 280,
     right: -30,
-    backgroundColor: "#A8C4F8",
+    backgroundColor: colors.skyBlue,
     opacity: 0.35,
   },
 });

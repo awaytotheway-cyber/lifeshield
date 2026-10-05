@@ -1,8 +1,9 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
@@ -96,7 +97,7 @@ export default function PlanItemScreen() {
       </View>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <SkeletonCardList rows={3} />
       ) : null}
 
       {message ? (
@@ -129,11 +130,10 @@ export default function PlanItemScreen() {
           </Text>
 
           {row.clinician_interaction_check ? (
-            <View
-              className="mt-3 self-start rounded-full px-3 py-1"
-              style={{ backgroundColor: "#FDE68A" }}
-            >
-              <Text className="text-sm text-charcoal">{COPY.planNeedsCheck}</Text>
+            <View className="mt-3 min-w-[72px] self-start rounded-full bg-amberLight px-3 py-1">
+              <Text className="text-center text-sm text-charcoal">
+                {COPY.planNeedsCheck}
+              </Text>
             </View>
           ) : null}
 

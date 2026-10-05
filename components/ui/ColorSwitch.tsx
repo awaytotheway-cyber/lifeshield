@@ -2,6 +2,8 @@ import { Pressable, Text, View } from "react-native";
 
 import { SWITCH_PALETTE, type SwitchColor } from "@/lib/switch-colors";
 
+import { colors } from "@/lib/design-tokens";
+
 type ColorSwitchProps = {
   label: string;
   value: boolean;
@@ -45,7 +47,7 @@ export function ColorSwitch({
             backgroundColor: value ? palette.thumbOn : palette.thumbOff,
             alignSelf: value ? "flex-end" : "flex-start",
             elevation: 2,
-            shadowColor: "#000",
+            shadowColor: colors.primaryBlue,
             shadowOpacity: 0.2,
             shadowRadius: 2,
             shadowOffset: { width: 0, height: 1 },

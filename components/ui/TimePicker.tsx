@@ -1,6 +1,8 @@
 import { Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
+
+import { colors } from "@/lib/design-tokens";
 import {
   formatDisplayDuration,
   isHHmm,
@@ -42,9 +44,9 @@ export function TimePicker({
           borderRadius: 12,
           borderWidth: 1,
           borderStyle: "solid",
-          borderColor: "#A8C5A0",
-          backgroundColor: "#FFFFFF",
-          color: "#2D3436",
+          borderColor: colors.border,
+          backgroundColor: colors.white,
+          color: colors.charcoal,
           fontSize: 16,
         }}
       />

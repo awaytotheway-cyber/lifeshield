@@ -62,6 +62,12 @@ export const colors = {
   teal: "#2B5FE0",
   /** Highlight accent — premium / highlights. */
   purple: "#AF52DE",
+
+  // ——— Pressed states ———
+  /** Primary CTA while held — the design system's "active: deepNavy". */
+  primaryBluePressed: "#0B1E4D",
+  /** Destructive CTA while held. */
+  riskHighPressed: "#D93228",
 } as const;
 
 /** Everyday names so screens do not guess which blue to use. */

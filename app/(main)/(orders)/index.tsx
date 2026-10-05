@@ -1,12 +1,12 @@
 import { Redirect, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
   Pressable,
   Text,
   View,
 } from "react-native";
 
+import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -162,7 +162,7 @@ export default function OrdersScreen() {
         </Text>
       )}
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <SkeletonCardList rows={3} /> : null}
 
       {message ? (
         <>

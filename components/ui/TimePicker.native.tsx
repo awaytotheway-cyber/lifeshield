@@ -5,6 +5,8 @@ import DateTimePicker, {
 import { Platform, Pressable, Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
+
+import { colors } from "@/lib/design-tokens";
 import {
   dateToHHmm,
   formatDisplayDuration,
@@ -69,7 +71,7 @@ export function TimePicker({
             minuteInterval={5}
             onChange={onPickerChange}
             themeVariant="light"
-            accentColor="#1A535C"
+            accentColor={colors.primaryBlue}
           />
           {Platform.OS === "ios" ? (
             <Pressable

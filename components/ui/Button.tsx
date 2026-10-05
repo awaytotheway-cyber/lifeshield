@@ -40,16 +40,21 @@ type ButtonProps = Omit<PressableProps, "style"> & {
 };
 
 function darkerPrimary(pressed: boolean) {
-  return pressed ? "#234FBF" : colors.primaryBlue;
+  return pressed ? colors.primaryBluePressed : colors.primaryBlue;
 }
 
 function darkerCoral(pressed: boolean) {
-  return pressed ? "#E05555" : colors.riskHigh;
+  return pressed ? colors.riskHighPressed : colors.riskHigh;
 }
 
 /**
  * Shared button. Prefer PrimaryButton / SecondaryButton names in new screens.
  * Older screens still pass title + variant="ghost".
+ *
+ * The in-button spinner below is the one place ActivityIndicator is correct:
+ * the design system bans it for *content* that is loading (use a shimmer
+ * skeleton there), but a button that is mid-submit has no layout to ghost and
+ * must keep its own footprint, so a spinner in place of the label is right.
  */
 export function Button({
   title = "",
@@ -90,7 +95,7 @@ export function Button({
       >
         {({ pressed }) =>
           loading ? (
-            <ActivityIndicator color={colors.skyBlue} />
+            <ActivityIndicator color={colors.primaryBlue} />
           ) : (
             <Text
               style={[
@@ -240,9 +245,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   textLabel: {
-    fontFamily: fontFamily.body,
+    fontFamily: fontFamily.bodySemi,
     fontSize: 15,
-    color: colors.skyBlue,
+    color: colors.primaryBlue,
   },
   textLabelPressed: {
     textDecorationLine: "underline",
@@ -250,7 +255,7 @@ const styles = StyleSheet.create({
   iconBtn: {
     width: tapTarget,
     height: tapTarget,
-    borderRadius: 10,
+    borderRadius: radius.button,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -258,7 +263,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   disabledWrap: {
-    opacity: 1,
+    opacity: 0.5,
   },
   disabledText: {
     color: colors.mist,

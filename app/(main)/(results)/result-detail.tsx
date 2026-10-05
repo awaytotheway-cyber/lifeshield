@@ -1,10 +1,11 @@
 import * as WebBrowser from "expo-web-browser";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StatusChip } from "@/components/results/StatusChip";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -92,7 +93,7 @@ export default function ResultDetailScreen() {
       </Text>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <SkeletonCardList rows={3} />
       ) : null}
 
       {message ? (

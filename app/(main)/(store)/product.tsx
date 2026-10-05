@@ -1,9 +1,10 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -136,7 +137,7 @@ export default function ProductDetailScreen() {
 
   return (
     <Screen scroll>
-      {loading ? <ActivityIndicator color="#1A535C" /> : null}
+      {loading ? <SkeletonCardList rows={2} /> : null}
 
       {message ? (
         <>

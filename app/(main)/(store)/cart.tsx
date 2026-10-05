@@ -1,10 +1,11 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { EmptyBox } from "@/components/illustrations";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
@@ -185,7 +186,7 @@ export default function CartScreen() {
       <Text className="text-center text-2xl text-charcoal">{COPY.cartTitle}</Text>
       <Text className="mt-3 text-center text-charcoal">{COPY.cartBody}</Text>
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <SkeletonCardList rows={3} /> : null}
 
       {message ? (
         <>
