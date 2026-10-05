@@ -1073,6 +1073,7 @@ export const COPY = {
   pluginsNeedSql:
     "Plugins need the 20260928_plugins migration to run in Supabase → SQL Editor.",
   // ——— Shared back links ———
+  goBack: "Go back",
   backToBuddies: "Back to buddies",
   backToRecipes: "Back to recipes",
   // ——— Buddy settings ———

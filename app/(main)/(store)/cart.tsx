@@ -11,6 +11,7 @@ import { SkeletonCardList } from "@/components/ui/Skeleton";
 import {
   BodySmall,
   BodyText,
+  DataValue,
   ErrorText,
   ScreenTitle,
   SectionTitle,
@@ -192,13 +193,13 @@ export default function CartScreen() {
   return (
     <Screen scroll>
       <ScreenTitle centered>{COPY.cartTitle}</ScreenTitle>
-      <BodyText className="mt-3" centered>{COPY.cartBody}</BodyText>
+      <BodyText className="mt-3">{COPY.cartBody}</BodyText>
 
       {loading ? <SkeletonCardList rows={3} /> : null}
 
       {message ? (
         <>
-          <ErrorText className="mt-4" centered>{message}</ErrorText>
+          <ErrorText className="mt-4">{message}</ErrorText>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -210,7 +211,7 @@ export default function CartScreen() {
       ) : null}
 
       {actionMessage ? (
-        <BodyText className="mt-4" centered style={{ color: colors.primaryBlue }}>{actionMessage}</BodyText>
+        <BodyText className="mt-4" style={{ color: colors.primaryBlue }}>{actionMessage}</BodyText>
       ) : null}
 
       {!loading && !message && lines.length === 0 ? (
@@ -283,11 +284,11 @@ export default function CartScreen() {
 
       {!loading && !message && lines.length > 0 ? (
         <View className="mt-6 rounded-2xl border border-border bg-iceBlue px-4 py-4">
-          <BodyText centered>{COPY.cartTotal}</BodyText>
-          <ScreenTitle className="mt-2" centered style={{ color: colors.primaryBlue }}>
+          <BodyText>{COPY.cartTotal}</BodyText>
+          <DataValue className="mt-2" style={{ color: colors.primaryBlue }}>
             ₹{total.toLocaleString("en-IN")}
-          </ScreenTitle>
-          <BodySmall className="mt-2" centered style={{ color: colors.charcoal }}>
+          </DataValue>
+          <BodySmall className="mt-2" style={{ color: colors.charcoal }}>
             {COPY.cartTotalNote}
           </BodySmall>
         </View>

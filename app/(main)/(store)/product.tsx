@@ -10,6 +10,7 @@ import { SkeletonCardList } from "@/components/ui/Skeleton";
 import {
   BodySmall,
   BodyText,
+  DataValue,
   ErrorText,
   ScreenTitle,
 } from "@/components/ui/Typography";
@@ -131,7 +132,7 @@ export default function ProductDetailScreen() {
   if (!productId) {
     return (
       <Screen>
-        <ErrorText centered>{COPY.storeProductMissing}</ErrorText>
+        <ErrorText>{COPY.storeProductMissing}</ErrorText>
         <Button
           title={COPY.storeBackStore}
           onPress={() => {
@@ -148,7 +149,7 @@ export default function ProductDetailScreen() {
 
       {message ? (
         <>
-          <ErrorText centered>{message}</ErrorText>
+          <ErrorText>{message}</ErrorText>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -179,14 +180,14 @@ export default function ProductDetailScreen() {
             </BodyText>
           </View>
 
-          <ScreenTitle className="mt-4" centered style={{ color: colors.primaryBlue }}>
+          <DataValue className="mt-4" style={{ color: colors.primaryBlue }}>
             {formatProductPrice(product)}
-          </ScreenTitle>
+          </DataValue>
 
           {gate ? <PurchaseStatus gate={gate} /> : null}
 
           {actionMessage ? (
-            <BodyText className="mt-4" centered style={{ color: colors.primaryBlue }}>{actionMessage}</BodyText>
+            <BodyText className="mt-4" style={{ color: colors.primaryBlue }}>{actionMessage}</BodyText>
           ) : null}
 
           <Button

@@ -101,7 +101,7 @@ export default function PlanItemScreen() {
         {COPY.planDetailTitle}
       </ScreenTitle>
       <View className="mt-4 rounded-2xl border border-border bg-iceBlue px-4 py-3">
-        <BodyText centered>{bannerText}</BodyText>
+        <BodyText>{bannerText}</BodyText>
       </View>
 
       {loading ? (
@@ -110,7 +110,7 @@ export default function PlanItemScreen() {
 
       {message ? (
         <>
-          <ErrorText className="mt-4" centered>{message}</ErrorText>
+          <ErrorText className="mt-4">{message}</ErrorText>
           <Button
             title={COPY.planRetry}
             variant="ghost"
@@ -123,7 +123,7 @@ export default function PlanItemScreen() {
 
       {!loading && !message && row ? (
         <>
-          <SectionTitle className="mt-4" centered>
+          <SectionTitle className="mt-4">
             {row.title}
           </SectionTitle>
           <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planDetailWhat}</BodySmall>
@@ -139,7 +139,7 @@ export default function PlanItemScreen() {
 
           {row.clinician_interaction_check ? (
             <View className="mt-3 min-w-[72px] self-start rounded-full bg-amberLight px-3 py-1">
-              <BodySmall centered style={{ color: colors.charcoal }}>
+              <BodySmall style={{ color: colors.charcoal }}>
                 {COPY.planNeedsCheck}
               </BodySmall>
             </View>
@@ -155,7 +155,7 @@ export default function PlanItemScreen() {
             {row.clinical_basis?.trim() || row.trigger_finding}
           </BodyText>
 
-          <BodySmall className="mt-6" centered style={{ color: colors.primaryBlue }}>
+          <BodySmall className="mt-6" style={{ color: colors.primaryBlue }}>
             {COPY.planDetailFinding}
           </BodySmall>
           <ClinicalTerm
@@ -165,7 +165,7 @@ export default function PlanItemScreen() {
             medicalName={row.trigger_finding}
           />
 
-          <BodySmall className="mt-4" centered style={{ color: colors.primaryBlue }}>
+          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>
             {COPY.planDetailNotInstruction}
           </BodySmall>
 

@@ -105,7 +105,7 @@ export default function ResultDetailScreen() {
 
       {message ? (
         <>
-          <ErrorText className="mt-4" centered>{message}</ErrorText>
+          <ErrorText className="mt-4">{message}</ErrorText>
           <Button
             title={COPY.labResultsRetry}
             variant="ghost"
@@ -143,10 +143,10 @@ export default function ResultDetailScreen() {
             </BodyText>
           </View>
 
-          <BodyText className="mt-4" centered>
+          <BodyText className="mt-4">
             {meaningForFlag(row.flag)}
           </BodyText>
-          <BodySmall className="mt-3" centered style={{ color: colors.primaryBlue }}>
+          <BodySmall className="mt-3" style={{ color: colors.primaryBlue }}>
             {COPY.labResultNotDiagnosis}
           </BodySmall>
 
@@ -168,7 +168,7 @@ export default function ResultDetailScreen() {
           ) : null}
 
           {pdfMessage ? (
-            <ErrorText className="mt-2" centered>{pdfMessage}</ErrorText>
+            <ErrorText className="mt-2">{pdfMessage}</ErrorText>
           ) : null}
         </>
       ) : null}

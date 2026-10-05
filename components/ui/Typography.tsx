@@ -95,6 +95,15 @@ export function Caption({ children, style, centered, ...rest }: TextTokenProps) 
   );
 }
 
+/** A number in a list row or inline: smaller DM Mono. */
+export function DataSmall({ children, style, centered, ...rest }: TextTokenProps) {
+  return (
+    <Text {...rest} style={[styles.dataSm, centered && styles.centered, style]}>
+      {children}
+    </Text>
+  );
+}
+
 /**
  * Inline error or validation message.
  *
@@ -127,6 +136,7 @@ const styles = StyleSheet.create({
   bodySm: { ...typography.bodySm, color: colors.slate },
   caption: { ...typography.label, color: colors.slate },
   data: { ...typography.data, color: colors.deepNavy },
+  dataSm: { ...typography.medical, color: colors.deepNavy },
   error: { ...typography.bodySm, color: colors.riskHighText },
   centered: { textAlign: "center" },
 });

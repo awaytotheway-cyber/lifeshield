@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
 import { IconButton } from "@/components/ui/Button";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { COPY } from "@/lib/copy";
+import { colors, spacing, tapTarget } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type ScreenHeaderProps = {
   title: string;
@@ -14,7 +15,7 @@ type ScreenHeaderProps = {
 export function ScreenHeader({
   title,
   onBack,
-  backLabel = "Go back",
+  backLabel = COPY.goBack,
 }: ScreenHeaderProps) {
   return (
     <View style={styles.row}>
@@ -42,16 +43,18 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.sm,
   },
   title: {
+    ...typography.h1,
     flex: 1,
+    // A stack title sits centred between the back arrow and its spacer.
+    // Headings may be centred; body copy may not.
     textAlign: "center",
-    fontFamily: fontFamily.display,
     fontSize: 26,
     lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+    // Headline colour, not the action blue the old deepTeal alias gave it.
+    color: colors.deepNavy,
   },
   spacer: {
-    width: 44,
-    height: 44,
+    width: tapTarget,
+    height: tapTarget,
   },
 });

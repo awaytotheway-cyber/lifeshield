@@ -84,7 +84,7 @@ export default function EnterResultsScreen() {
         <ScreenTitle centered>
           {COPY.enterResultsTitle}
         </ScreenTitle>
-        <BodyText className="mt-4" centered>
+        <BodyText className="mt-4">
           {COPY.enterResultsDenied}
         </BodyText>
         <Button
@@ -200,10 +200,10 @@ export default function EnterResultsScreen() {
       <ScreenTitle centered>
         {COPY.enterResultsTitle}
       </ScreenTitle>
-      <BodyText className="mt-3" centered>
+      <BodyText className="mt-3">
         {COPY.enterResultsBody}
       </BodyText>
-      <BodySmall className="mt-3" centered style={{ color: colors.primaryBlue }}>
+      <BodySmall className="mt-3" style={{ color: colors.primaryBlue }}>
         Signed in as {session.user.email}. For founder testing, leave the user
         id as your own so a row appears for you.
       </BodySmall>
@@ -353,10 +353,10 @@ export default function EnterResultsScreen() {
       />
 
       <View className="mt-8">
-        <SectionTitle centered>
+        <SectionTitle>
           {COPY.enterResultsCsvTitle}
         </SectionTitle>
-        <BodySmall className="mt-2" centered>
+        <BodySmall className="mt-2">
           {COPY.enterResultsCsvHint}
         </BodySmall>
         <TextInput

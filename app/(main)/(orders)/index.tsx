@@ -10,6 +10,8 @@ import {
   BodyText,
   Caption,
   CardTitle,
+  DataSmall,
+  DataValue,
   ErrorText,
   ScreenTitle,
 } from "@/components/ui/Typography";
@@ -39,9 +41,9 @@ function OrderListCard({
       onPress={onPress}
       className="mt-3 rounded-2xl bg-white px-4 py-4 active:opacity-80"
     >
-      <BodyText>
+      <DataSmall>
         {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
-      </BodyText>
+      </DataSmall>
       <BodyText className="mt-1" style={{ color: colors.primaryBlue }}>{formatOrderStatus(order)}</BodyText>
       <Caption className="mt-1" style={{ color: colors.charcoal }}>
         {order.created_at
@@ -152,17 +154,17 @@ export default function OrdersScreen() {
       </ScreenTitle>
 
       {placed ? (
-        <BodyText className="mt-4" centered style={{ color: colors.primaryBlue }}>{COPY.ordersPlacedBanner}</BodyText>
+        <BodyText className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.ordersPlacedBanner}</BodyText>
       ) : (
-        <BodyText className="mt-4" centered>{COPY.ordersBody}</BodyText>
+        <BodyText className="mt-4">{COPY.ordersBody}</BodyText>
       )}
 
       {placed ? (
-        <BodySmall className="mt-2" centered style={{ color: colors.charcoal }}>
+        <BodySmall className="mt-2" style={{ color: colors.charcoal }}>
           {COPY.checkoutSuccessBody}
         </BodySmall>
       ) : (
-        <Caption className="mt-2" centered style={{ color: colors.charcoal }}>
+        <Caption className="mt-2" style={{ color: colors.charcoal }}>
           {COPY.ordersWebhookNote}
         </Caption>
       )}
@@ -171,7 +173,7 @@ export default function OrdersScreen() {
 
       {message ? (
         <>
-          <ErrorText className="mt-4" centered>{message}</ErrorText>
+          <ErrorText className="mt-4">{message}</ErrorText>
           <Button title={COPY.storeRetry} variant="ghost" onPress={refresh} />
         </>
       ) : null}
@@ -183,19 +185,19 @@ export default function OrdersScreen() {
           }}
           className="mt-6 rounded-2xl border border-border bg-iceBlue px-4 py-4 active:opacity-80"
         >
-          <CardTitle centered>
+          <DataValue>
             {formatPaymentTotalForDisplay(
               showHighlight.total_amount,
               showHighlight.currency,
             )}
-          </CardTitle>
-          <BodyText className="mt-2" centered style={{ color: colors.primaryBlue }}>
+          </DataValue>
+          <BodyText className="mt-2" style={{ color: colors.primaryBlue }}>
             {formatOrderStatus(showHighlight, highlightItems)}
           </BodyText>
 
           {highlightItems.length > 0 ? (
             <View className="mt-4">
-              <BodySmall centered style={{ color: colors.charcoal }}>
+              <BodySmall style={{ color: colors.charcoal }}>
                 {COPY.orderItemsLabel}
               </BodySmall>
               {highlightItems.map((item) => (
@@ -212,7 +214,7 @@ export default function OrdersScreen() {
             </View>
           ) : null}
 
-          <ErrorText className="mt-4" centered>
+          <ErrorText className="mt-4">
             {COPY.checkoutViewOrder}
           </ErrorText>
         </Pressable>
@@ -223,7 +225,7 @@ export default function OrdersScreen() {
       ) : null}
 
       {!loading && !message && orders.length > 0 && !placed ? (
-        <BodySmall className="mt-6" centered style={{ color: colors.charcoal }}>
+        <BodySmall className="mt-6" style={{ color: colors.charcoal }}>
           {COPY.ordersTapForDetail}
         </BodySmall>
       ) : null}

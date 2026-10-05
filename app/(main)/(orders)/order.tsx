@@ -10,6 +10,7 @@ import {
   BodyText,
   Caption,
   CardTitle,
+  DataValue,
   ErrorText,
   ScreenTitle,
   SectionTitle,
@@ -126,7 +127,7 @@ export default function OrderDetailScreen() {
 
       {message ? (
         <>
-          <ErrorText className="mt-4" centered>{message}</ErrorText>
+          <ErrorText className="mt-4">{message}</ErrorText>
           <Button title={COPY.storeRetry} variant="ghost" onPress={() => void refresh()} />
         </>
       ) : null}
@@ -134,24 +135,24 @@ export default function OrderDetailScreen() {
       {!loading && !message && order ? (
         <>
           <View className="mt-6 rounded-2xl bg-white px-4 py-4">
-            <SectionTitle centered>
+            <DataValue>
               {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
-            </SectionTitle>
-            <BodyText className="mt-2" centered style={{ color: colors.primaryBlue }}>
+            </DataValue>
+            <BodyText className="mt-2" style={{ color: colors.primaryBlue }}>
               {formatOrderStatus(order, items)}
             </BodyText>
             {order.created_at ? (
-              <Caption className="mt-2" centered style={{ color: colors.charcoal }}>
+              <Caption className="mt-2" style={{ color: colors.charcoal }}>
                 {new Date(order.created_at).toLocaleString()}
               </Caption>
             ) : null}
           </View>
 
-          <CardTitle className="mt-6" centered>
+          <CardTitle className="mt-6">
             {COPY.orderItemsLabel}
           </CardTitle>
           {items.length === 0 ? (
-            <BodyText className="mt-2" centered>
+            <BodyText className="mt-2">
               {COPY.ordersEmpty}
             </BodyText>
           ) : (
@@ -170,10 +171,10 @@ export default function OrderDetailScreen() {
             ))
           )}
 
-          <CardTitle className="mt-8" centered>
+          <CardTitle className="mt-8">
             {COPY.orderTimelineTitle}
           </CardTitle>
-          <Caption className="mt-1" centered style={{ color: colors.charcoal }}>
+          <Caption className="mt-1" style={{ color: colors.charcoal }}>
             {COPY.ordersWebhookNote}
           </Caption>
 
