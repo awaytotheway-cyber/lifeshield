@@ -1,12 +1,11 @@
-import { useState } from "react";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { Platform, Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import { Platform, Pressable, View } from "react-native";
 
+import { BodySmall, BodyText, ErrorText } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
-
-import { colors } from "@/lib/design-tokens";
 import {
   dateToHHmm,
   formatDisplayDuration,
@@ -14,6 +13,7 @@ import {
   isHHmm,
   type TimePickerFieldProps,
 } from "@/lib/datetime";
+import { colors } from "@/lib/design-tokens";
 
 /**
  * iOS: spinning wheels (same idea as setting an alarm).
@@ -42,24 +42,24 @@ export function TimePicker({
 
   return (
     <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
-      {hint ? <Text className="mt-1 text-sm text-charcoal">{hint}</Text> : null}
+      <BodyText>{label}</BodyText>
+      {hint ? <BodySmall className="mt-1" style={{ color: colors.charcoal }}>{hint}</BodySmall> : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
         onPress={() => setOpen((current) => !current)}
         className="mt-2 rounded-xl border border-border bg-white px-4 py-3"
       >
-        <Text className="text-charcoal">
+        <BodyText>
           {isHHmm(value)
             ? `${value} (${formatDisplayDuration(value)})`
             : COPY.pickTime}
-        </Text>
+        </BodyText>
       </Pressable>
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-riskHighText">
+        <ErrorText className="mt-1">
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
-        </Text>
+        </ErrorText>
       ) : null}
       {open ? (
         <View className="mt-2 items-center rounded-2xl bg-white px-2 py-2">
@@ -79,12 +79,12 @@ export function TimePicker({
               onPress={() => setOpen(false)}
               className="mt-2 items-center px-4 py-2"
             >
-              <Text className="text-teal">{COPY.pickerDone}</Text>
+              <BodyText style={{ color: colors.primaryBlue }}>{COPY.pickerDone}</BodyText>
             </Pressable>
           ) : null}
         </View>
       ) : null}
-      {error ? <Text className="mt-1 text-riskHighText">{error}</Text> : null}
+      {error ? <ErrorText className="mt-1">{error}</ErrorText> : null}
     </View>
   );
 }

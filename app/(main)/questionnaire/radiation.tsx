@@ -2,13 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { TextField } from "@/components/ui/TextField";
-import { DatePicker } from "@/components/ui/DatePicker";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import { NIGHT_SHIFT_OPTIONS, RADIATION_TYPE_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
@@ -105,7 +105,7 @@ export default function RadiationScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller

@@ -2,13 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { TextField } from "@/components/ui/TextField";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import {
   BMI_OBESITY_HINT,
   CHRONIC_INFECTION_OPTIONS,
@@ -16,6 +16,7 @@ import {
   YES_NO_OPTIONS,
 } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import {
   jsonToComorbiditiesForm,
   comorbiditiesToJson,
@@ -115,7 +116,7 @@ export default function ComorbiditiesScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <ClinicalTerm termKey="gilbert" />
@@ -161,7 +162,7 @@ export default function ComorbiditiesScreen() {
         )}
       />
       {showObesityHint ? (
-        <Text className="mt-2 text-teal">{COPY.obesityBmiHint}</Text>
+        <BodyText className="mt-2" style={{ color: colors.primaryBlue }}>{COPY.obesityBmiHint}</BodyText>
       ) : null}
 
       <Controller

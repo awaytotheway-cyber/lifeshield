@@ -2,14 +2,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
-import { TimePicker } from "@/components/ui/TimePicker";
 import { TextField } from "@/components/ui/TextField";
+import { TimePicker } from "@/components/ui/TimePicker";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import {
   EXERCISE_DURATION_OPTIONS,
   EXERCISE_FREQUENCY_OPTIONS,
@@ -119,7 +119,7 @@ export default function LifestyleScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller

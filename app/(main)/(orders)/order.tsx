@@ -2,10 +2,20 @@ import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
-import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
+import {
+  BodySmall,
+  BodyText,
+  Caption,
+  CardTitle,
+  ErrorText,
+  ScreenTitle,
+  SectionTitle,
+} from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import {
   buildOrderTimeline,
   formatOrderStatus,
@@ -25,14 +35,14 @@ function TimelineRow({ step }: { step: OrderTimelineStep }) {
     : step.done
       ? "bg-teal"
       : "bg-sage";
-  const textClass = step.current ? "text-riskHighText" : "text-charcoal";
+  const labelColor = step.current ? colors.riskHighText : colors.charcoal;
 
   return (
     <View className="mt-4 flex-row">
       <View className={`mt-1 h-3 w-3 rounded-full ${dotClass}`} />
       <View className="ml-3 flex-1">
-        <Text className={`text-base ${textClass}`}>{step.label}</Text>
-        <Text className="mt-1 text-sm text-charcoal">{step.detail}</Text>
+        <BodyText style={{ color: labelColor }}>{step.label}</BodyText>
+        <BodySmall className="mt-1" style={{ color: colors.charcoal }}>{step.detail}</BodySmall>
       </View>
     </View>
   );
@@ -108,15 +118,15 @@ export default function OrderDetailScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <ScreenTitle centered>
         {COPY.orderDetailTitle}
-      </Text>
+      </ScreenTitle>
 
       {loading ? <SkeletonCardList rows={3} /> : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
+          <ErrorText className="mt-4" centered>{message}</ErrorText>
           <Button title={COPY.storeRetry} variant="ghost" onPress={() => void refresh()} />
         </>
       ) : null}
@@ -124,48 +134,48 @@ export default function OrderDetailScreen() {
       {!loading && !message && order ? (
         <>
           <View className="mt-6 rounded-2xl bg-white px-4 py-4">
-            <Text className="text-center text-xl text-charcoal">
+            <SectionTitle centered>
               {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
-            </Text>
-            <Text className="mt-2 text-center text-teal">
+            </SectionTitle>
+            <BodyText className="mt-2" centered style={{ color: colors.primaryBlue }}>
               {formatOrderStatus(order, items)}
-            </Text>
+            </BodyText>
             {order.created_at ? (
-              <Text className="mt-2 text-center text-xs text-charcoal">
+              <Caption className="mt-2" centered style={{ color: colors.charcoal }}>
                 {new Date(order.created_at).toLocaleString()}
-              </Text>
+              </Caption>
             ) : null}
           </View>
 
-          <Text className="mt-6 text-center text-lg text-charcoal">
+          <CardTitle className="mt-6" centered>
             {COPY.orderItemsLabel}
-          </Text>
+          </CardTitle>
           {items.length === 0 ? (
-            <Text className="mt-2 text-center text-charcoal">
+            <BodyText className="mt-2" centered>
               {COPY.ordersEmpty}
-            </Text>
+            </BodyText>
           ) : (
             items.map((item) => (
               <View
                 key={item.id}
                 className="mt-3 rounded-2xl border border-border bg-white px-4 py-3"
               >
-                <Text className="text-charcoal">{item.product_name}</Text>
-                <Text className="mt-1 text-sm text-charcoal">
+                <BodyText>{item.product_name}</BodyText>
+                <BodySmall className="mt-1" style={{ color: colors.charcoal }}>
                   {item.quantity} × ₹
                   {item.unit_price.toLocaleString("en-IN")} = ₹
                   {(item.unit_price * item.quantity).toLocaleString("en-IN")}
-                </Text>
+                </BodySmall>
               </View>
             ))
           )}
 
-          <Text className="mt-8 text-center text-lg text-charcoal">
+          <CardTitle className="mt-8" centered>
             {COPY.orderTimelineTitle}
-          </Text>
-          <Text className="mt-1 text-center text-xs text-charcoal">
+          </CardTitle>
+          <Caption className="mt-1" centered style={{ color: colors.charcoal }}>
             {COPY.ordersWebhookNote}
-          </Text>
+          </Caption>
 
           <View className="mt-2 rounded-2xl bg-white px-4 py-2">
             {timeline.map((step) => (
@@ -174,12 +184,12 @@ export default function OrderDetailScreen() {
           </View>
 
           <View className="mt-6 rounded-2xl bg-cream px-4 py-3">
-            <Text className="text-sm text-charcoal">
+            <BodySmall style={{ color: colors.charcoal }}>
               {COPY.orderPaymentLabel}: {order.payment_status}
-            </Text>
-            <Text className="mt-1 text-sm text-charcoal">
+            </BodySmall>
+            <BodySmall className="mt-1" style={{ color: colors.charcoal }}>
               {COPY.orderFulfilmentLabel}: {order.fulfilment_status}
-            </Text>
+            </BodySmall>
           </View>
         </>
       ) : null}

@@ -1,13 +1,14 @@
-import { useState } from "react";
-import { Text } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { BodySmall } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import { createLabOrdersForStoreOrder } from "@/lib/lab-orders";
 import { createOrderFromCart } from "@/lib/orders";
-import { formatPaymentTotalForDisplay } from "@/lib/payment-intent-format";
 import { requestPaymentIntent } from "@/lib/payment-intent";
+import { formatPaymentTotalForDisplay } from "@/lib/payment-intent-format";
 import type { CartLineRow } from "@/lib/store";
 import { paymentIntentIdFromClientSecret } from "@/lib/stripe-config";
 
@@ -116,9 +117,9 @@ export function StripePayButton({
 
   return (
     <>
-      <Text className="mt-2 text-center text-sm text-charcoal">
+      <BodySmall className="mt-2" centered style={{ color: colors.charcoal }}>
         {COPY.cartTotalNote}
-      </Text>
+      </BodySmall>
       <Button
         title={title}
         loading={busy}

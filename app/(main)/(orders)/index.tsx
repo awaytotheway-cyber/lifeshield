@@ -1,15 +1,20 @@
 import { Redirect, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import {
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, View } from "react-native";
 
-import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
+import {
+  BodySmall,
+  BodyText,
+  Caption,
+  CardTitle,
+  ErrorText,
+  ScreenTitle,
+} from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import {
   formatOrderStatus,
   loadOrderDetail,
@@ -34,15 +39,15 @@ function OrderListCard({
       onPress={onPress}
       className="mt-3 rounded-2xl bg-white px-4 py-4 active:opacity-80"
     >
-      <Text className="text-charcoal">
+      <BodyText>
         {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
-      </Text>
-      <Text className="mt-1 text-teal">{formatOrderStatus(order)}</Text>
-      <Text className="mt-1 text-xs text-charcoal">
+      </BodyText>
+      <BodyText className="mt-1" style={{ color: colors.primaryBlue }}>{formatOrderStatus(order)}</BodyText>
+      <Caption className="mt-1" style={{ color: colors.charcoal }}>
         {order.created_at
           ? new Date(order.created_at).toLocaleDateString()
           : ""}
-      </Text>
+      </Caption>
     </Pressable>
   );
 }
@@ -142,31 +147,31 @@ export default function OrdersScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <ScreenTitle centered>
         {placed ? COPY.checkoutSuccessTitle : COPY.ordersTitle}
-      </Text>
+      </ScreenTitle>
 
       {placed ? (
-        <Text className="mt-4 text-center text-teal">{COPY.ordersPlacedBanner}</Text>
+        <BodyText className="mt-4" centered style={{ color: colors.primaryBlue }}>{COPY.ordersPlacedBanner}</BodyText>
       ) : (
-        <Text className="mt-4 text-center text-charcoal">{COPY.ordersBody}</Text>
+        <BodyText className="mt-4" centered>{COPY.ordersBody}</BodyText>
       )}
 
       {placed ? (
-        <Text className="mt-2 text-center text-sm text-charcoal">
+        <BodySmall className="mt-2" centered style={{ color: colors.charcoal }}>
           {COPY.checkoutSuccessBody}
-        </Text>
+        </BodySmall>
       ) : (
-        <Text className="mt-2 text-center text-xs text-charcoal">
+        <Caption className="mt-2" centered style={{ color: colors.charcoal }}>
           {COPY.ordersWebhookNote}
-        </Text>
+        </Caption>
       )}
 
       {loading ? <SkeletonCardList rows={3} /> : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
+          <ErrorText className="mt-4" centered>{message}</ErrorText>
           <Button title={COPY.storeRetry} variant="ghost" onPress={refresh} />
         </>
       ) : null}
@@ -178,47 +183,49 @@ export default function OrdersScreen() {
           }}
           className="mt-6 rounded-2xl border border-border bg-iceBlue px-4 py-4 active:opacity-80"
         >
-          <Text className="text-center text-lg text-charcoal">
+          <CardTitle centered>
             {formatPaymentTotalForDisplay(
               showHighlight.total_amount,
               showHighlight.currency,
             )}
-          </Text>
-          <Text className="mt-2 text-center text-teal">
+          </CardTitle>
+          <BodyText className="mt-2" centered style={{ color: colors.primaryBlue }}>
             {formatOrderStatus(showHighlight, highlightItems)}
-          </Text>
+          </BodyText>
 
           {highlightItems.length > 0 ? (
             <View className="mt-4">
-              <Text className="text-center text-sm text-charcoal">
+              <BodySmall centered style={{ color: colors.charcoal }}>
                 {COPY.orderItemsLabel}
-              </Text>
+              </BodySmall>
               {highlightItems.map((item) => (
-                <Text
+                <BodySmall
                   key={item.id}
-                  className="mt-2 text-center text-sm text-charcoal"
+                  className="mt-2"
+                  centered
+                  style={{ color: colors.charcoal }}
                 >
                   {item.product_name} × {item.quantity} — ₹
                   {(item.unit_price * item.quantity).toLocaleString("en-IN")}
-                </Text>
+                </BodySmall>
               ))}
             </View>
           ) : null}
 
-          <Text className="mt-4 text-center text-sm text-riskHighText">
+          <ErrorText className="mt-4" centered>
             {COPY.checkoutViewOrder}
-          </Text>
+          </ErrorText>
         </Pressable>
       ) : null}
 
       {!loading && !message && !placed && orders.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.ordersEmpty}</Text>
+        <BodyText className="mt-6" centered>{COPY.ordersEmpty}</BodyText>
       ) : null}
 
       {!loading && !message && orders.length > 0 && !placed ? (
-        <Text className="mt-6 text-center text-sm text-charcoal">
+        <BodySmall className="mt-6" centered style={{ color: colors.charcoal }}>
           {COPY.ordersTapForDetail}
-        </Text>
+        </BodySmall>
       ) : null}
 
       {!loading && !message && orders.length > 0 ? (

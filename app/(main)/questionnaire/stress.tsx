@@ -2,16 +2,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text } from "react-native";
 
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { RadioGroup } from "@/components/ui/RadioGroup";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import {
   STRESS_LEVEL_OPTIONS,
   STRESS_REACH_OUT_OPTIONS,
   STRESS_VIEW_OPTIONS,
 } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import { jsonToStressForm, stressToJson } from "@/lib/questionnaire/mappers";
 import {
   emptyStress,
@@ -96,10 +97,10 @@ export default function StressScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
-      <Text className="mt-4 text-center text-teal">{COPY.stressFramingNote}</Text>
+      <BodyText className="mt-4" centered style={{ color: colors.primaryBlue }}>{COPY.stressFramingNote}</BodyText>
 
       <Controller
         control={control}

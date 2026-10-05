@@ -1,13 +1,20 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { Platform, Text, View } from "react-native";
+import { Platform, View } from "react-native";
 
-import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StripePayButton } from "@/components/checkout/StripePayButton";
-import { SkeletonCardList } from "@/components/ui/Skeleton";
+import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
+import {
+  BodySmall,
+  BodyText,
+  ErrorText,
+  ScreenTitle,
+} from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import { canPurchase } from "@/lib/purchase-gates";
 import { orderPlacedHref, routes } from "@/lib/routes";
 import {
@@ -112,26 +119,26 @@ export default function CheckoutScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">{COPY.checkoutTitle}</Text>
-      <Text className="mt-4 text-center text-charcoal">{COPY.checkoutBody}</Text>
+      <ScreenTitle centered>{COPY.checkoutTitle}</ScreenTitle>
+      <BodyText className="mt-4" centered>{COPY.checkoutBody}</BodyText>
 
       {!stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
+        <BodySmall className="mt-4" centered style={{ color: colors.charcoal }}>
           {COPY.checkoutStripeKeyMissing}
-        </Text>
+        </BodySmall>
       ) : null}
 
       {!stripeNative && stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
+        <BodySmall className="mt-4" centered style={{ color: colors.charcoal }}>
           {COPY.checkoutWebUnsupported}
-        </Text>
+        </BodySmall>
       ) : null}
 
       {loadingCart ? <SkeletonCardList rows={3} /> : null}
 
       {cartMessage ? (
         <>
-          <Text className="mt-4 text-center text-riskHighText">{cartMessage}</Text>
+          <ErrorText className="mt-4" centered>{cartMessage}</ErrorText>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -143,7 +150,7 @@ export default function CheckoutScreen() {
       ) : null}
 
       {!loadingCart && !cartMessage && purchasableLines.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.checkoutEmptyCart}</Text>
+        <BodyText className="mt-6" centered>{COPY.checkoutEmptyCart}</BodyText>
       ) : null}
 
       {!loadingCart && !cartMessage
@@ -159,10 +166,10 @@ export default function CheckoutScreen() {
                   }
                   medicalName={line.product.clinical_name}
                 />
-                <Text className="mt-2 text-teal">
+                <BodyText className="mt-2" style={{ color: colors.primaryBlue }}>
                   {formatProductPrice(line.product)} × {line.quantity} = ₹
                   {lineTotal.toLocaleString("en-IN")}
-                </Text>
+                </BodyText>
               </View>
             );
           })
@@ -170,13 +177,13 @@ export default function CheckoutScreen() {
 
       {!loadingCart && !cartMessage && purchasableLines.length > 0 ? (
         <View className="mt-6 rounded-2xl border border-border bg-iceBlue px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
+          <BodyText centered>{COPY.cartTotal}</BodyText>
+          <ScreenTitle className="mt-2" centered style={{ color: colors.primaryBlue }}>
             ₹{displayTotal.toLocaleString("en-IN")}
-          </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
+          </ScreenTitle>
+          <BodySmall className="mt-2" centered style={{ color: colors.charcoal }}>
             {COPY.cartTotalNote}
-          </Text>
+          </BodySmall>
         </View>
       ) : null}
 
@@ -210,7 +217,7 @@ export default function CheckoutScreen() {
 
       {errorMessage ? (
         <>
-          <Text className="mt-4 text-center text-riskHighText">{errorMessage}</Text>
+          <ErrorText className="mt-4" centered>{errorMessage}</ErrorText>
           {canUsePaymentSheet && canPay ? (
             <Button
               title={COPY.checkoutRetryPay}
@@ -223,9 +230,9 @@ export default function CheckoutScreen() {
         </>
       ) : null}
 
-      <Text className="mt-4 text-center text-sm text-charcoal">
+      <BodySmall className="mt-4" centered style={{ color: colors.charcoal }}>
         {COPY.checkoutDay5Note}
-      </Text>
+      </BodySmall>
 
       <Button
         title={COPY.storeBackCart}

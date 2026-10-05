@@ -9,8 +9,15 @@ import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { TextField } from "@/components/ui/TextField";
+import {
+  BodySmall,
+  BodyText,
+  ScreenTitle,
+  SectionTitle,
+} from "@/components/ui/Typography";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import {
   emptyResultEntry,
   formFromCsvRow,
@@ -27,8 +34,6 @@ import {
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
-
-import { colors } from "@/lib/design-tokens";
 
 export default function EnterResultsScreen() {
   const router = useRouter();
@@ -76,12 +81,12 @@ export default function EnterResultsScreen() {
   if (!isAdmin) {
     return (
       <Screen scroll>
-        <Text className="text-center text-2xl text-charcoal">
+        <ScreenTitle centered>
           {COPY.enterResultsTitle}
-        </Text>
-        <Text className="mt-4 text-center text-charcoal">
+        </ScreenTitle>
+        <BodyText className="mt-4" centered>
           {COPY.enterResultsDenied}
-        </Text>
+        </BodyText>
         <Button
           title={COPY.enterResultsGoHome}
           onPress={() => {
@@ -192,16 +197,16 @@ export default function EnterResultsScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <ScreenTitle centered>
         {COPY.enterResultsTitle}
-      </Text>
-      <Text className="mt-3 text-center text-charcoal">
+      </ScreenTitle>
+      <BodyText className="mt-3" centered>
         {COPY.enterResultsBody}
-      </Text>
-      <Text className="mt-3 text-center text-sm text-teal">
+      </BodyText>
+      <BodySmall className="mt-3" centered style={{ color: colors.primaryBlue }}>
         Signed in as {session.user.email}. For founder testing, leave the user
         id as your own so a row appears for you.
-      </Text>
+      </BodySmall>
 
       <Controller
         control={control}
@@ -330,11 +335,13 @@ export default function EnterResultsScreen() {
       />
 
       {formMessage ? (
-        <Text
-          className={`mt-4 text-center ${formOk ? "text-teal" : "text-riskHighText"}`}
+        <BodyText
+          className="mt-4"
+          centered
+          style={{ color: formOk ? colors.riskLowText : colors.riskHighText }}
         >
           {formMessage}
-        </Text>
+        </BodyText>
       ) : null}
 
       <Button
@@ -346,12 +353,12 @@ export default function EnterResultsScreen() {
       />
 
       <View className="mt-8">
-        <Text className="text-center text-xl text-charcoal">
+        <SectionTitle centered>
           {COPY.enterResultsCsvTitle}
-        </Text>
-        <Text className="mt-2 text-center text-sm text-slate">
+        </SectionTitle>
+        <BodySmall className="mt-2" centered>
           {COPY.enterResultsCsvHint}
-        </Text>
+        </BodySmall>
         <TextInput
           className="mt-3 min-h-[120px] rounded-xl border border-border bg-white px-4 py-3 text-charcoal"
           placeholderTextColor={colors.mist}

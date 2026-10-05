@@ -1,9 +1,11 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
-import { classifyError } from "@/lib/friendly-errors";
+import { BodyText, SectionTitle } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
+import { classifyError } from "@/lib/friendly-errors";
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -28,19 +30,19 @@ function ErrorFallback({ onRetry, hint }: FallbackProps) {
   return (
     <View className="flex-1 items-center justify-center bg-cream px-6">
       <GlassSurface intensity="card" style={{ padding: 24, width: "100%" }}>
-        <Text className="text-center text-xl text-charcoal">
+        <SectionTitle centered>
           {COPY.errorBoundaryTitle}
-        </Text>
-        <Text className="mt-2 text-center text-charcoal">
+        </SectionTitle>
+        <BodyText className="mt-2" centered>
           {hint ?? COPY.errorBoundaryBody}
-        </Text>
+        </BodyText>
         <Pressable
           onPress={onRetry}
           className="mt-6 min-h-[48px] items-center justify-center rounded-xl bg-primaryBlue px-6 py-3"
           accessibilityRole="button"
           accessibilityLabel={COPY.errorBoundaryRetryLabel}
         >
-          <Text className="text-white">{COPY.errorBoundaryRetry}</Text>
+          <BodyText style={{ color: colors.white }}>{COPY.errorBoundaryRetry}</BodyText>
         </Pressable>
       </GlassSurface>
     </View>

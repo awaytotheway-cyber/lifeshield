@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { SymptomInterrupt } from "@/components/questionnaire/SymptomInterrupt";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import { FAMILY_RELATIONSHIP_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import {
@@ -195,7 +196,7 @@ export default function FamilyHistoryScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller
@@ -215,13 +216,13 @@ export default function FamilyHistoryScreen() {
       {breastCancer === "yes" ? (
         <View className="mt-2">
           {errors.breastRelatives?.message ? (
-            <Text className="text-riskHighText">{String(errors.breastRelatives.message)}</Text>
+            <ErrorText>{String(errors.breastRelatives.message)}</ErrorText>
           ) : null}
           {fields.map((field, index) => (
             <View key={field.id} className="mt-3 rounded-2xl bg-white px-4 py-3">
-              <Text className="text-charcoal">
+              <BodyText>
                 {COPY.familyRelativeLabel} {index + 1}
-              </Text>
+              </BodyText>
               <Controller
                 control={control}
                 name={`breastRelatives.${index}.relationship`}

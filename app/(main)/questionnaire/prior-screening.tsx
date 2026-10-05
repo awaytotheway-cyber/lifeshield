@@ -2,16 +2,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { Button } from "@/components/ui/Button";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import { MAMMOGRAM_FINDING_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
+import { loadClinicalThresholds } from "@/lib/load-thresholds";
 import {
   jsonToPriorScreeningForm,
   priorScreeningToJson,
@@ -22,10 +24,9 @@ import {
   type PriorScreeningForm,
   type PriorScreeningParsed,
 } from "@/lib/questionnaire/schemas";
-import { collectRecommendations, PHASE1_LABS } from "@/lib/rules-engine";
-import { loadClinicalThresholds } from "@/lib/load-thresholds";
-import { factsFromSavedAnswers } from "@/lib/rules-facts";
 import { routes } from "@/lib/routes";
+import { collectRecommendations, PHASE1_LABS } from "@/lib/rules-engine";
+import { factsFromSavedAnswers } from "@/lib/rules-facts";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -145,7 +146,7 @@ export default function PriorScreeningScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller
@@ -165,13 +166,13 @@ export default function PriorScreeningScreen() {
       {previousMammogram === "yes" ? (
         <View className="mt-2">
           {errors.mammograms?.message ? (
-            <Text className="text-riskHighText">
+            <ErrorText>
               {String(errors.mammograms.message)}
-            </Text>
+            </ErrorText>
           ) : null}
           {fields.map((field, index) => (
             <View key={field.id} className="mt-3 rounded-2xl bg-white px-4 py-3">
-              <Text className="text-charcoal">Mammogram {index + 1}</Text>
+              <BodyText>Mammogram {index + 1}</BodyText>
               <Controller
                 control={control}
                 name={`mammograms.${index}.date`}

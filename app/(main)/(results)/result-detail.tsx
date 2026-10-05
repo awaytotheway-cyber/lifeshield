@@ -1,14 +1,21 @@
-import * as WebBrowser from "expo-web-browser";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StatusChip } from "@/components/results/StatusChip";
-import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
+import {
+  BodySmall,
+  BodyText,
+  ErrorText,
+  ScreenTitle,
+} from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import {
   loadOwnTestResultById,
@@ -88,9 +95,9 @@ export default function ResultDetailScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <ScreenTitle centered>
         {COPY.labResultDetailTitle}
-      </Text>
+      </ScreenTitle>
 
       {loading ? (
         <SkeletonCardList rows={3} />
@@ -98,7 +105,7 @@ export default function ResultDetailScreen() {
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
+          <ErrorText className="mt-4" centered>{message}</ErrorText>
           <Button
             title={COPY.labResultsRetry}
             variant="ghost"
@@ -120,28 +127,28 @@ export default function ResultDetailScreen() {
           />
 
           <View className="mt-4 rounded-2xl bg-white px-4 py-4">
-            <Text className="text-sm text-teal">{COPY.labResultValueLabel}</Text>
-            <Text className="mt-1 text-charcoal">
+            <BodySmall style={{ color: colors.primaryBlue }}>{COPY.labResultValueLabel}</BodySmall>
+            <BodyText className="mt-1">
               {valueBits.length > 0
                 ? valueBits.join(" ")
                 : COPY.labResultNoValue}
-            </Text>
-            <Text className="mt-4 text-sm text-teal">
+            </BodyText>
+            <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>
               {COPY.labResultRangeLabel}
-            </Text>
-            <Text className="mt-1 text-charcoal">
+            </BodySmall>
+            <BodyText className="mt-1">
               {row.reference_range?.trim()
                 ? row.reference_range
                 : COPY.labResultNoRange}
-            </Text>
+            </BodyText>
           </View>
 
-          <Text className="mt-4 text-center text-charcoal">
+          <BodyText className="mt-4" centered>
             {meaningForFlag(row.flag)}
-          </Text>
-          <Text className="mt-3 text-center text-sm text-teal">
+          </BodyText>
+          <BodySmall className="mt-3" centered style={{ color: colors.primaryBlue }}>
             {COPY.labResultNotDiagnosis}
-          </Text>
+          </BodySmall>
 
           {row.lab_report_url ? (
             <Button
@@ -161,7 +168,7 @@ export default function ResultDetailScreen() {
           ) : null}
 
           {pdfMessage ? (
-            <Text className="mt-2 text-center text-riskHighText">{pdfMessage}</Text>
+            <ErrorText className="mt-2" centered>{pdfMessage}</ErrorText>
           ) : null}
         </>
       ) : null}

@@ -1,14 +1,22 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { EmptyBox } from "@/components/illustrations";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import { EmptyBox } from "@/components/illustrations";
 import { PurchaseStatus } from "@/components/store/ProductCard";
-import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
+import {
+  BodySmall,
+  BodyText,
+  ErrorText,
+  ScreenTitle,
+  SectionTitle,
+} from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import { canPurchase, type PurchaseGateResult } from "@/lib/purchase-gates";
 import { routes } from "@/lib/routes";
 import {
@@ -183,14 +191,14 @@ export default function CartScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">{COPY.cartTitle}</Text>
-      <Text className="mt-3 text-center text-charcoal">{COPY.cartBody}</Text>
+      <ScreenTitle centered>{COPY.cartTitle}</ScreenTitle>
+      <BodyText className="mt-3" centered>{COPY.cartBody}</BodyText>
 
       {loading ? <SkeletonCardList rows={3} /> : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
+          <ErrorText className="mt-4" centered>{message}</ErrorText>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -202,13 +210,13 @@ export default function CartScreen() {
       ) : null}
 
       {actionMessage ? (
-        <Text className="mt-4 text-center text-teal">{actionMessage}</Text>
+        <BodyText className="mt-4" centered style={{ color: colors.primaryBlue }}>{actionMessage}</BodyText>
       ) : null}
 
       {!loading && !message && lines.length === 0 ? (
         <View className="mt-6 items-center">
           <EmptyBox width={100} height={100} />
-          <Text className="mt-4 text-center text-charcoal">{COPY.cartEmpty}</Text>
+          <BodyText className="mt-4" centered>{COPY.cartEmpty}</BodyText>
         </View>
       ) : null}
 
@@ -226,10 +234,10 @@ export default function CartScreen() {
                   }
                   medicalName={line.product.clinical_name}
                 />
-                <Text className="mt-2 text-teal">
+                <BodyText className="mt-2" style={{ color: colors.primaryBlue }}>
                   {formatProductPrice(line.product)} × {line.quantity} = ₹
                   {lineTotal.toLocaleString("en-IN")}
-                </Text>
+                </BodyText>
                 <PurchaseStatus gate={gate} />
 
                 <View className="mt-3 flex-row items-center justify-center">
@@ -242,11 +250,11 @@ export default function CartScreen() {
                       void changeQuantity(line, -1);
                     }}
                   >
-                    <Text className="text-xl text-charcoal">−</Text>
+                    <SectionTitle>−</SectionTitle>
                   </Pressable>
-                  <Text className="mx-4 text-charcoal">
+                  <BodyText className="mx-4">
                     {COPY.cartQuantity}: {line.quantity}
-                  </Text>
+                  </BodyText>
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={COPY.cartIncrease}
@@ -256,7 +264,7 @@ export default function CartScreen() {
                       void changeQuantity(line, 1);
                     }}
                   >
-                    <Text className="text-xl text-charcoal">+</Text>
+                    <SectionTitle>+</SectionTitle>
                   </Pressable>
                 </View>
 
@@ -275,13 +283,13 @@ export default function CartScreen() {
 
       {!loading && !message && lines.length > 0 ? (
         <View className="mt-6 rounded-2xl border border-border bg-iceBlue px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
+          <BodyText centered>{COPY.cartTotal}</BodyText>
+          <ScreenTitle className="mt-2" centered style={{ color: colors.primaryBlue }}>
             ₹{total.toLocaleString("en-IN")}
-          </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
+          </ScreenTitle>
+          <BodySmall className="mt-2" centered style={{ color: colors.charcoal }}>
             {COPY.cartTotalNote}
-          </Text>
+          </BodySmall>
         </View>
       ) : null}
 

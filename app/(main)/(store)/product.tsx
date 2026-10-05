@@ -1,14 +1,21 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
-import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
-import { COPY } from "@/lib/copy";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
+import {
+  BodySmall,
+  BodyText,
+  ErrorText,
+  ScreenTitle,
+} from "@/components/ui/Typography";
 import { hrefForConsent } from "@/lib/consent-flow";
+import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import { canPurchase, consentTypeForProduct, type UserContext } from "@/lib/purchase-gates";
 import { routes } from "@/lib/routes";
 import {
@@ -124,7 +131,7 @@ export default function ProductDetailScreen() {
   if (!productId) {
     return (
       <Screen>
-        <Text className="text-center text-riskHighText">{COPY.storeProductMissing}</Text>
+        <ErrorText centered>{COPY.storeProductMissing}</ErrorText>
         <Button
           title={COPY.storeBackStore}
           onPress={() => {
@@ -141,7 +148,7 @@ export default function ProductDetailScreen() {
 
       {message ? (
         <>
-          <Text className="text-center text-riskHighText">{message}</Text>
+          <ErrorText centered>{message}</ErrorText>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -164,22 +171,22 @@ export default function ProductDetailScreen() {
           />
 
           <View className="mt-4 rounded-2xl bg-white px-4 py-4">
-            <Text className="text-sm text-teal">{COPY.productClinicalBasis}</Text>
-            <Text className="mt-2 text-charcoal">
+            <BodySmall style={{ color: colors.primaryBlue }}>{COPY.productClinicalBasis}</BodySmall>
+            <BodyText className="mt-2">
               {product.linked_finding?.trim() ||
                 product.clinical_name ||
                 COPY.productNoBasis}
-            </Text>
+            </BodyText>
           </View>
 
-          <Text className="mt-4 text-center text-2xl text-teal">
+          <ScreenTitle className="mt-4" centered style={{ color: colors.primaryBlue }}>
             {formatProductPrice(product)}
-          </Text>
+          </ScreenTitle>
 
           {gate ? <PurchaseStatus gate={gate} /> : null}
 
           {actionMessage ? (
-            <Text className="mt-4 text-center text-teal">{actionMessage}</Text>
+            <BodyText className="mt-4" centered style={{ color: colors.primaryBlue }}>{actionMessage}</BodyText>
           ) : null}
 
           <Button

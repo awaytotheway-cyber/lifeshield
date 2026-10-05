@@ -1,6 +1,7 @@
-import { Text } from "react-native";
 
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import { useAuthStore } from "@/stores/auth-store";
 
 export function SetupBanners() {
@@ -11,13 +12,13 @@ export function SetupBanners() {
   return (
     <>
       {!configured ? (
-        <Text className="mb-4 text-center text-riskHighText">{COPY.missingKeys}</Text>
+        <ErrorText className="mb-4" centered>{COPY.missingKeys}</ErrorText>
       ) : null}
       {setupMessage ? (
-        <Text className="mb-4 text-center text-teal">{setupMessage}</Text>
+        <BodyText className="mb-4" centered style={{ color: colors.primaryBlue }}>{setupMessage}</BodyText>
       ) : null}
       {errorMessage ? (
-        <Text className="mb-4 text-center text-riskHighText">{errorMessage}</Text>
+        <ErrorText className="mb-4" centered>{errorMessage}</ErrorText>
       ) : null}
     </>
   );

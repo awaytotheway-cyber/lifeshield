@@ -2,11 +2,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Text } from "react-native";
 
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { RadioGroup } from "@/components/ui/RadioGroup";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import {
   COSMETICS_OPTIONS,
   FOOD_FREQUENCY_OPTIONS,
@@ -103,7 +103,7 @@ export default function DietEnvironmentScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller

@@ -1,8 +1,8 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 
-import { SWITCH_PALETTE, type SwitchColor } from "@/lib/switch-colors";
-
+import { BodyText } from "@/components/ui/Typography";
 import { colors } from "@/lib/design-tokens";
+import { SWITCH_PALETTE, type SwitchColor } from "@/lib/switch-colors";
 
 type ColorSwitchProps = {
   label: string;
@@ -54,7 +54,7 @@ export function ColorSwitch({
           }}
         />
       </View>
-      <Text className="flex-1 text-charcoal">{label}</Text>
+      <BodyText className="flex-1">{label}</BodyText>
     </Pressable>
   );
 }

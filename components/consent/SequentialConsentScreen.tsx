@@ -1,13 +1,14 @@
+import { Redirect, useRouter } from "expo-router";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { Redirect, useRouter } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
+import { BodyText, ErrorText, ScreenTitle } from "@/components/ui/Typography";
 import {
   hrefAfterConsent,
   redirectIfConsentOutOfOrder,
@@ -106,23 +107,23 @@ export function SequentialConsentScreen({
 
   return (
     <Screen scroll>
-      <Text className="text-riskHighText text-3xl">{COPY.appName}</Text>
-      <Text className="mt-4 text-2xl text-charcoal">{COPY.consentTitle}</Text>
-      <Text className="mt-3 text-charcoal">{COPY.consentIntro}</Text>
+      <ErrorText>{COPY.appName}</ErrorText>
+      <ScreenTitle className="mt-4">{COPY.consentTitle}</ScreenTitle>
+      <BodyText className="mt-3">{COPY.consentIntro}</BodyText>
       {illustration ? <View style={styles.illustration}>{illustration}</View> : null}
       <ClinicalTerm termKey={consentType} />
-      <Text className="mt-4 text-charcoal">{extraBody}</Text>
+      <BodyText className="mt-4">{extraBody}</BodyText>
       <SetupBanners />
 
       {message ? (
-        <Text className="mt-4 text-center text-riskHighText">{message}</Text>
+        <ErrorText className="mt-4" centered>{message}</ErrorText>
       ) : null}
 
       {declined ? (
         <>
-          <Text className="mt-3 text-center text-charcoal">
+          <BodyText className="mt-3" centered>
             {COPY.consentDeclinedHint}
-          </Text>
+          </BodyText>
           <Button
             title={COPY.consentGoHome}
             variant="ghost"

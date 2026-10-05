@@ -1,23 +1,53 @@
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
+import { colors, radius, spacing } from "@/lib/design-tokens";
 import type { ResultStatusChip } from "@/lib/result-status";
+import { typography } from "@/lib/typography";
 
 /**
  * Colour-coded status. Leads the row so the raw number is never the headline.
+ *
+ * Same contract as components/ui/StatusChip: tinted fill, deepNavy label, and
+ * the status colour on the dot. The previous version put iceBlue on the
+ * vivid red (3.13:1) and primaryBlue on the vivid green (2.48:1) — the
+ * within-range chip, which most users see most often, was the worst of the
+ * two. deepNavy on these tints is 13-15:1.
  */
 export function StatusChip({ chip }: { chip: ResultStatusChip }) {
-  const toneClass =
+  const palette =
     chip.tone === "needs_attention"
-      ? "bg-coral"
+      ? { bg: colors.riskHighLight, dot: colors.riskHigh }
       : chip.tone === "worth_watching"
-        ? "bg-charcoal"
-        : "bg-sage";
-  const textClass =
-    chip.tone === "within_range" ? "text-teal" : "text-cream";
+        ? { bg: colors.riskModerateLight, dot: colors.riskModerate }
+        : { bg: colors.riskLowLight, dot: colors.riskLow };
 
   return (
-    <View className={`self-start rounded-full px-3 py-1 ${toneClass}`}>
-      <Text className={`text-sm ${textClass}`}>{chip.label}</Text>
+    <View style={[styles.chip, { backgroundColor: palette.bg }]}>
+      <View style={[styles.dot, { backgroundColor: palette.dot }]} />
+      <Text style={styles.label}>{chip.label}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  chip: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.micro + 2,
+    minWidth: 72,
+    paddingHorizontal: spacing.mdSm,
+    paddingVertical: spacing.micro,
+    borderRadius: radius.chip,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: radius.chip,
+  },
+  label: {
+    ...typography.chip,
+    textTransform: "none",
+    color: colors.deepNavy,
+  },
+});

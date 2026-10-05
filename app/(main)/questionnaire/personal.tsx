@@ -2,13 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { QuestionCard } from "@/components/questionnaire/QuestionCard";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { TextField } from "@/components/ui/TextField";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import {
   ALCOHOL_UNIT_HINT,
   CAFFEINE_OPTIONS,
@@ -16,6 +16,7 @@ import {
   YES_NO_OPTIONS,
 } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
+import { colors } from "@/lib/design-tokens";
 import {
   calcPackYears,
   jsonToPersonalHistoryForm,
@@ -112,7 +113,7 @@ export default function PersonalHistoryScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller
@@ -157,10 +158,10 @@ export default function PersonalHistoryScreen() {
               />
             )}
           />
-          <Text className="mt-3 text-teal">
+          <BodyText className="mt-3" style={{ color: colors.primaryBlue }}>
             {COPY.packYearsLabel}: {packYears ?? "—"}
-          </Text>
-          <Text className="mt-1 text-charcoal">{COPY.packYearsHint}</Text>
+          </BodyText>
+          <BodyText className="mt-1">{COPY.packYearsHint}</BodyText>
         </>
       ) : null}
 

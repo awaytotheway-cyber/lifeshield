@@ -1,19 +1,27 @@
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
-import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { SkeletonCardList } from "@/components/ui/Skeleton";
+import {
+  BodySmall,
+  BodyText,
+  ErrorText,
+  ScreenTitle,
+  SectionTitle,
+} from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
-import { termKeyForFinding } from "@/lib/plan-groups";
+import { colors } from "@/lib/design-tokens";
 import {
   loadOwnInterventionById,
   reviewStatusLabel,
   type InterventionRow,
 } from "@/lib/plan";
+import { termKeyForFinding } from "@/lib/plan-groups";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -89,11 +97,11 @@ export default function PlanItemScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <ScreenTitle centered>
         {COPY.planDetailTitle}
-      </Text>
+      </ScreenTitle>
       <View className="mt-4 rounded-2xl border border-border bg-iceBlue px-4 py-3">
-        <Text className="text-center text-charcoal">{bannerText}</Text>
+        <BodyText centered>{bannerText}</BodyText>
       </View>
 
       {loading ? (
@@ -102,7 +110,7 @@ export default function PlanItemScreen() {
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
+          <ErrorText className="mt-4" centered>{message}</ErrorText>
           <Button
             title={COPY.planRetry}
             variant="ghost"
@@ -115,41 +123,41 @@ export default function PlanItemScreen() {
 
       {!loading && !message && row ? (
         <>
-          <Text className="mt-4 text-center text-xl text-charcoal">
+          <SectionTitle className="mt-4" centered>
             {row.title}
-          </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailWhat}</Text>
-          <Text className="mt-1 text-charcoal">
+          </SectionTitle>
+          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planDetailWhat}</BodySmall>
+          <BodyText className="mt-1">
             {row.description?.trim() ||
               row.plain_reason?.trim() ||
               COPY.planDetailNotInstruction}
-          </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planWhyLabel}</Text>
-          <Text className="mt-1 text-charcoal">
+          </BodyText>
+          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planWhyLabel}</BodySmall>
+          <BodyText className="mt-1">
             {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
-          </Text>
+          </BodyText>
 
           {row.clinician_interaction_check ? (
             <View className="mt-3 min-w-[72px] self-start rounded-full bg-amberLight px-3 py-1">
-              <Text className="text-center text-sm text-charcoal">
+              <BodySmall centered style={{ color: colors.charcoal }}>
                 {COPY.planNeedsCheck}
-              </Text>
+              </BodySmall>
             </View>
           ) : null}
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailReview}</Text>
-          <Text className="mt-1 text-charcoal">
+          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planDetailReview}</BodySmall>
+          <BodyText className="mt-1">
             {reviewStatusLabel(row.status)}
-          </Text>
+          </BodyText>
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planClinicalBasis}</Text>
-          <Text className="mt-1 text-charcoal">
+          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planClinicalBasis}</BodySmall>
+          <BodyText className="mt-1">
             {row.clinical_basis?.trim() || row.trigger_finding}
-          </Text>
+          </BodyText>
 
-          <Text className="mt-6 text-center text-sm text-teal">
+          <BodySmall className="mt-6" centered style={{ color: colors.primaryBlue }}>
             {COPY.planDetailFinding}
-          </Text>
+          </BodySmall>
           <ClinicalTerm
             termKey={termKey}
             plainName={row.title}
@@ -157,9 +165,9 @@ export default function PlanItemScreen() {
             medicalName={row.trigger_finding}
           />
 
-          <Text className="mt-4 text-center text-sm text-teal">
+          <BodySmall className="mt-4" centered style={{ color: colors.primaryBlue }}>
             {COPY.planDetailNotInstruction}
-          </Text>
+          </BodySmall>
 
           {session?.user.id ? (
             <BarriersAccordion

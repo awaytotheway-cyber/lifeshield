@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { QuestionCard } from "@/components/questionnaire/QuestionCard";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
@@ -11,6 +10,7 @@ import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { TextField } from "@/components/ui/TextField";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import {
   COUNTRY_OPTIONS,
   ETHNICITY_OPTIONS,
@@ -20,6 +20,7 @@ import {
 } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
+import { colors } from "@/lib/design-tokens";
 import {
   demographicsToProfile,
   profileToDemographicsForm,
@@ -120,7 +121,7 @@ export default function DemographicsScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller
@@ -137,9 +138,9 @@ export default function DemographicsScreen() {
           />
         )}
       />
-      <Text className="mt-2 text-teal">
+      <BodyText className="mt-2" style={{ color: colors.primaryBlue }}>
         {COPY.ageLabel}: {age === null ? "—" : `${age} years`}
-      </Text>
+      </BodyText>
 
       <Controller
         control={control}
@@ -181,10 +182,10 @@ export default function DemographicsScreen() {
           />
         )}
       />
-      <Text className="mt-3 text-teal">
+      <BodyText className="mt-3" style={{ color: colors.primaryBlue }}>
         {COPY.bmiLabel}: {bmi === null ? "—" : String(bmi)}
-      </Text>
-      <Text className="mt-1 text-charcoal">{COPY.bmiHint}</Text>
+      </BodyText>
+      <BodyText className="mt-1">{COPY.bmiHint}</BodyText>
 
       <QuestionCard title="Waist (cm)" hint={WAIST_MEASURE_HINT}>
         <Controller
@@ -217,9 +218,9 @@ export default function DemographicsScreen() {
           )}
         />
       </QuestionCard>
-      <Text className="mt-3 text-teal">
+      <BodyText className="mt-3" style={{ color: colors.primaryBlue }}>
         {COPY.whrLabel}: {whr === null ? "—" : String(whr)}
-      </Text>
+      </BodyText>
 
       <Controller
         control={control}

@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
@@ -11,6 +10,7 @@ import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { TextField } from "@/components/ui/TextField";
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import {
   CONTRACEPTIVE_TYPE_OPTIONS,
   MENOPAUSAL_STATUS_OPTIONS,
@@ -282,11 +282,11 @@ export default function ReproductiveScreen() {
         onFooterPress={() => router.replace(routes.qDemographics)}
       >
         {loadMessage ? (
-          <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+          <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
         ) : null}
-        <Text className="mt-4 text-center text-charcoal">
+        <BodyText className="mt-4" centered>
           {COPY.reproductiveNeedSection1}
-        </Text>
+        </BodyText>
       </SectionScaffold>
     );
   }
@@ -311,11 +311,11 @@ export default function ReproductiveScreen() {
         errorMessage={saveMessage}
       >
         {loadMessage ? (
-          <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+          <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
         ) : null}
-        <Text className="mt-4 text-center text-charcoal">
+        <BodyText className="mt-4" centered>
           {COPY.reproductiveMaleSkip}
-        </Text>
+        </BodyText>
       </SectionScaffold>
     );
   }
@@ -337,7 +337,7 @@ export default function ReproductiveScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
+        <ErrorText className="mt-3" centered>{loadMessage}</ErrorText>
       ) : null}
 
       <Controller

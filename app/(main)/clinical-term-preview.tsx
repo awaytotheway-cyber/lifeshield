@@ -1,9 +1,9 @@
 import { Redirect, useRouter } from "expo-router";
-import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { BodyText, ScreenTitle } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
@@ -23,12 +23,12 @@ export default function ClinicalTermPreviewScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <ScreenTitle centered>
         {COPY.clinicalTermPreviewTitle}
-      </Text>
-      <Text className="mt-3 text-center text-charcoal">
+      </ScreenTitle>
+      <BodyText className="mt-3" centered>
         {COPY.clinicalTermPreviewBody}
-      </Text>
+      </BodyText>
 
       {/* Sample: Gut health check (TERMS.stool) */}
       <ClinicalTerm termKey="stool" />

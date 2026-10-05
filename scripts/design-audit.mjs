@@ -175,6 +175,29 @@ const RULES = [
       || /\bcolor: colors\.(skyBlue|midTeal)\b/.test(line),
   },
   {
+    id: "system-font-text",
+    severity: 1,
+    label: "Text without a font family (renders in the platform system font)",
+    // A Tailwind size class sets size but not family, and no font-* utilities
+    // are configured, so a className-only Text silently falls back to the
+    // system font. Use the components in components/ui/Typography.tsx.
+    exempt: ["components/ui/Typography.tsx"],
+    test: (line, n, src) => {
+      const at = src.split("\n").slice(0, n).join("\n").length;
+      const tag = /<Text\b[^>]*?>/g;
+      tag.lastIndex = Math.max(0, at - line.length - 1);
+      let m;
+      while ((m = tag.exec(src)) !== null) {
+        if (m.index > at) break;
+        const end = m.index + m[0].length;
+        if (m.index <= at && end >= at - line.length) {
+          return !m[0].includes("style=");
+        }
+      }
+      return false;
+    },
+  },
+  {
     id: "inline-string",
     severity: 2,
     label: "Hardcoded user-facing string in JSX (move it to lib/copy.ts)",

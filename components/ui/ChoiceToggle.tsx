@@ -1,6 +1,8 @@
 import { Pressable, Text, View } from "react-native";
 
+import { BodyText, ErrorText } from "@/components/ui/Typography";
 import { SWITCH_PALETTE, type SwitchColor } from "@/lib/switch-colors";
+import { typography } from "@/lib/typography";
 
 type Option = { value: string; label: string };
 
@@ -35,7 +37,7 @@ export function ChoiceToggle({
 
   return (
     <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
+      <BodyText>{label}</BodyText>
       <View
         className="mt-3 flex-row rounded-full p-1"
         style={{ backgroundColor: palette.trackOff }}
@@ -62,8 +64,8 @@ export function ChoiceToggle({
               }}
             >
               <Text
-                className="text-base"
                 style={{
+                  ...typography.body,
                   color: selected ? palette.selectedText : palette.idleText,
                 }}
               >
@@ -73,7 +75,7 @@ export function ChoiceToggle({
           );
         })}
       </View>
-      {error ? <Text className="mt-1 text-riskHighText">{error}</Text> : null}
+      {error ? <ErrorText className="mt-1">{error}</ErrorText> : null}
     </View>
   );
 }

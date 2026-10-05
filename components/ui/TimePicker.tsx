@@ -1,14 +1,14 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 
+import { BodySmall, BodyText, ErrorText } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
-
-import { colors } from "@/lib/design-tokens";
 import {
   formatDisplayDuration,
   isHHmm,
   toInputHHmm,
   type TimePickerFieldProps,
 } from "@/lib/datetime";
+import { colors } from "@/lib/design-tokens";
 
 /**
  * Default (web) time field. On iPhone Safari this is the alarm-style clock.
@@ -26,8 +26,8 @@ export function TimePicker({
 
   return (
     <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
-      {hint ? <Text className="mt-1 text-sm text-charcoal">{hint}</Text> : null}
+      <BodyText>{label}</BodyText>
+      {hint ? <BodySmall className="mt-1" style={{ color: colors.charcoal }}>{hint}</BodySmall> : null}
       <input
         type="time"
         aria-label={label}
@@ -51,16 +51,16 @@ export function TimePicker({
         }}
       />
       {isHHmm(clockValue) ? (
-        <Text className="mt-1 text-sm text-teal">
+        <BodySmall className="mt-1" style={{ color: colors.primaryBlue }}>
           {formatDisplayDuration(clockValue)}
-        </Text>
+        </BodySmall>
       ) : null}
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-riskHighText">
+        <ErrorText className="mt-1">
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
-        </Text>
+        </ErrorText>
       ) : null}
-      {error ? <Text className="mt-1 text-riskHighText">{error}</Text> : null}
+      {error ? <ErrorText className="mt-1">{error}</ErrorText> : null}
     </View>
   );
 }
