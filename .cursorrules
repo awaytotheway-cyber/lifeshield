@@ -5,6 +5,7 @@ Every async operation gets a try/catch and a user-visible fallback. No silent fa
 Never let the app crash to a white/blank screen. Wrap the app in an Error Boundary. Every screen must render something even if data is missing.
 No secrets in the app code. The Supabase anon key is fine (it's public by design with RLS). Nothing else. No service-role keys, ever.
 Explain like I don't code. When you finish a step, tell me in plain English what you did, what I need to do in the Supabase dashboard (if anything), and how I'd change it later. Keep code comments plentiful and beginner-friendly.
+UI/UX is governed by .cursorrules-design, not by this file. That file is the single authoritative design system (colour, typography, spacing, components, motion, accessibility, copy tone). Where this file or any phase file disagrees with it on a visual matter, .cursorrules-design wins. Verify any screen work with `node scripts/design-audit.mjs` before considering it done.
 When unsure, ask me one clear question rather than guessing. A wrong assumption that compiles is worse than a question.
 Build incrementally and keep it runnable. After each day's tasks in Section 9, the app must still start with npx expo start without errors. Never leave the project in a broken state between steps.
 1. WHAT WE ARE BUILDING (Phase 1 scope)
@@ -79,31 +80,28 @@ After installing, run npx expo start --clear once to confirm a clean boot before
 
 NativeWind "installs fine but styles silently don't apply" is a well-known trap caused by wrong config paths or Metro cache. Follow this exactly:
 
-Create tailwind.config.js at project root:
-js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
-  presets: [require("nativewind/preset")],
-  theme: {
-    extend: {
-      colors: {
-        sage: "#A8C5A0",
-        cream: "#FFF8F0",
-        teal: "#1A535C",
-        coral: "#FF6B6B",
-        charcoal: "#2D3436",
-      },
-    },
-  },
-  plugins: [],
-};
-Create global.css at project root:
-css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-Import global.css at the very top of app/_layout.tsx.
+This project is already set up — tailwind.config.js, global.css,
+metro.config.js and babel.config.js all exist and work. Do NOT recreate them
+from a snippet. Read the real files.
+
+Two things that have changed since this section was first written, and that
+old snippets here got wrong:
+
+1. COLOURS. Do not take a palette from this file. The authoritative palette
+   lives in .cursorrules-design (section 2) and is defined in three places
+   that must always be edited together:
+     - tailwind.config.js
+     - the @theme block in global.css
+     - lib/design-tokens.ts
+   The palette has moved twice (original sage/cream/teal → iOS system →
+   "Blue Glass"). Any hex you remember from this file is stale.
+
+2. TAILWIND v4 / NATIVEWIND v5 ARE CSS-FIRST. global.css imports layers and
+   declares tokens as CSS variables; it does NOT use the v3 directives
+   (@tailwind base/components/utilities), and tailwind.config.js does not set
+   `presets`. Copying a v3 snippet in is a silent-failure trap.
+
+global.css is already imported at the very top of app/_layout.tsx.
 Configure metro.config.js and babel.config.js per the NativeWind v5 docs for the installed version. After config, ALWAYS restart with npx expo start --clear (cache clear) — stale Metro cache is why styles "don't work" even when config is right.
 Verification step (do not skip): before building real screens, put one <Text className="text-coral"> on screen and confirm it renders coral. If it doesn't, the problem is config/cache, not the code — fix it now, not later.
 6. SUPABASE — BACKEND A NON-CODER CAN MANAGE
