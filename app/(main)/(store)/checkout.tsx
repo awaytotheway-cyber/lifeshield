@@ -131,7 +131,7 @@ export default function CheckoutScreen() {
 
       {cartMessage ? (
         <>
-          <Text className="mt-4 text-center text-coral">{cartMessage}</Text>
+          <Text className="mt-4 text-center text-riskHighText">{cartMessage}</Text>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -210,7 +210,7 @@ export default function CheckoutScreen() {
 
       {errorMessage ? (
         <>
-          <Text className="mt-4 text-center text-coral">{errorMessage}</Text>
+          <Text className="mt-4 text-center text-riskHighText">{errorMessage}</Text>
           {canUsePaymentSheet && canPay ? (
             <Button
               title={COPY.checkoutRetryPay}

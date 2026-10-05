@@ -470,14 +470,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   note: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.amber,
+    color: colors.riskModerateText,
   },
   photoCard: {
     marginTop: spacing.md,
@@ -548,6 +548,6 @@ const styles = StyleSheet.create({
   badgeText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.sage,
+    color: colors.riskLowText,
   },
 });

@@ -85,12 +85,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   error: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
 });

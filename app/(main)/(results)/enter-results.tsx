@@ -331,7 +331,7 @@ export default function EnterResultsScreen() {
 
       {formMessage ? (
         <Text
-          className={`mt-4 text-center ${formOk ? "text-teal" : "text-coral"}`}
+          className={`mt-4 text-center ${formOk ? "text-teal" : "text-riskHighText"}`}
         >
           {formMessage}
         </Text>

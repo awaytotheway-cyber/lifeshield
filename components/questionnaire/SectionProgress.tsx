@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   done: {
-    color: colors.sage,
+    color: colors.riskLowText,
   },
   wait: {
     color: colors.slate,

@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   loading: {
     textAlign: "center",

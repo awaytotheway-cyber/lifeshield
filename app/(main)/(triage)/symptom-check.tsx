@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   cta: {
     marginTop: 40,

@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
     textAlign: "left",
   },
   hint: {

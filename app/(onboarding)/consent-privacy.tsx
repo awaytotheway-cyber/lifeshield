@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   backdrop: {
     flex: 1,
@@ -362,11 +362,11 @@ const styles = StyleSheet.create({
   sheetClose: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   sheetBack: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.primaryBlue,
   },
 });

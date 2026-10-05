@@ -23,6 +23,11 @@
   --color-riskModerate: #ffcc00;
   --color-riskHigh: #ff3b30;
 
+  /* Text-safe risk variants — coloured words only, never fills. */
+  --color-riskHighText: #d70015;
+  --color-riskModerateText: #8a6100;
+  --color-riskLowText: #1b7f3b;
+
   /* ——— Neutrals ——— */
   --color-white: #ffffff;
   --color-charcoal: #0b1e4d;

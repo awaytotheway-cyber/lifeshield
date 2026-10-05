@@ -317,14 +317,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
     textAlign: "center",
   },
   ok: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.sage,
+    color: colors.riskLowText,
     textAlign: "center",
   },
   group: {

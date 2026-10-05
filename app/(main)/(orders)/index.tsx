@@ -166,7 +166,7 @@ export default function OrdersScreen() {
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
           <Button title={COPY.storeRetry} variant="ghost" onPress={refresh} />
         </>
       ) : null}
@@ -205,7 +205,7 @@ export default function OrdersScreen() {
             </View>
           ) : null}
 
-          <Text className="mt-4 text-center text-sm text-coral">
+          <Text className="mt-4 text-center text-sm text-riskHighText">
             {COPY.checkoutViewOrder}
           </Text>
         </Pressable>

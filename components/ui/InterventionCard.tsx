@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   expandLabel: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.primaryBlue,
   },
   basis: {
     fontFamily: fontFamily.body,

@@ -259,6 +259,6 @@ const styles = StyleSheet.create({
   error: {
     marginTop: spacing.base,
     fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    color: colors.riskHighText,
   },
 });

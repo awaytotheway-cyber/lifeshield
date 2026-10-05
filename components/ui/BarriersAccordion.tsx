@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
   error: {
     marginTop: spacing.base,
     fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    color: colors.riskHighText,
   },
 });
 
@@ -465,6 +465,6 @@ const fbStyles = StyleSheet.create({
   error: {
     marginTop: spacing.sm,
     fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    color: colors.riskHighText,
   },
 });

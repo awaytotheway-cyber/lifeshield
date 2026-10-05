@@ -196,11 +196,11 @@ const styles = StyleSheet.create({
   saved: {
     marginTop: spacing.base,
     fontFamily: fontFamily.bodySemi,
-    color: colors.riskLow,
+    color: colors.riskLowText,
   },
   error: {
     marginTop: spacing.base,
     fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    color: colors.riskHighText,
   },
 });

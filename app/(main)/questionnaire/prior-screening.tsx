@@ -145,7 +145,7 @@ export default function PriorScreeningScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
       ) : null}
 
       <Controller
@@ -165,7 +165,7 @@ export default function PriorScreeningScreen() {
       {previousMammogram === "yes" ? (
         <View className="mt-2">
           {errors.mammograms?.message ? (
-            <Text className="text-coral">
+            <Text className="text-riskHighText">
               {String(errors.mammograms.message)}
             </Text>
           ) : null}

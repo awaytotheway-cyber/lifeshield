@@ -102,7 +102,7 @@ export default function PlanItemScreen() {
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
           <Button
             title={COPY.planRetry}
             variant="ghost"

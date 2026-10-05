@@ -162,13 +162,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   error: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   backdrop: {
     flex: 1,
@@ -193,6 +193,6 @@ const styles = StyleSheet.create({
   doneText: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.primaryBlue,
   },
 });

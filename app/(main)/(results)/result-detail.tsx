@@ -98,7 +98,7 @@ export default function ResultDetailScreen() {
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
           <Button
             title={COPY.labResultsRetry}
             variant="ghost"
@@ -161,7 +161,7 @@ export default function ResultDetailScreen() {
           ) : null}
 
           {pdfMessage ? (
-            <Text className="mt-2 text-center text-coral">{pdfMessage}</Text>
+            <Text className="mt-2 text-center text-riskHighText">{pdfMessage}</Text>
           ) : null}
         </>
       ) : null}

@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 14,
     lineHeight: 22,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   card: {
     marginTop: spacing.md,
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   done: {
     fontFamily: fontFamily.body,

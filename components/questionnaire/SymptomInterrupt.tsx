@@ -92,7 +92,7 @@ export function SymptomInterrupt({
           style={{
             marginTop: 12,
             textAlign: "center",
-            color: colors.coral,
+            color: colors.riskHighText,
             fontFamily: fontFamily.body,
             fontSize: 13,
           }}

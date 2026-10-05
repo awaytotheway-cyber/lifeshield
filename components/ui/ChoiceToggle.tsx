@@ -73,7 +73,7 @@ export function ChoiceToggle({
           );
         })}
       </View>
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text className="mt-1 text-riskHighText">{error}</Text> : null}
     </View>
   );
 }

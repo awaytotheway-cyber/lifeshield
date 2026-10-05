@@ -56,12 +56,12 @@ function GoalRow({
 }
 
 function statusColor(row: WeeklyGoalRow) {
-  if (isOverdue(row)) return { color: colors.riskHigh };
+  if (isOverdue(row)) return { color: colors.riskHighText };
   switch (row.status) {
     case "completed":
-      return { color: colors.riskLow };
+      return { color: colors.riskLowText };
     case "missed":
-      return { color: colors.riskHigh };
+      return { color: colors.riskHighText };
     case "cancelled":
       return { color: colors.slate };
     default:
@@ -214,6 +214,6 @@ const styles = StyleSheet.create({
   error: {
     marginTop: spacing.base,
     fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    color: colors.riskHighText,
   },
 });

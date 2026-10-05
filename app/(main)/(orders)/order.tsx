@@ -25,7 +25,7 @@ function TimelineRow({ step }: { step: OrderTimelineStep }) {
     : step.done
       ? "bg-teal"
       : "bg-sage";
-  const textClass = step.current ? "text-coral" : "text-charcoal";
+  const textClass = step.current ? "text-riskHighText" : "text-charcoal";
 
   return (
     <View className="mt-4 flex-row">
@@ -116,7 +116,7 @@ export default function OrderDetailScreen() {
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-riskHighText">{message}</Text>
           <Button title={COPY.storeRetry} variant="ghost" onPress={() => void refresh()} />
         </>
       ) : null}

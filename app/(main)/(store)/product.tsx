@@ -124,7 +124,7 @@ export default function ProductDetailScreen() {
   if (!productId) {
     return (
       <Screen>
-        <Text className="text-center text-coral">{COPY.storeProductMissing}</Text>
+        <Text className="text-center text-riskHighText">{COPY.storeProductMissing}</Text>
         <Button
           title={COPY.storeBackStore}
           onPress={() => {
@@ -141,7 +141,7 @@ export default function ProductDetailScreen() {
 
       {message ? (
         <>
-          <Text className="text-center text-coral">{message}</Text>
+          <Text className="text-center text-riskHighText">{message}</Text>
           <Button
             title={COPY.storeRetry}
             variant="ghost"

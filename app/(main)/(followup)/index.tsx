@@ -308,14 +308,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
     textAlign: "center",
   },
   ok: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.sage,
+    color: colors.riskLowText,
     textAlign: "center",
   },
   note: {
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.slate,
   },
   list: {
     paddingBottom: 16,

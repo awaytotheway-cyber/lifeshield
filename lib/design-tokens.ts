@@ -35,6 +35,22 @@ export const colors = {
   riskHigh: "#FF3B30",
   riskHighLight: "#FFE5E3",
 
+  /**
+   * Text-safe variants of the risk colours.
+   *
+   * The system Green/Yellow/Red are tuned for fills, icons and dots, where
+   * WCAG only asks 3:1. As *text* on white they fail AA badly — the yellow is
+   * 1.51:1 and the green 2.22:1 — so anything that spells a status out in
+   * words uses these instead. #D70015 is Apple's own accessible-contrast
+   * systemRed, so this stays inside the iOS palette.
+   *
+   * Use the vivid tokens above for icons, dots, bars and fills; use these for
+   * any coloured words.
+   */
+  riskHighText: "#D70015",
+  riskModerateText: "#8A6100",
+  riskLowText: "#1B7F3B",
+
   white: "#FFFFFF",
   /** Headline / primary text (same as deepNavy — never pure black). */
   charcoal: "#0B1E4D",

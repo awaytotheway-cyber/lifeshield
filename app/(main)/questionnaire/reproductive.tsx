@@ -282,7 +282,7 @@ export default function ReproductiveScreen() {
         onFooterPress={() => router.replace(routes.qDemographics)}
       >
         {loadMessage ? (
-          <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+          <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
         ) : null}
         <Text className="mt-4 text-center text-charcoal">
           {COPY.reproductiveNeedSection1}
@@ -311,7 +311,7 @@ export default function ReproductiveScreen() {
         errorMessage={saveMessage}
       >
         {loadMessage ? (
-          <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+          <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
         ) : null}
         <Text className="mt-4 text-center text-charcoal">
           {COPY.reproductiveMaleSkip}
@@ -337,7 +337,7 @@ export default function ReproductiveScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
       ) : null}
 
       <Controller

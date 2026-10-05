@@ -57,7 +57,7 @@ export function TimePicker({
         </Text>
       </Pressable>
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-coral">
+        <Text className="mt-1 text-sm text-riskHighText">
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
         </Text>
       ) : null}
@@ -84,7 +84,7 @@ export function TimePicker({
           ) : null}
         </View>
       ) : null}
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text className="mt-1 text-riskHighText">{error}</Text> : null}
     </View>
   );
 }

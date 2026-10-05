@@ -241,14 +241,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
     textAlign: "center",
   },
   hint: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.midTeal,
+    color: colors.slate,
     textAlign: "center",
   },
 });

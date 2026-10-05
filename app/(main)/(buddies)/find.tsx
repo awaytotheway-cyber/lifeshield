@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   matchText: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.riskLow,
+    color: colors.riskLowText,
   },
   subLabel: {
     marginTop: spacing.sm,
@@ -233,6 +233,6 @@ const styles = StyleSheet.create({
   error: {
     marginTop: spacing.base,
     fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    color: colors.riskHighText,
   },
 });

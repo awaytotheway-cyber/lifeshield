@@ -167,6 +167,6 @@ const styles = StyleSheet.create({
   closeText: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.primaryBlue,
   },
 });

@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 12,
-    color: colors.coral,
+    color: colors.riskHighText,
     fontFamily: fontFamily.body,
   },
   card: {

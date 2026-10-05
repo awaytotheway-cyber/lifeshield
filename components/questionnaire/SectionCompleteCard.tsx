@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.display,
     fontSize: 20,
-    color: colors.sage,
+    color: colors.riskLowText,
     textAlign: "center",
   },
   subtitle: {

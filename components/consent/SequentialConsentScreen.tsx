@@ -106,7 +106,7 @@ export function SequentialConsentScreen({
 
   return (
     <Screen scroll>
-      <Text className="text-coral text-3xl">{COPY.appName}</Text>
+      <Text className="text-riskHighText text-3xl">{COPY.appName}</Text>
       <Text className="mt-4 text-2xl text-charcoal">{COPY.consentTitle}</Text>
       <Text className="mt-3 text-charcoal">{COPY.consentIntro}</Text>
       {illustration ? <View style={styles.illustration}>{illustration}</View> : null}
@@ -115,7 +115,7 @@ export function SequentialConsentScreen({
       <SetupBanners />
 
       {message ? (
-        <Text className="mt-4 text-center text-coral">{message}</Text>
+        <Text className="mt-4 text-center text-riskHighText">{message}</Text>
       ) : null}
 
       {declined ? (

@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
   body: {
     marginTop: 12,

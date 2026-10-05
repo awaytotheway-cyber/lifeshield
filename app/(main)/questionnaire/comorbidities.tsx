@@ -115,7 +115,7 @@ export default function ComorbiditiesScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-riskHighText">{loadMessage}</Text>
       ) : null}
 
       <ClinicalTerm termKey="gilbert" />

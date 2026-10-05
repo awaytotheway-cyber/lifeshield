@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   hint: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.midTeal,
+    color: colors.slate,
     marginBottom: 8,
   },
   input: {
@@ -131,6 +131,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: colors.riskHighText,
   },
 });

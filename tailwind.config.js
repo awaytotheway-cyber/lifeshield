@@ -22,6 +22,13 @@ module.exports = {
         riskModerate: "#FFCC00",
         riskHigh: "#FF3B30",
 
+        // Text-safe risk variants. The vivid colours above are for fills,
+        // icons and dots; coloured *words* use these, because the system
+        // yellow and green fail WCAG AA as text on white.
+        riskHighText: "#D70015",
+        riskModerateText: "#8A6100",
+        riskLowText: "#1B7F3B",
+
         // ——— Neutrals ———
         white: "#FFFFFF",
         charcoal: "#0B1E4D",

@@ -156,6 +156,25 @@ const RULES = [
     },
   },
   {
+    id: "risk-color-as-text",
+    severity: 1,
+    label: "Vivid risk colour used as text (use riskHighText/riskModerateText/riskLowText)",
+    // The system Green/Yellow/Red are fill colours. As text on white they are
+    // 2.22:1 and 1.51:1, well under WCAG AA's 4.5:1. Icons and fills may keep
+    // them, so this only looks at text colours.
+    test: (line) =>
+      /\btext-(coral|sage|amber|riskHigh|riskLow|riskModerate)\b(?!Text|Light)/.test(line)
+      || /\bcolor: colors\.(coral|sage|amber|riskHigh|riskLow|riskModerate)\b(?!Text|Light)/.test(line),
+  },
+  {
+    id: "low-contrast-text",
+    severity: 1,
+    label: "Low-contrast colour used as text (skyBlue 2.44:1, mist 2.50:1 — decorative/placeholder only)",
+    test: (line) =>
+      /\btext-(skyBlue|midTeal)\b/.test(line)
+      || /\bcolor: colors\.(skyBlue|midTeal)\b/.test(line),
+  },
+  {
     id: "console",
     severity: 3,
     label: "console.log left in a component",

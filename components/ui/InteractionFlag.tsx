@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.amber,
+    color: colors.riskModerateText,
   },
   callout: {
     marginTop: spacing.sm,
