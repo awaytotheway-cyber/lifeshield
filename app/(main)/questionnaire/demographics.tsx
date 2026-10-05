@@ -108,7 +108,7 @@ export default function DemographicsScreen() {
 
   return (
     <SectionScaffold
-      title="Demographics & measurements"
+      title={COPY.qDemographicsTitle}
       step={1}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -128,7 +128,7 @@ export default function DemographicsScreen() {
         name="dateOfBirth"
         render={({ field: { value, onChange } }) => (
           <DatePicker
-            label="Date of birth"
+            label={COPY.qDateOfBirthLabel}
             value={value}
             onChange={onChange}
             error={errors.dateOfBirth?.message}
@@ -257,7 +257,7 @@ export default function DemographicsScreen() {
         name="countryOfOrigin"
         render={({ field: { value, onChange } }) => (
           <SelectPicker
-            label="Country of origin"
+            label={COPY.qCountryOfOriginLabel}
             options={COUNTRY_OPTIONS}
             value={value}
             onChange={onChange}
@@ -271,7 +271,7 @@ export default function DemographicsScreen() {
           name="countryOther"
           render={({ field: { value, onChange, onBlur } }) => (
             <TextField
-              label="Please enter country"
+              label={COPY.qCountryEnterLabel}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}

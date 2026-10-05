@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { COPY } from "@/lib/copy";
 
 type InteractionFlagProps = {
   reason?: string;
@@ -18,7 +19,7 @@ export function InteractionFlag({
   return (
     <View>
       <View style={styles.badge}>
-        <Text style={styles.badgeText}>Needs practitioner check</Text>
+        <Text style={styles.badgeText}>{COPY.interactionFlagBadge}</Text>
       </View>
       {!compact && reason ? (
         <View style={styles.callout}>

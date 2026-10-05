@@ -84,7 +84,7 @@ export default function DeleteAccountScreen() {
             multiline
           />
           <TextField
-            label='Type DELETE to confirm'
+            label={COPY.deleteAccountConfirmLabel}
             value={confirmText}
             onChangeText={setConfirmText}
             autoCapitalize="characters"

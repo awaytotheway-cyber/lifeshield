@@ -175,6 +175,21 @@ const RULES = [
       || /\bcolor: colors\.(skyBlue|midTeal)\b/.test(line),
   },
   {
+    id: "inline-string",
+    severity: 2,
+    label: "Hardcoded user-facing string in JSX (move it to lib/copy.ts)",
+    // Looks for prose rendered straight into a Text element or passed as a
+    // title/label prop. Short symbols and single words are ignored, since
+    // things like "+" or a unit are not copy.
+    test: (line) => {
+      const patterns = [
+        /<Text[^>]*>\s*[A-Z][A-Za-z,'’]+(?:\s+[A-Za-z0-9,'’.&-]+){2,}/,
+        /\b(?:title|label|placeholder|accessibilityHint)=["'][A-Z][A-Za-z,'’]+(?:\s+[A-Za-z0-9,'’.&-]+){2,}["']/,
+      ];
+      return patterns.some((re) => re.test(line));
+    },
+  },
+  {
     id: "console",
     severity: 3,
     label: "console.log left in a component",

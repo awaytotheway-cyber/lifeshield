@@ -132,7 +132,7 @@ export default function BuddiesSettingsScreen() {
               multiline
               numberOfLines={2}
             />
-            <Text style={styles.hint}>Up to 12 tags · 32 chars each</Text>
+            <Text style={styles.hint}>{COPY.buddyTagsHint}</Text>
           </View>
 
           {saved ? <Text style={styles.saved}>{COPY.profileBuddySaved}</Text> : null}
@@ -140,11 +140,11 @@ export default function BuddiesSettingsScreen() {
 
           <View style={{ marginTop: spacing.md }}>
             <PrimaryButton
-              title="Save buddy settings"
+              title={COPY.buddySettingsSave}
               loading={busy}
               onPress={submit}
             />
-            <TextButton title="Back to buddies" onPress={() => router.replace(routes.buddies)} />
+            <TextButton title={COPY.backToBuddies} onPress={() => router.replace(routes.buddies)} />
           </View>
         </View>
       )}

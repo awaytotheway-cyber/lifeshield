@@ -127,7 +127,7 @@ export default function LifestyleScreen() {
         name="sleepHours"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Sleep hours per night"
+            label={COPY.qSleepHoursLabel}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}

@@ -4,6 +4,7 @@ import { Feather } from "@expo/vector-icons";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { COPY } from "@/lib/copy";
 
 type SymptomInterruptCardProps = {
   question: string;
@@ -25,7 +26,7 @@ export function SymptomInterruptCard({
     <View style={styles.card}>
       <View style={styles.header}>
         <Feather name="alert-triangle" size={20} color={colors.coral} />
-        <Text style={styles.title}>One important question</Text>
+        <Text style={styles.title}>{COPY.symptomInterruptTitle}</Text>
       </View>
       <Text style={styles.body}>{question}</Text>
       <RadioGroup

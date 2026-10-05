@@ -136,7 +136,7 @@ export default function PersonalHistoryScreen() {
             name="cigsPerDay"
             render={({ field: { value, onChange, onBlur } }) => (
               <NumberInput
-                label="Cigarettes per day"
+                label={COPY.qCigarettesPerDayLabel}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -204,7 +204,7 @@ export default function PersonalHistoryScreen() {
           name="alcoholUnitsPerWeek"
           render={({ field: { value, onChange, onBlur } }) => (
             <NumberInput
-              label="Units per week"
+              label={COPY.qUnitsPerWeekLabel}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}

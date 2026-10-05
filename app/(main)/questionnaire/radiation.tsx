@@ -93,7 +93,7 @@ export default function RadiationScreen() {
 
   return (
     <SectionScaffold
-      title="Radiation & occupation"
+      title={COPY.qRadiationTitle}
       step={3}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -128,7 +128,7 @@ export default function RadiationScreen() {
             name="radiationType"
             render={({ field: { value, onChange } }) => (
               <RadioGroup
-                label="Type of exposure"
+                label={COPY.qExposureTypeLabel}
                 options={RADIATION_TYPE_OPTIONS}
                 value={value}
                 onChange={onChange}
@@ -202,7 +202,7 @@ export default function RadiationScreen() {
           name="nightShiftYears"
           render={({ field: { value, onChange, onBlur } }) => (
             <NumberInput
-              label="Total years of night-shift work"
+              label={COPY.qNightShiftYearsLabel}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}

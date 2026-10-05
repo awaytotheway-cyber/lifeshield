@@ -161,7 +161,7 @@ export default function FindBuddiesScreen() {
         );
       })}
 
-      <TextButton title="Back to buddies" onPress={() => router.back()} />
+      <TextButton title={COPY.backToBuddies} onPress={() => router.back()} />
     </Screen>
   );
 }

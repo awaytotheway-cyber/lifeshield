@@ -7,6 +7,10 @@ import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { GoalsSummaryCard } from "@/components/ui/GoalsSummaryCard";
 import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
 import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
+import {
+  QuickActionGrid,
+  type QuickAction,
+} from "@/components/ui/QuickActionGrid";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
 import { Screen } from "@/components/ui/Screen";
@@ -261,21 +265,89 @@ export default function HomeScreen() {
     { id: string; value: string | number; label: string },
     { id: string; value: string | number; label: string },
   ] = [
-    { id: "sections", value: `${questionnaireCount}/10`, label: "Questionnaire" },
-    { id: "consents", value: `${consentCount}/3`, label: "Consents" },
+    {
+      id: "sections",
+      value: `${questionnaireCount}/10`,
+      label: COPY.homeMilestoneQuestionnaire,
+    },
+    { id: "consents", value: `${consentCount}/3`, label: COPY.homeMilestoneConsents },
     {
       id: "tests",
-      value: hasRecommendations ? "Ready" : "Soon",
-      label: "Test plan",
+      value: hasRecommendations ? COPY.homeMilestoneReady : COPY.homeMilestoneSoon,
+      label: COPY.homeMilestoneTestPlan,
     },
   ];
 
   const homeFeatures = [
-    { id: "science", label: "Science-backed rules", icon: "cpu" as const },
-    { id: "private", label: "Private by default", icon: "lock" as const },
-    { id: "calm", label: "Calm, clear next steps", icon: "heart" as const },
-    { id: "track", label: "Track your journey", icon: "map" as const },
+    { id: "science", label: COPY.homeFeatureScience, icon: "cpu" as const },
+    { id: "private", label: COPY.homeFeaturePrivate, icon: "lock" as const },
+    { id: "calm", label: COPY.homeFeatureCalm, icon: "heart" as const },
+    { id: "track", label: COPY.homeFeatureTrack, icon: "map" as const },
   ];
+
+  // Secondary destinations as a scannable grid rather than a stack of
+  // identically weighted text links. Each entry keeps the visibility rule it
+  // had as a link: only offer somewhere the user can actually act on, and
+  // never the step they are already on.
+  const quickActions: QuickAction[] = [];
+  if (consentsDone) {
+    if (current !== "questionnaire") {
+      quickActions.push({
+        id: "questionnaire",
+        label: COPY.homeOpenQuestionnaire,
+        icon: "clipboard",
+        onPress: () => router.replace(routes.questionnaire),
+      });
+    }
+    if ((hasRecommendations || questionnaireCount >= 10) && current !== "tests") {
+      quickActions.push({
+        id: "results",
+        label: COPY.homeOpenResults,
+        icon: "check-circle",
+        onPress: () => router.replace(routes.results),
+      });
+    }
+    if (hasLabResults && current !== "results") {
+      quickActions.push({
+        id: "labResults",
+        label: COPY.homeOpenLabResults,
+        icon: "activity",
+        onPress: () => router.push(routes.labResults),
+      });
+    }
+    if ((hasLabResults || hasPlan) && current !== "plan") {
+      quickActions.push({
+        id: "plan",
+        label: COPY.homeOpenPlan,
+        icon: "list",
+        onPress: () => router.push(routes.plan),
+      });
+    }
+    if (hasPlan && current !== "store") {
+      quickActions.push({
+        id: "store",
+        label: COPY.homeOpenStore,
+        icon: "shopping-bag",
+        onPress: () => router.push(routes.store),
+      });
+    }
+    if (hasStoreOrders && current !== "followup") {
+      quickActions.push({
+        id: "orders",
+        label: COPY.homeOpenOrders,
+        icon: "package",
+        onPress: () => router.push(routes.orders),
+      });
+    }
+    if (hasPlan && current !== "followup") {
+      quickActions.push({
+        id: "followup",
+        label: COPY.homeOpenFollowUp,
+        icon: "calendar",
+        onPress: () => router.push(routes.followUp),
+      });
+    }
+  }
 
   return (
     <Screen scroll contentPadding={spacing.screenX}>
@@ -314,67 +386,12 @@ export default function HomeScreen() {
       <Text style={styles.hint}>{COPY.homePrimaryHint}</Text>
       <PrimaryButton title={COPY[primary.titleKey]} onPress={goPrimary} />
 
-      {consentsDone ? (
+      {quickActions.length > 0 ? (
         <>
           <Text style={styles.also}>{COPY.homeAlsoAvailable}</Text>
-          {current !== "questionnaire" ? (
-            <TextButton
-              title={COPY.homeOpenQuestionnaire}
-              onPress={() => {
-                router.replace(routes.questionnaire);
-              }}
-            />
-          ) : null}
-          {hasRecommendations || questionnaireCount >= 10 ? (
-            current !== "tests" ? (
-              <TextButton
-                title={COPY.homeOpenResults}
-                onPress={() => {
-                  router.replace(routes.results);
-                }}
-              />
-            ) : null
-          ) : null}
-          {hasLabResults && current !== "results" ? (
-            <TextButton
-              title={COPY.homeOpenLabResults}
-              onPress={() => {
-                router.push(routes.labResults);
-              }}
-            />
-          ) : null}
-          {(hasLabResults || hasPlan) && current !== "plan" ? (
-            <TextButton
-              title={COPY.homeOpenPlan}
-              onPress={() => {
-                router.push(routes.plan);
-              }}
-            />
-          ) : null}
-          {hasPlan && current !== "store" ? (
-            <TextButton
-              title={COPY.homeOpenStore}
-              onPress={() => {
-                router.push(routes.store);
-              }}
-            />
-          ) : null}
-          {hasStoreOrders && current !== "followup" ? (
-            <TextButton
-              title={COPY.homeOpenOrders}
-              onPress={() => {
-                router.push(routes.orders);
-              }}
-            />
-          ) : null}
-          {hasPlan && current !== "followup" ? (
-            <TextButton
-              title={COPY.homeOpenFollowUp}
-              onPress={() => {
-                router.push(routes.followUp);
-              }}
-            />
-          ) : null}
+          <View style={styles.quickActions}>
+            <QuickActionGrid actions={quickActions} />
+          </View>
         </>
       ) : null}
 
@@ -411,6 +428,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.charcoal,
     textAlign: "center",
+  },
+  quickActions: {
+    marginTop: spacing.mdSm,
   },
   menuRow: {
     flexDirection: "row",

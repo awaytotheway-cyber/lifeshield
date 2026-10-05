@@ -6,6 +6,7 @@ import { GlassSurface } from "@/components/ui/GlassSurface";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { COPY } from "@/lib/copy";
 
 const CATEGORY_ICONS = {
   supplement: "droplet",
@@ -57,7 +58,7 @@ export function InterventionCard({
           <StatusChip kind={status} label={statusLabel} />
         </View>
       </View>
-      <Text style={styles.whyLabel}>Why you're seeing this:</Text>
+      <Text style={styles.whyLabel}>{COPY.interventionWhyLabel}</Text>
       <Text style={styles.why}>{why}</Text>
       {clinicalBasis ? (
         <Pressable

@@ -165,7 +165,7 @@ export function BarriersAccordion({ userId, category, sourceType, sourceId }: Pr
                         />
                       ) : (
                         <TextButton
-                          title="Stop trying this"
+                          title={COPY.barriersStopTrying}
                           onPress={() =>
                             item.user_state
                               ? stopTrying(item.user_state.id)

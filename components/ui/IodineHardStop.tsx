@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { COPY } from "@/lib/copy";
 
 type IodineHardStopProps = {
   reason?: string;
@@ -18,7 +19,7 @@ export function IodineHardStop({
     <View style={styles.card}>
       <View style={styles.header}>
         <Feather name="alert-triangle" size={20} color={colors.amber} />
-        <Text style={styles.title}>This isn't recommended for you right now</Text>
+        <Text style={styles.title}>{COPY.iodineHardStopTitle}</Text>
       </View>
       <Text style={styles.body}>{reason}</Text>
     </View>

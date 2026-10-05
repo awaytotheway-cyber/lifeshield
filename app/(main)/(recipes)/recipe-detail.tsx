@@ -163,7 +163,7 @@ export default function RecipeDetailScreen() {
               loading={busy}
               onPress={toggleSave}
             />
-            <TextButton title="Back to recipes" onPress={() => router.back()} />
+            <TextButton title={COPY.backToRecipes} onPress={() => router.back()} />
           </View>
         </View>
       ) : null}

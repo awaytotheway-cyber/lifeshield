@@ -275,7 +275,7 @@ export default function ReproductiveScreen() {
   if (ready && profileSex === null) {
     return (
       <SectionScaffold
-        title="Reproductive & menstrual history"
+        title={COPY.qReproductiveTitle}
         step={2}
         loading={false}
         footerTitle={COPY.reproductiveGoSection1}
@@ -296,7 +296,7 @@ export default function ReproductiveScreen() {
   if (ready && profileSex === "male") {
     return (
       <SectionScaffold
-        title="Reproductive & menstrual history"
+        title={COPY.qReproductiveTitle}
         step={2}
         loading={false}
         footerTitle={COPY.sectionSave}
@@ -322,7 +322,7 @@ export default function ReproductiveScreen() {
 
   return (
     <SectionScaffold
-      title="Reproductive & menstrual history"
+      title={COPY.qReproductiveTitle}
       step={2}
       loading={!ready}
       footerTitle={COPY.sectionSave}
@@ -345,7 +345,7 @@ export default function ReproductiveScreen() {
         name="ageAtFirstPeriod"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Age at first period"
+            label={COPY.qFirstPeriodAgeLabel}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -517,7 +517,7 @@ export default function ReproductiveScreen() {
           name="ageAtFirstBirth"
           render={({ field: { value, onChange, onBlur } }) => (
             <NumberInput
-              label="Age at first birth"
+              label={COPY.qFirstBirthAgeLabel}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -546,7 +546,7 @@ export default function ReproductiveScreen() {
           name="breastfeedingMonths"
           render={({ field: { value, onChange, onBlur } }) => (
             <NumberInput
-              label="Months of breastfeeding"
+              label={COPY.qBreastfeedingMonthsLabel}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}

@@ -197,7 +197,7 @@ export default function ComorbiditiesScreen() {
           name="thyroidType"
           render={({ field: { value, onChange, onBlur } }) => (
             <TextField
-              label="Type of thyroid condition"
+              label={COPY.qThyroidTypeLabel}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}

@@ -136,6 +136,17 @@ export const COPY = {
   homeStepWaiting: "Waiting",
   homePrimaryHint: "One next step:",
   homeAlsoAvailable: "Also available",
+  // Milestone strip labels on Home.
+  homeMilestoneQuestionnaire: "Questionnaire",
+  homeMilestoneConsents: "Consents",
+  homeMilestoneTestPlan: "Test plan",
+  homeMilestoneReady: "Ready",
+  homeMilestoneSoon: "Soon",
+  // Reassurance pills on Home.
+  homeFeatureScience: "Science-backed rules",
+  homeFeaturePrivate: "Private by default",
+  homeFeatureCalm: "Calm, clear next steps",
+  homeFeatureTrack: "Track your journey",
   signOut: "Sign out",
 
   clinicalTermPreviewTitle: "Wording preview",
@@ -1061,4 +1072,41 @@ export const COPY = {
     "We couldn't load plugins right now. Check your connection and try again.",
   pluginsNeedSql:
     "Plugins need the 20260928_plugins migration to run in Supabase → SQL Editor.",
+  // ——— Shared back links ———
+  backToBuddies: "Back to buddies",
+  backToRecipes: "Back to recipes",
+  // ——— Buddy settings ———
+  buddyTagsHint: "Up to 12 tags · 32 chars each",
+  buddySettingsSave: "Save buddy settings",
+  // ——— Delete account ———
+  deleteAccountConfirmLabel: "Type DELETE to confirm",
+  // ——— Questionnaire field labels ———
+  qThyroidTypeLabel: "Type of thyroid condition",
+  qDemographicsTitle: "Demographics & measurements",
+  qDateOfBirthLabel: "Date of birth",
+  qCountryOfOriginLabel: "Country of origin",
+  qCountryEnterLabel: "Please enter country",
+  qDietTitle: "Diet & environment",
+  qSleepHoursLabel: "Sleep hours per night",
+  qCigarettesPerDayLabel: "Cigarettes per day",
+  qUnitsPerWeekLabel: "Units per week",
+  qRadiationTitle: "Radiation & occupation",
+  qExposureTypeLabel: "Type of exposure",
+  qNightShiftYearsLabel: "Total years of night-shift work",
+  qReproductiveTitle: "Reproductive & menstrual history",
+  qFirstPeriodAgeLabel: "Age at first period",
+  qFirstBirthAgeLabel: "Age at first birth",
+  qBreastfeedingMonthsLabel: "Months of breastfeeding",
+  // ——— Error boundary ———
+  errorBoundaryTitle: "Something went wrong",
+  errorBoundaryBody:
+    "Tap to retry. Your answers are saved — this is just a display hiccup.",
+  errorBoundaryRetry: "Tap to retry",
+  errorBoundaryRetryLabel: "Retry",
+  // ——— Safety and plan components ———
+  symptomInterruptTitle: "One important question",
+  barriersStopTrying: "Stop trying this",
+  interactionFlagBadge: "Needs practitioner check",
+  interventionWhyLabel: "Why you’re seeing this:",
+  iodineHardStopTitle: "This isn’t recommended for you right now",
 } as const;
