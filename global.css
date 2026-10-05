@@ -15,6 +15,7 @@
   /* ——— Blue Glass primaries ——— */
   --color-primaryBlue: #2b5fe0;
   --color-deepNavy: #0b1e4d;
+  --color-heading: #1a1a2e;
   --color-skyBlue: #6fa8f5;
   --color-iceBlue: #eaf1ff;
   --color-appBackground: #fafbfc;
@@ -31,10 +32,11 @@
 
   /* ——— Neutrals ——— */
   --color-white: #ffffff;
-  --color-charcoal: #0b1e4d;
+  --color-charcoal: #1a1a2e;
   --color-slate: #4a5568;
   --color-mist: #9aa5b4;
   --color-border: #d4e0f5;
+  --color-cardBorder: #e5e7eb;
 
   /* ——— Tinted backgrounds ——— */
   --color-riskLowLight: #e8f8ed;

@@ -5,14 +5,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { BlurView } from "expo-blur";
 
-import {
-  colors,
-  glassBlurIntensity,
-  radius,
-  shadows,
-} from "@/lib/design-tokens";
+import { colors, radius, shadows } from "@/lib/design-tokens";
 
 export type GlassIntensity = "card" | "chrome" | "sheet" | "button";
 export type GlassTint = "light" | "dark";
@@ -20,7 +14,7 @@ export type GlassTint = "light" | "dark";
 type GlassCardProps = {
   children?: ReactNode;
   intensity?: GlassIntensity;
-  /** light = white frosted fill; dark = navy tint (rare chrome). */
+  /** light = white surface; dark = navy surface (rare chrome). */
   tint?: GlassTint;
   style?: StyleProp<ViewStyle>;
 };
@@ -33,11 +27,16 @@ const radiusFor: Record<GlassIntensity, number> = {
 };
 
 /**
- * Frosted glass panel — BlurView + semi-transparent fill.
- * Prefer this public API on new screens. GlassSurface re-exports the same look.
- * Never place on a plain white background; Screen provides ice-blue atmosphere.
+ * Standard surface: solid fill, 1px neutral border, shallow shadow.
  *
- * Children sit above the blur layers so padding / alignItems on `style` still work.
+ * This used to be a frosted BlurView panel, which only worked because Screen
+ * painted a tinted gradient behind every page. With the background flattened
+ * to a near-white #FAFBFC there is nothing to frost: a translucent white fill
+ * on near-white made cards disappear, and the blur cost a layer per card for
+ * no visible effect. A solid surface with a real border is both clearer and
+ * cheaper, and gives every card the same edge.
+ *
+ * The name is kept because it is imported in ~40 places; the API is unchanged.
  */
 export function GlassCard({
   children,
@@ -46,32 +45,18 @@ export function GlassCard({
   style,
 }: GlassCardProps) {
   const isDark = tint === "dark";
-  const fill = isDark ? colors.glassFillDark : colors.glassFill;
-  const blurTint = isDark ? "dark" : "light";
   const corner = radiusFor[intensity];
 
   const shape: ViewStyle = {
+    backgroundColor: isDark ? colors.deepNavy : colors.white,
     borderRadius: intensity === "sheet" ? undefined : corner,
     borderTopLeftRadius: intensity === "sheet" ? radius.sheet : corner,
     borderTopRightRadius: intensity === "sheet" ? radius.sheet : corner,
     borderWidth: intensity === "chrome" ? StyleSheet.hairlineWidth : 1,
-    borderColor: colors.glassBorder,
+    borderColor: isDark ? colors.deepNavy : colors.cardBorder,
     overflow: "hidden",
     ...(intensity === "card" || intensity === "sheet" ? shadows.card : {}),
   };
 
-  return (
-    <View style={[shape, style]}>
-      <BlurView
-        intensity={glassBlurIntensity}
-        tint={blurTint}
-        style={StyleSheet.absoluteFill}
-      />
-      <View
-        pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { backgroundColor: fill }]}
-      />
-      {children}
-    </View>
-  );
+  return <View style={[shape, style]}>{children}</View>;
 }

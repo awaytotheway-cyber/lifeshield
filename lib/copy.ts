@@ -143,10 +143,12 @@ export const COPY = {
   homeMilestoneReady: "Ready",
   homeMilestoneSoon: "Soon",
   // Reassurance pills on Home.
-  homeFeatureScience: "Science-backed rules",
-  homeFeaturePrivate: "Private by default",
-  homeFeatureCalm: "Calm, clear next steps",
-  homeFeatureTrack: "Track your journey",
+  // Specific, verifiable claims only. "Gail & Tyrer-Cuzick models" was
+  // requested here but this app implements neither — lib/rules-engine.ts is a
+  // threshold rules engine mapped to the source protocol, with an explicit
+  // "no AI/LLM" rule — so claiming those models would be false.
+  homeFeatureScience: "Protocol rules, no AI",
+  homeFeaturePrivate: "End-to-end HTTPS + RLS",
   signOut: "Sign out",
 
   clinicalTermPreviewTitle: "Wording preview",

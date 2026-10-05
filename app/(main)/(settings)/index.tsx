@@ -5,7 +5,6 @@ import { Feather } from "@expo/vector-icons";
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Screen } from "@/components/ui/Screen";
-import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
 import { colors, spacing, tapTarget } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
@@ -74,7 +73,6 @@ export default function SettingsIndex() {
       </View>
       <Text style={styles.body}>{COPY.settingsBody}</Text>
       <View style={styles.banner}>
-        <TrustBanner />
       </View>
 
       <GlassCard intensity="card" style={styles.card}>

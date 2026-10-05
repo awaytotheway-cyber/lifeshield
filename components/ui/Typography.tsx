@@ -128,15 +128,15 @@ export function DataValue({ children, style, centered, ...rest }: TextTokenProps
 }
 
 const styles = StyleSheet.create({
-  screenTitle: { ...typography.h1, color: colors.deepNavy },
-  sectionTitle: { ...typography.h2, color: colors.deepNavy },
-  cardTitle: { ...typography.h3, color: colors.deepNavy },
+  screenTitle: { ...typography.h1, color: colors.heading },
+  sectionTitle: { ...typography.h2, color: colors.heading },
+  cardTitle: { ...typography.h3, color: colors.heading },
   body: { ...typography.body, color: colors.charcoal },
   bodyEmphasis: { ...typography.bodyEmphasis, color: colors.charcoal },
   bodySm: { ...typography.bodySm, color: colors.slate },
   caption: { ...typography.label, color: colors.slate },
-  data: { ...typography.data, color: colors.deepNavy },
-  dataSm: { ...typography.medical, color: colors.deepNavy },
+  data: { ...typography.data, color: colors.heading },
+  dataSm: { ...typography.medical, color: colors.heading },
   error: { ...typography.bodySm, color: colors.riskHighText },
   centered: { textAlign: "center" },
 });

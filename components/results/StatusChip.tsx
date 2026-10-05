@@ -48,6 +48,6 @@ const styles = StyleSheet.create({
   label: {
     ...typography.chip,
     textTransform: "none",
-    color: colors.deepNavy,
+    color: colors.heading,
   },
 });

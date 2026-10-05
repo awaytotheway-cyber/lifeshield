@@ -209,7 +209,7 @@ export default function ProfileScreen() {
                 />
               ) : (
                 <View style={styles.avatarPlaceholder}>
-                  <Feather name="camera" size={28} color={colors.primaryBlue} />
+                  <Feather name="plus" size={26} color={colors.mist} />
                 </View>
               )}
             </Pressable>
@@ -242,7 +242,11 @@ export default function ProfileScreen() {
               {email.length > 0 ? email : COPY.profileEmailEmpty}
             </Text>
             <Text style={styles.hint}>{COPY.profileEmailReadonly}</Text>
-            {isAdminEmail(email) ? (
+            {/*
+              Role badge is a development aid, not user-facing information.
+              __DEV__ is false in any release build, so it never ships.
+            */}
+            {__DEV__ && isAdminEmail(email) ? (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{COPY.profileAdminBadge}</Text>
               </View>
@@ -497,7 +501,12 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: colors.lightTeal,
+    // An empty slot reads as "add something here", so it is an outline rather
+    // than a filled blue disc competing with the primary action.
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderColor: colors.border,
+    backgroundColor: colors.white,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -535,7 +544,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.heading,
   },
   badge: {
     marginTop: 12,

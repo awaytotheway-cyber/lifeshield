@@ -10,8 +10,13 @@
 export const colors = {
   /** Brand primary — buttons, links, active tabs. */
   primaryBlue: "#2B5FE0",
-  /** Primary text and headlines. */
+  /**
+   * Dark brand navy. Reserved for dark SURFACES (the privacy banner, gradient
+   * hero cards) and the PRESCOPE brand name — not for headings.
+   */
   deepNavy: "#0B1E4D",
+  /** Headings and primary text. Charcoal, so headings never read as links. */
+  heading: "#1A1A2E",
   /** Softer accent blue — info highlights, progress, secondary chrome. */
   skyBlue: "#6FA8F5",
   /** Default screen atmosphere — Blue Glass ice. Still used for tinted fills. */
@@ -19,11 +24,6 @@ export const colors = {
   /** App background. Clean and near-white — no decorative wash. */
   appBackground: "#FAFBFC",
 
-  /** Glass fills — light cards / dark chrome overlays. */
-  glassFill: "rgba(255,255,255,0.72)",
-  glassFillDark: "rgba(11,30,77,0.40)",
-  glassChrome: "rgba(255,255,255,0.60)",
-  glassBorder: "rgba(43,95,224,0.10)",
 
   /**
    * Risk semantics — deliberately kept on the iOS system Green/Yellow/Red.
@@ -54,14 +54,16 @@ export const colors = {
   riskLowText: "#1B7F3B",
 
   white: "#FFFFFF",
-  /** Headline / primary text (same as deepNavy — never pure black). */
-  charcoal: "#0B1E4D",
+  /** Body text. Same charcoal as headings — never pure black. */
+  charcoal: "#1A1A2E",
   /** Secondary text — descriptions, timestamps. */
   slate: "#4A5568",
   /** Placeholder, disabled, tertiary info. */
   mist: "#9AA5B4",
-  /** Borders and dividers. */
+  /** Borders and dividers on tinted surfaces. */
   border: "#D4E0F5",
+  /** Card outline on the clean background — neutral, not blue-tinted. */
+  cardBorder: "#E5E7EB",
   /** Blue-tinted shadow — never plain black. */
   shadow: "rgba(43,95,224,0.08)",
 
@@ -132,11 +134,13 @@ export const radius = {
 
 export const shadows = {
   card: {
-    shadowColor: "#2B5FE0",
-    shadowOffset: { width: 0, height: 2 },
+    // Neutral and shallow: on a near-white background a wide blue-tinted
+    // shadow reads as a glow rather than elevation.
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 3,
+    shadowRadius: 3,
+    elevation: 2,
   },
   button: {
     shadowColor: "#2B5FE0",
@@ -167,5 +171,3 @@ export const inputHeight = 56;
 export const primaryButtonHeight = 50;
 export const secondaryButtonHeight = 50;
 
-/** BlurView intensity used by GlassCard (native glass look). */
-export const glassBlurIntensity = 32;

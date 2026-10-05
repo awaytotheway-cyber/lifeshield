@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 31,
     // Headline colour, not the action blue the old deepTeal alias gave it.
-    color: colors.deepNavy,
+    color: colors.heading,
   },
   spacer: {
     width: tapTarget,

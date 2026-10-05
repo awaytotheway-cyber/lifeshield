@@ -49,19 +49,19 @@ export function StatusChip({ kind, label }: StatusChipProps) {
 const palettes = {
   normal: {
     bg: colors.riskLowLight,
-    text: colors.deepNavy,
+    text: colors.heading,
     dot: colors.riskLow,
     border: undefined,
   },
   attention: {
     bg: colors.riskModerateLight,
-    text: colors.deepNavy,
+    text: colors.heading,
     dot: colors.riskModerate,
     border: undefined,
   },
   critical: {
     bg: colors.riskHighLight,
-    text: colors.deepNavy,
+    text: colors.heading,
     dot: colors.riskHigh,
     border: undefined,
   },

@@ -16,6 +16,7 @@ module.exports = {
         // ——— Blue Glass primaries ———
         primaryBlue: "#2B5FE0",
         deepNavy: "#0B1E4D",
+        heading: "#1A1A2E",
         skyBlue: "#6FA8F5",
         iceBlue: "#EAF1FF",
         appBackground: "#FAFBFC",
@@ -34,10 +35,11 @@ module.exports = {
 
         // ——— Neutrals ———
         white: "#FFFFFF",
-        charcoal: "#0B1E4D",
+        charcoal: "#1A1A2E",
         slate: "#4A5568",
         mist: "#9AA5B4",
         border: "#D4E0F5",
+        cardBorder: "#E5E7EB",
 
         // ——— Tinted backgrounds for chips and alert boxes ———
         riskLowLight: "#E8F8ED",

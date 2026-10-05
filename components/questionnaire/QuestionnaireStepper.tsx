@@ -65,7 +65,9 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: 4,
-    backgroundColor: colors.riskLow,
+    // Progress is a brand state, not a success state. Green is reserved for
+    // completed dots and checkmarks (see JourneyProgressCard).
+    backgroundColor: colors.primaryBlue,
     borderRadius: 2,
   },
 });

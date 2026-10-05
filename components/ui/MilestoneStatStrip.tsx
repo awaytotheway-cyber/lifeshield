@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { colors, spacing } from "@/lib/design-tokens";
@@ -8,6 +9,11 @@ export type MilestoneStat = {
   id: string;
   value: string | number;
   label: string;
+  /**
+   * Not available yet. Renders a lock and muted text instead of the big blue
+   * figure, so a placeholder never reads as a real result the user can act on.
+   */
+  locked?: boolean;
 };
 
 type MilestoneStatStripProps = {
@@ -26,7 +32,14 @@ export function MilestoneStatStrip({ stats }: MilestoneStatStripProps) {
             key={stat.id}
             style={[styles.cell, index < 2 ? styles.cellBorder : null]}
           >
-            <Text style={styles.value}>{stat.value}</Text>
+            {stat.locked ? (
+              <View style={styles.lockedValue}>
+                <Feather name="lock" size={16} color={colors.mist} />
+                <Text style={styles.lockedText}>{stat.value}</Text>
+              </View>
+            ) : (
+              <Text style={styles.value}>{stat.value}</Text>
+            )}
             <Text style={styles.label}>{stat.label}</Text>
           </View>
         ))}
@@ -56,6 +69,18 @@ const styles = StyleSheet.create({
   value: {
     ...typography.heroStat,
     color: colors.primaryBlue,
+  },
+  lockedValue: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    // Match the height of the big figure so the row does not jump when a
+    // stat unlocks.
+    minHeight: typography.heroStat.lineHeight,
+  },
+  lockedText: {
+    ...typography.bodyEmphasis,
+    color: colors.mist,
   },
   label: {
     marginTop: 4,

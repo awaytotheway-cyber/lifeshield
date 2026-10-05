@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodySemi,
     fontSize: 14,
     lineHeight: 19,
-    color: colors.deepNavy,
+    color: colors.heading,
   },
 });

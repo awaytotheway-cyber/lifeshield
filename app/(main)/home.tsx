@@ -5,13 +5,15 @@ import { StyleSheet, Text, View } from "react-native";
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { GoalsSummaryCard } from "@/components/ui/GoalsSummaryCard";
-import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
+import {
+  MilestoneStatStrip,
+  type MilestoneStat,
+} from "@/components/ui/MilestoneStatStrip";
 import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
 import {
   QuickActionGrid,
   type QuickAction,
 } from "@/components/ui/QuickActionGrid";
-import { TrustBanner } from "@/components/ui/TrustBanner";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
@@ -260,11 +262,7 @@ export default function HomeScreen() {
 
   const consentCount = (agreed.brca ? 1 : 0) + (agreed.ctc ? 1 : 0) + (agreed.snp ? 1 : 0);
 
-  const milestoneStats: [
-    { id: string; value: string | number; label: string },
-    { id: string; value: string | number; label: string },
-    { id: string; value: string | number; label: string },
-  ] = [
+  const milestoneStats: [MilestoneStat, MilestoneStat, MilestoneStat] = [
     {
       id: "sections",
       value: `${questionnaireCount}/10`,
@@ -275,14 +273,16 @@ export default function HomeScreen() {
       id: "tests",
       value: hasRecommendations ? COPY.homeMilestoneReady : COPY.homeMilestoneSoon,
       label: COPY.homeMilestoneTestPlan,
+      locked: !hasRecommendations,
     },
   ];
 
+  // Two specific claims beat four vague ones, and both of these are true of
+  // the code: the recommendations come from a deterministic rules engine, and
+  // every row is behind Supabase Row Level Security over HTTPS.
   const homeFeatures = [
     { id: "science", label: COPY.homeFeatureScience, icon: "cpu" as const },
     { id: "private", label: COPY.homeFeaturePrivate, icon: "lock" as const },
-    { id: "calm", label: COPY.homeFeatureCalm, icon: "heart" as const },
-    { id: "track", label: COPY.homeFeatureTrack, icon: "map" as const },
   ];
 
   // Secondary destinations as a scannable grid rather than a stack of
@@ -358,9 +358,6 @@ export default function HomeScreen() {
       <Text style={styles.tagline}>{COPY.tagline}</Text>
       <Text style={styles.headline}>{headlineFor(current)}</Text>
 
-      <View style={styles.trust}>
-        <TrustBanner />
-      </View>
 
       <View style={styles.stats}>
         <MilestoneStatStrip stats={milestoneStats} />
@@ -445,9 +442,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.6,
     color: colors.primaryBlue,
     textAlign: "left",
-  },
-  trust: {
-    marginTop: 20,
   },
   stats: {
     marginTop: 16,

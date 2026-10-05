@@ -161,7 +161,7 @@ export default function MainLayout() {
               : {
                   backgroundColor: "transparent",
                   borderTopWidth: StyleSheet.hairlineWidth,
-                  borderTopColor: colors.glassBorder,
+                  borderTopColor: colors.cardBorder,
                   elevation: 0,
                   minHeight: 52,
                 },
