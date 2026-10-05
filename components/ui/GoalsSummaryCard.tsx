@@ -145,9 +145,8 @@ const styles = StyleSheet.create({
   type: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 11,
-    letterSpacing: 0.4,
+    letterSpacing: 0.2,
     color: colors.slate,
-    textTransform: "uppercase",
   },
   rowTitle: {
     marginTop: spacing.micro,

@@ -167,9 +167,8 @@ const styles = StyleSheet.create({
   type: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    letterSpacing: 0.4,
+    letterSpacing: 0.2,
     color: colors.slate,
-    textTransform: "uppercase",
   },
   title: {
     marginTop: spacing.sm,

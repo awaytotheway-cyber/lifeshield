@@ -1,8 +1,10 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image } from "expo-image";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
-import { colors, spacing } from "@/lib/design-tokens";
+import { COPY } from "@/lib/copy";
+import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 type UiProductCardProps = {
@@ -51,7 +53,12 @@ export function ProductCard({
         style={[styles.card, isGrid ? styles.cardGrid : styles.cardRow]}
       >
       {imageUri ? (
-        <Image source={{ uri: imageUri }} style={isGrid ? styles.imageGrid : styles.image} />
+        <Image
+          source={{ uri: imageUri }}
+          style={isGrid ? styles.imageGrid : styles.image}
+          contentFit="cover"
+          transition={300}
+        />
       ) : (
         <View style={isGrid ? styles.imageGrid : styles.image} />
       )}
@@ -61,12 +68,12 @@ export function ProductCard({
         <Text style={styles.desc}>{description}</Text>
         {needsCheck ? <InteractionFlag reason={checkReason} compact={!checkReason} /> : null}
         {blocked ? (
-          <Text style={styles.blocked}>Not available for you right now</Text>
+          <Text style={styles.blocked}>{COPY.storeBlockedGeneric}</Text>
         ) : null}
         {showAdd ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`Add ${name}`}
+            accessibilityLabel={COPY.storeAddItemLabel.replace("{name}", name)}
             onPress={(event) => {
               event.stopPropagation();
               onAdd?.();
@@ -74,7 +81,9 @@ export function ProductCard({
             disabled={adding}
             style={styles.add}
           >
-            <Text style={styles.addText}>{adding ? "Adding…" : "Add"}</Text>
+            <Text style={styles.addText}>
+              {adding ? COPY.storeAdding : COPY.storeAdd}
+            </Text>
           </Pressable>
         ) : null}
       </View>
@@ -98,13 +107,13 @@ const styles = StyleSheet.create({
   image: {
     width: 80,
     height: 80,
-    borderRadius: 10,
+    borderRadius: radius.card,
     backgroundColor: colors.lightTeal,
   },
   imageGrid: {
     width: "100%",
     height: 80,
-    borderRadius: 10,
+    borderRadius: radius.card,
     backgroundColor: colors.lightTeal,
     marginBottom: 8,
   },
@@ -140,13 +149,13 @@ const styles = StyleSheet.create({
   add: {
     marginTop: 8,
     alignSelf: "flex-end",
-    height: 32,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    minHeight: tapTarget,
+    paddingHorizontal: 20,
+    borderRadius: radius.chip,
     backgroundColor: colors.deepTeal,
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 44,
+    minWidth: tapTarget,
   },
   addText: {
     fontFamily: fontFamily.bodySemi,

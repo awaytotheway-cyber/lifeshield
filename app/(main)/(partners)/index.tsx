@@ -199,8 +199,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
     color: colors.slate,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   group: { marginTop: spacing.lg },
   section: {

@@ -149,8 +149,8 @@ export default function MainLayout() {
             tabBarActiveTintColor: colors.primaryBlue,
             tabBarInactiveTintColor: colors.slate,
             tabBarLabelStyle: {
-              fontFamily: fontFamily.body,
-              fontSize: 13,
+              fontFamily: fontFamily.bodyMedium,
+              fontSize: 11,
             },
             tabBarBackground: () =>
               hideTabBar ? null : (

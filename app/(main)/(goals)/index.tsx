@@ -186,9 +186,8 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
     lineHeight: 16,
-    letterSpacing: 0.4,
+    letterSpacing: 0.2,
     color: colors.slate,
-    textTransform: "uppercase",
   },
   status: {
     fontFamily: fontFamily.bodySemi,

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import {
+  FlatList,
   Modal,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -69,12 +69,16 @@ export function SelectPicker({
             <SafeAreaView edges={["bottom"]}>
               <View style={styles.sheetHandle} />
               <Text style={styles.sheetTitle}>{label}</Text>
-              <ScrollView style={styles.sheetScroll}>
-                {options.map((option) => {
+              <FlatList
+                style={styles.sheetScroll}
+                data={options}
+                keyExtractor={(option) => option.value}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                renderItem={({ item: option }) => {
                   const isOn = option.value === value;
                   return (
                     <Pressable
-                      key={option.value}
                       accessibilityRole="button"
                       accessibilityLabel={option.label}
                       onPress={() => {
@@ -85,12 +89,12 @@ export function SelectPicker({
                     >
                       <Text style={styles.rowLabel}>{option.label}</Text>
                       {isOn ? (
-                        <Feather name="check" size={20} color={colors.midTeal} />
+                        <Feather name="check" size={20} color={colors.primaryBlue} />
                       ) : null}
                     </Pressable>
                   );
-                })}
-              </ScrollView>
+                }}
+              />
             </SafeAreaView>
           </Pressable>
         </Pressable>

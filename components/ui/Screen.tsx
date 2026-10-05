@@ -64,6 +64,7 @@ export function Screen({
       ]}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
+      showsVerticalScrollIndicator={false}
     >
       {children}
     </ScrollView>
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingTop: 16,
-    paddingBottom: 32,
+    paddingBottom: 96,
   },
   scrollWithFooter: {
     paddingBottom: 16,

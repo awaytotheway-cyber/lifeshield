@@ -340,9 +340,8 @@ const styles = StyleSheet.create({
   groupTitle: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    letterSpacing: 0.4,
+    letterSpacing: 0.2,
     color: colors.slate,
-    textTransform: "uppercase",
     marginBottom: spacing.sm,
   },
   item: {
@@ -368,9 +367,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontFamily: fontFamily.bodyMedium,
     fontSize: 11,
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
     color: colors.primaryBlue,
-    textTransform: "uppercase",
   },
   itemBody: {
     padding: spacing.base,
@@ -388,8 +386,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
     color: colors.slate,
-    letterSpacing: 0.4,
-    textTransform: "uppercase",
+    letterSpacing: 0.2,
   },
   subText: {
     fontFamily: fontFamily.body,
@@ -463,8 +460,7 @@ const fbStyles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
     color: colors.slate,
-    letterSpacing: 0.3,
-    textTransform: "uppercase",
+    letterSpacing: 0.2,
   },
   error: {
     marginTop: spacing.sm,

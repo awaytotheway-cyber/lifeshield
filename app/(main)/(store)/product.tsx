@@ -163,7 +163,7 @@ export default function ProductDetailScreen() {
             medicalName={product.clinical_name}
           />
 
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
+          <View className="mt-4 rounded-2xl bg-white px-4 py-4">
             <Text className="text-sm text-teal">{COPY.productClinicalBasis}</Text>
             <Text className="mt-2 text-charcoal">
               {product.linked_finding?.trim() ||

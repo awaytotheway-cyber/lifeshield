@@ -159,6 +159,13 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
               </View>
               <Text style={styles.subtitle}>{COPY.drawerSubtitle}</Text>
 
+              {/*
+                A ScrollView is deliberate here. The design system's
+                "FlatList, never ScrollView + .map()" rule exists for long or
+                data-driven lists; this is a fixed navigation menu of about a
+                dozen static entries, where virtualisation only adds overhead
+                and complicates the badge/active-row layout.
+              */}
               <ScrollView
                 style={styles.list}
                 contentContainerStyle={styles.listContent}

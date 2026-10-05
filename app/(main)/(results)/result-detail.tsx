@@ -119,7 +119,7 @@ export default function ResultDetailScreen() {
             plainName={row.plain_name ?? undefined}
           />
 
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
+          <View className="mt-4 rounded-2xl bg-white px-4 py-4">
             <Text className="text-sm text-teal">{COPY.labResultValueLabel}</Text>
             <Text className="mt-1 text-charcoal">
               {valueBits.length > 0

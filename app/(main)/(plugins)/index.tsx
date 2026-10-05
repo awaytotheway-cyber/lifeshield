@@ -223,9 +223,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     fontFamily: fontFamily.bodyMedium,
     fontSize: 11,
-    letterSpacing: 0.4,
+    letterSpacing: 0.2,
     color: colors.slate,
-    textTransform: "uppercase",
   },
   privacy: {
     fontFamily: fontFamily.body,

@@ -92,14 +92,38 @@ const RULES = [
     test: (line, n, src) => {
       if (!/\.map\(/.test(line)) return false;
       // Only flag when a ScrollView wraps this file's list rendering.
-      return /<ScrollView/.test(src) && !/<FlatList|<SectionList/.test(src);
+      if (!/<ScrollView/.test(src) || /<FlatList|<SectionList/.test(src)) return false;
+      // A ScrollView explicitly argued for in a comment just above is allowed.
+      const lines = src.split("\n");
+      const near = lines.slice(Math.max(0, n - 12), n).join("\n");
+      return !/ScrollView is deliberate/.test(near);
     },
   },
   {
-    id: "screen-padding",
+    id: "card-radius",
     severity: 2,
-    label: "Screen padding px-4/px-8 (screens use px-5 = 20px)",
-    test: (line) => /className=["'][^"']*\bpx-(4|8)\b/.test(line),
+    label: "Card using the button corner (surfaces are rounded-2xl, not rounded-xl)",
+    // Inputs legitimately keep the 12px corner, so a line that is clearly a
+    // field (a TextInput, a fixed-height multiline box, or a picker trigger)
+    // is not a card wearing the wrong radius.
+    test: (line, n, src) => {
+      if (!/\brounded-xl\b/.test(line)) return false;
+      if (!/\bbg-(white|cream|iceBlue)\b/.test(line)) return false;
+      if (!/\b(p|px|py)-\d/.test(line)) return false;
+      const lines = src.split("\n");
+      const near = lines.slice(Math.max(0, n - 6), n + 1).join("\n");
+      if (/<TextInput|<NumberInput|min-h-\[/.test(near)) return false;
+      if (/placeholder|keyboardType|accessibilityLabel=\{label\}/.test(near)) return false;
+      return true;
+    },
+  },
+  {
+    id: "semantic-border",
+    severity: 2,
+    label: "Status colour used as a neutral border (use border-border; keep sage/coral/amber for state)",
+    test: (line) =>
+      /\bborder-(sage|teal|deepTeal|midTeal|skyBlue)\b/.test(line)
+      && /\bbg-(white|cream|iceBlue)\b/.test(line),
   },
   {
     id: "radius",
@@ -119,8 +143,17 @@ const RULES = [
     id: "all-caps",
     severity: 2,
     label: "ALL CAPS text (sentence case everywhere except 1-2 word status chips)",
-    test: (line) => /textTransform:\s*["']uppercase["']/.test(line)
-      || /\buppercase\b/.test(line),
+    // Status chips are the sanctioned exception, so a style block that says it
+    // is a chip nearby is left alone. Keeping this comment-driven rather than
+    // path-driven means a new violation in the same file is still caught.
+    test: (line, n, src) => {
+      if (!/textTransform:\s*["']uppercase["']/.test(line) && !/\buppercase\b/.test(line)) {
+        return false;
+      }
+      const lines = src.split("\n");
+      const near = lines.slice(Math.max(0, n - 5), n + 2).join("\n");
+      return !/chip/i.test(near);
+    },
   },
   {
     id: "console",

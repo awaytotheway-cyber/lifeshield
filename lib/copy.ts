@@ -668,6 +668,8 @@ export const COPY = {
     "We couldn’t load your safety checks for the store. Please try again.",
   storeRetry: "Try loading again",
   storeAdd: "Add",
+  storeAdding: "Adding…",
+  storeAddItemLabel: "Add {name}",
   storeAdded: "Added to your cart.",
   storeAddFailed:
     "We couldn’t add that item. Please try again. Your cart is unchanged if you see this message.",

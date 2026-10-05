@@ -217,7 +217,7 @@ export default function CartScreen() {
             const busy = updatingId === line.id;
             const lineTotal = line.product.price * line.quantity;
             return (
-              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
+              <View key={line.id} className="mt-4 rounded-2xl bg-white px-4 py-4">
                 <ClinicalTerm
                   plainName={line.product.plain_name}
                   plainExplanation={
@@ -237,7 +237,7 @@ export default function CartScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={COPY.cartDecrease}
                     disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
+                    className="min-h-[48px] min-w-[48px] items-center justify-center rounded-xl bg-iceBlue px-4"
                     onPress={() => {
                       void changeQuantity(line, -1);
                     }}
@@ -251,7 +251,7 @@ export default function CartScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={COPY.cartIncrease}
                     disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
+                    className="min-h-[48px] min-w-[48px] items-center justify-center rounded-xl bg-iceBlue px-4"
                     onPress={() => {
                       void changeQuantity(line, 1);
                     }}
@@ -274,7 +274,7 @@ export default function CartScreen() {
         : null}
 
       {!loading && !message && lines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
+        <View className="mt-6 rounded-2xl border border-border bg-iceBlue px-4 py-4">
           <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
           <Text className="mt-2 text-center text-2xl text-teal">
             ₹{total.toLocaleString("en-IN")}

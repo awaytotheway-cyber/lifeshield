@@ -203,9 +203,8 @@ const styles = StyleSheet.create({
   metaLabel: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 11,
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
     color: colors.slate,
-    textTransform: "uppercase",
   },
   metaValue: {
     fontFamily: fontFamily.bodySemi,
@@ -254,8 +253,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
     color: colors.slate,
-    letterSpacing: 0.4,
-    textTransform: "uppercase",
+    letterSpacing: 0.2,
   },
   line: {
     marginBottom: 4,

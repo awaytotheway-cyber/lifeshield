@@ -154,7 +154,8 @@ export const shadows = {
   },
 } as const;
 
-export const tapTarget = 44;
+/** Minimum touch target. The design system floor is 48px. */
+export const tapTarget = 48;
 export const inputHeight = 56;
 export const primaryButtonHeight = 50;
 export const secondaryButtonHeight = 50;

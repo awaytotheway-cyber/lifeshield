@@ -210,10 +210,12 @@ const badgeStyles = StyleSheet.create({
     borderRadius: radius.chip,
   },
   text: {
+    // Status chips are the one place the design system allows ALL CAPS,
+    // for one or two words only. Tracking follows the chip spec.
     fontFamily: fontFamily.bodySemi,
     fontSize: 11,
     textTransform: "uppercase",
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
   },
 });
 
@@ -241,8 +243,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
     color: colors.slate,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
   celebrate: {
     marginTop: spacing.sm,
@@ -304,7 +305,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 11,
     color: colors.slate,
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
   },
 });

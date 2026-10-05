@@ -123,7 +123,7 @@ export default function OrderDetailScreen() {
 
       {!loading && !message && order ? (
         <>
-          <View className="mt-6 rounded-xl bg-white px-4 py-4">
+          <View className="mt-6 rounded-2xl bg-white px-4 py-4">
             <Text className="text-center text-xl text-charcoal">
               {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
             </Text>
@@ -148,7 +148,7 @@ export default function OrderDetailScreen() {
             items.map((item) => (
               <View
                 key={item.id}
-                className="mt-3 rounded-xl border border-sage bg-white px-4 py-3"
+                className="mt-3 rounded-2xl border border-border bg-white px-4 py-3"
               >
                 <Text className="text-charcoal">{item.product_name}</Text>
                 <Text className="mt-1 text-sm text-charcoal">
@@ -167,13 +167,13 @@ export default function OrderDetailScreen() {
             {COPY.ordersWebhookNote}
           </Text>
 
-          <View className="mt-2 rounded-xl bg-white px-4 py-2">
+          <View className="mt-2 rounded-2xl bg-white px-4 py-2">
             {timeline.map((step) => (
               <TimelineRow key={step.label} step={step} />
             ))}
           </View>
 
-          <View className="mt-6 rounded-xl bg-cream px-4 py-3">
+          <View className="mt-6 rounded-2xl bg-cream px-4 py-3">
             <Text className="text-sm text-charcoal">
               {COPY.orderPaymentLabel}: {order.payment_status}
             </Text>
