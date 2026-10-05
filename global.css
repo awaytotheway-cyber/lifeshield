@@ -12,28 +12,37 @@
   v5 reads these CSS variables to create classes like text-coral and bg-cream.
 */
 @theme {
-  --color-primaryBlue: #007aff;
-  --color-deepNavy: #000000;
-  --color-skyBlue: #5ac8fa;
-  --color-iceBlue: #f2f2f7;
+  /* ——— Blue Glass primaries ——— */
+  --color-primaryBlue: #2b5fe0;
+  --color-deepNavy: #0b1e4d;
+  --color-skyBlue: #6fa8f5;
+  --color-iceBlue: #eaf1ff;
+
+  /* ——— Risk semantics (iOS system Green/Yellow/Red, retained) ——— */
   --color-riskLow: #34c759;
   --color-riskModerate: #ffcc00;
   --color-riskHigh: #ff3b30;
-  --color-deepTeal: #007aff;
-  --color-midTeal: #5ac8fa;
-  --color-lightTeal: #e5f2ff;
-  --color-sage: #34c759;
-  --color-sageLight: #e8f8ed;
-  --color-coral: #ff3b30;
-  --color-coralLight: #ffe5e3;
-  --color-amber: #ffcc00;
-  --color-amberLight: #fff8db;
-  --color-cream: #f2f2f7;
+
+  /* ——— Neutrals ——— */
   --color-white: #ffffff;
-  --color-charcoal: #000000;
-  --color-slate: #8e8e93;
-  --color-mist: #c7c7cc;
-  --color-border: #e5e5ea;
-  --color-teal: #007aff;
+  --color-charcoal: #0b1e4d;
+  --color-slate: #4a5568;
+  --color-mist: #9aa5b4;
+  --color-border: #d4e0f5;
+
+  /* ——— Tinted backgrounds ——— */
+  --color-sageLight: #e8f8ed;
+  --color-amberLight: #fff8db;
+  --color-coralLight: #ffe5e3;
+  --color-lightTeal: #d6e4ff;
+
+  /* ——— Legacy aliases ——— */
+  --color-sage: #34c759;
+  --color-amber: #ffcc00;
+  --color-coral: #ff3b30;
+  --color-deepTeal: #2b5fe0;
+  --color-midTeal: #6fa8f5;
+  --color-teal: #2b5fe0;
+  --color-cream: #eaf1ff;
   --color-purple: #af52de;
 }

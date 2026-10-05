@@ -1,17 +1,19 @@
 // Must be the first import so NativeWind styles load before anything renders.
 import "../global.css";
 
-import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-} from "@expo-google-fonts/inter";
+import { DMMono_400Regular, DMMono_500Medium } from "@expo-google-fonts/dm-mono";
+import { DMSerifDisplay_400Regular } from "@expo-google-fonts/dm-serif-display";
 import {
   Manrope_600SemiBold,
   Manrope_700Bold,
   Manrope_800ExtraBold,
 } from "@expo-google-fonts/manrope";
+import {
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+} from "@expo-google-fonts/plus-jakarta-sans";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -87,13 +89,20 @@ function AuthGate() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    // Headings and display.
     Manrope_600SemiBold,
     Manrope_700Bold,
     Manrope_800ExtraBold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
+    // Body, labels and UI text.
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    // Data values — scores, percentages, lab names.
     DMMono_400Regular,
+    DMMono_500Medium,
+    // Editorial accent, used sparingly (max one moment per screen).
+    DMSerifDisplay_400Regular,
   });
 
   // If a font file fails, keep going with system fonts rather than a blank screen.

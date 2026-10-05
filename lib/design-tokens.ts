@@ -9,21 +9,25 @@
 
 export const colors = {
   /** Brand primary — buttons, links, active tabs. */
-  primaryBlue: "#007AFF",
-  /** Primary text — pure black per the design system. */
-  deepNavy: "#000000",
-  /** Softer accent blue — info highlights, secondary chrome. */
-  skyBlue: "#5AC8FA",
-  /** Default screen atmosphere — iOS Light Gray. */
-  iceBlue: "#F2F2F7",
+  primaryBlue: "#2B5FE0",
+  /** Primary text and headlines. */
+  deepNavy: "#0B1E4D",
+  /** Softer accent blue — info highlights, progress, secondary chrome. */
+  skyBlue: "#6FA8F5",
+  /** Default screen atmosphere — Blue Glass ice. */
+  iceBlue: "#EAF1FF",
 
   /** Glass fills — light cards / dark chrome overlays. */
   glassFill: "rgba(255,255,255,0.72)",
-  glassFillDark: "rgba(0,0,0,0.40)",
+  glassFillDark: "rgba(11,30,77,0.40)",
   glassChrome: "rgba(255,255,255,0.60)",
-  glassBorder: "rgba(0,0,0,0.06)",
+  glassBorder: "rgba(43,95,224,0.10)",
 
-  /** Risk semantics — mapped to the system Green/Yellow/Red. */
+  /**
+   * Risk semantics — deliberately kept on the iOS system Green/Yellow/Red.
+   * These read as medical-standard, so they stay even though the rest of the
+   * palette moved to Blue Glass.
+   */
   riskLow: "#34C759",
   riskLowLight: "#E8F8ED",
   riskModerate: "#FFCC00",
@@ -32,30 +36,31 @@ export const colors = {
   riskHighLight: "#FFE5E3",
 
   white: "#FFFFFF",
-  /** Headline / primary text. */
-  charcoal: "#000000",
-  /** Secondary text — Dark Gray. */
-  slate: "#8E8E93",
-  /** Tertiary text / inactive elements. */
-  mist: "#C7C7CC",
-  /** Borders and dividers — Medium Gray. */
-  border: "#E5E5EA",
-  /** Neutral shadow. */
-  shadow: "rgba(0,0,0,0.15)",
+  /** Headline / primary text (same as deepNavy — never pure black). */
+  charcoal: "#0B1E4D",
+  /** Secondary text — descriptions, timestamps. */
+  slate: "#4A5568",
+  /** Placeholder, disabled, tertiary info. */
+  mist: "#9AA5B4",
+  /** Borders and dividers. */
+  border: "#D4E0F5",
+  /** Blue-tinted shadow — never plain black. */
+  shadow: "rgba(43,95,224,0.08)",
 
-  // ——— Legacy aliases (map old teal/cream system → iOS palette) ———
-  deepTeal: "#007AFF",
-  midTeal: "#5AC8FA",
-  lightTeal: "#E5F2FF",
+  // ——— Legacy aliases (older screens still reference these names) ———
+  deepTeal: "#2B5FE0",
+  midTeal: "#6FA8F5",
+  /** Hover / pressed states, subtle highlights. */
+  lightTeal: "#D6E4FF",
   sage: "#34C759",
   sageLight: "#E8F8ED",
   coral: "#FF3B30",
   coralLight: "#FFE5E3",
   amber: "#FFCC00",
   amberLight: "#FFF8DB",
-  cream: "#F2F2F7",
-  teal: "#007AFF",
-  /** Highlight accent — Purple, per spec (premium / highlights). */
+  cream: "#EAF1FF",
+  teal: "#2B5FE0",
+  /** Highlight accent — premium / highlights. */
   purple: "#AF52DE",
 } as const;
 
@@ -73,8 +78,14 @@ export const semantic = {
 
 /** Soft background wash for Screen — near-flat light gray per the design system. */
 export const gradients = {
-  screen: ["#FFFFFF", "#F2F2F7", "#F2F2F7"] as const,
+  screen: ["#FFFFFF", "#EAF1FF", "#EAF1FF"] as const,
   screenLocations: [0, 0.6, 1] as const,
+  /** Primary brand gradient — hero cards, prominent score surfaces. */
+  brand: ["#2B5FE0", "#0B1E4D"] as const,
+  /** Lighter brand gradient — secondary emphasis. */
+  brandLight: ["#6FA8F5", "#2B5FE0"] as const,
+  /** Scrim placed under text that sits on a photo. */
+  imageScrim: ["transparent", "rgba(11,30,77,0.7)"] as const,
 } as const;
 
 /** 8-point grid (4px for tiny tweaks). */
@@ -91,35 +102,40 @@ export const spacing = {
 } as const;
 
 export const radius = {
+  /** Buttons and inputs. */
   input: 12,
   button: 12,
   alert: 12,
+  /** Cards — the standard surface corner. */
   card: 16,
-  radioCard: 14,
-  chip: 20,
-  sheet: 20,
+  /** Selectable option cards share the card corner for consistency. */
+  radioCard: 16,
+  /** Chips, tags and avatars are always fully rounded. */
+  chip: 999,
+  /** Bottom sheets — rounded-t-3xl. */
+  sheet: 24,
   glass: 16,
 } as const;
 
 export const shadows = {
   card: {
-    shadowColor: "#000000",
+    shadowColor: "#2B5FE0",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  button: {
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    shadowRadius: 12,
     elevation: 3,
   },
-  modal: {
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 8 },
+  button: {
+    shadowColor: "#2B5FE0",
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  modal: {
+    shadowColor: "#0B1E4D",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
     shadowRadius: 24,
     elevation: 8,
   },
