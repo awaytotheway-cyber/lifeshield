@@ -6,12 +6,12 @@ import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
 import {
   BodySmall,
   BodyText,
   ErrorText,
-  ScreenTitle,
   SectionTitle,
 } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
@@ -97,9 +97,10 @@ export default function PlanItemScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>
-        {COPY.planDetailTitle}
-      </ScreenTitle>
+      <ScreenHeader
+        title={COPY.planDetailTitle}
+        onBack={() => router.back()}
+      />
       <View className="mt-4 rounded-2xl border border-border bg-iceBlue px-4 py-3">
         <BodyText>{bannerText}</BodyText>
       </View>

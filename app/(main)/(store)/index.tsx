@@ -3,7 +3,8 @@ import { useCallback, useMemo, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { ProductCard } from "@/components/store/ProductCard";
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { TextButton } from "@/components/ui/Button";
+import { CartButton } from "@/components/ui/CartButton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -160,10 +161,6 @@ export default function StoreScreen() {
     }
   };
 
-  const cartButtonTitle =
-    cartCount > 0
-      ? COPY.storeViewCartWithCount.replace("{count}", String(cartCount))
-      : COPY.storeViewCart;
 
   if (!session) {
     return <Redirect href={routes.login} />;
@@ -183,6 +180,14 @@ export default function StoreScreen() {
         title={COPY.storeTitle}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.storeBackHome}
+        right={
+          <CartButton
+            count={cartCount}
+            onPress={() => {
+              router.push(routes.storeCart);
+            }}
+          />
+        }
       />
       <Text style={styles.body}>{COPY.storeBody}</Text>
 
@@ -287,16 +292,6 @@ export default function StoreScreen() {
               />
             </View>
           )}
-          ListFooterComponent={
-            <View>
-              <PrimaryButton
-                title={cartButtonTitle}
-                onPress={() => {
-                  router.push(routes.storeCart);
-                }}
-              />
-            </View>
-          }
           contentContainerStyle={styles.list}
         />
       ) : null}

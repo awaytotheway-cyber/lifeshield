@@ -6,13 +6,13 @@ import { StripePayButton } from "@/components/checkout/StripePayButton";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
 import {
   BodySmall,
   BodyText,
   DataValue,
   ErrorText,
-  ScreenTitle,
 } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
@@ -120,7 +120,10 @@ export default function CheckoutScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>{COPY.checkoutTitle}</ScreenTitle>
+      <ScreenHeader
+        title={COPY.checkoutTitle}
+        onBack={() => router.back()}
+      />
       <BodyText className="mt-4">{COPY.checkoutBody}</BodyText>
 
       {!stripeKeyReady ? (

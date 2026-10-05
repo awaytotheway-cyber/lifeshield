@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { IconButton } from "@/components/ui/Button";
@@ -9,13 +10,20 @@ type ScreenHeaderProps = {
   title: string;
   onBack?: () => void;
   backLabel?: string;
+  /**
+   * Optional trailing action, e.g. the cart button on the store.
+   * It replaces the spacer that balances the back arrow, so the title
+   * stays optically centred either way.
+   */
+  right?: ReactNode;
 };
 
-/** Stack-style heading with an optional back arrow. */
+/** Stack-style heading with an optional back arrow and trailing action. */
 export function ScreenHeader({
   title,
   onBack,
   backLabel = COPY.goBack,
+  right,
 }: ScreenHeaderProps) {
   return (
     <View style={styles.row}>
@@ -31,7 +39,11 @@ export function ScreenHeader({
       <Text style={styles.title} accessibilityRole="header">
         {title}
       </Text>
-      <View style={styles.spacer} />
+      {right ? (
+        <View style={styles.right}>{right}</View>
+      ) : (
+        <View style={styles.spacer} />
+      )}
     </View>
   );
 }
@@ -56,5 +68,11 @@ const styles = StyleSheet.create({
   spacer: {
     width: tapTarget,
     height: tapTarget,
+  },
+  right: {
+    minWidth: tapTarget,
+    height: tapTarget,
+    alignItems: "flex-end",
+    justifyContent: "center",
   },
 });

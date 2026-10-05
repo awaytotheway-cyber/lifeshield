@@ -3,7 +3,8 @@ import { Redirect, useRouter } from "expo-router";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
-import { BodyText, ScreenTitle } from "@/components/ui/Typography";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { BodyText } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
@@ -23,9 +24,10 @@ export default function ClinicalTermPreviewScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>
-        {COPY.clinicalTermPreviewTitle}
-      </ScreenTitle>
+      <ScreenHeader
+        title={COPY.clinicalTermPreviewTitle}
+        onBack={() => router.back()}
+      />
       <BodyText className="mt-3" centered>
         {COPY.clinicalTermPreviewBody}
       </BodyText>

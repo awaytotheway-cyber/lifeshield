@@ -186,6 +186,15 @@ export default function MainLayout() {
             }}
           />
           <Tabs.Screen
+            name="(journey)"
+            options={{
+              title: "Journey",
+              tabBarIcon: ({ color }) => (
+                <Feather name="map" size={24} color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
             name="(settings)"
             options={{
               title: "More",
@@ -194,6 +203,19 @@ export default function MainLayout() {
               ),
             }}
           />
+
+          {/*
+            Every other route group must be declared with href: null. Expo
+            Router otherwise registers each one as its own tab, labelled with
+            the raw folder name — which is how (goals), (buddies), (plugins),
+            (recipes) and (partners) ended up crowding the bar. These screens
+            are reached from Home's quick actions and the More drawer.
+          */}
+          <Tabs.Screen name="(buddies)" options={{ href: null }} />
+          <Tabs.Screen name="(goals)" options={{ href: null }} />
+          <Tabs.Screen name="(partners)" options={{ href: null }} />
+          <Tabs.Screen name="(plugins)" options={{ href: null }} />
+          <Tabs.Screen name="(recipes)" options={{ href: null }} />
           <Tabs.Screen
             name="(triage)"
             options={{

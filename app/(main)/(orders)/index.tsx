@@ -4,6 +4,7 @@ import { Pressable, View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
 import {
   BodySmall,
@@ -13,7 +14,6 @@ import {
   DataSmall,
   DataValue,
   ErrorText,
-  ScreenTitle,
 } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
@@ -149,9 +149,10 @@ export default function OrdersScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>
-        {placed ? COPY.checkoutSuccessTitle : COPY.ordersTitle}
-      </ScreenTitle>
+      <ScreenHeader
+        title={placed ? COPY.checkoutSuccessTitle : COPY.ordersTitle}
+        onBack={() => router.back()}
+      />
 
       {placed ? (
         <BodyText className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.ordersPlacedBanner}</BodyText>

@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
 import {
   BodySmall,
@@ -12,7 +13,6 @@ import {
   CardTitle,
   DataValue,
   ErrorText,
-  ScreenTitle,
   SectionTitle,
 } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
@@ -119,9 +119,10 @@ export default function OrderDetailScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>
-        {COPY.orderDetailTitle}
-      </ScreenTitle>
+      <ScreenHeader
+        title={COPY.orderDetailTitle}
+        onBack={() => router.back()}
+      />
 
       {loading ? <SkeletonCardList rows={3} /> : null}
 

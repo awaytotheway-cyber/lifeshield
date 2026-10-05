@@ -18,6 +18,7 @@ module.exports = {
         deepNavy: "#0B1E4D",
         skyBlue: "#6FA8F5",
         iceBlue: "#EAF1FF",
+        appBackground: "#FAFBFC",
 
         // ——— Risk semantics (iOS system Green/Yellow/Red, retained) ———
         riskLow: "#34C759",

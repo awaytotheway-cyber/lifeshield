@@ -7,14 +7,10 @@ import { Text, TextInput, View } from "react-native";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { TextField } from "@/components/ui/TextField";
-import {
-  BodySmall,
-  BodyText,
-  ScreenTitle,
-  SectionTitle,
-} from "@/components/ui/Typography";
+import { BodySmall, BodyText, SectionTitle } from "@/components/ui/Typography";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
@@ -81,9 +77,10 @@ export default function EnterResultsScreen() {
   if (!isAdmin) {
     return (
       <Screen scroll>
-        <ScreenTitle centered>
-          {COPY.enterResultsTitle}
-        </ScreenTitle>
+        <ScreenHeader
+          title={COPY.enterResultsTitle}
+          onBack={() => router.back()}
+        />
         <BodyText className="mt-4">
           {COPY.enterResultsDenied}
         </BodyText>
@@ -197,9 +194,10 @@ export default function EnterResultsScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>
-        {COPY.enterResultsTitle}
-      </ScreenTitle>
+      <ScreenHeader
+        title={COPY.enterResultsTitle}
+        onBack={() => router.back()}
+      />
       <BodyText className="mt-3">
         {COPY.enterResultsBody}
       </BodyText>

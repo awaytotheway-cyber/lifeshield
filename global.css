@@ -17,6 +17,7 @@
   --color-deepNavy: #0b1e4d;
   --color-skyBlue: #6fa8f5;
   --color-iceBlue: #eaf1ff;
+  --color-appBackground: #fafbfc;
 
   /* ——— Risk semantics (iOS system Green/Yellow/Red, retained) ——— */
   --color-riskLow: #34c759;

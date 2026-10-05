@@ -7,13 +7,13 @@ import { EmptyBox } from "@/components/illustrations";
 import { PurchaseStatus } from "@/components/store/ProductCard";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
 import {
   BodySmall,
   BodyText,
   DataValue,
   ErrorText,
-  ScreenTitle,
   SectionTitle,
 } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
@@ -192,7 +192,10 @@ export default function CartScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>{COPY.cartTitle}</ScreenTitle>
+      <ScreenHeader
+        title={COPY.cartTitle}
+        onBack={() => router.back()}
+      />
       <BodyText className="mt-3">{COPY.cartBody}</BodyText>
 
       {loading ? <SkeletonCardList rows={3} /> : null}

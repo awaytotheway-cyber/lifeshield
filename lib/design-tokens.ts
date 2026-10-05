@@ -14,8 +14,10 @@ export const colors = {
   deepNavy: "#0B1E4D",
   /** Softer accent blue — info highlights, progress, secondary chrome. */
   skyBlue: "#6FA8F5",
-  /** Default screen atmosphere — Blue Glass ice. */
+  /** Default screen atmosphere — Blue Glass ice. Still used for tinted fills. */
   iceBlue: "#EAF1FF",
+  /** App background. Clean and near-white — no decorative wash. */
+  appBackground: "#FAFBFC",
 
   /** Glass fills — light cards / dark chrome overlays. */
   glassFill: "rgba(255,255,255,0.72)",

@@ -7,13 +7,9 @@ import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StatusChip } from "@/components/results/StatusChip";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
-import {
-  BodySmall,
-  BodyText,
-  ErrorText,
-  ScreenTitle,
-} from "@/components/ui/Typography";
+import { BodySmall, BodyText, ErrorText } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
@@ -95,9 +91,10 @@ export default function ResultDetailScreen() {
 
   return (
     <Screen scroll>
-      <ScreenTitle centered>
-        {COPY.labResultDetailTitle}
-      </ScreenTitle>
+      <ScreenHeader
+        title={COPY.labResultDetailTitle}
+        onBack={() => router.back()}
+      />
 
       {loading ? (
         <SkeletonCardList rows={3} />
