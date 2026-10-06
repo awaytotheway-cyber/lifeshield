@@ -172,7 +172,7 @@ export default function ProductDetailScreen() {
           />
 
           <View className="mt-4 rounded-2xl bg-white px-4 py-4">
-            <BodySmall style={{ color: colors.primaryBlue }}>{COPY.productClinicalBasis}</BodySmall>
+            <BodySmall>{COPY.productClinicalBasis}</BodySmall>
             <BodyText className="mt-2">
               {product.linked_finding?.trim() ||
                 product.clinical_name ||

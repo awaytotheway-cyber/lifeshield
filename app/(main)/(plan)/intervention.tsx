@@ -5,6 +5,7 @@ import { View } from "react-native";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { BarriersAccordion } from "@/components/ui/BarriersAccordion";
 import { Button } from "@/components/ui/Button";
+import { Disclosure } from "@/components/ui/Disclosure";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
@@ -127,46 +128,57 @@ export default function PlanItemScreen() {
           <SectionTitle className="mt-4">
             {row.title}
           </SectionTitle>
-          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planDetailWhat}</BodySmall>
-          <BodyText className="mt-1">
+
+          {/*
+            Essentials only, above the fold: what this draft actually suggests,
+            whether it needs a practitioner check, and where it is in review.
+            Everything that answers "tell me more" sits behind a disclosure.
+          */}
+          <BodyText className="mt-2">
             {row.description?.trim() ||
               row.plain_reason?.trim() ||
               COPY.planDetailNotInstruction}
           </BodyText>
-          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planWhyLabel}</BodySmall>
-          <BodyText className="mt-1">
-            {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
-          </BodyText>
 
-          {row.clinician_interaction_check ? (
-            <View className="mt-3 min-w-[72px] self-start rounded-full bg-riskModerateLight px-3 py-1">
+          <View className="mt-3 flex-row flex-wrap items-center gap-2">
+            <View className="min-w-[72px] self-start rounded-full bg-iceBlue px-3 py-1">
               <BodySmall style={{ color: colors.charcoal }}>
-                {COPY.planNeedsCheck}
+                {reviewStatusLabel(row.status)}
               </BodySmall>
             </View>
-          ) : null}
+            {row.clinician_interaction_check ? (
+              <View className="min-w-[72px] self-start rounded-full bg-riskModerateLight px-3 py-1">
+                <BodySmall style={{ color: colors.charcoal }}>
+                  {COPY.planNeedsCheck}
+                </BodySmall>
+              </View>
+            ) : null}
+          </View>
 
-          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planDetailReview}</BodySmall>
-          <BodyText className="mt-1">
-            {reviewStatusLabel(row.status)}
-          </BodyText>
+          <View className="mt-5">
+            <Disclosure label={COPY.planWhyLabel}>
+              <BodyText>
+                {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
+              </BodyText>
+            </Disclosure>
 
-          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>{COPY.planClinicalBasis}</BodySmall>
-          <BodyText className="mt-1">
-            {row.clinical_basis?.trim() || row.trigger_finding}
-          </BodyText>
+            <Disclosure label={COPY.planClinicalBasis}>
+              <BodyText>
+                {row.clinical_basis?.trim() || row.trigger_finding}
+              </BodyText>
+            </Disclosure>
 
-          <BodySmall className="mt-6" style={{ color: colors.primaryBlue }}>
-            {COPY.planDetailFinding}
-          </BodySmall>
-          <ClinicalTerm
-            termKey={termKey}
-            plainName={row.title}
-            plainExplanation={row.plain_reason ?? undefined}
-            medicalName={row.trigger_finding}
-          />
+            <Disclosure label={COPY.planDetailFinding}>
+              <ClinicalTerm
+                termKey={termKey}
+                plainName={row.title}
+                plainExplanation={row.plain_reason ?? undefined}
+                medicalName={row.trigger_finding}
+              />
+            </Disclosure>
+          </View>
 
-          <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>
+          <BodySmall className="mt-4">
             {COPY.planDetailNotInstruction}
           </BodySmall>
 

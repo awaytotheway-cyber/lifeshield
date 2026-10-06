@@ -51,7 +51,7 @@ export function TimePicker({
         }}
       />
       {isHHmm(clockValue) ? (
-        <BodySmall className="mt-1" style={{ color: colors.primaryBlue }}>
+        <BodySmall className="mt-1">
           {formatDisplayDuration(clockValue)}
         </BodySmall>
       ) : null}

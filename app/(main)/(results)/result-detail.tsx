@@ -11,7 +11,6 @@ import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SkeletonCardList } from "@/components/ui/Skeleton";
 import { BodySmall, BodyText, ErrorText } from "@/components/ui/Typography";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import {
   loadOwnTestResultById,
@@ -124,13 +123,13 @@ export default function ResultDetailScreen() {
           />
 
           <View className="mt-4 rounded-2xl bg-white px-4 py-4">
-            <BodySmall style={{ color: colors.primaryBlue }}>{COPY.labResultValueLabel}</BodySmall>
+            <BodySmall>{COPY.labResultValueLabel}</BodySmall>
             <BodyText className="mt-1">
               {valueBits.length > 0
                 ? valueBits.join(" ")
                 : COPY.labResultNoValue}
             </BodyText>
-            <BodySmall className="mt-4" style={{ color: colors.primaryBlue }}>
+            <BodySmall className="mt-4">
               {COPY.labResultRangeLabel}
             </BodySmall>
             <BodyText className="mt-1">
@@ -143,7 +142,7 @@ export default function ResultDetailScreen() {
           <BodyText className="mt-4">
             {meaningForFlag(row.flag)}
           </BodyText>
-          <BodySmall className="mt-3" style={{ color: colors.primaryBlue }}>
+          <BodySmall className="mt-3">
             {COPY.labResultNotDiagnosis}
           </BodySmall>
 

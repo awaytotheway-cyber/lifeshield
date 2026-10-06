@@ -201,7 +201,7 @@ export default function EnterResultsScreen() {
       <BodyText className="mt-3">
         {COPY.enterResultsBody}
       </BodyText>
-      <BodySmall className="mt-3" style={{ color: colors.primaryBlue }}>
+      <BodySmall className="mt-3">
         Signed in as {session.user.email}. For founder testing, leave the user
         id as your own so a row appears for you.
       </BodySmall>
