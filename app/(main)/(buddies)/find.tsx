@@ -24,6 +24,7 @@ export default function FindBuddiesScreen() {
   const session = useAuthStore((state) => state.session);
   const [q, setQ] = useState("");
   const [rows, setRows] = useState<PotentialBuddyRow[] | null>(null);
+  const [searchedFor, setSearchedFor] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -33,6 +34,7 @@ export default function FindBuddiesScreen() {
   const search = useCallback(async (query: string) => {
     setBusy(true);
     setMessage(null);
+    setSearchedFor(query.trim());
     const res = await findPotentialBuddies(query || null, 25);
     setBusy(false);
     if (!res.ok) {
@@ -96,7 +98,11 @@ export default function FindBuddiesScreen() {
         <EmptyState
           icon="search"
           heading={COPY.buddiesFindTitle}
-          explanation={COPY.buddiesFindEmpty}
+          explanation={
+            searchedFor.length > 0
+              ? COPY.buddiesFindEmptyForSearch
+              : `${COPY.buddiesFindEmpty} ${COPY.buddiesOptInHint}`
+          }
         />
       ) : null}
 

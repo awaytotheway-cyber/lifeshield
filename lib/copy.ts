@@ -924,7 +924,15 @@ export const COPY = {
     "Turn on 'Find me as a buddy' in Profile, then find someone with similar goals.",
   buddiesFindTitle: "Find buddies",
   buddiesSearchPlaceholder: "Search by name, city or interest…",
-  buddiesFindEmpty: "No matches yet. Try a broader search or check again later.",
+  // Two different empty states. A blank search returning nothing means nobody
+  // else has opted in yet — saying "no matches" there reads as a broken
+  // feature, which is exactly how it looked in testing.
+  buddiesFindEmpty:
+    "No one else has opted in to buddy matching yet. You'll see people here as more members turn it on.",
+  buddiesFindEmptyForSearch:
+    "No one matches that name, city or interest yet. Try a broader search, or clear it to see everyone who has opted in.",
+  buddiesOptInHint:
+    "Turn on \u201CFind me as a buddy\u201D in settings so others can find you too.",
   buddiesMatchLabel: "Match",
   buddiesSharedInterestsLabel: "Shared interests",
   buddiesSendRequest: "Send request",

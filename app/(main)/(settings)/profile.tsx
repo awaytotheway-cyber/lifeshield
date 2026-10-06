@@ -22,6 +22,7 @@ import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { isAdminEmail, SEX_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
+import { clearAvatar, uploadAvatar } from "@/lib/avatar-upload";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
 import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
@@ -61,6 +62,7 @@ export default function ProfileScreen() {
   const [toast, setToast] = useState<string | null>(null);
   const [migrationNote, setMigrationNote] = useState<string | null>(null);
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const [signOutMessage, setSignOutMessage] = useState<string | null>(null);
 
@@ -159,8 +161,19 @@ export default function ProfileScreen() {
         return;
       }
       const uri = picked.assets[0].uri;
+      // Show the local file immediately, then replace it with the uploaded
+      // URL so the photo survives a reinstall and reaches other devices.
       setAvatarUri(uri);
       await setLocalAvatarUri(session.user.id, uri);
+      setUploadingPhoto(true);
+      const uploaded = await uploadAvatar(session.user.id, uri);
+      setUploadingPhoto(false);
+      if (!uploaded.ok) {
+        setSaveMessage(uploaded.message);
+        return;
+      }
+      setAvatarUri(uploaded.publicUrl);
+      await setLocalAvatarUri(session.user.id, uploaded.publicUrl);
       setToast(COPY.profileSavedToast);
     } catch (error) {
       setSaveMessage(messageFromUnknown(error, COPY.profilePhotoFailed));
@@ -170,6 +183,10 @@ export default function ProfileScreen() {
   const removePhoto = async () => {
     setAvatarUri(null);
     await setLocalAvatarUri(session.user.id, null);
+    const cleared = await clearAvatar(session.user.id);
+    if (!cleared.ok) {
+      setSaveMessage(cleared.message);
+    }
   };
 
   return (
@@ -199,6 +216,7 @@ export default function ProfileScreen() {
                 avatarUri ? COPY.profilePhotoChange : COPY.profilePhotoAdd
               }
               onPress={() => void pickPhoto()}
+              disabled={uploadingPhoto}
               style={styles.avatarHit}
             >
               {avatarUri ? (
@@ -216,6 +234,7 @@ export default function ProfileScreen() {
             <TextButton
               title={avatarUri ? COPY.profilePhotoChange : COPY.profilePhotoAdd}
               onPress={() => void pickPhoto()}
+              loading={uploadingPhoto}
             />
             {avatarUri ? (
               <TextButton title={COPY.profilePhotoRemove} onPress={() => void removePhoto()} />
