@@ -1,11 +1,11 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
 import { QUESTIONNAIRE_HUB_SECTIONS, type HubSectionKey } from "@/lib/constants";
 import { colors, spacing, tapTarget } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type SectionProgressProps = {
   progress: Record<string, boolean>;
@@ -43,7 +43,7 @@ export function SectionProgress({
                 {done ? COPY.hubStatusDone : COPY.hubStatusNotStarted}
               </Text>
             </View>
-            <Feather name="chevron-right" size={20} color={colors.skyBlue} />
+            <Icon name="chevron-right" size={20} color={colors.skyBlue} />
             </GlassSurface>
           </Pressable>
         );

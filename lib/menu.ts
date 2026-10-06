@@ -3,8 +3,8 @@
  * Optional reorder: persist ordered ids in AsyncStorage (see AppDrawer).
  */
 import type { Href } from "expo-router";
-import type { Feather } from "@expo/vector-icons";
 
+import { type IconName } from "@/components/ui/Icon";
 import { routes } from "@/lib/routes";
 
 export type MenuItemId =
@@ -27,7 +27,7 @@ export type MenuItemId =
 export type MenuItem = {
   id: MenuItemId;
   label: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   href: Href;
   /** Match pathname snippets to highlight the active row. */
   match: string[];

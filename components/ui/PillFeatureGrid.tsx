@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
 export type PillFeature = {
   id: string;
   label: string;
-  icon?: keyof typeof Feather.glyphMap;
+  icon?: IconName;
 };
 
 type PillFeatureGridProps = {
@@ -25,7 +25,7 @@ export function PillFeatureGrid({ features }: PillFeatureGridProps) {
         <GlassCard key={item.id} intensity="card" style={styles.pill}>
           <View style={styles.row}>
             {item.icon ? (
-              <Feather name={item.icon} size={16} color={colors.primaryBlue} />
+              <Icon name={item.icon} size={16} color={colors.primaryBlue} />
             ) : null}
             <Text style={styles.label}>{item.label}</Text>
           </View>

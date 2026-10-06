@@ -5,7 +5,6 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
@@ -49,6 +48,7 @@ import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Icon } from "@/components/ui/Icon";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
                 />
               ) : (
                 <View style={styles.avatarPlaceholder}>
-                  <Feather name="plus" size={26} color={colors.mist} />
+                  <Icon name="plus" size={26} color={colors.mist} />
                 </View>
               )}
             </Pressable>

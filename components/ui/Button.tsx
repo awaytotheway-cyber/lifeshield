@@ -7,7 +7,6 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { PressScale } from "@/components/ui/PressScale";
@@ -20,6 +19,7 @@ import {
   tapTarget,
 } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
 export type ButtonVariant =
   | "primary"
@@ -33,8 +33,8 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   title?: string;
   loading?: boolean;
   variant?: ButtonVariant;
-  /** Feather icon name for IconButton (and optional leading icon). */
-  icon?: keyof typeof Feather.glyphMap;
+  /** Icon name for IconButton (and optional leading icon). */
+  icon?: IconName;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -79,7 +79,7 @@ export function Button({
         disabled={isDisabled}
         style={[styles.iconBtn, isDisabled && styles.iconDisabled, style]}
       >
-        <Feather name={icon ?? "more-horizontal"} size={20} color={colors.primaryBlue} />
+        <Icon name={icon ?? "more-horizontal"} size={20} color={colors.primaryBlue} />
       </PressScale>
     );
   }
@@ -160,7 +160,7 @@ export function Button({
       ) : (
         <View style={styles.row}>
           {icon ? (
-            <Feather
+            <Icon
               name={icon}
               size={18}
               color={isDisabled ? colors.mist : colors.white}

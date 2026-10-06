@@ -1,16 +1,16 @@
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
 type EmptyStateProps = {
-  icon?: keyof typeof Feather.glyphMap;
+  icon?: IconName;
   heading: string;
   explanation: string;
-  /** Optional drawing. When set, the Feather icon is not shown. */
+  /** Optional drawing. When set, the icon is not shown. */
   illustration?: ReactNode;
 };
 
@@ -24,7 +24,7 @@ export function EmptyState({
   return (
     <GlassCard intensity="card" style={styles.wrap}>
       {illustration ?? (
-        <Feather name={icon} size={32} color={colors.primaryBlue} />
+        <Icon name={icon} size={32} color={colors.primaryBlue} />
       )}
       <Text style={styles.heading}>{heading}</Text>
       <Text style={styles.body}>{explanation}</Text>

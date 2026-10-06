@@ -10,7 +10,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useDrawer } from "@/components/navigation/DrawerContext";
@@ -25,6 +24,7 @@ import {
 } from "@/lib/menu";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Icon } from "@/components/ui/Icon";
 
 const ORDER_KEY = (userId: string) => `prescope:menu-order:${userId}`;
 
@@ -154,7 +154,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                   onPress={closeDrawer}
                   style={styles.iconHit}
                 >
-                  <Feather name="x" size={22} color={colors.charcoal} />
+                  <Icon name="x" size={22} color={colors.charcoal} />
                 </Pressable>
               </View>
               <Text style={styles.subtitle}>{COPY.drawerSubtitle}</Text>
@@ -191,7 +191,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                           active ? styles.itemActive : null,
                         ]}
                       >
-                        <Feather
+                        <Icon
                           name={item.icon}
                           size={20}
                           color={
@@ -231,7 +231,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                             onPress={() => moveItem(item.id, -1)}
                             style={styles.iconHit}
                           >
-                            <Feather
+                            <Icon
                               name="chevron-up"
                               size={20}
                               color={colors.slate}
@@ -243,7 +243,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                             onPress={() => moveItem(item.id, 1)}
                             style={styles.iconHit}
                           >
-                            <Feather
+                            <Icon
                               name="chevron-down"
                               size={20}
                               color={colors.slate}
@@ -266,7 +266,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                 onPress={() => setReorderMode((prev) => !prev)}
                 style={styles.reorderToggle}
               >
-                <Feather
+                <Icon
                   name={reorderMode ? "check" : "list"}
                   size={18}
                   color={colors.primaryBlue}

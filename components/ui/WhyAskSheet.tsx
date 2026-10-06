@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
 import { colors, tapTarget } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type WhyAskButtonProps = {
   explanation: string;
   accessibilityLabel?: string;
 };
 
-/** Feather info icon that opens a one-paragraph “why we ask” sheet. */
+/** Info icon that opens a one-paragraph “why we ask” sheet. */
 export function WhyAskButton({
   explanation,
   accessibilityLabel = COPY.whyWeAsk,
@@ -29,7 +29,7 @@ export function WhyAskButton({
         onPress={() => setOpen(true)}
         style={styles.infoHit}
       >
-        <Feather name="info" size={16} color={colors.skyBlue} />
+        <Icon name="info" size={16} color={colors.skyBlue} />
       </Pressable>
       <Modal
         visible={open}

@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ShieldTrust } from "@/components/illustrations";
@@ -26,6 +25,7 @@ import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
 import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Icon } from "@/components/ui/Icon";
 
 type CheckCardProps = {
   label: string;
@@ -45,7 +45,7 @@ function CheckCard({ label, checked, onToggle }: CheckCardProps) {
     >
       <Text style={styles.checkLabel}>{label}</Text>
       {checked ? (
-        <Feather name="check" size={20} color={colors.skyBlue} />
+        <Icon name="check" size={20} color={colors.skyBlue} />
       ) : (
         <View style={styles.checkEmpty} />
       )}

@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";
 import { colors, radius } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type Option = { value: string; label: string; description?: string };
 
@@ -66,7 +66,7 @@ export function RadioGroup({
                 ) : null}
               </View>
               {selected ? (
-                <Feather
+                <Icon
                   name="check"
                   size={20}
                   color={dangerSelected ? colors.riskHigh : colors.skyBlue}

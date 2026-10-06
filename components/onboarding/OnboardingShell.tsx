@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { TextButton } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -9,11 +8,12 @@ import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
 type OnboardingShellProps = {
   /** 1, 2, or 3 — three screens in this flow. */
   step: 1 | 2 | 3;
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   title: string;
   body: string;
   /** Shown from screen 2 onward. Does not skip the terms agreement. */
@@ -66,7 +66,7 @@ export function OnboardingShell({
           <View style={styles.illustration}>{illustration}</View>
         ) : (
           <View style={styles.iconCircle}>
-            <Feather name={icon} size={24} color={colors.primaryBlue} />
+            <Icon name={icon} size={24} color={colors.primaryBlue} />
           </View>
         )}
 

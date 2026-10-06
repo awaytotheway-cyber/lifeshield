@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { getTerm, hasTerm } from "@/lib/plain-language";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type ClinicalTermProps = {
   termKey?: string;
@@ -61,7 +61,7 @@ export function ClinicalTerm({
           onPress={() => setSheetOpen(true)}
           style={styles.infoHit}
         >
-          <Feather name="info" size={16} color={colors.skyBlue} />
+          <Icon name="info" size={16} color={colors.skyBlue} />
         </Pressable>
       </View>
       <Text style={styles.explain}>{explanation || "plain explanation coming soon"}</Text>

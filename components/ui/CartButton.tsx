@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { PressScale } from "@/components/ui/PressScale";
 import { COPY } from "@/lib/copy";
 import { colors, radius, tapTarget } from "@/lib/design-tokens";
 import { typography } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type CartButtonProps = {
   count: number;
@@ -31,7 +31,7 @@ export function CartButton({ count, onPress }: CartButtonProps) {
       onPress={onPress}
       style={styles.hit}
     >
-      <Feather name="shopping-bag" size={24} color={colors.primaryBlue} />
+      <Icon name="shopping-bag" size={24} color={colors.primaryBlue} />
       {count > 0 ? (
         <View style={styles.badge}>
           <Text style={styles.badgeText} numberOfLines={1}>

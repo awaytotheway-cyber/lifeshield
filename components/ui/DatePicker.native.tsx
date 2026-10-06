@@ -3,7 +3,6 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { COPY } from "@/lib/copy";
@@ -17,6 +16,7 @@ import {
 } from "@/lib/datetime";
 import { isValidIsoCalendarDate } from "@/lib/questionnaire/numbers";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 /**
  * Native date field. Opens a bottom sheet (iOS) or the system calendar (Android).
@@ -59,7 +59,7 @@ export function DatePicker({
         <Text style={hasCalendarValue ? styles.value : styles.placeholder}>
           {hasCalendarValue ? formatDisplayDate(value) : COPY.pickDate}
         </Text>
-        <Feather name="calendar" size={18} color={colors.slate} />
+        <Icon name="calendar" size={18} color={colors.slate} />
       </Pressable>
       {leftoverText ? (
         <Text style={styles.warn}>

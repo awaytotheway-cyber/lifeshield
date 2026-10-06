@@ -225,6 +225,17 @@ const RULES = [
       || /\bcolors\.(?:deepTeal|midTeal|teal|cream|sage|coral|amber)\b(?!Light)/.test(line),
   },
   {
+    id: "icon-set",
+    severity: 2,
+    label: "Icon imported directly from a vendor set (use components/ui/Icon)",
+    // One set, one place. Importing Feather or Ionicons directly is how a
+    // screen ends up mixing icon families or outline/filled styles.
+    exempt: ["components/ui/Icon.tsx"],
+    test: (line) =>
+      /\b(?:Feather|Ionicons|MaterialCommunityIcons|AntDesign|FontAwesome\d?)\b/.test(line)
+      && /@expo\/vector-icons|<\s*(?:Feather|Ionicons|MaterialCommunityIcons)\b/.test(line),
+  },
+  {
     id: "console",
     severity: 3,
     label: "console.log left in a component",

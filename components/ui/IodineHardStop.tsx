@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 import { COPY } from "@/lib/copy";
+import { Icon } from "@/components/ui/Icon";
 
 type IodineHardStopProps = {
   reason?: string;
@@ -18,7 +18,7 @@ export function IodineHardStop({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.riskModerate} />
+        <Icon name="alert-triangle" size={20} color={colors.riskModerate} />
         <Text style={styles.title}>{COPY.iodineHardStopTitle}</Text>
       </View>
       <Text style={styles.body}>{reason}</Text>

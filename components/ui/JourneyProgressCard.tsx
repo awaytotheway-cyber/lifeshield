@@ -1,5 +1,4 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -11,6 +10,7 @@ import Animated, {
 import { GlassCard } from "@/components/ui/GlassCard";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 export type JourneyStepState = "complete" | "current" | "upcoming";
 
@@ -79,7 +79,7 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
                   style={styles.chip}
                 >
                   <Text style={styles.chipText}>Continue</Text>
-                  <Feather name="chevron-right" size={14} color={colors.primaryBlue} />
+                  <Icon name="chevron-right" size={14} color={colors.primaryBlue} />
                 </Pressable>
               ) : null}
             </View>

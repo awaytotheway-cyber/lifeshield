@@ -1,6 +1,5 @@
 import { Redirect, useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -11,11 +10,12 @@ import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
 type LinkRow = {
   title: string;
   subtitle?: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   href: typeof routes.settingsNotifications | typeof routes.profile | typeof routes.settingsPrivacy | typeof routes.settingsHelp | typeof routes.settingsAbout | typeof routes.appointments | typeof routes.prescriptions | typeof routes.notificationsInbox | typeof routes.plan | typeof routes.labResults | typeof routes.store;
 };
 
@@ -84,9 +84,9 @@ export default function SettingsIndex() {
             onPress={() => router.push(link.href)}
             style={styles.row}
           >
-            <Feather name={link.icon} size={20} color={colors.primaryBlue} />
+            <Icon name={link.icon} size={20} color={colors.primaryBlue} />
             <Text style={styles.rowLabel}>{link.title}</Text>
-            <Feather name="chevron-right" size={20} color={colors.mist} />
+            <Icon name="chevron-right" size={20} color={colors.mist} />
           </Pressable>
         ))}
       </GlassCard>

@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { TextInput } from "@/components/ui/TextInput";
 import { colors, radius, tapTarget } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type NumberInputProps = {
   label: string;
@@ -65,7 +65,7 @@ export function NumberInput({
           onPress={() => nudge(-1)}
           style={styles.stepBtn}
         >
-          <Feather name="minus" size={18} color={colors.primaryBlue} />
+          <Icon name="minus" size={18} color={colors.primaryBlue} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -73,7 +73,7 @@ export function NumberInput({
           onPress={() => nudge(1)}
           style={styles.stepBtn}
         >
-          <Feather name="plus" size={18} color={colors.primaryBlue} />
+          <Icon name="plus" size={18} color={colors.primaryBlue} />
         </Pressable>
       </View>
     </View>

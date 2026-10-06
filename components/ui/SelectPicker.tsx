@@ -7,13 +7,13 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";
 import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
 import { COPY } from "@/lib/copy";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type Option = { value: string; label: string };
 
@@ -54,7 +54,7 @@ export function SelectPicker({
         <Text style={selected ? styles.value : styles.placeholder}>
           {selected?.label ?? placeholder ?? COPY.pickOption}
         </Text>
-        <Feather name="chevron-down" size={20} color={colors.slate} />
+        <Icon name="chevron-down" size={20} color={colors.slate} />
       </Pressable>
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -89,7 +89,7 @@ export function SelectPicker({
                     >
                       <Text style={styles.rowLabel}>{option.label}</Text>
                       {isOn ? (
-                        <Feather name="check" size={20} color={colors.primaryBlue} />
+                        <Icon name="check" size={20} color={colors.primaryBlue} />
                       ) : null}
                     </Pressable>
                   );

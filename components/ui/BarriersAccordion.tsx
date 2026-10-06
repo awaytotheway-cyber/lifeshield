@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
 import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 import {
   BARRIER_TYPE_ORDER,
   barrierTypeLabel,
@@ -132,7 +132,7 @@ export function BarriersAccordion({ userId, category, sourceType, sourceId }: Pr
                         </Text>
                       ) : null}
                     </View>
-                    <Feather
+                    <Icon
                       name={open ? "chevron-up" : "chevron-down"}
                       size={20}
                       color={colors.primaryBlue}

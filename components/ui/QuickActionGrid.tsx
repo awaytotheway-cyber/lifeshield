@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { PressScale } from "@/components/ui/PressScale";
 import { colors, radius, shadows, spacing, tapTarget } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon, type IconName } from "@/components/ui/Icon";
 
 export type QuickAction = {
   id: string;
   label: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   onPress: () => void;
 };
 
@@ -40,7 +40,7 @@ export function QuickActionGrid({ actions }: QuickActionGridProps) {
           style={styles.card}
         >
           <View style={styles.iconCircle}>
-            <Feather name={action.icon} size={22} color={colors.primaryBlue} />
+            <Icon name={action.icon} size={22} color={colors.primaryBlue} />
           </View>
           <Text style={styles.label} numberOfLines={2}>
             {action.label}

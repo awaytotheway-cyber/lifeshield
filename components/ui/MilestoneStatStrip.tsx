@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily, typography } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 export type MilestoneStat = {
   id: string;
@@ -34,7 +34,7 @@ export function MilestoneStatStrip({ stats }: MilestoneStatStripProps) {
           >
             {stat.locked ? (
               <View style={styles.lockedValue}>
-                <Feather name="lock" size={16} color={colors.mist} />
+                <Icon name="lock" size={16} color={colors.mist} />
                 <Text style={styles.lockedText}>{stat.value}</Text>
               </View>
             ) : (

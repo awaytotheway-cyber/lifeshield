@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 import { COPY } from "@/lib/copy";
+import { Icon } from "@/components/ui/Icon";
 
 const CATEGORY_ICONS = {
   supplement: "droplet",
@@ -52,7 +52,7 @@ export function InterventionCard({
     >
       <GlassSurface intensity="card" style={styles.card}>
       <View style={styles.top}>
-        <Feather name={icon} size={20} color={colors.primaryBlue} />
+        <Icon name={icon} size={20} color={colors.primaryBlue} />
         <View style={styles.topText}>
           <Text style={styles.title}>{title}</Text>
           <StatusChip kind={status} label={statusLabel} />

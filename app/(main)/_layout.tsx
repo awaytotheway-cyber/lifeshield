@@ -1,5 +1,4 @@
 import { Redirect, Tabs, usePathname } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
@@ -19,6 +18,7 @@ import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Icon } from "@/components/ui/Icon";
 
 function consentScreenFromPath(pathname: string): SequentialConsent | null {
   if (pathname.includes("brca")) {
@@ -171,8 +171,8 @@ export default function MainLayout() {
             name="home"
             options={{
               title: "Home",
-              tabBarIcon: ({ color }) => (
-                <Feather name="home" size={24} color={color} />
+              tabBarIcon: ({ color, focused }) => (
+                <Icon name="home" size={24} color={color} filled={focused} />
               ),
             }}
           />
@@ -180,8 +180,8 @@ export default function MainLayout() {
             name="questionnaire"
             options={{
               title: "Questionnaire",
-              tabBarIcon: ({ color }) => (
-                <Feather name="clipboard" size={24} color={color} />
+              tabBarIcon: ({ color, focused }) => (
+                <Icon name="clipboard" size={24} color={color} filled={focused} />
               ),
             }}
           />
@@ -189,8 +189,8 @@ export default function MainLayout() {
             name="(journey)"
             options={{
               title: "Journey",
-              tabBarIcon: ({ color }) => (
-                <Feather name="map" size={24} color={color} />
+              tabBarIcon: ({ color, focused }) => (
+                <Icon name="map" size={24} color={color} filled={focused} />
               ),
             }}
           />
@@ -198,8 +198,8 @@ export default function MainLayout() {
             name="(settings)"
             options={{
               title: "More",
-              tabBarIcon: ({ color }) => (
-                <Feather name="menu" size={24} color={color} />
+              tabBarIcon: ({ color, focused }) => (
+                <Icon name="menu" size={24} color={color} filled={focused} />
               ),
             }}
           />

@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { colors, radius } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type Option = { value: string; label: string };
 
@@ -55,7 +55,7 @@ export function CheckboxGroup({
             >
               <Text style={styles.optionLabel}>{option.label}</Text>
               {selected ? (
-                <Feather name="check" size={20} color={colors.skyBlue} />
+                <Icon name="check" size={20} color={colors.skyBlue} />
               ) : null}
             </Pressable>
           );

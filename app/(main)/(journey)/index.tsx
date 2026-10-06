@@ -2,7 +2,6 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import type { Href } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -25,6 +24,7 @@ import { loadUserContext } from "@/lib/user-context";
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+import { Icon } from "@/components/ui/Icon";
 import {
   completedSectionCount,
   useQuestionnaireStore,
@@ -134,7 +134,7 @@ export default function JourneyDashboardScreen() {
 
       {done >= 3 ? (
         <View style={styles.celebrate}>
-          <Feather name="star" size={16} color={colors.riskModerate} />
+          <Icon name="star" size={16} color={colors.riskModerate} />
           <Text style={styles.celebrateText}>{COPY.journeyDashCelebrate}</Text>
         </View>
       ) : null}
@@ -194,7 +194,7 @@ function StateBadge({ state }: { state: "complete" | "current" | "upcoming" }) {
     state === "complete" ? "check-circle" : state === "current" ? "play-circle" : "circle";
   return (
     <View style={[badgeStyles.wrap, { backgroundColor: bg }]}>
-      <Feather name={icon} size={14} color={fg} />
+      <Icon name={icon} size={14} color={fg} />
       <Text style={[badgeStyles.text, { color: fg }]}>{state}</Text>
     </View>
   );

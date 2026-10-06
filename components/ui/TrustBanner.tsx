@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/ui/Icon";
 
 type TrustBannerProps = {
   title?: string;
@@ -20,7 +20,7 @@ export function TrustBanner({
   return (
     <View style={styles.wrap} accessibilityRole="summary">
       <View style={styles.iconWrap}>
-        <Feather name="shield" size={18} color={colors.white} />
+        <Icon name="shield" size={18} color={colors.white} />
       </View>
       <View style={styles.textCol}>
         <Text style={styles.title}>{title}</Text>
