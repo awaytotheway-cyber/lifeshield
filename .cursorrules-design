@@ -11,6 +11,21 @@
 > generate generic "health app blue" defaults. Every choice here is
 > intentional and has a reason behind it.
 
+## Changes from the October review
+
+The app moved away from the frosted/tinted look after a design review:
+
+- **Background is flat `#FAFBFC`** (`appBackground`). The decorative blobs
+  and gradient wash behind every screen are gone.
+- **Cards are solid**, not frosted glass: white, 1px `cardBorder` (#E5E7EB),
+  shallow neutral shadow. `expo-blur` is no longer used.
+- **Headings are charcoal `#1A1A2E`** (`heading`). Blue is reserved for
+  primary buttons, the active tab, real links and the brand name. `deepNavy`
+  is for dark SURFACES only.
+- **Icons are Ionicons**, always via `components/ui/Icon`.
+- **Card shadows are neutral**, not blue-tinted: on a near-white background a
+  wide blue shadow reads as a glow rather than elevation.
+
 ## Two deliberate deviations from the base Blue Glass brief
 
 Recorded here so nobody "corrects" them back:
@@ -141,8 +156,9 @@ fails on any of them.
 | `riskHighPressed` | `#D93228` |
 
 ### Colour rules
-- **Backgrounds** are `iceBlue` or `white`. Never a plain gray (`#f5f5f5`,
-  `#eee`) — that reads generic and untrustworthy.
+- **Screen backgrounds** are `appBackground` (#FAFBFC), applied centrally by
+  `Screen`. `iceBlue` is for tinted fills and emphasised cards, not the page.
+  Never a plain gray (`#f5f5f5`, `#eee`).
 - **Cards** are `white` with a `border` outline **or** no border plus a
   subtle shadow. Never both a heavy border and a shadow. To emphasise a card,
   fill it `iceBlue` rather than ringing it in full-strength `primaryBlue`.
@@ -332,8 +348,9 @@ reduced motion. `StaticSkeleton` is a thin alias kept for older imports.
 
 ## 6. ICONOGRAPHY
 
-- **One icon set per screen.** Ionicons or Feather — this codebase uses
-  **Feather** throughout, so match it.
+- **One icon set, one import path.** Always `components/ui/Icon`, never
+  `Feather`/`Ionicons` directly — the audit fails on a direct vendor import.
+  Outline by default; `filled` for active states such as the selected tab.
 - MaterialCommunityIcons only for genuinely health-specific glyphs.
 - Sizes: 20px inline, 24px navigation, 32–48px feature.
 - Colour: `primaryBlue` interactive, `mist` decorative, `deepNavy`
@@ -341,7 +358,7 @@ reduced motion. `StaticSkeleton` is a thin alias kept for older imports.
 - Feature icons sit in a 40–48px circle at 10% tint:
 ```tsx
 <View className="h-12 w-12 items-center justify-center rounded-full bg-primaryBlue/10">
-  <Feather name="heart" size={24} color={colors.primaryBlue} />
+  <Icon name="activity" size={24} color={colors.primaryBlue} />
 </View>
 ```
 - No stethoscopes, blue crosses or clipart medicine.
@@ -362,7 +379,7 @@ reduced motion. `StaticSkeleton` is a thin alias kept for older imports.
 - A clean fade-in only. No production animation sequence.
 
 ### Onboarding (3 screens max)
-- One idea per screen, illustrated with a simple Feather composition.
+- One idea per screen, illustrated with a simple icon composition.
 - Horizontal swipe, dot indicators. "Skip" TextButton top-right from screen 2.
 - Final CTA: "Get started".
 
@@ -515,11 +532,15 @@ Measured, not estimated. Anything marked FAIL must not carry text.
 
 ## 11. NAVIGATION & INFORMATION ARCHITECTURE
 
-**Tab bar — three tabs, plus a drawer for everything else.** This is what the
-app actually ships; do not add tabs without a deliberate IA decision.
+**Tab bar — four tabs, plus a drawer for everything else.** Do not add tabs
+without a deliberate IA decision.
 ```
-Home | Questionnaire | More
+Home | Questionnaire | Journey | More
 ```
+**Every route group under `app/(main)/` must be declared in its `_layout`.**
+An undeclared group becomes its own tab labelled with the raw folder name —
+that is how six placeholder tabs once appeared in the bar. Groups that are
+not tabs get `href: null`.
 - Blurred chrome background, hairline top border (`border` at low opacity).
 - Active: `primaryBlue` icon + label. Inactive: `slate`.
 - Icons 24px. Labels 11px, Plus Jakarta 500.
