@@ -93,6 +93,7 @@ export default function RadiationScreen() {
 
   return (
     <SectionScaffold
+      topic="radiation"
       title={COPY.qRadiationTitle}
       step={3}
       loading={!ready}

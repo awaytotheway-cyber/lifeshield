@@ -4,12 +4,14 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { QuestionnaireStepper } from "@/components/questionnaire/QuestionnaireStepper";
 import { SectionCompleteCard } from "@/components/questionnaire/SectionCompleteCard";
+import { SectionHeaderImage } from "@/components/questionnaire/SectionHeaderImage";
 import { IconButton, PrimaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
+import { type SectionImageKey } from "@/lib/section-images";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
@@ -17,6 +19,8 @@ import { useTriageStore } from "@/stores/triage-store";
 
 type SectionScaffoldProps = {
   title: string;
+  /** Topical banner shown above the first question. */
+  topic?: SectionImageKey;
   step: number;
   total?: number;
   loading?: boolean;
@@ -37,6 +41,7 @@ type SectionScaffoldProps = {
  */
 export function SectionScaffold({
   title,
+  topic,
   step,
   total = 10,
   loading = false,
@@ -149,6 +154,7 @@ export function SectionScaffold({
 
   return (
     <Screen scroll contentPadding={spacing.screenX} header={header} footer={footer}>
+      {topic ? <SectionHeaderImage topic={topic} /> : null}
       {children}
     </Screen>
   );
@@ -162,7 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.primaryBlue,
+    color: colors.heading,
   },
   error: {
     fontFamily: fontFamily.body,

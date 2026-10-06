@@ -101,6 +101,7 @@ export default function PersonalHistoryScreen() {
 
   return (
     <SectionScaffold
+      topic="personal"
       title="Personal history"
       step={6}
       loading={!ready}

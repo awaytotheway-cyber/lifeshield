@@ -91,6 +91,7 @@ export default function DietEnvironmentScreen() {
 
   return (
     <SectionScaffold
+      topic="diet"
       title={COPY.qDietTitle}
       step={9}
       loading={!ready}

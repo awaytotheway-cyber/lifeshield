@@ -104,6 +104,7 @@ export default function ComorbiditiesScreen() {
 
   return (
     <SectionScaffold
+      topic="comorbidities"
       title="Other conditions"
       step={4}
       loading={!ready}

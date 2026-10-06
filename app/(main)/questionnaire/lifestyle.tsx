@@ -107,6 +107,7 @@ export default function LifestyleScreen() {
 
   return (
     <SectionScaffold
+      topic="lifestyle"
       title="Lifestyle"
       step={7}
       loading={!ready}

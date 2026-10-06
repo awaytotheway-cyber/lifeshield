@@ -85,6 +85,7 @@ export default function StressScreen() {
 
   return (
     <SectionScaffold
+      topic="stress"
       title="Stress"
       step={8}
       loading={!ready}

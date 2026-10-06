@@ -109,6 +109,7 @@ export default function DemographicsScreen() {
 
   return (
     <SectionScaffold
+      topic="demographics"
       title={COPY.qDemographicsTitle}
       step={1}
       loading={!ready}

@@ -275,6 +275,7 @@ export default function ReproductiveScreen() {
   if (ready && profileSex === null) {
     return (
       <SectionScaffold
+      topic="reproductive"
         title={COPY.qReproductiveTitle}
         step={2}
         loading={false}

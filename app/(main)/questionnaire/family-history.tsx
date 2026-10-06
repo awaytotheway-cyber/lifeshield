@@ -181,6 +181,7 @@ export default function FamilyHistoryScreen() {
 
   return (
     <SectionScaffold
+      topic="familyHistory"
       title="Family history"
       step={5}
       loading={!ready}

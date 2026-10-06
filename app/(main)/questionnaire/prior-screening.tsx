@@ -134,6 +134,7 @@ export default function PriorScreeningScreen() {
 
   return (
     <SectionScaffold
+      topic="priorScreening"
       title="Prior screening"
       step={10}
       loading={!ready}
