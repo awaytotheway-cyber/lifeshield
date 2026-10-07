@@ -1,6 +1,5 @@
 import { StyleSheet, View } from "react-native";
-
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { Edge, Ink, Measure, Paper } from "@/lib/specimen-tokens";
 
 type StaticSkeletonProps = {
   rows?: number;
@@ -23,34 +22,34 @@ export function StaticSkeleton({ rows = 3 }: StaticSkeletonProps) {
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: spacing.md,
+    marginTop: Measure.loose,
     gap: 12,
   },
   card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
-    padding: spacing.base,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: Ink.rule,
   },
   bar: {
     height: 12,
     width: 88,
     borderRadius: 6,
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
     marginBottom: 12,
   },
   lineWide: {
     height: 10,
     width: "100%",
     borderRadius: 4,
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
   },
   lineShort: {
     marginTop: 8,
     height: 10,
     width: "55%",
     borderRadius: 4,
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
   },
 });

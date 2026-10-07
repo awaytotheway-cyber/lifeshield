@@ -17,7 +17,7 @@ type HeroStatsRowProps = {
 /**
  * The register — three readings on one ruled row.
  *
- * Previously three glass tiles bridging a gradient edge. On paper that
+ * Three readings in a row. On paper that
  * move has nothing to bridge, so this is now what it should always have
  * been: a ruled register, vertical hairlines between columns, closed by
  * a heavier rule beneath.

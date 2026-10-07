@@ -1,9 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, Paper, tapTarget } from "@/lib/specimen-tokens";
 
 type NumberInputProps = {
   label: string;
@@ -65,7 +64,7 @@ export function NumberInput({
           onPress={() => nudge(-1)}
           style={styles.stepBtn}
         >
-          <Feather name="minus" size={18} color={colors.deepTeal} />
+          <Icon name="minus" size={18} color={Accent.tag} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -73,7 +72,7 @@ export function NumberInput({
           onPress={() => nudge(1)}
           style={styles.stepBtn}
         >
-          <Feather name="plus" size={18} color={colors.deepTeal} />
+          <Icon name="plus" size={18} color={Accent.tag} />
         </Pressable>
       </View>
     </View>
@@ -90,10 +89,10 @@ const styles = StyleSheet.create({
   stepBtn: {
     minWidth: tapTarget,
     minHeight: tapTarget,
-    borderRadius: radius.input,
+    borderRadius: Edge.none,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
+    borderColor: Ink.rule,
+    backgroundColor: Paper.mount,
     alignItems: "center",
     justifyContent: "center",
   },

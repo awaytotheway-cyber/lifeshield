@@ -7,16 +7,15 @@ import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { InterventionCard } from "@/components/ui/InterventionCard";
 import { Screen } from "@/components/ui/Screen";
-import { GradientHero } from "@/components/ui/GradientHero";
-import { PrimaryButton as GradientButton } from "@/components/ui/PrimaryButton";
+import { PageHead } from "@/components/specimen/PageHead";
+import { PrimaryButton as BlockButton } from "@/components/ui/PrimaryButton";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import type { StatusChipKind } from "@/components/ui/StatusChip";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { Accent, Ink } from "@/lib/specimen-tokens";
+
 import { groupInterventions } from "@/lib/plan-groups";
 import {
   planBannerForState,
@@ -29,9 +28,9 @@ import {
   type InterventionRow,
 } from "@/lib/plan";
 import { planItemHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type ListRow =
   | { kind: "heading"; id: string; title: string }
@@ -75,7 +74,7 @@ export default function PlanScreen() {
   const [message, setMessage] = useState<string | null>(null);
   const [rows, setRows] = useState<InterventionRow[]>([]);
   const windowWidth = useWindowDimensions().width;
-  const roadmapWidth = Math.max(160, windowWidth - spacing.screenX * 2);
+  const roadmapWidth = Math.max(160, windowWidth - Measure.gutter * 2);
 
   const applyRows = useCallback((next: InterventionRow[]) => {
     setRows(next);
@@ -175,7 +174,7 @@ export default function PlanScreen() {
   return (
     <View style={styles.root}>
       <View style={{ position: "relative" }}>
-        <GradientHero
+        <PageHead
           height={200}
           onBack={() => router.replace(routes.labResults)}
           backLabel={COPY.planBackResults}
@@ -184,12 +183,12 @@ export default function PlanScreen() {
             <Text style={styles.heroTitle}>{planTitle}</Text>
             <Text style={styles.heroSub}>{COPY.planBody}</Text>
           </View>
-        </GradientHero>
-        {/* Glass-dark approval strip pinned to the hero bottom. */}
+        </PageHead>
+        {/* Approval strip pinned to the foot of the page head. */}
         <View style={styles.approvalStrip}>
           <View style={styles.approvalFill} />
           <View style={styles.approvalRow}>
-            <Feather name="check-circle" size={13} color={colors.pureWhite} />
+            <Icon name="check-circle" size={13} color={Paper.mount} />
             <Text style={styles.approvalText}>{planBanner}</Text>
           </View>
         </View>
@@ -261,7 +260,7 @@ export default function PlanScreen() {
       ) : null}
 
       <SafeAreaView edges={["bottom"]} style={styles.footer}>
-        <GradientButton
+        <BlockButton
           label={COPY.planBrowseStore}
           onPress={() => {
             router.push(routes.store);
@@ -288,10 +287,10 @@ export default function PlanScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.softWhite,
+    backgroundColor: Paper.sheet,
   },
   pad: {
-    paddingHorizontal: spacing.screenX,
+    paddingHorizontal: Measure.gutter,
   },
   heroInner: {
     flex: 1,
@@ -299,7 +298,7 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
   },
   heroTitle: {
-    fontFamily: fontFamily.heading,
+    fontFamily: SpecimenType.serif,
     fontSize: 32,
     lineHeight: 38,
     letterSpacing: -0.6,
@@ -307,7 +306,7 @@ const styles = StyleSheet.create({
   },
   heroSub: {
     marginTop: 8,
-    fontFamily: fontFamily.regular,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 24,
     color: Ink.soft,
@@ -323,25 +322,25 @@ const styles = StyleSheet.create({
   },
   approvalFill: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: colors.charcoal,
+    backgroundColor: Ink.full,
   },
   approvalRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    paddingHorizontal: spacing.screenX,
+    paddingHorizontal: Measure.gutter,
   },
   approvalText: {
     flex: 1,
-    fontFamily: fontFamily.semibold,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 15,
     color: Ink.full,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.regular,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.dangerRed,
+    color: Accent.tag,
     textAlign: "center",
   },
   roadmap: {
@@ -349,7 +348,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   list: {
-    paddingHorizontal: spacing.screenX,
+    paddingHorizontal: Measure.gutter,
     paddingTop: 20,
     paddingBottom: 16,
   },
@@ -357,7 +356,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   footer: {
-    paddingHorizontal: spacing.screenX,
+    paddingHorizontal: Measure.gutter,
     paddingTop: 8,
     gap: 4,
   },

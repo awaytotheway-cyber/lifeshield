@@ -9,8 +9,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { SectionComplete } from "@/components/illustrations";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type SectionCompleteCardProps = {
   title?: string;
@@ -68,24 +67,24 @@ export function SectionCompleteCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.card,
-    padding: spacing.md,
+    backgroundColor: Accent.sageWash,
+    borderRadius: Edge.mount,
+    padding: Measure.loose,
     alignItems: "center",
   },
   title: {
     marginTop: 12,
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 20,
-    color: colors.sage,
+    color: Accent.sage,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
     textAlign: "center",
   },
 });

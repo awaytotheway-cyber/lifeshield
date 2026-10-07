@@ -2,8 +2,8 @@
  * Side-drawer menu items. Routes map to real screens or honest empty shells.
  * Optional reorder: persist ordered ids in AsyncStorage (see AppDrawer).
  */
+import type { IconName } from "@/components/specimen/Icon";
 import type { Href } from "expo-router";
-import type { Feather } from "@expo/vector-icons";
 
 import { routes } from "@/lib/routes";
 
@@ -27,7 +27,7 @@ export type MenuItemId =
 export type MenuItem = {
   id: MenuItemId;
   label: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   href: Href;
   /** Match pathname snippets to highlight the active row. */
   match: string[];

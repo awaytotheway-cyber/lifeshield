@@ -14,10 +14,9 @@ import {
   sendBuddyRequest,
   type PotentialBuddyRow,
 } from "@/lib/buddies";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function FindBuddiesScreen() {
   const router = useRouter();
@@ -67,7 +66,7 @@ export default function FindBuddiesScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.buddiesFindTitle}
         onBack={() => router.back()}
@@ -83,7 +82,7 @@ export default function FindBuddiesScreen() {
           onSubmitEditing={() => void search(q)}
           returnKeyType="search"
         />
-        <View style={{ marginTop: spacing.sm }}>
+        <View style={{ marginTop: Measure.tight }}>
           <PrimaryButton title="Search" onPress={() => void search(q)} loading={busy} />
         </View>
       </View>
@@ -136,7 +135,7 @@ export default function FindBuddiesScreen() {
               <Text style={styles.sentBadge}>{COPY.buddiesRequestSent}</Text>
             ) : (
               <>
-                <View style={{ marginTop: spacing.sm }}>
+                <View style={{ marginTop: Measure.tight }}>
                   <TextInput
                     label={COPY.buddiesRequestNoteLabel}
                     placeholder={COPY.buddiesRequestNotePlaceholder}
@@ -148,7 +147,7 @@ export default function FindBuddiesScreen() {
                     numberOfLines={2}
                   />
                 </View>
-                <View style={{ marginTop: spacing.sm }}>
+                <View style={{ marginTop: Measure.tight }}>
                   <PrimaryButton
                     title={COPY.buddiesSendRequest}
                     loading={sending === row.user_id}
@@ -168,72 +167,71 @@ export default function FindBuddiesScreen() {
 
 const styles = StyleSheet.create({
   searchWrap: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.base,
+    marginTop: Measure.tight,
+    marginBottom: Measure.base,
   },
   card: {
-    marginBottom: spacing.sm,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    marginBottom: Measure.tight,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
   },
   headRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: spacing.sm,
+    gap: Measure.tight,
   },
   name: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 19,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   meta: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   metaLight: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.hair,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.mist,
+    color: Ink.faint,
   },
   matchPill: {
-    backgroundColor: colors.riskLowLight,
+    backgroundColor: Accent.sageWash,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: radius.chip,
+    borderRadius: Edge.tag,
   },
   matchText: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 14,
-    color: colors.riskLow,
+    color: Accent.sage,
   },
   subLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
     letterSpacing: 0.4,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
   },
   subText: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   sentBadge: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodySemi,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 15,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

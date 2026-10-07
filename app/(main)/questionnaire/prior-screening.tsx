@@ -145,7 +145,7 @@ export default function PriorScreeningScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-tag">{loadMessage}</Text>
       ) : null}
 
       <Controller
@@ -165,13 +165,13 @@ export default function PriorScreeningScreen() {
       {previousMammogram === "yes" ? (
         <View className="mt-2">
           {errors.mammograms?.message ? (
-            <Text className="text-coral">
+            <Text className="text-tag">
               {String(errors.mammograms.message)}
             </Text>
           ) : null}
           {fields.map((field, index) => (
-            <View key={field.id} className="mt-3 rounded-xl bg-white px-4 py-3">
-              <Text className="text-charcoal">Mammogram {index + 1}</Text>
+            <View key={field.id} className="mt-3 rounded-xl bg-paperMount px-4 py-3">
+              <Text className="text-inkFull">Mammogram {index + 1}</Text>
               <Controller
                 control={control}
                 name={`mammograms.${index}.date`}

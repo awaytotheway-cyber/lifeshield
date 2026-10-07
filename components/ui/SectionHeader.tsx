@@ -1,6 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-
-import { Colors, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type SectionHeaderAction = {
   label: string;
@@ -42,26 +41,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: Spacing.md,
-    marginBottom: Spacing.md,
+    gap: Measure.snug,
+    marginBottom: Measure.snug,
   },
   title: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.sectionTitle,
-    lineHeight: Typography.sectionTitle + 6,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.sectionTitle,
+    lineHeight: SpecimenType.sectionTitle + 6,
     letterSpacing: -0.3,
-    color: Colors.charcoal,
+    color: Ink.full,
   },
   subtitle: {
     marginTop: 4,
-    fontFamily: Typography.regular,
+    fontFamily: SpecimenType.regular,
     fontSize: 16,
     lineHeight: 24,
-    color: Colors.bodyText,
+    color: Ink.soft,
   },
   action: {
-    fontFamily: Typography.semibold,
+    fontFamily: SpecimenType.semibold,
     fontSize: 16,
-    color: Colors.orangeDark,
+    color: Accent.tag,
   },
 });

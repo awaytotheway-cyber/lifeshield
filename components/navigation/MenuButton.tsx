@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
 import { useDrawer } from "@/components/navigation/DrawerContext";
-import { colors, tapTarget } from "@/lib/design-tokens";
+import { Accent, tapTarget } from "@/lib/specimen-tokens";
 
 type MenuButtonProps = {
   accessibilityLabel?: string;
@@ -20,7 +20,7 @@ export function MenuButton({
       onPress={openDrawer}
       style={styles.hit}
     >
-      <Feather name="menu" size={22} color={colors.primaryBlue} />
+      <Icon name="menu" size={22} color={Accent.tag} />
     </Pressable>
   );
 }

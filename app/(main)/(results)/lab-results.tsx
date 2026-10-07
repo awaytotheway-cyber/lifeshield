@@ -8,13 +8,12 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { DonutRing } from "@/components/ui/DonutRing";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FilterChips, type FilterChip } from "@/components/ui/FilterChips";
-import { GradientHero } from "@/components/ui/GradientHero";
+import { PageHead } from "@/components/specimen/PageHead";
 import { ResultCard } from "@/components/ui/ResultCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { Colors, Spacing, Typography } from "@/lib/design-tokens";
-import { Accent, Ink } from "@/lib/specimen-tokens";
+
 import { getTerm } from "@/lib/plain-language";
 import { resultDetailHref, routes } from "@/lib/routes";
 import {
@@ -26,6 +25,7 @@ import {
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 import type { StatusChipKind } from "@/components/ui/StatusChip";
+import { Accent, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type ListRow =
   | { kind: "heading"; id: string; title: string }
@@ -163,7 +163,7 @@ export default function LabResultsScreen() {
 
   return (
     <View style={styles.root}>
-      <GradientHero
+      <PageHead
         height={210}
         onBack={() => router.replace(routes.home)}
         backLabel={COPY.resultsBackHome}
@@ -181,7 +181,7 @@ export default function LabResultsScreen() {
             color={allNormal ? Accent.sage : Accent.ochre}
           />
         </View>
-      </GradientHero>
+      </PageHead>
 
       <View style={styles.chipsWrap}>
         <FilterChips chips={filterChips} value={filter} onChange={setFilter} />
@@ -259,55 +259,55 @@ export default function LabResultsScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Colors.softWhite,
+    backgroundColor: Paper.sheet,
   },
   heroRow: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: Spacing.base,
+    gap: Measure.base,
   },
   heroText: {
     flex: 1,
   },
   heroTitle: {
-    fontFamily: Typography.heading,
-    fontSize: Typography.screenTitle,
+    fontFamily: SpecimenType.heading,
+    fontSize: SpecimenType.screenTitle,
     lineHeight: 38,
     letterSpacing: -0.6,
     color: Ink.full,
   },
   heroSub: {
     marginTop: 8,
-    fontFamily: Typography.regular,
+    fontFamily: SpecimenType.regular,
     fontSize: 16,
     lineHeight: 23,
     color: Ink.soft,
   },
   chipsWrap: {
-    marginTop: Spacing.xl,
-    marginBottom: Spacing.sm,
+    marginTop: Measure.loose,
+    marginBottom: Measure.tight,
   },
   pad: {
-    paddingHorizontal: Spacing.screenH,
+    paddingHorizontal: Measure.gutter,
   },
   error: {
-    marginTop: Spacing.md,
-    fontFamily: Typography.regular,
-    fontSize: Typography.secondary,
-    color: Colors.dangerRed,
+    marginTop: Measure.snug,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.secondary,
+    color: Accent.tag,
     textAlign: "center",
   },
   list: {
-    paddingHorizontal: Spacing.screenH,
+    paddingHorizontal: Measure.gutter,
     paddingBottom: 32,
   },
   groupWrap: {
-    marginTop: Spacing.base,
+    marginTop: Measure.base,
   },
   footer: {
-    marginTop: Spacing.base,
+    marginTop: Measure.base,
   },
   cardGap: {
     marginBottom: 12,

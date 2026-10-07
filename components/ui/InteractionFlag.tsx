@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type InteractionFlagProps = {
   reason?: string;
@@ -32,26 +30,26 @@ export function InteractionFlag({
 const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
-    backgroundColor: colors.amberLight,
+    backgroundColor: Accent.ochreWash,
     paddingHorizontal: 6,
     paddingVertical: 4,
     borderRadius: 20,
   },
   badgeText: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.amber,
+    color: Accent.ochre,
   },
   callout: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.amberLight,
-    borderRadius: radius.alert,
-    padding: spacing.mdSm,
+    marginTop: Measure.tight,
+    backgroundColor: Accent.ochreWash,
+    borderRadius: Edge.hair,
+    padding: Measure.snug,
   },
   calloutText: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

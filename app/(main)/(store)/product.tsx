@@ -19,6 +19,7 @@ import {
 import { loadUserContext } from "@/lib/user-context";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent } from "@/lib/specimen-tokens";
 
 /**
  * Product detail — checkpoint 1 of 3 for canPurchase() (add-to-cart).
@@ -123,7 +124,7 @@ export default function ProductDetailScreen() {
   if (!productId) {
     return (
       <Screen>
-        <Text className="text-center text-coral">{COPY.storeProductMissing}</Text>
+        <Text className="text-center text-tag">{COPY.storeProductMissing}</Text>
         <Button
           title={COPY.storeBackStore}
           onPress={() => {
@@ -136,11 +137,11 @@ export default function ProductDetailScreen() {
 
   return (
     <Screen scroll>
-      {loading ? <ActivityIndicator color="#1A535C" /> : null}
+      {loading ? <ActivityIndicator color={Accent.tag} /> : null}
 
       {message ? (
         <>
-          <Text className="text-center text-coral">{message}</Text>
+          <Text className="text-center text-tag">{message}</Text>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -162,23 +163,23 @@ export default function ProductDetailScreen() {
             medicalName={product.clinical_name}
           />
 
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
-            <Text className="text-sm text-teal">{COPY.productClinicalBasis}</Text>
-            <Text className="mt-2 text-charcoal">
+          <View className="mt-4 rounded-xl bg-paperMount px-4 py-4">
+            <Text className="text-sm text-tag">{COPY.productClinicalBasis}</Text>
+            <Text className="mt-2 text-inkFull">
               {product.linked_finding?.trim() ||
                 product.clinical_name ||
                 COPY.productNoBasis}
             </Text>
           </View>
 
-          <Text className="mt-4 text-center text-2xl text-teal">
+          <Text className="mt-4 text-center text-2xl text-tag">
             {formatProductPrice(product)}
           </Text>
 
           {gate ? <PurchaseStatus gate={gate} /> : null}
 
           {actionMessage ? (
-            <Text className="mt-4 text-center text-teal">{actionMessage}</Text>
+            <Text className="mt-4 text-center text-tag">{actionMessage}</Text>
           ) : null}
 
           <Button

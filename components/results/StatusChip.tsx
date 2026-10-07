@@ -8,12 +8,12 @@ import type { ResultStatusChip } from "@/lib/result-status";
 export function StatusChip({ chip }: { chip: ResultStatusChip }) {
   const toneClass =
     chip.tone === "needs_attention"
-      ? "bg-coral"
+      ? "bg-tag"
       : chip.tone === "worth_watching"
-        ? "bg-charcoal"
+        ? "bg-inkFull"
         : "bg-sage";
   const textClass =
-    chip.tone === "within_range" ? "text-teal" : "text-cream";
+    chip.tone === "within_range" ? "text-tag" : "text-paperSheet";
 
   return (
     <View className={`self-start rounded-full px-3 py-1 ${toneClass}`}>

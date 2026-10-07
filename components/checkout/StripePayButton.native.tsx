@@ -116,7 +116,7 @@ export function StripePayButton({
 
   return (
     <>
-      <Text className="mt-2 text-center text-sm text-charcoal">
+      <Text className="mt-2 text-center text-sm text-inkFull">
         {COPY.cartTotalNote}
       </Text>
       <Button

@@ -1,3 +1,4 @@
+import type { IconName } from "@/components/specimen/Icon";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -9,7 +10,7 @@ import { JourneyCard, type JourneyNode } from "@/components/home/JourneyCard";
 import { PrimaryButton as LegacyPrimaryButton, TextButton } from "@/components/ui/Button";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { GoalsSummaryCard } from "@/components/ui/GoalsSummaryCard";
-import { GradientHero } from "@/components/ui/GradientHero";
+import { PageHead } from "@/components/specimen/PageHead";
 import { IconContainer } from "@/components/ui/IconContainer";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
 import { Screen } from "@/components/ui/Screen";
@@ -22,8 +23,7 @@ import {
 } from "@/lib/consent-flow";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { Colors, Spacing, colors, spacing } from "@/lib/design-tokens";
-import { Accent, Ink } from "@/lib/specimen-tokens";
+
 import {
   currentJourneyStep,
   isJourneyStepComplete,
@@ -37,7 +37,6 @@ import { hasOwnInterventions } from "@/lib/plan";
 import { hasOwnStoreOrders } from "@/lib/orders";
 import { routes } from "@/lib/routes";
 import { hasOwnTestResults } from "@/lib/test-results";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import {
@@ -45,6 +44,7 @@ import {
   useQuestionnaireStore,
 } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 const LOOP_LABELS: { id: JourneyStepId; label: string }[] = [
   { id: "questionnaire", label: COPY.homeStepQuestionnaire },
@@ -320,21 +320,21 @@ export default function HomeScreen() {
     ?.replace(/^./, (c) => c.toUpperCase()) || "there";
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.softWhite }}>
+    <View style={{ flex: 1, backgroundColor: Paper.sheet }}>
       <Screen scroll contentPadding={0}>
         {/* Hero: greeting + brand + bridging stats */}
         <View style={{ position: "relative" }}>
-          <GradientHero height={220}>
+          <PageHead height={220}>
             <View style={styles.heroRow}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.greeting}>Good day</Text>
                 <Text style={styles.name}>{greetingName}</Text>
               </View>
-              <IconContainer icon="bell" size="md" variant="glass" />
+              <IconContainer icon="bell" size="md" variant="ink" />
               <MenuButton />
             </View>
             <Text style={styles.heroTag}>{COPY.tagline}</Text>
-          </GradientHero>
+          </PageHead>
           <HeroStatsRow stats={heroStats} />
         </View>
 
@@ -483,7 +483,7 @@ type NextActionsInput = {
 
 type NextAction = {
   id: string;
-  icon: keyof typeof import("@expo/vector-icons").Feather.glyphMap;
+  icon: import("@/components/specimen/Icon").IconName;
   title: string;
   subtitle?: string;
   onPress: () => void;
@@ -549,9 +549,9 @@ function buildNextActions(input: NextActionsInput): NextAction[] {
 
 const styles = StyleSheet.create({
   loading: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
     textAlign: "center",
   },
   menuRow: {
@@ -565,41 +565,41 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   greeting: {
-    fontFamily: fontFamily.regular,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     color: Ink.soft,
   },
   name: {
     marginTop: 4,
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 28,
     letterSpacing: -0.5,
     color: Ink.full,
   },
   heroTag: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 20,
-    color: "rgba(255,255,255,0.8)",
+    color: Ink.soft,
   },
   content: {
     paddingTop: 48,
-    paddingHorizontal: Spacing.screenH,
+    paddingHorizontal: Measure.gutter,
     paddingBottom: 32,
   },
   helper: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
-    color: colors.slate,
+    color: Ink.soft,
   },
   brand: {
     flex: 1,
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 34,
     lineHeight: 40,
     letterSpacing: -0.6,
-    color: colors.primaryBlue,
+    color: Accent.tag,
     textAlign: "left",
   },
   trust: {
@@ -613,26 +613,26 @@ const styles = StyleSheet.create({
   },
   tagline: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "left",
   },
   headline: {
     marginTop: 16,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
     textAlign: "left",
   },
   section: {
     marginTop: 24,
     marginBottom: 12,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 20,
-    color: colors.primaryBlue,
+    color: Accent.tag,
     textAlign: "left",
   },
   timeline: {
@@ -640,23 +640,23 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
     textAlign: "left",
   },
   hint: {
     marginTop: 16,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "left",
   },
   also: {
     marginTop: 24,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "left",
   },
 });

@@ -1,8 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
-
-import { colors, radius } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/specimen/Icon";
+import { Accent, Edge, Ink, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type Option = { value: string; label: string };
 
@@ -55,7 +53,7 @@ export function CheckboxGroup({
             >
               <Text style={styles.optionLabel}>{option.label}</Text>
               {selected ? (
-                <Feather name="check" size={20} color={colors.midTeal} />
+                <Icon name="check" size={20} color={Accent.tag} />
               ) : null}
             </Pressable>
           );
@@ -71,10 +69,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.2,
-    color: colors.slate,
+    color: Ink.soft,
     marginBottom: 8,
   },
   list: {
@@ -82,7 +80,7 @@ const styles = StyleSheet.create({
   },
   card: {
     minHeight: 56,
-    borderRadius: radius.radioCard,
+    borderRadius: Edge.mount,
     paddingHorizontal: 16,
     paddingVertical: 12,
     flexDirection: "row",
@@ -90,26 +88,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   cardIdle: {
-    backgroundColor: colors.white,
+    backgroundColor: Paper.mount,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: Ink.rule,
   },
   cardSelected: {
-    backgroundColor: colors.lightTeal,
+    backgroundColor: Accent.tagWash,
     borderWidth: 2,
-    borderColor: colors.midTeal,
+    borderColor: Accent.tag,
   },
   optionLabel: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
     paddingRight: 12,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
 });

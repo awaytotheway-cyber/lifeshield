@@ -6,7 +6,7 @@ type ColorSwitchProps = {
   label: string;
   value: boolean;
   onChange: (next: boolean) => void;
-  /** primary = teal, secondary = sage, warning = coral, default = charcoal */
+  /** primary = tag, secondary = sage, warning = ochre, default = ink */
   color?: SwitchColor;
   accessibilityLabel?: string;
 };
@@ -52,7 +52,7 @@ export function ColorSwitch({
           }}
         />
       </View>
-      <Text className="flex-1 text-charcoal">{label}</Text>
+      <Text className="flex-1 text-inkFull">{label}</Text>
     </Pressable>
   );
 }

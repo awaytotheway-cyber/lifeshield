@@ -19,10 +19,9 @@ import {
   type BuddyProfile,
   type ConnectionRow,
 } from "@/lib/buddies";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { buddyChatHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -97,7 +96,7 @@ export default function BuddiesListScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.buddiesTitle}
         onBack={() => router.replace(routes.home)}
@@ -210,61 +209,60 @@ export default function BuddiesListScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
-  cta: { marginTop: spacing.base },
+  cta: { marginTop: Measure.base },
   section: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.displaySemi,
+    marginTop: Measure.section,
+    marginBottom: Measure.tight,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   card: {
-    marginBottom: spacing.sm,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    marginBottom: Measure.tight,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
   },
   cardPressed: { opacity: 0.85 },
   name: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 19,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   meta: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   metaLight: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.mist,
+    color: Ink.faint,
   },
   note: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
-    color: colors.slate,
+    color: Ink.soft,
     fontStyle: "italic",
   },
   rowActions: {
-    marginTop: spacing.sm,
+    marginTop: Measure.tight,
     flexDirection: "row",
-    gap: spacing.mdSm,
+    gap: Measure.snug,
     flexWrap: "wrap",
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

@@ -3,11 +3,10 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { Modal, Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { COPY } from "@/lib/copy";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
 import {
   formatDisplayDate,
   isoToLocalDate,
@@ -16,7 +15,7 @@ import {
   type DatePickerFieldProps,
 } from "@/lib/datetime";
 import { isValidIsoCalendarDate } from "@/lib/questionnaire/numbers";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, inputHeight, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 /**
  * Native date field. Opens a bottom sheet (iOS) or the system calendar (Android).
@@ -59,7 +58,7 @@ export function DatePicker({
         <Text style={hasCalendarValue ? styles.value : styles.placeholder}>
           {hasCalendarValue ? formatDisplayDate(value) : COPY.pickDate}
         </Text>
-        <Feather name="calendar" size={18} color={colors.slate} />
+        <Icon name="calendar" size={18} color={Ink.soft} />
       </Pressable>
       {leftoverText ? (
         <Text style={styles.warn}>
@@ -123,65 +122,64 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.2,
-    color: colors.slate,
+    color: Ink.soft,
     marginBottom: 8,
   },
   hint: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
     marginBottom: 8,
   },
   field: {
     minHeight: inputHeight,
-    borderRadius: radius.input,
+    borderRadius: Edge.none,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
+    borderColor: Ink.rule,
+    backgroundColor: Paper.mount,
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   value: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
     flex: 1,
   },
   placeholder: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.mist,
+    color: Ink.faint,
     flex: 1,
   },
   warn: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: Ink.scrim,
   },
   sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
+    backgroundColor: Paper.mount,
+    borderTopLeftRadius: Edge.mount,
+    borderTopRightRadius: Edge.mount,
     paddingHorizontal: 12,
     paddingTop: 12,
-    ...shadows.modal,
   },
   done: {
     minHeight: 44,
@@ -191,8 +189,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   doneText: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.midTeal,
+    color: Accent.tag,
   },
 });

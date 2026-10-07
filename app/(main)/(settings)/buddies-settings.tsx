@@ -16,10 +16,9 @@ import {
   saveBuddySettings,
   type BuddySettings,
 } from "@/lib/buddy-settings";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function BuddiesSettingsScreen() {
   const router = useRouter();
@@ -67,7 +66,7 @@ export default function BuddiesSettingsScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title="Buddy settings"
         onBack={() => router.back()}
@@ -93,8 +92,8 @@ export default function BuddiesSettingsScreen() {
               onValueChange={(v) =>
                 setValues((prev) => ({ ...prev, is_buddy_discoverable: v }))
               }
-              trackColor={{ true: colors.primaryBlue, false: colors.border }}
-              thumbColor={colors.white}
+              trackColor={{ true: Accent.tag, false: Ink.rule }}
+              thumbColor={Paper.mount}
             />
           </View>
 
@@ -138,7 +137,7 @@ export default function BuddiesSettingsScreen() {
           {saved ? <Text style={styles.saved}>{COPY.profileBuddySaved}</Text> : null}
           {message ? <Text style={styles.error}>{message}</Text> : null}
 
-          <View style={{ marginTop: spacing.md }}>
+          <View style={{ marginTop: Measure.loose }}>
             <PrimaryButton
               title="Save buddy settings"
               loading={busy}
@@ -154,53 +153,52 @@ export default function BuddiesSettingsScreen() {
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.iceBlue,
+    marginTop: Measure.base,
+    padding: Measure.base,
+    borderRadius: Edge.mount,
+    backgroundColor: Paper.sheet,
   },
   consentTitle: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   consentBody: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.hair,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
-  form: { marginTop: spacing.base },
+  form: { marginTop: Measure.base },
   toggleRow: {
     flexDirection: "row",
     alignItems: "center",
-    padding: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    ...shadows.card,
-    gap: spacing.sm,
+    padding: Measure.base,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    gap: Measure.tight,
   },
   label: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   hint: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
   },
-  field: { marginTop: spacing.base },
+  field: { marginTop: Measure.base },
   saved: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.bodySemi,
-    color: colors.riskLow,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.monoBold,
+    color: Accent.sage,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

@@ -9,10 +9,9 @@ import {
   View,
   type ViewStyle,
 } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import * as Haptics from "expo-haptics";
-
-import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type ChoiceCardProps = {
   label: string;
@@ -82,7 +81,7 @@ export function ChoiceCard({
           ) : null}
         </View>
         {selected ? (
-          <Feather name="check" size={18} color={Colors.orangeDark} />
+          <Icon name="check" size={18} color={Accent.tag} />
         ) : null}
       </Pressable>
     </Animated.View>
@@ -92,35 +91,35 @@ export function ChoiceCard({
 const styles = StyleSheet.create({
   card: {
     minHeight: 58,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderRadius: Radii.card,
+    paddingHorizontal: Measure.wide,
+    paddingVertical: Measure.snug,
+    borderRadius: Edge.mount,
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.md,
+    gap: Measure.snug,
   },
   idle: {
-    backgroundColor: Colors.pureWhite,
+    backgroundColor: Paper.mount,
     borderWidth: 1.5,
-    borderColor: Colors.borderLight,
+    borderColor: Ink.rule,
   },
   selected: {
-    backgroundColor: Colors.orangeTint,
+    backgroundColor: Accent.tagWash,
     borderWidth: 2,
-    borderColor: Colors.orangeDark,
+    borderColor: Accent.tag,
   },
   label: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.bodyLarge,
-    color: Colors.darkText,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.bodyLarge,
+    color: Ink.full,
   },
   labelSelected: {
-    color: Colors.orangeDark,
+    color: Accent.tag,
   },
   sublabel: {
     marginTop: 2,
-    fontFamily: Typography.regular,
-    fontSize: Typography.secondary,
-    color: Colors.bodyText,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.secondary,
+    color: Ink.soft,
   },
 });

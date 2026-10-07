@@ -2,7 +2,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { SpecimenIcon } from "@/components/specimen/SpecimenIcon";
 
 import { DataValue } from "@/components/ui/DataValue";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
 import { Accent, Edge, Ink, Measure, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
@@ -23,9 +23,9 @@ type UiProductCardProps = {
 };
 
 /**
- * Store product card — PRESCOPE v2.
+ * Store product card.
  *
- * The circular gradient add button (rather than a rectangular "Add to
+ * The circular add button (rather than a rectangular "Add to
  * cart") is deliberate: it reads premium and is a generous touch
  * target, instead of looking like stock e-commerce.
  */
@@ -69,7 +69,7 @@ export function ProductCard({
       disabled={!onOpen}
       style={({ pressed }) => (pressed && onOpen ? { opacity: 0.92 } : null)}
     >
-      <GlassCard variant="onWhite" radius={Edge.mount} padding={12}>
+      <Sheet radius={Edge.mount} padding={12}>
         <View style={isGrid ? undefined : styles.rowLayout}>
           {photo}
           <View style={isGrid ? styles.gridBody : styles.rowBody}>
@@ -115,7 +115,7 @@ export function ProductCard({
             </View>
           </View>
         </View>
-      </GlassCard>
+      </Sheet>
     </Pressable>
   );
 }
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: "rgba(0,0,0,0.32)",
+    backgroundColor: Ink.scrim,
     borderTopRightRadius: 8,
   },
   categoryText: {

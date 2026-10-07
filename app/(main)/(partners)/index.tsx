@@ -7,7 +7,6 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   activityMinutesByDay,
   loadOwnPartnerLinks,
@@ -21,8 +20,8 @@ import {
   type PartnerRow,
 } from "@/lib/partners";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function PartnersScreen() {
   const router = useRouter();
@@ -89,7 +88,7 @@ export default function PartnersScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.partnersTitle}
         onBack={() => router.replace(routes.home)}
@@ -102,7 +101,7 @@ export default function PartnersScreen() {
         <Text style={styles.summaryLabel}>{COPY.activityWeeklyMinutes}</Text>
       </View>
 
-      <View style={{ marginTop: spacing.sm }}>
+      <View style={{ marginTop: Measure.tight }}>
         <PrimaryButton
           title={COPY.partnersLogActivityCta}
           onPress={() => router.push(routes.partnersLog)}
@@ -177,61 +176,60 @@ export default function PartnersScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   summary: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.iceBlue,
+    marginTop: Measure.base,
+    padding: Measure.base,
+    borderRadius: Edge.mount,
+    backgroundColor: Paper.sheet,
     alignItems: "center",
   },
   summaryValue: {
-    fontFamily: fontFamily.heroStat,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 40,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   summaryLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
     letterSpacing: 0.3,
   },
-  group: { marginTop: spacing.lg },
+  group: { marginTop: Measure.section },
   section: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.displaySemi,
+    marginTop: Measure.section,
+    marginBottom: Measure.tight,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   card: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginBottom: spacing.sm,
-    padding: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    ...shadows.card,
-    gap: spacing.sm,
+    marginBottom: Measure.tight,
+    padding: Measure.base,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    gap: Measure.tight,
   },
   headRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  name: { fontFamily: fontFamily.bodySemi, fontSize: 17, color: colors.charcoal },
+  name: { fontFamily: SpecimenType.monoBold, fontSize: 17, color: Ink.full },
   linked: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 14,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   meta: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
   },
   actions: { justifyContent: "space-between", alignItems: "flex-end" },
   activityRow: {
@@ -239,27 +237,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: Ink.rule,
   },
   activityType: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 16,
-    color: colors.charcoal,
+    color: Ink.full,
     textTransform: "capitalize",
   },
   activityMeta: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
   },
   emptyLine: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

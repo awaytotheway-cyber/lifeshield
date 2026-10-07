@@ -4,20 +4,19 @@ import { useState } from "react";
 import { StyleSheet, Text } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Toast } from "@/components/ui/Toast";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
 import { exportOwnData } from "@/lib/data-export";
-import { colors, spacing } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function PrivacySettingsScreen() {
   const router = useRouter();
@@ -63,7 +62,7 @@ export default function PrivacySettingsScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.privacyTitle}
         onBack={() => router.replace(routes.settings)}
@@ -71,7 +70,7 @@ export default function PrivacySettingsScreen() {
       <Text style={styles.body}>{COPY.privacyBody}</Text>
       <TrustBanner title={COPY.privacyTitle} body={COPY.privacyBody} />
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Sheet style={styles.card}>
         <Text style={styles.retention}>{COPY.privacyRetention}</Text>
         <PrimaryButton
           title={COPY.privacyExport}
@@ -95,7 +94,7 @@ export default function PrivacySettingsScreen() {
           title={COPY.privacyDelete}
           onPress={() => router.push(routes.settingsDeleteAccount)}
         />
-      </GlassCard>
+      </Sheet>
 
       {message ? <Text style={styles.error}>{message}</Text> : null}
       <Toast message={toast} onHide={() => setToast(null)} />
@@ -105,28 +104,28 @@ export default function PrivacySettingsScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    marginBottom: spacing.md,
-    fontFamily: fontFamily.body,
+    marginBottom: Measure.loose,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   card: {
-    marginTop: spacing.md,
-    padding: spacing.base,
+    marginTop: Measure.loose,
+    padding: Measure.base,
     gap: 4,
   },
   retention: {
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginBottom: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
 });

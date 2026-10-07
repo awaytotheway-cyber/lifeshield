@@ -12,10 +12,9 @@ import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TextField } from "@/components/ui/TextField";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Ink, Measure, SpecimenType, TypeStyle } from "@/lib/specimen-tokens";
 
 const loginSchema = z.object({
   email: z.email("Enter a valid email"),
@@ -48,7 +47,7 @@ export default function LoginScreen() {
 
   if (loading) {
     return (
-      <Screen contentPadding={spacing.screenX}>
+      <Screen contentPadding={Measure.gutter}>
         <Text style={styles.loading}>{COPY.authLoading}</Text>
       </Screen>
     );
@@ -104,7 +103,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <Text style={styles.brand}>{COPY.appName}</Text>
       <Text style={styles.title}>{COPY.loginTitle}</Text>
       <Text style={styles.sub}>{COPY.loginSubtitle}</Text>
@@ -179,29 +178,29 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   brand: {
-    ...typography.display,
-    color: colors.deepTeal,
+    ...TypeStyle.plateTitle,
+    color: Accent.tag,
   },
   title: {
     marginTop: 12,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 20,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   sub: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   tagline: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   forgot: {
     marginTop: 8,
@@ -209,22 +208,22 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.coral,
+    color: Accent.tag,
   },
   notice: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.sage,
+    color: Accent.sage,
   },
   loading: {
     textAlign: "center",
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.slate,
+    color: Ink.soft,
   },
 });

@@ -2,13 +2,12 @@ import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
-import { colors, inputHeight, radius } from "@/lib/design-tokens";
 import {
   localDateToIso,
   type DatePickerFieldProps,
 } from "@/lib/datetime";
 import { isValidIsoCalendarDate } from "@/lib/questionnaire/numbers";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, inputHeight, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 /**
  * Default (web) date field. On iPhone Safari this is the system calendar.
@@ -44,12 +43,12 @@ export function DatePicker({
           width: "100%",
           minHeight: inputHeight,
           padding: 12,
-          borderRadius: radius.input,
+          borderRadius: Edge.none,
           borderWidth: 1.5,
           borderStyle: "solid",
-          borderColor: colors.border,
-          backgroundColor: colors.white,
-          color: colors.charcoal,
+          borderColor: Ink.rule,
+          backgroundColor: Paper.mount,
+          color: Ink.full,
           fontSize: 17,
           fontFamily: "Inter, system-ui, sans-serif",
         }}
@@ -69,28 +68,28 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.2,
-    color: colors.slate,
+    color: Ink.soft,
     marginBottom: 8,
   },
   hint: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
     marginBottom: 8,
   },
   warn: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
 });

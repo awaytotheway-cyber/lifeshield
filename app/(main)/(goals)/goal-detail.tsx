@@ -9,9 +9,7 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import {
   cancelGoal,
   completeGoal,
@@ -26,6 +24,7 @@ import {
   type WeeklyGoalRow,
 } from "@/lib/weekly-goals";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function GoalDetailScreen() {
   const router = useRouter();
@@ -84,7 +83,7 @@ export default function GoalDetailScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.goalsTitle}
         onBack={() => router.back()}
@@ -158,69 +157,68 @@ export default function GoalDetailScreen() {
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.md,
-    ...shadows.card,
+    marginTop: Measure.base,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.loose,
   },
   type: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.4,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
   },
   title: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.display,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.serif,
     fontSize: 24,
     lineHeight: 30,
     letterSpacing: -0.3,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   meta: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.hair,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 20,
-    color: colors.slate,
+    color: Ink.soft,
   },
   status: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodySemi,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 16,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   progressRow: {
-    marginTop: spacing.md,
+    marginTop: Measure.loose,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   progressLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   progressValue: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 15,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   note: {
-    marginTop: spacing.md,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.loose,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.slate,
+    color: Ink.soft,
   },
   actions: {
-    marginTop: spacing.lg,
-    gap: spacing.sm,
+    marginTop: Measure.section,
+    gap: Measure.tight,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

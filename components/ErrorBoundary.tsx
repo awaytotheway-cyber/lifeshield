@@ -1,7 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Sheet } from "@/components/specimen/Sheet";
 import { classifyError } from "@/lib/friendly-errors";
 
 type ErrorBoundaryProps = {
@@ -25,24 +25,24 @@ type FallbackProps = {
  */
 function ErrorFallback({ onRetry, hint }: FallbackProps) {
   return (
-    <View className="flex-1 items-center justify-center bg-cream px-6">
-      <GlassSurface intensity="card" style={{ padding: 24, width: "100%" }}>
-        <Text className="text-center text-xl text-charcoal">
+    <View className="flex-1 items-center justify-center bg-paperSheet px-6">
+      <Sheet style={{ padding: 24, width: "100%" }}>
+        <Text className="text-center text-xl text-inkFull">
           Something went wrong
         </Text>
-        <Text className="mt-2 text-center text-charcoal">
+        <Text className="mt-2 text-center text-inkFull">
           {hint ??
             "Tap to retry. Your answers are saved — this is just a display hiccup."}
         </Text>
         <Pressable
           onPress={onRetry}
-          className="mt-6 min-h-[44px] items-center justify-center rounded-2xl bg-teal px-6 py-3"
+          className="mt-6 min-h-[44px] items-center justify-center rounded-2xl bg-tag px-6 py-3"
           accessibilityRole="button"
           accessibilityLabel="Retry"
         >
-          <Text className="text-cream">Tap to retry</Text>
+          <Text className="text-paperSheet">Tap to retry</Text>
         </Pressable>
-      </GlassSurface>
+      </Sheet>
     </View>
   );
 }

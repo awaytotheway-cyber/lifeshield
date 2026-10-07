@@ -195,7 +195,7 @@ export default function FamilyHistoryScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-tag">{loadMessage}</Text>
       ) : null}
 
       <Controller
@@ -215,11 +215,11 @@ export default function FamilyHistoryScreen() {
       {breastCancer === "yes" ? (
         <View className="mt-2">
           {errors.breastRelatives?.message ? (
-            <Text className="text-coral">{String(errors.breastRelatives.message)}</Text>
+            <Text className="text-tag">{String(errors.breastRelatives.message)}</Text>
           ) : null}
           {fields.map((field, index) => (
-            <View key={field.id} className="mt-3 rounded-xl bg-white px-4 py-3">
-              <Text className="text-charcoal">
+            <View key={field.id} className="mt-3 rounded-xl bg-paperMount px-4 py-3">
+              <Text className="text-inkFull">
                 {COPY.familyRelativeLabel} {index + 1}
               </Text>
               <Controller

@@ -36,6 +36,10 @@ export const Ink = {
   rule: "#D8D2C4",
   /** Heavier rule for section breaks. */
   ruleStrong: "#BDB5A2",
+  /** Ink under a press — the pressed state of a dark control. */
+  pressed: "#36332D",
+  /** Behind a modal or drawer: ink, thinned. Never pure black. */
+  scrim: "rgba(27,26,23,0.38)",
 } as const;
 
 export const Accent = {
@@ -48,6 +52,12 @@ export const Accent = {
   /** Annotation ochre — attention, worth watching. */
   ochre: "#9A6B28",
   ochreWash: "#F4EBDA",
+  /** Borders for the wash surfaces, a shade down from each wash. */
+  tagEdge: "#E3C8C1",
+  sageEdge: "#CFD6C2",
+  ochreEdge: "#E2D2B4",
+  /** The tag under a press. */
+  tagPressed: "#8C2C1A",
 } as const;
 
 /**
@@ -95,7 +105,7 @@ export const SpecimenType = {
   catalogue: 12,
 
   /** Mono scale. */
-  readingLarge: 32,
+  readingLarge: 34,
   reading: 20,
   readingSmall: 15,
 
@@ -105,7 +115,7 @@ export const SpecimenType = {
   bodyLarge: 17,
   secondary: 15,
   micro: 12,
-  dataHero: 32,
+  dataHero: 34,
   dataCard: 22,
   dataInline: 17,
   dataSmall: 15,
@@ -137,8 +147,10 @@ export const Measure = {
   tight: 8,
   snug: 12,
   base: 16,
+  wide: 20,
   loose: 24,
   section: 36,
+  page: 44,
   plate: 56,
   /** Screen gutter. Wider than a typical app — this is a page. */
   gutter: 22,
@@ -176,3 +188,37 @@ export const PLATES = {
 } as const;
 
 export type PlateKey = keyof typeof PLATES;
+
+/**
+ * Composed text styles, for the few places that spread a whole style
+ * rather than setting family and size separately.
+ */
+export const TypeStyle = {
+  plateTitle: {
+    fontFamily: SpecimenType.serif,
+    fontSize: SpecimenType.plateTitle,
+    lineHeight: 42,
+    letterSpacing: TRACK.title,
+  },
+  specimenName: {
+    fontFamily: SpecimenType.serif,
+    fontSize: SpecimenType.specimenName,
+    lineHeight: 33,
+    letterSpacing: TRACK.title,
+  },
+  readingLarge: {
+    fontFamily: SpecimenType.monoBold,
+    fontSize: SpecimenType.readingLarge,
+    lineHeight: 38,
+    letterSpacing: -0.6,
+  },
+} as const;
+
+/**
+ * Interaction sizing. Not a palette, but part of the same system: a
+ * 44pt minimum target is an accessibility floor, not a style choice.
+ */
+export const tapTarget = 44;
+export const inputHeight = 52;
+export const primaryButtonHeight = 52;
+export const secondaryButtonHeight = 48;

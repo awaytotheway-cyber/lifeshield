@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 
 import { DataValue } from "@/components/ui/DataValue";
-import { Colors, Typography } from "@/lib/design-tokens";
+import { Accent, Ink, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type DonutRingProps = {
   /** 0–1 fraction filled. */
@@ -24,7 +24,7 @@ type DonutRingProps = {
 };
 
 /**
- * Thin SVG donut used in the Results hero. On the orange gradient the
+ * Thin SVG donut used in the Results head. On paper the
  * ring is white at 90% for "all normal" and 50% when something needs
  * attention — one glance tells the story.
  */
@@ -34,9 +34,9 @@ export function DonutRing({
   caption,
   size = 100,
   stroke = 10,
-  color = "rgba(255,255,255,0.90)",
-  trackColor = "rgba(255,255,255,0.25)",
-  textColor = Colors.pureWhite,
+  color = Accent.tag,
+  trackColor = Ink.rule,
+  textColor = Ink.full,
 }: DonutRingProps) {
   const safe = Number.isFinite(progress)
     ? Math.max(0, Math.min(1, progress))
@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
   },
   caption: {
     marginTop: -2,
-    fontFamily: Typography.regular,
-    fontSize: Typography.micro,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.micro,
     opacity: 0.65,
   },
 });

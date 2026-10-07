@@ -25,10 +25,10 @@ export default function ClinicalTermPreviewScreen() {
   return (
     <Screen scroll>
       <BackBar onPress={() => router.back()} label="Back" />
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-inkFull">
         {COPY.clinicalTermPreviewTitle}
       </Text>
-      <Text className="mt-3 text-center text-charcoal">
+      <Text className="mt-3 text-center text-inkFull">
         {COPY.clinicalTermPreviewBody}
       </Text>
 

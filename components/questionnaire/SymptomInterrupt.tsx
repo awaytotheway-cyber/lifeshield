@@ -6,10 +6,9 @@ import { SymptomInterruptCard } from "@/components/questionnaire/SymptomInterrup
 import { DangerButton, PrimaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, SpecimenType } from "@/lib/specimen-tokens";
 
 type SymptomInterruptProps = {
   saving?: boolean;
@@ -60,9 +59,9 @@ export function SymptomInterrupt({
     <Screen scroll>
       <Text
         style={{
-          fontFamily: fontFamily.display,
+          fontFamily: SpecimenType.serif,
           fontSize: 26,
-          color: colors.deepTeal,
+          color: Accent.tag,
         }}
       >
         {COPY.interruptTitle}
@@ -70,10 +69,10 @@ export function SymptomInterrupt({
       <Text
         style={{
           marginTop: 12,
-          fontFamily: fontFamily.body,
+          fontFamily: SpecimenType.mono,
           fontSize: 17,
           lineHeight: 26,
-          color: colors.slate,
+          color: Ink.soft,
         }}
       >
         {COPY.interruptBody}
@@ -92,8 +91,8 @@ export function SymptomInterrupt({
           style={{
             marginTop: 12,
             textAlign: "center",
-            color: colors.coral,
-            fontFamily: fontFamily.body,
+            color: Accent.tag,
+            fontFamily: SpecimenType.mono,
             fontSize: 15,
           }}
         >

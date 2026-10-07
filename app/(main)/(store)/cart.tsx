@@ -22,6 +22,7 @@ import {
 import { loadUserContext } from "@/lib/user-context";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent } from "@/lib/specimen-tokens";
 
 type CheckedLine = {
   line: CartLineRow;
@@ -184,14 +185,14 @@ export default function CartScreen() {
   return (
     <Screen scroll>
       <BackBar onPress={() => router.back()} label="Store" />
-      <Text className="text-center text-2xl text-charcoal">{COPY.cartTitle}</Text>
-      <Text className="mt-3 text-center text-charcoal">{COPY.cartBody}</Text>
+      <Text className="text-center text-2xl text-inkFull">{COPY.cartTitle}</Text>
+      <Text className="mt-3 text-center text-inkFull">{COPY.cartBody}</Text>
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <ActivityIndicator className="mt-6" color={Accent.tag} /> : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-tag">{message}</Text>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -203,13 +204,13 @@ export default function CartScreen() {
       ) : null}
 
       {actionMessage ? (
-        <Text className="mt-4 text-center text-teal">{actionMessage}</Text>
+        <Text className="mt-4 text-center text-tag">{actionMessage}</Text>
       ) : null}
 
       {!loading && !message && lines.length === 0 ? (
         <View className="mt-6 items-center">
           <EmptyBox width={100} height={100} />
-          <Text className="mt-4 text-center text-charcoal">{COPY.cartEmpty}</Text>
+          <Text className="mt-4 text-center text-inkFull">{COPY.cartEmpty}</Text>
         </View>
       ) : null}
 
@@ -218,7 +219,7 @@ export default function CartScreen() {
             const busy = updatingId === line.id;
             const lineTotal = line.product.price * line.quantity;
             return (
-              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
+              <View key={line.id} className="mt-4 rounded-xl bg-paperMount px-4 py-4">
                 <ClinicalTerm
                   plainName={line.product.plain_name}
                   plainExplanation={
@@ -227,7 +228,7 @@ export default function CartScreen() {
                   }
                   medicalName={line.product.clinical_name}
                 />
-                <Text className="mt-2 text-teal">
+                <Text className="mt-2 text-tag">
                   {formatProductPrice(line.product)} × {line.quantity} = ₹
                   {lineTotal.toLocaleString("en-IN")}
                 </Text>
@@ -238,26 +239,26 @@ export default function CartScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={COPY.cartDecrease}
                     disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
+                    className="rounded-lg bg-paperSheet px-4 py-2"
                     onPress={() => {
                       void changeQuantity(line, -1);
                     }}
                   >
-                    <Text className="text-xl text-charcoal">−</Text>
+                    <Text className="text-xl text-inkFull">−</Text>
                   </Pressable>
-                  <Text className="mx-4 text-charcoal">
+                  <Text className="mx-4 text-inkFull">
                     {COPY.cartQuantity}: {line.quantity}
                   </Text>
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={COPY.cartIncrease}
                     disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
+                    className="rounded-lg bg-paperSheet px-4 py-2"
                     onPress={() => {
                       void changeQuantity(line, 1);
                     }}
                   >
-                    <Text className="text-xl text-charcoal">+</Text>
+                    <Text className="text-xl text-inkFull">+</Text>
                   </Pressable>
                 </View>
 
@@ -275,12 +276,12 @@ export default function CartScreen() {
         : null}
 
       {!loading && !message && lines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
+        <View className="mt-6 rounded-xl border border-tag bg-paperMount px-4 py-4">
+          <Text className="text-center text-inkFull">{COPY.cartTotal}</Text>
+          <Text className="mt-2 text-center text-2xl text-tag">
             ₹{total.toLocaleString("en-IN")}
           </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
+          <Text className="mt-2 text-center text-sm text-inkFull">
             {COPY.cartTotalNote}
           </Text>
         </View>

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { WhyAskButton } from "@/components/ui/WhyAskSheet";
 import { COPY } from "@/lib/copy";
-import { Colors, Spacing, Typography } from "@/lib/design-tokens";
+import { Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type QuestionCardProps = {
   title: string;
@@ -13,7 +13,7 @@ type QuestionCardProps = {
 };
 
 /**
- * A question group — PRESCOPE v2.
+ * A question group.
  *
  * Deliberately not a card. Questions read as editorial groups: 17px
  * semibold prompt, an inline "why we ask" info icon (a trust feature),
@@ -48,16 +48,16 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.sm,
+    gap: Measure.tight,
   },
   title: {
     flex: 1,
-    fontFamily: Typography.semibold,
-    fontSize: Typography.bodyLarge,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.bodyLarge,
     lineHeight: 24,
-    color: Colors.charcoal,
+    color: Ink.full,
   },
   input: {
-    marginTop: Spacing.md,
+    marginTop: Measure.snug,
   },
 });

@@ -627,7 +627,7 @@ export const COPY = {
   aboutVersion: "Version",
   aboutWhatsNew: "What’s new",
   aboutWhatsNewBody:
-    "Profile & settings hub, side menu, data export, and clearer privacy wording. Blue glass design system.",
+    "Profile & settings hub, side menu, data export, and clearer privacy wording. New Specimen design throughout, with larger type.",
   aboutCompany: "Prescope",
   aboutOss: "Open-source notices",
   aboutOssBody:

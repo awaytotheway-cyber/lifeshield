@@ -5,11 +5,10 @@ import { StyleSheet, Text } from "react-native";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { PrimaryButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, SpecimenType } from "@/lib/specimen-tokens";
 
 /**
  * Last welcome step after the legal gate. Privacy consent is already saved;
@@ -64,9 +63,9 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 16,
     textAlign: "center",
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.coral,
+    color: Accent.tag,
   },
 });

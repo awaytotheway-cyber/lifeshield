@@ -8,9 +8,7 @@ import {
 } from "react-native";
 
 import { IconButton } from "@/components/ui/Button";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
-import { Accent, Ink, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
+import { Accent, Edge, Ink, inputHeight, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 type FieldProps = RNTextInputProps & {
   label: string;
@@ -19,7 +17,7 @@ type FieldProps = RNTextInputProps & {
 };
 
 /**
- * Standard text field: label above, 56px box, teal glow when focused.
+ * Standard text field: label above, 56px box, the rule darkens on focus.
  */
 export function TextInput({
   label,

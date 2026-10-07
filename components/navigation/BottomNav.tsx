@@ -1,11 +1,12 @@
+import type { IconName } from "@/components/specimen/Icon";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter, usePathname } from "expo-router";
 import { SpecimenIcon, type SpecimenIconName } from "@/components/specimen/SpecimenIcon";
 import * as Haptics from "expo-haptics";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Accent, Ink, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 import { routes } from "@/lib/routes";
+import { Accent, Ink, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 type TabSpec = {
   id: string;
@@ -54,7 +55,7 @@ const TABS: TabSpec[] = [
 ];
 
 /**
- * PRESCOPE v2 bottom tab bar.
+ * The bottom tab bar.
  *
  * The 4×4 orange pill sits ABOVE the active icon rather than
  * underlining the label — that small placement choice is what stops the

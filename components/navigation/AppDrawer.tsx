@@ -10,21 +10,20 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useDrawer } from "@/components/navigation/DrawerContext";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import {
   DEFAULT_MENU_ORDER,
   menuItemIsActive,
   orderedMenuItems,
   type MenuItemId,
 } from "@/lib/menu";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, SpecimenType, tapTarget } from "@/lib/specimen-tokens";
 
 const ORDER_KEY = (userId: string) => `prescope:menu-order:${userId}`;
 
@@ -142,7 +141,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
         <Animated.View
           style={[styles.panelWrap, { transform: [{ translateX: slide }] }]}
         >
-          <GlassCard intensity="sheet" style={styles.panel}>
+          <Sheet variant="sheet" style={styles.panel}>
             <SafeAreaView edges={["top", "bottom"]} style={styles.safe}>
               <View style={styles.header}>
                 <Text style={styles.brand} accessibilityRole="header">
@@ -154,7 +153,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                   onPress={closeDrawer}
                   style={styles.iconHit}
                 >
-                  <Feather name="x" size={22} color={colors.charcoal} />
+                  <Icon name="x" size={22} color={Ink.full} />
                 </Pressable>
               </View>
               <Text style={styles.subtitle}>{COPY.drawerSubtitle}</Text>
@@ -184,11 +183,11 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                           active ? styles.itemActive : null,
                         ]}
                       >
-                        <Feather
+                        <Icon
                           name={item.icon}
                           size={20}
                           color={
-                            active ? colors.primaryBlue : colors.charcoal
+                            active ? Accent.tag : Ink.full
                           }
                         />
                         <Text
@@ -224,10 +223,10 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                             onPress={() => moveItem(item.id, -1)}
                             style={styles.iconHit}
                           >
-                            <Feather
+                            <Icon
                               name="chevron-up"
                               size={20}
-                              color={colors.slate}
+                              color={Ink.soft}
                             />
                           </Pressable>
                           <Pressable
@@ -236,10 +235,10 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                             onPress={() => moveItem(item.id, 1)}
                             style={styles.iconHit}
                           >
-                            <Feather
+                            <Icon
                               name="chevron-down"
                               size={20}
-                              color={colors.slate}
+                              color={Ink.soft}
                             />
                           </Pressable>
                         </View>
@@ -259,10 +258,10 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                 onPress={() => setReorderMode((prev) => !prev)}
                 style={styles.reorderToggle}
               >
-                <Feather
+                <Icon
                   name={reorderMode ? "check" : "list"}
                   size={18}
-                  color={colors.primaryBlue}
+                  color={Accent.tag}
                 />
                 <Text style={styles.reorderToggleText}>
                   {reorderMode
@@ -271,7 +270,7 @@ export function AppDrawer({ unreadCount = 0 }: AppDrawerProps) {
                 </Text>
               </Pressable>
             </SafeAreaView>
-          </GlassCard>
+          </Sheet>
         </Animated.View>
       </View>
     </Modal>
@@ -285,7 +284,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: "rgba(11,30,77,0.35)",
+    backgroundColor: Ink.scrim,
   },
   panelWrap: {
     width: 300,
@@ -296,37 +295,37 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
-    borderTopRightRadius: radius.sheet,
-    borderBottomRightRadius: radius.sheet,
+    borderTopRightRadius: Edge.mount,
+    borderBottomRightRadius: Edge.mount,
   },
   safe: {
     flex: 1,
-    paddingHorizontal: spacing.base,
+    paddingHorizontal: Measure.base,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: spacing.sm,
+    paddingTop: Measure.tight,
   },
   brand: {
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 28,
     letterSpacing: -0.5,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   subtitle: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   list: {
     flex: 1,
-    marginTop: spacing.base,
+    marginTop: Measure.base,
   },
   listContent: {
-    paddingBottom: spacing.md,
+    paddingBottom: Measure.loose,
   },
   row: {
     flexDirection: "row",
@@ -340,26 +339,26 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: radius.input,
+    borderRadius: Edge.none,
     marginBottom: 4,
   },
   itemActive: {
-    backgroundColor: colors.lightTeal,
+    backgroundColor: Accent.tagWash,
   },
   itemLabel: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   itemLabelActive: {
-    color: colors.primaryBlue,
-    fontFamily: fontFamily.bodySemi,
+    color: Accent.tag,
+    fontFamily: SpecimenType.monoBold,
   },
   currentHint: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   badge: {
     minWidth: 22,
@@ -368,12 +367,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.amber,
+    backgroundColor: Accent.ochre,
   },
   badgeText: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 13,
-    color: colors.deepNavy,
+    color: Ink.full,
   },
   reorder: {
     flexDirection: "column",
@@ -389,12 +388,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    paddingVertical: spacing.sm,
-    marginBottom: spacing.sm,
+    paddingVertical: Measure.tight,
+    marginBottom: Measure.tight,
   },
   reorderToggleText: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
 });

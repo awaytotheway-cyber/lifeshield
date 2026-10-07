@@ -21,10 +21,9 @@ import {
   type ChatMessageRow,
   type ConnectionRow,
 } from "@/lib/buddies";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 const POLL_MS = 10_000;
 
@@ -107,7 +106,7 @@ export default function BuddyChatScreen() {
     : false;
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={buddy?.display_name ?? COPY.buddiesChatTitle}
         onBack={() => router.replace(routes.buddies)}
@@ -202,7 +201,7 @@ export default function BuddyChatScreen() {
       ) : null}
 
       {!loading && connection && connection.status !== "active" ? (
-        <View style={{ marginTop: spacing.base }}>
+        <View style={{ marginTop: Measure.base }}>
           <Text style={styles.empty}>
             This connection is {connection.status}. Reactivate it to chat.
           </Text>
@@ -221,10 +220,10 @@ export default function BuddyChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  chatWrap: { flex: 1, marginTop: spacing.sm },
+  chatWrap: { flex: 1, marginTop: Measure.tight },
   list: {
-    padding: spacing.sm,
-    gap: spacing.sm,
+    padding: Measure.tight,
+    gap: Measure.tight,
     flexGrow: 1,
     justifyContent: "flex-end",
   },
@@ -236,70 +235,70 @@ const styles = StyleSheet.create({
   },
   bubbleMine: {
     alignSelf: "flex-end",
-    backgroundColor: colors.primaryBlue,
+    backgroundColor: Accent.tag,
   },
   bubbleTheirs: {
     alignSelf: "flex-start",
-    backgroundColor: colors.iceBlue,
+    backgroundColor: Paper.sheet,
   },
   bubbleText: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   bubbleTextMine: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.white,
+    color: Paper.mount,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: spacing.sm,
-    paddingTop: spacing.sm,
+    gap: Measure.tight,
+    paddingTop: Measure.tight,
   },
   sendBtn: {
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderRadius: radius.button,
-    backgroundColor: colors.primaryBlue,
+    borderRadius: Edge.none,
+    backgroundColor: Accent.tag,
   },
   sendBtnDisabled: { opacity: 0.5 },
   sendText: {
-    fontFamily: fontFamily.bodySemi,
-    color: colors.white,
+    fontFamily: SpecimenType.monoBold,
+    color: Paper.mount,
   },
   empty: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.slate,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Ink.soft,
     textAlign: "center",
   },
   staleCard: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    backgroundColor: colors.amberLight,
-    borderRadius: radius.card,
+    marginTop: Measure.base,
+    padding: Measure.base,
+    backgroundColor: Accent.ochreWash,
+    borderRadius: Edge.mount,
   },
   staleTitle: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   staleBody: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.hair,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   staleActions: {
-    marginTop: spacing.sm,
+    marginTop: Measure.tight,
     flexDirection: "row",
-    gap: spacing.mdSm,
+    gap: Measure.snug,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

@@ -19,9 +19,7 @@ import {
   type HubSectionKey,
 } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import {
@@ -29,6 +27,7 @@ import {
   completedSectionCount,
 } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 function hrefForSection(key: HubSectionKey) {
   switch (key) {
@@ -77,7 +76,7 @@ export default function QuestionnaireHubScreen() {
   const session = useAuthStore((state) => state.session);
   const [hint, setHint] = useState<string | null>(null);
   const windowWidth = useWindowDimensions().width;
-  const trailWidth = Math.max(160, windowWidth - spacing.screenX * 2);
+  const trailWidth = Math.max(160, windowWidth - Measure.gutter * 2);
 
   useEffect(() => {
     if (!session?.user.id || hubHydrated || hubLoading) {
@@ -141,7 +140,7 @@ export default function QuestionnaireHubScreen() {
   };
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen contentPadding={Measure.gutter} centered={false}>
       <FlatList
         data={[]}
         keyExtractor={() => "hub"}
@@ -204,51 +203,51 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 34,
     lineHeight: 40,
     letterSpacing: -0.6,
-    color: colors.deepTeal,
+    color: Accent.tag,
     textAlign: "left",
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "left",
   },
   progress: {
     marginTop: 16,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "left",
   },
   track: {
     marginTop: 8,
     height: 4,
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
     borderRadius: 2,
     overflow: "hidden",
   },
   fill: {
     height: 4,
-    backgroundColor: colors.sage,
+    backgroundColor: Accent.sage,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
     textAlign: "center",
   },
   hint: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.midTeal,
+    color: Accent.tag,
     textAlign: "center",
   },
 });

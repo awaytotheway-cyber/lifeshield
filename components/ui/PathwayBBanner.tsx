@@ -2,10 +2,9 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { PathwayBHandoff } from "@/components/illustrations";
 import { DangerButton, TextButton } from "@/components/ui/Button";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Sheet } from "@/components/specimen/Sheet";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type PathwayBBannerProps = {
   onFindDoctor?: () => void;
@@ -17,7 +16,7 @@ type PathwayBBannerProps = {
  */
 export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProps) {
   return (
-    <GlassSurface intensity="card" style={styles.wrap}>
+    <Sheet style={styles.wrap}>
       <View style={styles.illustration}>
         <PathwayBHandoff width={160} height={140} />
       </View>
@@ -29,30 +28,30 @@ export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProp
       {onSavePlace ? (
         <TextButton title={COPY.pathwayBSavePlace} onPress={onSavePlace} />
       ) : null}
-    </GlassSurface>
+    </Sheet>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    padding: spacing.md,
+    padding: Measure.loose,
   },
   illustration: {
     alignItems: "center",
     marginBottom: 16,
   },
   title: {
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 24,
     lineHeight: 29,
     letterSpacing: -0.5,
-    color: colors.deepTeal,
+    color: Accent.tag,
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

@@ -7,20 +7,11 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon, type IconName } from "@/components/specimen/Icon";
 
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { PressScale } from "@/components/ui/PressScale";
-import {
-  colors,
-  primaryButtonHeight,
-  radius,
-  secondaryButtonHeight,
-  shadows,
-  tapTarget,
-} from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
-import { Accent, Ink, Paper, Rule, TRACK } from "@/lib/specimen-tokens";
+import { Accent, Edge, Ink, Paper, primaryButtonHeight, Rule, secondaryButtonHeight, SpecimenType, tapTarget, TRACK } from "@/lib/specimen-tokens";
 
 export type ButtonVariant =
   | "primary"
@@ -34,19 +25,19 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   title?: string;
   loading?: boolean;
   variant?: ButtonVariant;
-  /** Feather icon name for IconButton (and optional leading icon). */
-  icon?: keyof typeof Feather.glyphMap;
+  /** Icon name for IconButton (and optional leading icon). */
+  icon?: IconName;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 };
 
 /** Primary is a solid ink block; pressing lifts it slightly, not a hue shift. */
 function inkFill(pressed: boolean) {
-  return pressed ? "#36332D" : Ink.full;
+  return pressed ? Ink.pressed : Ink.full;
 }
 
 function tagFill(pressed: boolean) {
-  return pressed ? "#8C2C1A" : Accent.tag;
+  return pressed ? Accent.tagPressed : Accent.tag;
 }
 
 /**
@@ -76,7 +67,7 @@ export function Button({
         disabled={isDisabled}
         style={[styles.iconBtn, isDisabled && styles.iconDisabled, style]}
       >
-        <Feather name={icon ?? "more-horizontal"} size={20} color={colors.primaryBlue} />
+        <Icon name={icon ?? "more-horizontal"} size={20} color={Accent.tag} />
       </PressScale>
     );
   }
@@ -92,7 +83,7 @@ export function Button({
       >
         {({ pressed }) =>
           loading ? (
-            <ActivityIndicator color={colors.skyBlue} />
+            <ActivityIndicator color={Accent.tag} />
           ) : (
             <Text
               style={[
@@ -123,7 +114,7 @@ export function Button({
           style,
         ]}
       >
-        <GlassCard intensity="button" style={styles.secondaryGlass}>
+        <Sheet style={styles.secondarySheet}>
           {loading ? (
             <ActivityIndicator color={Ink.full} />
           ) : (
@@ -131,7 +122,7 @@ export function Button({
               {title.toUpperCase()}
             </Text>
           )}
-        </GlassCard>
+        </Sheet>
       </PressScale>
     );
   }
@@ -147,7 +138,7 @@ export function Button({
       style={({ pressed }) => [
         styles.primary,
         { backgroundColor: isDanger ? tagFill(pressed) : inkFill(pressed) },
-        !isDisabled ? shadows.button : null,
+        !isDisabled ? {} : null,
         isDisabled && styles.primaryDisabled,
         style,
       ]}
@@ -157,7 +148,7 @@ export function Button({
       ) : (
         <View style={styles.row}>
           {icon ? (
-            <Feather
+            <Icon
               name={icon}
               size={18}
               color={isDisabled ? Ink.ghost : Paper.sheet}
@@ -197,19 +188,19 @@ const styles = StyleSheet.create({
   primary: {
     marginTop: 16,
     minHeight: primaryButtonHeight,
-    borderRadius: radius.button,
+    borderRadius: Edge.none,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
     width: "100%",
   },
   primaryDisabled: {
-    backgroundColor: colors.borderMedium,
+    backgroundColor: Ink.ruleStrong,
     shadowOpacity: 0,
     elevation: 0,
   },
   primaryLabel: {
-    fontFamily: fontFamily.mono,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: TRACK.label,
     color: Paper.sheet,
@@ -217,10 +208,10 @@ const styles = StyleSheet.create({
   secondaryWrap: {
     marginTop: 16,
     width: "100%",
-    borderRadius: radius.button,
+    borderRadius: Edge.none,
     overflow: "hidden",
   },
-  secondaryGlass: {
+  secondarySheet: {
     minHeight: secondaryButtonHeight,
     borderWidth: Rule.medium,
     borderColor: Ink.full,
@@ -234,7 +225,7 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   secondaryLabel: {
-    fontFamily: fontFamily.mono,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: TRACK.label,
     color: Ink.full,
@@ -247,7 +238,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   textLabel: {
-    fontFamily: fontFamily.mono,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: TRACK.label,
     color: Accent.tag,
@@ -270,7 +261,7 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   disabledText: {
-    color: colors.mist,
+    color: Ink.faint,
   },
   row: {
     flexDirection: "row",

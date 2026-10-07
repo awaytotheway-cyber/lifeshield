@@ -6,9 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-
-import { colors } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Ink, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type QuestionnaireStepperProps = {
   current: number;
@@ -45,27 +43,27 @@ export function QuestionnaireStepper({ current, total }: QuestionnaireStepperPro
 
 const styles = StyleSheet.create({
   bar: {
-    backgroundColor: colors.white,
+    backgroundColor: Paper.mount,
     paddingHorizontal: 0,
     paddingTop: 12,
     paddingBottom: 12,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
     marginBottom: 8,
   },
   track: {
     height: 4,
     width: "100%",
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
     borderRadius: 2,
     overflow: "hidden",
   },
   fill: {
     height: 4,
-    backgroundColor: colors.sage,
+    backgroundColor: Accent.sage,
     borderRadius: 2,
   },
 });

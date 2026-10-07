@@ -2,16 +2,15 @@ import { Redirect, useRouter } from "expo-router";
 import { Linking, StyleSheet, Text, View } from "react-native";
 
 import { TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { PROFILE_FAQ } from "@/lib/profile-constants";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function HelpSettingsScreen() {
   const router = useRouter();
@@ -29,7 +28,7 @@ export default function HelpSettingsScreen() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.helpTitle}
         onBack={() => router.replace(routes.settings)}
@@ -37,18 +36,18 @@ export default function HelpSettingsScreen() {
       <Text style={styles.body}>{COPY.helpBody}</Text>
 
       {PROFILE_FAQ.map((item) => (
-        <GlassCard key={item.id} intensity="card" style={styles.card}>
+        <Sheet key={item.id}  style={styles.card}>
           <Text style={styles.q}>{item.question}</Text>
           <Text style={styles.a}>{item.answer}</Text>
-        </GlassCard>
+        </Sheet>
       ))}
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Sheet style={styles.card}>
         <Text style={styles.q}>{COPY.helpTutorials}</Text>
         <Text style={styles.a}>{COPY.helpTutorialsBody}</Text>
-      </GlassCard>
+      </Sheet>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Sheet style={styles.card}>
         <Text style={styles.q}>{COPY.helpContact}</Text>
         <Text style={styles.a}>{COPY.helpContactBody}</Text>
         <TextButton
@@ -57,9 +56,9 @@ export default function HelpSettingsScreen() {
             void Linking.openURL("mailto:support@prescope.app");
           }}
         />
-      </GlassCard>
+      </Sheet>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Sheet style={styles.card}>
         <Text style={styles.q}>{COPY.helpFeedback}</Text>
         <Text style={styles.a}>{COPY.helpFeedbackBody}</Text>
         <View>
@@ -70,33 +69,33 @@ export default function HelpSettingsScreen() {
             }}
           />
         </View>
-      </GlassCard>
+      </Sheet>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   body: {
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginBottom: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   card: {
-    marginTop: spacing.mdSm,
-    padding: spacing.base,
+    marginTop: Measure.snug,
+    padding: Measure.base,
   },
   q: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 19,
-    color: colors.deepNavy,
+    color: Ink.full,
   },
   a: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.slate,
+    color: Ink.soft,
   },
 });

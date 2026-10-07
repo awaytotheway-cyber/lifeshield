@@ -1,3 +1,4 @@
+import { Ink, Paper } from "@/lib/specimen-tokens";
 import { Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
@@ -24,8 +25,8 @@ export function TimePicker({
 
   return (
     <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
-      {hint ? <Text className="mt-1 text-sm text-charcoal">{hint}</Text> : null}
+      <Text className="text-inkFull">{label}</Text>
+      {hint ? <Text className="mt-1 text-sm text-inkFull">{hint}</Text> : null}
       <input
         type="time"
         aria-label={label}
@@ -42,23 +43,23 @@ export function TimePicker({
           borderRadius: 12,
           borderWidth: 1,
           borderStyle: "solid",
-          borderColor: "#A8C5A0",
-          backgroundColor: "#FFFFFF",
-          color: "#2D3436",
+          borderColor: Ink.rule,
+          backgroundColor: Paper.mount,
+          color: Ink.full,
           fontSize: 18,
         }}
       />
       {isHHmm(clockValue) ? (
-        <Text className="mt-1 text-sm text-teal">
+        <Text className="mt-1 text-sm text-tag">
           {formatDisplayDuration(clockValue)}
         </Text>
       ) : null}
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-coral">
+        <Text className="mt-1 text-sm text-tag">
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
         </Text>
       ) : null}
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text className="mt-1 text-tag">{error}</Text> : null}
     </View>
   );
 }

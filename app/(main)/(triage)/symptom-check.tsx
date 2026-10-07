@@ -8,11 +8,10 @@ import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TRIAGE_QUESTIONS, type TriageAnswerKey } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type Answers = Record<TriageAnswerKey, boolean | null>;
 
@@ -106,7 +105,7 @@ export default function SymptomCheckScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <Text style={styles.h1}>{COPY.triageTitle}</Text>
       <Text style={styles.sub}>{COPY.triageBody}</Text>
       <Text style={styles.note}>{COPY.triageAwareness}</Text>
@@ -157,25 +156,25 @@ export default function SymptomCheckScreen() {
 
 const styles = StyleSheet.create({
   h1: {
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.deepTeal,
+    color: Accent.tag,
   },
   sub: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   note: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   questions: {
     marginTop: 24,
@@ -184,9 +183,9 @@ const styles = StyleSheet.create({
   error: {
     marginTop: 16,
     textAlign: "center",
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
   cta: {
     marginTop: 40,

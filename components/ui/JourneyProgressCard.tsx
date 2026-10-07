@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -8,9 +8,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Sheet } from "@/components/specimen/Sheet";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 export type JourneyStepState = "complete" | "current" | "upcoming";
 
@@ -44,18 +43,18 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
   });
 
   return (
-    <GlassCard intensity="card" style={styles.card}>
+    <Sheet style={styles.card}>
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
         const color =
           step.state === "complete"
-            ? colors.riskLow
+            ? Accent.sage
             : step.state === "current"
-              ? colors.primaryBlue
-              : colors.border;
+              ? Accent.tag
+              : Ink.rule;
         const textColor =
-          step.state === "upcoming" ? colors.mist : colors.deepNavy;
-        const weight = step.state === "current" ? fontFamily.bodySemi : fontFamily.body;
+          step.state === "upcoming" ? Ink.faint : Ink.full;
+        const weight = step.state === "current" ? SpecimenType.monoBold : SpecimenType.mono;
 
         return (
           <View key={step.id} style={styles.row}>
@@ -79,20 +78,20 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
                   style={styles.chip}
                 >
                   <Text style={styles.chipText}>Continue</Text>
-                  <Feather name="chevron-right" size={14} color={colors.primaryBlue} />
+                  <Icon name="chevron-right" size={14} color={Accent.tag} />
                 </Pressable>
               ) : null}
             </View>
           </View>
         );
       })}
-    </GlassCard>
+    </Sheet>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    padding: spacing.base,
+    padding: Measure.base,
   },
   row: {
     flexDirection: "row",
@@ -111,7 +110,7 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     width: 2,
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
     marginVertical: 4,
   },
   body: {
@@ -129,14 +128,14 @@ const styles = StyleSheet.create({
     minHeight: 32,
     paddingHorizontal: 12,
     borderRadius: 20,
-    backgroundColor: colors.lightTeal,
+    backgroundColor: Accent.tagWash,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
   chipText: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
 });

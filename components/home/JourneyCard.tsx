@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { SpecimenIcon } from "@/components/specimen/SpecimenIcon";
 
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatusChip } from "@/components/ui/StatusChip";
-import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
-import { Accent, Ink, Paper } from "@/lib/specimen-tokens";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 export type JourneyNodeState = "complete" | "current" | "upcoming";
 
@@ -25,9 +24,9 @@ type JourneyCardProps = {
 
 /**
  * The main journey card on Home. Custom-drawn 5-node horizontal
- * progress line — no third-party stepper. Complete nodes get the brand
- * gradient + checkmark; current node gets a double-ring; upcoming nodes
- * are hollow dots.
+ * progress line — no third-party stepper. Complete nodes are filled
+ * sage with a check; the current node gets a double-ring; upcoming
+ * nodes are hollow.
  */
 export function JourneyCard({
   title = "Your journey",
@@ -37,7 +36,7 @@ export function JourneyCard({
   onViewPress,
 }: JourneyCardProps) {
   return (
-    <GlassCard variant="onWhite" radius={Radii.cardLarge}>
+    <Sheet radius={Edge.mount}>
       <View style={styles.headRow}>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{title}</Text>
@@ -83,7 +82,7 @@ export function JourneyCard({
           </Text>
         ) : null}
       </View>
-    </GlassCard>
+    </Sheet>
   );
 }
 
@@ -123,13 +122,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: Spacing.base,
+    marginBottom: Measure.base,
   },
   title: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.sectionTitle,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.sectionTitle,
     letterSpacing: -0.3,
-    color: Colors.charcoal,
+    color: Ink.full,
   },
   row: {
     flexDirection: "row",
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: "rgba(200,75,17,0.20)",
+    backgroundColor: Accent.tagWash,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -163,14 +162,14 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: Colors.orangeDark,
-    backgroundColor: Colors.pureWhite,
+    borderColor: Accent.tag,
+    backgroundColor: Paper.mount,
   },
   nodeIdle: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: Ink.rule,
   },
   connector: {
     position: "absolute",
@@ -178,10 +177,10 @@ const styles = StyleSheet.create({
     left: "-50%",
     width: "100%",
     height: 2,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: Ink.rule,
   },
   connectorDone: {
-    backgroundColor: Colors.orangeDark,
+    backgroundColor: Accent.tag,
   },
   connectorStub: {
     position: "absolute",
@@ -192,41 +191,41 @@ const styles = StyleSheet.create({
   },
   nodeLabel: {
     marginTop: 8,
-    fontFamily: Typography.medium,
-    fontSize: Typography.micro,
-    color: Colors.charcoal,
+    fontFamily: SpecimenType.medium,
+    fontSize: SpecimenType.micro,
+    color: Ink.full,
     textAlign: "center",
   },
   nodeLabelCurrent: {
-    color: Colors.orangeDark,
-    fontFamily: Typography.semibold,
+    color: Accent.tag,
+    fontFamily: SpecimenType.semibold,
   },
   nodeLabelIdle: {
-    color: Colors.mutedText,
+    color: Ink.faint,
   },
   divider: {
-    marginTop: Spacing.base,
-    marginBottom: Spacing.md,
+    marginTop: Measure.base,
+    marginBottom: Measure.snug,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: Ink.rule,
   },
   footRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: Spacing.sm,
+    gap: Measure.tight,
   },
   desc: {
     flex: 1,
-    fontFamily: Typography.regular,
+    fontFamily: SpecimenType.regular,
     fontSize: 16,
     lineHeight: 24,
-    color: Colors.bodyText,
+    color: Ink.soft,
   },
   view: {
-    fontFamily: Typography.semibold,
+    fontFamily: SpecimenType.semibold,
     fontSize: 16,
-    color: Colors.orangeDark,
+    color: Accent.tag,
     paddingLeft: 10,
   },
 });

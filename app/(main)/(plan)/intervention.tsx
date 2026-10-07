@@ -17,6 +17,7 @@ import {
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent } from "@/lib/specimen-tokens";
 
 export default function PlanItemScreen() {
   const router = useRouter();
@@ -90,20 +91,20 @@ export default function PlanItemScreen() {
   return (
     <Screen scroll>
       <BackBar onPress={() => router.back()} label="Plan" />
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-inkFull">
         {COPY.planDetailTitle}
       </Text>
-      <View className="mt-4 rounded-xl border border-teal bg-white px-4 py-3">
-        <Text className="text-center text-charcoal">{bannerText}</Text>
+      <View className="mt-4 rounded-xl border border-tag bg-paperMount px-4 py-3">
+        <Text className="text-center text-inkFull">{bannerText}</Text>
       </View>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <ActivityIndicator className="mt-6" color={Accent.tag} />
       ) : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-tag">{message}</Text>
           <Button
             title={COPY.planRetry}
             variant="ghost"
@@ -116,40 +117,40 @@ export default function PlanItemScreen() {
 
       {!loading && !message && row ? (
         <>
-          <Text className="mt-4 text-center text-xl text-charcoal">
+          <Text className="mt-4 text-center text-xl text-inkFull">
             {row.title}
           </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailWhat}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-tag">{COPY.planDetailWhat}</Text>
+          <Text className="mt-1 text-inkFull">
             {row.description?.trim() ||
               row.plain_reason?.trim() ||
               COPY.planDetailNotInstruction}
           </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planWhyLabel}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-tag">{COPY.planWhyLabel}</Text>
+          <Text className="mt-1 text-inkFull">
             {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
           </Text>
 
           {row.clinician_interaction_check ? (
             <View
               className="mt-3 self-start rounded-full px-3 py-1"
-              style={{ backgroundColor: "#FDE68A" }}
+              style={{ backgroundColor: Accent.ochreWash }}
             >
-              <Text className="text-sm text-charcoal">{COPY.planNeedsCheck}</Text>
+              <Text className="text-sm text-inkFull">{COPY.planNeedsCheck}</Text>
             </View>
           ) : null}
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailReview}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-tag">{COPY.planDetailReview}</Text>
+          <Text className="mt-1 text-inkFull">
             {reviewStatusLabel(row.status)}
           </Text>
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planClinicalBasis}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-tag">{COPY.planClinicalBasis}</Text>
+          <Text className="mt-1 text-inkFull">
             {row.clinical_basis?.trim() || row.trigger_finding}
           </Text>
 
-          <Text className="mt-6 text-center text-sm text-teal">
+          <Text className="mt-6 text-center text-sm text-tag">
             {COPY.planDetailFinding}
           </Text>
           <ClinicalTerm
@@ -159,7 +160,7 @@ export default function PlanItemScreen() {
             medicalName={row.trigger_finding}
           />
 
-          <Text className="mt-4 text-center text-sm text-teal">
+          <Text className="mt-4 text-center text-sm text-tag">
             {COPY.planDetailNotInstruction}
           </Text>
 

@@ -1,16 +1,15 @@
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon, type IconName } from "@/components/specimen/Icon";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Sheet } from "@/components/specimen/Sheet";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type EmptyStateProps = {
-  icon?: keyof typeof Feather.glyphMap;
+  icon?: IconName;
   heading: string;
   explanation: string;
-  /** Optional drawing. When set, the Feather icon is not shown. */
+  /** Optional drawing. When set, the icon is not shown. */
   illustration?: ReactNode;
 };
 
@@ -22,38 +21,38 @@ export function EmptyState({
   illustration,
 }: EmptyStateProps) {
   return (
-    <GlassCard intensity="card" style={styles.wrap}>
+    <Sheet style={styles.wrap}>
       {illustration ?? (
-        <Feather name={icon} size={32} color={colors.primaryBlue} />
+        <Icon name={icon} size={32} color={Accent.tag} />
       )}
       <Text style={styles.heading}>{heading}</Text>
       <Text style={styles.body}>{explanation}</Text>
-    </GlassCard>
+    </Sheet>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    marginTop: spacing.md,
+    marginTop: Measure.loose,
     alignItems: "center",
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.md,
+    paddingHorizontal: Measure.base,
+    paddingVertical: Measure.loose,
   },
   heading: {
     marginTop: 16,
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.primaryBlue,
+    color: Accent.tag,
     textAlign: "center",
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "center",
   },
 });

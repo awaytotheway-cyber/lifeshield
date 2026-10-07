@@ -9,9 +9,7 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { goalDetailHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import {
   goalTypeLabel,
   isOverdue,
@@ -21,6 +19,7 @@ import {
   type WeeklyGoalRow,
 } from "@/lib/weekly-goals";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -56,16 +55,16 @@ function GoalRow({
 }
 
 function statusColor(row: WeeklyGoalRow) {
-  if (isOverdue(row)) return { color: colors.riskHigh };
+  if (isOverdue(row)) return { color: Accent.tag };
   switch (row.status) {
     case "completed":
-      return { color: colors.riskLow };
+      return { color: Accent.sage };
     case "missed":
-      return { color: colors.riskHigh };
+      return { color: Accent.tag };
     case "cancelled":
-      return { color: colors.slate };
+      return { color: Ink.soft };
     default:
-      return { color: colors.primaryBlue };
+      return { color: Accent.tag };
   }
 }
 
@@ -110,7 +109,7 @@ export default function GoalsListScreen() {
   const showEmpty = loadState === "ready" && !message && rows.length === 0;
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.goalsTitle}
         onBack={() => router.replace(routes.home)}
@@ -158,21 +157,20 @@ export default function GoalsListScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 24,
-    color: colors.slate,
+    color: Ink.soft,
   },
   ctaWrap: {
-    marginTop: spacing.base,
-    marginBottom: spacing.base,
+    marginTop: Measure.base,
+    marginBottom: Measure.base,
   },
   card: {
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
   },
   cardPressed: {
     opacity: 0.85,
@@ -180,41 +178,41 @@ const styles = StyleSheet.create({
   rowTop: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: spacing.sm,
+    marginBottom: Measure.tight,
   },
   type: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     lineHeight: 18,
     letterSpacing: 0.4,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
   },
   status: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 14,
     lineHeight: 18,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   meta: {
-    marginTop: spacing.micro,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.hair,
+    marginBottom: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 20,
-    color: colors.slate,
+    color: Ink.soft,
   },
   sep: {
-    height: spacing.mdSm,
+    height: Measure.snug,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

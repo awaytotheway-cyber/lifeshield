@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { getTerm, hasTerm } from "@/lib/plain-language";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type ClinicalTermProps = {
   termKey?: string;
@@ -61,7 +60,7 @@ export function ClinicalTerm({
           onPress={() => setSheetOpen(true)}
           style={styles.infoHit}
         >
-          <Feather name="info" size={16} color={colors.midTeal} />
+          <Icon name="info" size={16} color={Accent.tag} />
         </Pressable>
       </View>
       <Text style={styles.explain}>{explanation || "plain explanation coming soon"}</Text>
@@ -98,11 +97,10 @@ export function ClinicalTerm({
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
-    padding: spacing.base,
-    ...shadows.card,
+    marginTop: Measure.base,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
   },
   row1: {
     flexDirection: "row",
@@ -112,10 +110,10 @@ const styles = StyleSheet.create({
   },
   heading: {
     flex: 1,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   infoHit: {
     minWidth: 44,
@@ -125,38 +123,37 @@ const styles = StyleSheet.create({
   },
   explain: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.slate,
+    color: Ink.soft,
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
     marginVertical: 12,
   },
   clinicalLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
-    color: colors.mist,
+    color: Ink.faint,
   },
   medical: {
     marginTop: 4,
-    fontFamily: fontFamily.medical,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: Ink.scrim,
   },
   sheet: {
-    backgroundColor: colors.white,
+    backgroundColor: Paper.mount,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 20,
-    ...shadows.modal,
   },
   closeHit: {
     minHeight: 44,
@@ -165,8 +162,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeText: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.midTeal,
+    color: Accent.tag,
   },
 });

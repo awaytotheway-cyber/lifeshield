@@ -1,8 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
-
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/specimen/Icon";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type TrustBannerProps = {
   title?: string;
@@ -10,8 +8,8 @@ type TrustBannerProps = {
 };
 
 /**
- * Solid (NON-glass) trust/privacy strip — sits near the top of home/onboarding.
- * Solid fill keeps it readable and distinct from frosted cards below.
+ * Trust/privacy strip — sits near the top of home/onboarding. A solid
+ * block of ink, so it reads as a stamp rather than another card.
  */
 export function TrustBanner({
   title = "Your data stays private",
@@ -20,7 +18,7 @@ export function TrustBanner({
   return (
     <View style={styles.wrap} accessibilityRole="summary">
       <View style={styles.iconWrap}>
-        <Feather name="shield" size={18} color={colors.white} />
+        <Icon name="shield" size={18} color={Paper.mount} />
       </View>
       <View style={styles.textCol}>
         <Text style={styles.title}>{title}</Text>
@@ -34,16 +32,16 @@ const styles = StyleSheet.create({
   wrap: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: spacing.mdSm,
-    padding: spacing.base,
-    borderRadius: radius.alert,
-    backgroundColor: colors.deepNavy,
+    gap: Measure.snug,
+    padding: Measure.base,
+    borderRadius: Edge.hair,
+    backgroundColor: Ink.full,
   },
   iconWrap: {
     width: 36,
     height: 36,
     borderRadius: 10,
-    backgroundColor: colors.primaryBlue,
+    backgroundColor: Accent.tag,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -51,16 +49,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 17,
     lineHeight: 22,
-    color: colors.white,
+    color: Paper.mount,
   },
   body: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: "rgba(255,255,255,0.82)",
+    color: Paper.sheetDeep,
   },
 });

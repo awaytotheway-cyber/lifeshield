@@ -1,8 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
-
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Icon } from "@/components/specimen/Icon";
+import { Accent, Edge, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type IodineHardStopProps = {
   reason?: string;
@@ -17,7 +15,7 @@ export function IodineHardStop({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.amber} />
+        <Icon name="alert-triangle" size={20} color={Accent.ochre} />
         <Text style={styles.title}>This isn't recommended for you right now</Text>
       </View>
       <Text style={styles.body}>{reason}</Text>
@@ -27,11 +25,11 @@ export function IodineHardStop({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.amberLight,
+    backgroundColor: Accent.ochreWash,
     borderWidth: 1,
-    borderColor: colors.amber,
-    borderRadius: radius.alert,
-    padding: spacing.base,
+    borderColor: Accent.ochre,
+    borderRadius: Edge.hair,
+    padding: Measure.base,
   },
   header: {
     flexDirection: "row",
@@ -40,15 +38,15 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   body: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

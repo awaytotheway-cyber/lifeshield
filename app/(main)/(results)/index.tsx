@@ -11,16 +11,15 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { getTerm } from "@/lib/plain-language";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import {
   useQuestionnaireStore,
   type TestOrderRow,
 } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type ListRow =
   | { kind: "heading"; id: string; title: string }
@@ -91,7 +90,7 @@ export default function ResultsScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.resultsTitle}
         onBack={() => router.replace(routes.home)}
@@ -210,10 +209,10 @@ export default function ResultsScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "left",
     marginBottom: 8,
   },
@@ -222,9 +221,9 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
     textAlign: "center",
   },
   insight: {
@@ -237,19 +236,19 @@ const styles = StyleSheet.create({
   group: {
     marginTop: 16,
     marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 20,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   cardGap: {
     marginBottom: 12,
   },
   discuss: {
     marginTop: 16,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
     textAlign: "center",
   },
 });

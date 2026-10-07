@@ -1,11 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Sheet } from "@/components/specimen/Sheet";
 import { COPY } from "@/lib/copy";
 import { QUESTIONNAIRE_HUB_SECTIONS, type HubSectionKey } from "@/lib/constants";
-import { colors, spacing, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Ink, Measure, SpecimenType, tapTarget } from "@/lib/specimen-tokens";
 
 type SectionProgressProps = {
   progress: Record<string, boolean>;
@@ -30,11 +29,11 @@ export function SectionProgress({
             accessibilityLabel={`${section.title}. ${done ? COPY.hubStatusDone : COPY.hubStatusNotStarted}`}
             onPress={() => onPressSection(section.key)}
           >
-            <GlassSurface intensity="card" style={styles.row}>
+            <Sheet style={styles.row}>
             <View
               style={[
                 styles.dot,
-                { backgroundColor: done ? colors.sage : colors.border },
+                { backgroundColor: done ? Accent.sage : Ink.rule },
               ]}
             />
             <View style={styles.text}>
@@ -43,8 +42,8 @@ export function SectionProgress({
                 {done ? COPY.hubStatusDone : COPY.hubStatusNotStarted}
               </Text>
             </View>
-            <Feather name="chevron-right" size={20} color={colors.midTeal} />
-            </GlassSurface>
+            <Icon name="chevron-right" size={20} color={Accent.tag} />
+            </Sheet>
           </Pressable>
         );
       })}
@@ -59,7 +58,7 @@ const styles = StyleSheet.create({
   },
   row: {
     minHeight: tapTarget,
-    paddingHorizontal: spacing.base,
+    paddingHorizontal: Measure.base,
     paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -74,19 +73,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   status: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
   },
   done: {
-    color: colors.sage,
+    color: Accent.sage,
   },
   wait: {
-    color: colors.slate,
+    color: Ink.soft,
   },
 });

@@ -1,19 +1,18 @@
 import type { ReactNode } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon, type IconName } from "@/components/specimen/Icon";
 
 import { TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type OnboardingShellProps = {
   /** 1, 2, or 3 — three screens in this flow. */
   step: 1 | 2 | 3;
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   title: string;
   body: string;
   /** Shown from screen 2 onward. Does not skip the terms agreement. */
@@ -29,7 +28,7 @@ type OnboardingShellProps = {
 };
 
 /**
- * Shared look for welcome, disclaimer, and terms: one idea, glass panel, dots.
+ * Shared look for welcome, disclaimer, and terms: one idea, one sheet, dots.
  */
 export function OnboardingShell({
   step,
@@ -44,7 +43,7 @@ export function OnboardingShell({
   onBack,
 }: OnboardingShellProps) {
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       {onBack || onSkip ? (
         <View style={styles.topRow}>
           {onBack ? (
@@ -55,10 +54,10 @@ export function OnboardingShell({
               hitSlop={8}
               style={styles.backHit}
             >
-              <Feather
+              <Icon
                 name="chevron-left"
                 size={22}
-                color={colors.orangeDark}
+                color={Accent.tag}
               />
             </Pressable>
           ) : (
@@ -83,12 +82,12 @@ export function OnboardingShell({
         </View>
       ) : null}
 
-      <GlassCard intensity="card" style={styles.panel}>
+      <Sheet style={styles.panel}>
         {illustration ? (
           <View style={styles.illustration}>{illustration}</View>
         ) : (
           <View style={styles.iconCircle}>
-            <Feather name={icon} size={24} color={colors.primaryBlue} />
+            <Icon name={icon} size={24} color={Accent.tag} />
           </View>
         )}
 
@@ -96,7 +95,7 @@ export function OnboardingShell({
         <Text style={styles.body}>{body}</Text>
 
         {children}
-      </GlassCard>
+      </Sheet>
 
       <View
         style={styles.dots}
@@ -135,10 +134,10 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
   trust: {
-    marginBottom: spacing.base,
+    marginBottom: Measure.base,
   },
   panel: {
-    padding: spacing.md,
+    padding: Measure.loose,
     marginBottom: 8,
   },
   illustration: {
@@ -151,25 +150,25 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.lightTeal,
+    backgroundColor: Accent.tagWash,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
     marginBottom: 24,
   },
   title: {
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   dots: {
     flexDirection: "row",
@@ -184,9 +183,9 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   dotActive: {
-    backgroundColor: colors.primaryBlue,
+    backgroundColor: Accent.tag,
   },
   dotIdle: {
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
   },
 });

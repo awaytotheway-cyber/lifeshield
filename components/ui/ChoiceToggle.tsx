@@ -36,7 +36,7 @@ export function ChoiceToggle({
 
   return (
     <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
+      <Text className="text-inkFull">{label}</Text>
       <View
         className="mt-3 flex-row rounded-full p-1"
         style={{ backgroundColor: palette.trackOff }}
@@ -79,7 +79,7 @@ export function ChoiceToggle({
           );
         })}
       </View>
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text className="mt-1 text-tag">{error}</Text> : null}
     </View>
   );
 }

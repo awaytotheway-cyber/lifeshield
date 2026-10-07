@@ -8,11 +8,10 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { createGoal, type GoalType } from "@/lib/weekly-goals";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 const TYPE_OPTIONS = [
   { value: "habit", label: COPY.goalsTypeHabit },
@@ -80,7 +79,7 @@ export default function NewGoalScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.goalsNewCta}
         onBack={() => router.back()}
@@ -164,27 +163,27 @@ export default function NewGoalScreen() {
 
 const styles = StyleSheet.create({
   form: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.xxl,
+    paddingTop: Measure.tight,
+    paddingBottom: Measure.plate,
   },
   field: {
-    marginTop: spacing.base,
+    marginTop: Measure.base,
   },
   row: {
     flexDirection: "row",
-    gap: spacing.mdSm,
-    marginTop: spacing.base,
+    gap: Measure.snug,
+    marginTop: Measure.base,
   },
   rowItem: {
     flex: 1,
   },
   actions: {
-    marginTop: spacing.lg,
-    gap: spacing.sm,
+    marginTop: Measure.section,
+    gap: Measure.tight,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Animated, Easing, View, type ViewStyle } from "react-native";
-
 import { Accent, Ink, Paper, Rule } from "@/lib/specimen-tokens";
+
 
 type ProgressBarProps = {
   /** v2: direct fraction 0–1. */
@@ -18,7 +18,7 @@ type ProgressBarProps = {
 };
 
 /**
- * Orange-gradient progress bar on a warm neutral track. Accepts either
+ * Progress bar in ink on a warm neutral track. Accepts either
  * a 0–1 `progress` fraction (v2) or a `current / total` pair (legacy).
  */
 export function ProgressBar({

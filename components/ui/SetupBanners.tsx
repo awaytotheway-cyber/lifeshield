@@ -11,13 +11,13 @@ export function SetupBanners() {
   return (
     <>
       {!configured ? (
-        <Text className="mb-4 text-center text-coral">{COPY.missingKeys}</Text>
+        <Text className="mb-4 text-center text-tag">{COPY.missingKeys}</Text>
       ) : null}
       {setupMessage ? (
-        <Text className="mb-4 text-center text-teal">{setupMessage}</Text>
+        <Text className="mb-4 text-center text-tag">{setupMessage}</Text>
       ) : null}
       {errorMessage ? (
-        <Text className="mb-4 text-center text-coral">{errorMessage}</Text>
+        <Text className="mb-4 text-center text-tag">{errorMessage}</Text>
       ) : null}
     </>
   );

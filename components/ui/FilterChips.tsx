@@ -1,6 +1,5 @@
 import { Platform, Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import * as Haptics from "expo-haptics";
-
 import { Edge, Ink, Measure, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
 export type FilterChip = {
@@ -12,13 +11,13 @@ type FilterChipsProps = {
   chips: readonly FilterChip[];
   value: string;
   onChange: (value: string) => void;
-  /** Horizontal padding for the scroll content. Default Spacing.screenH. */
+  /** Horizontal padding for the scroll content. Default Measure.gutter. */
   paddingH?: number;
 };
 
 /**
  * Horizontal filter chip row. The active chip is filled with the brand
- * gradient; inactive chips are outlined.
+ * ink; inactive chips are outlined.
  */
 export function FilterChips({
   chips,

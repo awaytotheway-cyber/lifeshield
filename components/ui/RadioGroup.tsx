@@ -1,10 +1,9 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import * as Haptics from "expo-haptics";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";
-import { colors, radius } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type Option = { value: string; label: string; description?: string };
 
@@ -21,7 +20,7 @@ type RadioGroupProps = {
   allowClear?: boolean;
   /** Optional “Why do we ask this?” sheet for intrusive questions. */
   whyAsk?: string;
-  /** When this option is selected, use coral styling (symptom Yes only). */
+  /** When this option is selected, use tag styling (symptom Yes only). */
   dangerValue?: string;
 };
 
@@ -72,10 +71,10 @@ export function RadioGroup({
                 ) : null}
               </View>
               {selected ? (
-                <Feather
+                <Icon
                   name="check"
                   size={18}
-                  color={dangerSelected ? colors.dangerRed : colors.orangeDark}
+                  color={dangerSelected ? Accent.tag : Accent.tag}
                 />
               ) : null}
             </Pressable>
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
   },
   card: {
     minHeight: 58,
-    borderRadius: radius.card,
+    borderRadius: Edge.mount,
     paddingHorizontal: 20,
     paddingVertical: 12,
     flexDirection: "row",
@@ -104,39 +103,39 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   cardIdle: {
-    backgroundColor: colors.pureWhite,
+    backgroundColor: Paper.mount,
     borderWidth: 1.5,
-    borderColor: colors.borderLight,
+    borderColor: Ink.rule,
   },
   cardSelected: {
-    backgroundColor: colors.orangeTint,
+    backgroundColor: Accent.tagWash,
     borderWidth: 2,
-    borderColor: colors.orangeDark,
+    borderColor: Accent.tag,
   },
   cardDanger: {
-    backgroundColor: colors.coralLight,
+    backgroundColor: Accent.tagWash,
     borderWidth: 2,
-    borderColor: colors.dangerRed,
+    borderColor: Accent.tag,
   },
   cardText: {
     flex: 1,
     paddingRight: 12,
   },
   optionLabel: {
-    fontFamily: fontFamily.semibold,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
-    color: colors.darkText,
+    color: Ink.full,
   },
   optionDesc: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
 });

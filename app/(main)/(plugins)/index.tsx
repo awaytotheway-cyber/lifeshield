@@ -7,7 +7,6 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   disconnectPlugin,
   loadOwnEnabledPlugins,
@@ -18,8 +17,8 @@ import {
   type PluginRow,
 } from "@/lib/plugins";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 const CATEGORY_HEADER: Record<PluginCategory, string> = {
   data_import: COPY.pluginsCategoryDataImport,
@@ -102,7 +101,7 @@ export default function PluginsScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.pluginsTitle}
         onBack={() => router.replace(routes.home)}
@@ -117,7 +116,7 @@ export default function PluginsScreen() {
         const items = grouped.get(cat) ?? [];
         if (items.length === 0) return null;
         return (
-          <View key={cat} style={{ marginTop: spacing.lg }}>
+          <View key={cat} style={{ marginTop: Measure.section }}>
             <Text style={styles.section}>{CATEGORY_HEADER[cat]}</Text>
             {items.map((p) => {
               const state = enabled[p.id];
@@ -135,8 +134,8 @@ export default function PluginsScreen() {
                       value={on}
                       onValueChange={(v) => flip(p, v)}
                       disabled={busyId === p.id}
-                      trackColor={{ true: colors.primaryBlue, false: colors.border }}
-                      thumbColor={colors.white}
+                      trackColor={{ true: Accent.tag, false: Ink.rule }}
+                      thumbColor={Paper.mount}
                     />
                   </View>
 
@@ -176,79 +175,78 @@ export default function PluginsScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   section: {
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.displaySemi,
+    marginBottom: Measure.tight,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   card: {
-    marginBottom: spacing.sm,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.white,
-    ...shadows.card,
+    marginBottom: Measure.tight,
+    padding: Measure.base,
+    borderRadius: Edge.mount,
+    backgroundColor: Paper.mount,
   },
   headRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: spacing.sm,
+    gap: Measure.tight,
   },
   name: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   provider: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.mist,
+    color: Ink.faint,
   },
   desc: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   subLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
     letterSpacing: 0.4,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
   },
   privacy: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   usageRow: {
-    marginTop: spacing.sm,
+    marginTop: Measure.tight,
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  usageLabel: { fontFamily: fontFamily.bodyMedium, fontSize: 15, color: colors.slate },
-  usageValue: { fontFamily: fontFamily.bodySemi, fontSize: 15, color: colors.charcoal },
+  usageLabel: { fontFamily: SpecimenType.mono, fontSize: 15, color: Ink.soft },
+  usageValue: { fontFamily: SpecimenType.monoBold, fontSize: 15, color: Ink.full },
   enabledBadge: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodySemi,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 14,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

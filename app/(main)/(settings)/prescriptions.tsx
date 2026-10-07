@@ -5,10 +5,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
-import { spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Measure } from "@/lib/specimen-tokens";
 
 /** Honest shell — prescriptions are not in schema; PRESCOPE does not prescribe. */
 export default function PrescriptionsScreen() {
@@ -27,7 +27,7 @@ export default function PrescriptionsScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX}>
+    <Screen contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.prescriptionsTitle}
         onBack={() => router.back()}

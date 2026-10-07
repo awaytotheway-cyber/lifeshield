@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { DataValue } from "@/components/ui/DataValue";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Edge, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type ResultCardProps = {
   plainName: string;
@@ -15,7 +15,7 @@ type ResultCardProps = {
 };
 
 /**
- * Results list row — PRESCOPE v2.
+ * Results list row.
  *
  * The 4px full-height coloured left edge is the fastest visual scan
  * signal: the reader clocks status before reading a single word.
@@ -30,10 +30,10 @@ export function ResultCard({
 }: ResultCardProps) {
   const edgeColor =
     status === "critical"
-      ? Colors.dangerRed
+      ? Accent.tag
       : status === "attention"
-        ? Colors.warningAmber
-        : Colors.successGreen;
+        ? Accent.ochre
+        : Accent.sage;
 
   return (
     <Pressable
@@ -43,7 +43,7 @@ export function ResultCard({
       disabled={!onPress}
       style={({ pressed }) => (pressed ? { opacity: 0.92 } : null)}
     >
-      <GlassCard variant="onWhite" radius={Radii.card} padding={0}>
+      <Sheet radius={Edge.mount} padding={0}>
         <View style={styles.inner}>
           <View style={[styles.edge, { backgroundColor: edgeColor }]} />
 
@@ -63,11 +63,11 @@ export function ResultCard({
             <DataValue
               value={medicalName}
               size="small"
-              color={Colors.orangeDark}
+              color={Accent.tag}
             />
           </View>
         </View>
-      </GlassCard>
+      </Sheet>
     </Pressable>
   );
 }
@@ -75,8 +75,8 @@ export function ResultCard({
 const styles = StyleSheet.create({
   inner: {
     paddingLeft: 24,
-    paddingRight: Spacing.lg,
-    paddingVertical: Spacing.base,
+    paddingRight: Measure.wide,
+    paddingVertical: Measure.base,
   },
   edge: {
     position: "absolute",
@@ -89,36 +89,36 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: Spacing.sm,
+    gap: Measure.tight,
   },
   name: {
     flex: 1,
-    fontFamily: Typography.semibold,
-    fontSize: Typography.bodyLarge,
-    color: Colors.charcoal,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.bodyLarge,
+    color: Ink.full,
   },
   meaning: {
-    marginTop: Spacing.sm,
-    fontFamily: Typography.regular,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.regular,
     fontSize: 16,
     lineHeight: 23,
-    color: Colors.bodyText,
+    color: Ink.soft,
   },
   divider: {
-    marginTop: Spacing.base,
+    marginTop: Measure.base,
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.borderLight,
+    backgroundColor: Ink.rule,
   },
   bottomRow: {
-    marginTop: Spacing.md,
+    marginTop: Measure.snug,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: Spacing.sm,
+    gap: Measure.tight,
   },
   clinicalLabel: {
-    fontFamily: Typography.regular,
-    fontSize: Typography.micro,
-    color: Colors.mutedText,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.micro,
+    color: Ink.faint,
   },
 });

@@ -1,16 +1,7 @@
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
+import { Accent, Edge, Ink, Measure, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
-import {
-  Accent,
-  Edge,
-  Ink,
-  Measure,
-  Paper,
-  Rule,
-  SpecimenType,
-  TRACK,
-} from "@/lib/specimen-tokens";
 
 /* ------------------------------------------------------------------ *
  * SectionRule — a tracked-out label sitting on a hairline.
@@ -75,7 +66,7 @@ export function Hairline({
 
 /* ------------------------------------------------------------------ *
  * Mount — a mounted sheet. Paper with a hairline border, near-square.
- * Replaces the glass card. No shadow, ever.
+ * A mounted sheet. No shadow, ever.
  * ------------------------------------------------------------------ */
 
 export function Mount({
@@ -102,11 +93,11 @@ export function Mount({
 
   const border =
     tone === "tag"
-      ? "#E3C8C1"
+      ? Accent.tagEdge
       : tone === "sage"
-        ? "#CFD6C2"
+        ? Accent.sageEdge
         : tone === "ochre"
-          ? "#E2D2B4"
+          ? Accent.ochreEdge
           : Ink.rule;
 
   return (

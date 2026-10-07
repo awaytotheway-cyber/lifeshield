@@ -3,18 +3,17 @@ import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text } from "react-native";
 
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type ConsentRow = {
   consent_type: string;
@@ -74,7 +73,7 @@ export default function ConsentsSettingsScreen() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.consentsSettingsTitle}
         onBack={() => router.replace(routes.settingsPrivacy)}
@@ -90,9 +89,9 @@ export default function ConsentsSettingsScreen() {
         />
       ) : null}
       {rows.map((row, index) => (
-        <GlassCard
+        <Sheet
           key={`${row.consent_type}-${index}`}
-          intensity="card"
+
           style={styles.card}
         >
           <Text style={styles.type}>{row.consent_type}</Text>
@@ -100,7 +99,7 @@ export default function ConsentsSettingsScreen() {
             {row.consented ? "Agreed" : "Not agreed"}
             {row.consented_at ? ` · ${row.consented_at.slice(0, 10)}` : ""}
           </Text>
-        </GlassCard>
+        </Sheet>
       ))}
     </Screen>
   );
@@ -108,29 +107,29 @@ export default function ConsentsSettingsScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   error: {
     marginTop: 12,
-    color: colors.coral,
-    fontFamily: fontFamily.body,
+    color: Accent.tag,
+    fontFamily: SpecimenType.mono,
   },
   card: {
-    marginTop: spacing.mdSm,
-    padding: spacing.base,
+    marginTop: Measure.snug,
+    padding: Measure.base,
   },
   type: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   status: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
-    color: colors.slate,
+    color: Ink.soft,
   },
 });

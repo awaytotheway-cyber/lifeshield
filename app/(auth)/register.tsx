@@ -11,10 +11,9 @@ import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TextField } from "@/components/ui/TextField";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Ink, Measure, SpecimenType, TypeStyle } from "@/lib/specimen-tokens";
 
 const registerSchema = z
   .object({
@@ -54,7 +53,7 @@ export default function RegisterScreen() {
 
   if (loading) {
     return (
-      <Screen contentPadding={spacing.screenX}>
+      <Screen contentPadding={Measure.gutter}>
         <Text style={styles.loading}>{COPY.authLoading}</Text>
       </Screen>
     );
@@ -85,7 +84,7 @@ export default function RegisterScreen() {
   });
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <Text style={styles.brand}>{COPY.appName}</Text>
       <Text style={styles.title}>{COPY.registerTitle}</Text>
       <Text style={styles.sub}>{COPY.registerSubtitle}</Text>
@@ -183,34 +182,34 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
   brand: {
-    ...typography.display,
-    color: colors.deepTeal,
+    ...TypeStyle.plateTitle,
+    color: Accent.tag,
   },
   title: {
     marginTop: 12,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 20,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   sub: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.coral,
+    color: Accent.tag,
   },
   loading: {
     textAlign: "center",
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.slate,
+    color: Ink.soft,
   },
 });

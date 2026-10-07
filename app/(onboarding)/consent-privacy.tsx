@@ -12,20 +12,19 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ShieldTrust } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
-import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType, tapTarget, TypeStyle } from "@/lib/specimen-tokens";
 
 type CheckCardProps = {
   label: string;
@@ -45,7 +44,7 @@ function CheckCard({ label, checked, onToggle }: CheckCardProps) {
     >
       <Text style={styles.checkLabel}>{label}</Text>
       {checked ? (
-        <Feather name="check" size={20} color={colors.midTeal} />
+        <Icon name="check" size={20} color={Accent.tag} />
       ) : (
         <View style={styles.checkEmpty} />
       )}
@@ -156,7 +155,7 @@ export default function ConsentPrivacyScreen() {
       </View>
       <Text style={styles.title}>{COPY.consentGateTitle}</Text>
 
-      <GlassSurface intensity="card" style={styles.summaryCard}>
+      <Sheet style={styles.summaryCard}>
         <ScrollView
           style={styles.summaryScroll}
           contentContainerStyle={styles.summaryInner}
@@ -180,7 +179,7 @@ export default function ConsentPrivacyScreen() {
             onPress={() => void openLegal("terms")}
           />
         </ScrollView>
-      </GlassSurface>
+      </Sheet>
 
       <CheckCard
         label={COPY.consentGateCheckPolicy}
@@ -207,7 +206,7 @@ export default function ConsentPrivacyScreen() {
       >
         <Pressable style={styles.backdrop} onPress={() => setDeclineOpen(false)}>
           <Pressable onPress={() => undefined}>
-            <GlassSurface intensity="sheet" style={styles.sheet}>
+            <Sheet variant="sheet" style={styles.sheet}>
               <SafeAreaView edges={["bottom"]}>
                 <Text style={styles.sheetTitle}>{COPY.consentGateDeclineTitle}</Text>
                 <Text style={styles.sheetBody}>{COPY.consentGateDeclineBody}</Text>
@@ -230,7 +229,7 @@ export default function ConsentPrivacyScreen() {
                   </Pressable>
                 </View>
               </SafeAreaView>
-            </GlassSurface>
+            </Sheet>
           </Pressable>
         </Pressable>
       </Modal>
@@ -241,7 +240,7 @@ export default function ConsentPrivacyScreen() {
 const styles = StyleSheet.create({
   logoWrap: {
     alignItems: "center",
-    marginBottom: spacing.sm,
+    marginBottom: Measure.tight,
   },
   logo: {
     width: 72,
@@ -249,13 +248,13 @@ const styles = StyleSheet.create({
   },
   shieldWrap: {
     alignItems: "center",
-    marginBottom: spacing.sm,
+    marginBottom: Measure.tight,
   },
   title: {
-    ...typography.h1,
-    color: colors.deepTeal,
+    ...TypeStyle.plateTitle,
+    color: Accent.tag,
     textAlign: "center",
-    marginBottom: spacing.base,
+    marginBottom: Measure.base,
   },
   summaryCard: {
     maxHeight: "55%",
@@ -265,35 +264,35 @@ const styles = StyleSheet.create({
     maxHeight: 360,
   },
   summaryInner: {
-    padding: spacing.base,
-    paddingBottom: spacing.md,
+    padding: Measure.base,
+    paddingBottom: Measure.loose,
   },
   summaryHeading: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
     lineHeight: 24,
-    color: colors.deepTeal,
-    marginBottom: spacing.sm,
+    color: Accent.tag,
+    marginBottom: Measure.tight,
   },
   block: {
-    marginTop: spacing.base,
+    marginTop: Measure.base,
   },
   blockTitle: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
     marginBottom: 4,
   },
   blockBody: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   checkCard: {
-    marginTop: spacing.sm,
+    marginTop: Measure.tight,
     minHeight: 56,
-    borderRadius: radius.radioCard,
+    borderRadius: Edge.mount,
     paddingHorizontal: 16,
     paddingVertical: 12,
     flexDirection: "row",
@@ -301,22 +300,22 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   checkOff: {
-    backgroundColor: colors.white,
+    backgroundColor: Paper.mount,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: Ink.rule,
   },
   checkOn: {
-    backgroundColor: colors.lightTeal,
+    backgroundColor: Accent.tagWash,
     borderWidth: 2,
-    borderColor: colors.midTeal,
+    borderColor: Accent.tag,
   },
   checkLabel: {
     flex: 1,
     paddingRight: 12,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   checkEmpty: {
     width: 20,
@@ -324,30 +323,30 @@ const styles = StyleSheet.create({
   },
   error: {
     textAlign: "center",
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.coral,
+    color: Accent.tag,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: Ink.scrim,
   },
   sheet: {
     padding: 20,
   },
   sheetTitle: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
-    color: colors.deepTeal,
+    color: Accent.tag,
   },
   sheetBody: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   sheetRow: {
     marginTop: 8,
@@ -360,13 +359,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   sheetClose: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.coral,
+    color: Accent.tag,
   },
   sheetBack: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.midTeal,
+    color: Accent.tag,
   },
 });

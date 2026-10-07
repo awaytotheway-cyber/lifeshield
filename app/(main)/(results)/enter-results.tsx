@@ -28,6 +28,7 @@ import {
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Ink } from "@/lib/specimen-tokens";
 
 export default function EnterResultsScreen() {
   const router = useRouter();
@@ -76,10 +77,10 @@ export default function EnterResultsScreen() {
     return (
       <Screen scroll>
         <BackBar onPress={() => router.back()} label="Back" />
-        <Text className="text-center text-2xl text-charcoal">
+        <Text className="text-center text-2xl text-inkFull">
           {COPY.enterResultsTitle}
         </Text>
-        <Text className="mt-4 text-center text-charcoal">
+        <Text className="mt-4 text-center text-inkFull">
           {COPY.enterResultsDenied}
         </Text>
         <Button
@@ -192,13 +193,13 @@ export default function EnterResultsScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-inkFull">
         {COPY.enterResultsTitle}
       </Text>
-      <Text className="mt-3 text-center text-charcoal">
+      <Text className="mt-3 text-center text-inkFull">
         {COPY.enterResultsBody}
       </Text>
-      <Text className="mt-3 text-center text-sm text-teal">
+      <Text className="mt-3 text-center text-sm text-tag">
         Signed in as {session.user.email}. For founder testing, leave the user
         id as your own so a row appears for you.
       </Text>
@@ -331,7 +332,7 @@ export default function EnterResultsScreen() {
 
       {formMessage ? (
         <Text
-          className={`mt-4 text-center ${formOk ? "text-teal" : "text-coral"}`}
+          className={`mt-4 text-center ${formOk ? "text-tag" : "text-tag"}`}
         >
           {formMessage}
         </Text>
@@ -346,15 +347,15 @@ export default function EnterResultsScreen() {
       />
 
       <View className="mt-8">
-        <Text className="text-center text-xl text-charcoal">
+        <Text className="text-center text-xl text-inkFull">
           {COPY.enterResultsCsvTitle}
         </Text>
-        <Text className="mt-2 text-center text-sm text-teal">
+        <Text className="mt-2 text-center text-sm text-tag">
           {COPY.enterResultsCsvHint}
         </Text>
         <TextInput
-          className="mt-3 min-h-[120px] rounded-xl border border-sage bg-white px-4 py-3 text-charcoal"
-          placeholderTextColor="#2D343699"
+          className="mt-3 min-h-[120px] rounded-xl border border-sage bg-paperMount px-4 py-3 text-inkFull"
+          placeholderTextColor={Ink.ghost}
           multiline
           textAlignVertical="top"
           value={csvText}

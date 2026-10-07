@@ -1,12 +1,12 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon, type IconName } from "@/components/specimen/Icon";
 
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { IconContainer } from "@/components/ui/IconContainer";
-import { Colors, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type ActionCardProps = {
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   title: string;
   subtitle?: string;
   onPress: () => void;
@@ -29,20 +29,20 @@ export function ActionCard({
         onPress={onPress}
         style={({ pressed }) => [pressed ? { opacity: 0.9 } : null]}
       >
-        <GlassCard variant="onWhite" padding={16}>
+        <Sheet padding={16}>
           <View style={styles.row}>
-            <IconContainer icon={icon} size="md" variant="orange" />
+            <IconContainer icon={icon} size="md" variant="tag" />
             <View style={styles.center}>
               <Text style={styles.title}>{title}</Text>
               {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
             </View>
-            <Feather
+            <Icon
               name="chevron-right"
               size={20}
-              color={Colors.mutedText}
+              color={Ink.faint}
             />
           </View>
-        </GlassCard>
+        </Sheet>
       </Pressable>
       {isNew ? <View style={styles.newDot} /> : null}
     </View>
@@ -53,21 +53,21 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.md,
+    gap: Measure.snug,
   },
   center: {
     flex: 1,
   },
   title: {
-    fontFamily: Typography.semibold,
+    fontFamily: SpecimenType.semibold,
     fontSize: 18,
-    color: Colors.charcoal,
+    color: Ink.full,
   },
   subtitle: {
     marginTop: 2,
-    fontFamily: Typography.regular,
-    fontSize: Typography.secondary,
-    color: Colors.mutedText,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.secondary,
+    color: Ink.faint,
   },
   newDot: {
     position: "absolute",
@@ -76,6 +76,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.orangeDark,
+    backgroundColor: Accent.tag,
   },
 });

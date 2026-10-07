@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
 import { Image } from "expo-image";
-
 import { Ink, Paper, Rule, SpecimenType } from "@/lib/specimen-tokens";
+
 
 type InitialsAvatarProps = {
   /** Full name or email — initials are derived from it. */
@@ -27,7 +27,7 @@ export function initialsFrom(nameOrEmail?: string | null): string {
 }
 
 /**
- * Circular avatar with the brand gradient behind white initials.
+ * Circular avatar: initials in paper on a block of ink.
  * Initials read as more distinctive than a stock placeholder photo.
  */
 export function InitialsAvatar({

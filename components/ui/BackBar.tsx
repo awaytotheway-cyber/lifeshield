@@ -1,8 +1,7 @@
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import * as Haptics from "expo-haptics";
-
-import { Colors, Spacing, Typography, tapTarget } from "@/lib/design-tokens";
+import { Accent, Measure, SpecimenType, tapTarget } from "@/lib/specimen-tokens";
 
 type BackBarProps = {
   onPress: () => void;
@@ -13,7 +12,7 @@ type BackBarProps = {
 
 /**
  * Lightweight back affordance for screens that are not fronted by a
- * GradientHero. Left-aligned chevron + label, full 44pt tap target.
+ * PageHead. Left-aligned chevron + label, full 44pt tap target.
  */
 export function BackBar({
   onPress,
@@ -36,7 +35,7 @@ export function BackBar({
         hitSlop={8}
         style={({ pressed }) => [styles.hit, pressed ? { opacity: 0.6 } : null]}
       >
-        <Feather name="chevron-left" size={22} color={Colors.orangeDark} />
+        <Icon name="chevron-left" size={22} color={Accent.tag} />
         <Text style={styles.label}>{label}</Text>
       </Pressable>
     </View>
@@ -47,18 +46,18 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: Spacing.sm,
+    marginBottom: Measure.tight,
   },
   hit: {
     minHeight: tapTarget,
     flexDirection: "row",
     alignItems: "center",
     gap: 2,
-    paddingRight: Spacing.md,
+    paddingRight: Measure.snug,
   },
   label: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.body,
-    color: Colors.orangeDark,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.body,
+    color: Accent.tag,
   },
 });

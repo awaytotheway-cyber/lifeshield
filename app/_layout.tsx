@@ -19,10 +19,9 @@ import {
 import { NotificationBootstrap } from "@/components/NotificationBootstrap";
 import { StripeRoot } from "@/components/StripeRoot";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
 import { SessionProvider } from "@/lib/session";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Ink, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 export { ExpoRouterErrorBoundary as ErrorBoundary };
 
@@ -33,15 +32,15 @@ function BrandSplash({ message }: { message: string }) {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.iceBlue,
+        backgroundColor: Paper.sheet,
       }}
     >
-      <ActivityIndicator color={colors.primaryBlue} />
+      <ActivityIndicator color={Accent.tag} />
       <Text
         style={{
           marginTop: 16,
-          color: colors.charcoal,
-          fontFamily: fontFamily.body,
+          color: Ink.full,
+          fontFamily: SpecimenType.mono,
           fontSize: 17,
         }}
       >

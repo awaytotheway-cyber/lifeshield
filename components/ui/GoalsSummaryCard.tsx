@@ -1,12 +1,11 @@
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import { goalDetailHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import {
   activeGoals,
   goalTypeLabel,
@@ -98,68 +97,67 @@ export function GoalsSummaryCard({ userId, maxRows = 2 }: GoalsSummaryCardProps)
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.base,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    marginTop: Measure.base,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: spacing.sm,
+    marginBottom: Measure.tight,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   link: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 15,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   empty: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
-    marginBottom: spacing.sm,
+    color: Ink.soft,
+    marginBottom: Measure.tight,
   },
   cta: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 16,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   row: {
-    marginTop: spacing.sm,
-    paddingTop: spacing.sm,
+    marginTop: Measure.tight,
+    paddingTop: Measure.tight,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: Ink.rule,
   },
   rowPressed: {
     opacity: 0.85,
   },
   type: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
     letterSpacing: 0.4,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
   },
   rowTitle: {
-    marginTop: spacing.micro,
-    marginBottom: spacing.micro,
-    fontFamily: fontFamily.bodySemi,
+    marginTop: Measure.hair,
+    marginBottom: Measure.hair,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   meta: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.hair,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
   },
 });

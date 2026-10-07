@@ -3,6 +3,10 @@ Pin to the exact versions in Section 2. Do NOT install "latest" of anything unle
 Never generate deprecated code. Specifically: use Expo Router (not React Navigation manually), use expo-secure-store current API, use the @supabase/supabase-js v2 client, use function components with hooks only (no class components), use TypeScript everywhere.
 Every async operation gets a try/catch and a user-visible fallback. No silent failures. No unhandled promise rejections. If a Supabase call fails, the user sees a friendly message and the app stays alive.
 Never let the app crash to a white/blank screen. Wrap the app in an Error Boundary. Every screen must render something even if data is missing.
+Design: read DESIGN.md before touching any UI. SPECIMEN (paper, ink, one
+accent) is the only design language in this repo; earlier teal/coral,
+glass and gradient notes describe a system that has been removed.
+
 No secrets in the app code. The Supabase anon key is fine (it's public by design with RLS). Nothing else. No service-role keys, ever.
 Explain like I don't code. When you finish a step, tell me in plain English what you did, what I need to do in the Supabase dashboard (if anything), and how I'd change it later. Keep code comments plentiful and beginner-friendly.
 When unsure, ask me one clear question rather than guessing. A wrong assumption that compiles is worse than a question.
@@ -33,7 +37,7 @@ State	zustand (latest for RN)	Simple global state, no boilerplate.
 Styling	nativewind v5 + tailwindcss	See Section 5 for the exact crash-proof setup — NativeWind misconfiguration is a known silent-failure trap.
 Forms	react-hook-form + zod + @hookform/resolvers	Validation without crashes.
 Secure storage	expo-secure-store	For the auth session.
-Icons	@expo/vector-icons (bundled)	Don't add a separate icon library.
+Icons	components/specimen/SpecimenIcon	Hand-drawn in-house. Do NOT add an icon library — draw the glyph.
 
 If any npx expo install reports a compatibility warning, STOP and show me the warning rather than forcing the install.
 
@@ -88,11 +92,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        sage: "#A8C5A0",
-        cream: "#FFF8F0",
-        teal: "#1A535C",
-        coral: "#FF6B6B",
-        charcoal: "#2D3436",
+        // The SPECIMEN palette. See DESIGN.md and lib/specimen-tokens.ts —
+        // those are authoritative; this block must match them.
+        paperSheet: "#f5f2eb",
+        paperMount: "#fcfbf7",
+        inkFull: "#1b1a17",
+        inkSoft: "#56524a",
+        rule: "#d8d2c4",
+        tag: "#a4341f",
+        sage: "#5f6b4c",
+        ochre: "#9a6b28",
       },
     },
   },
@@ -105,7 +114,7 @@ css
 @tailwind utilities;
 Import global.css at the very top of app/_layout.tsx.
 Configure metro.config.js and babel.config.js per the NativeWind v5 docs for the installed version. After config, ALWAYS restart with npx expo start --clear (cache clear) — stale Metro cache is why styles "don't work" even when config is right.
-Verification step (do not skip): before building real screens, put one <Text className="text-coral"> on screen and confirm it renders coral. If it doesn't, the problem is config/cache, not the code — fix it now, not later.
+Verification step (do not skip): before building real screens, put one <Text className="text-tag"> on screen and confirm it renders specimen red. If it doesn't, the problem is config/cache, not the code — fix it now, not later.
 6. SUPABASE — BACKEND A NON-CODER CAN MANAGE
 6.1 Why Supabase (so you understand what you own)
 
@@ -421,7 +430,7 @@ use `npx expo install` (not npm install) for Expo-managed packages.
 Start with Day 1 from Section 9:
 1. Confirm my Node version meets the SDK 57 minimum.
 2. Create the Expo project (Section 3) and install dependencies (Section 4).
-3. Set up NativeWind exactly per Section 5, including the coral-text
+3. Set up NativeWind exactly per Section 5, including the text-tag
    verification step — do not proceed until styles actually render.
 4. Build lib/supabase.ts, the Error Boundary, and the root _layout.tsx with
    an auth gate.

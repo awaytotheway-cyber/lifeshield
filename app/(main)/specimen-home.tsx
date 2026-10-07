@@ -1,3 +1,4 @@
+import type { IconName } from "@/components/specimen/Icon";
 import { Redirect, useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -19,6 +20,8 @@ import {
   SpecimenIcon,
   type SpecimenIconName,
 } from "@/components/specimen/SpecimenIcon";
+import { routes } from "@/lib/routes";
+import { useAuthStore } from "@/stores/auth-store";
 import {
   Accent,
   Ink,
@@ -28,8 +31,6 @@ import {
   SpecimenType,
   TRACK,
 } from "@/lib/specimen-tokens";
-import { routes } from "@/lib/routes";
-import { useAuthStore } from "@/stores/auth-store";
 
 /**
  * SPECIMEN — reference implementation of the design language on Home.

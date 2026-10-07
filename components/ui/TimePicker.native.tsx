@@ -1,3 +1,4 @@
+import { Accent } from "@/lib/specimen-tokens";
 import { useState } from "react";
 import DateTimePicker, {
   type DateTimePickerEvent,
@@ -40,27 +41,27 @@ export function TimePicker({
 
   return (
     <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
-      {hint ? <Text className="mt-1 text-sm text-charcoal">{hint}</Text> : null}
+      <Text className="text-inkFull">{label}</Text>
+      {hint ? <Text className="mt-1 text-sm text-inkFull">{hint}</Text> : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
         onPress={() => setOpen((current) => !current)}
-        className="mt-2 rounded-xl border border-sage bg-white px-4 py-3"
+        className="mt-2 rounded-xl border border-sage bg-paperMount px-4 py-3"
       >
-        <Text className="text-charcoal">
+        <Text className="text-inkFull">
           {isHHmm(value)
             ? `${value} (${formatDisplayDuration(value)})`
             : COPY.pickTime}
         </Text>
       </Pressable>
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-coral">
+        <Text className="mt-1 text-sm text-tag">
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
         </Text>
       ) : null}
       {open ? (
-        <View className="mt-2 items-center rounded-xl bg-white px-2 py-2">
+        <View className="mt-2 items-center rounded-xl bg-paperMount px-2 py-2">
           <DateTimePicker
             value={selected}
             mode="time"
@@ -69,7 +70,7 @@ export function TimePicker({
             minuteInterval={5}
             onChange={onPickerChange}
             themeVariant="light"
-            accentColor="#1A535C"
+            accentColor={Accent.tag}
           />
           {Platform.OS === "ios" ? (
             <Pressable
@@ -77,12 +78,12 @@ export function TimePicker({
               onPress={() => setOpen(false)}
               className="mt-2 items-center px-4 py-2"
             >
-              <Text className="text-teal">{COPY.pickerDone}</Text>
+              <Text className="text-tag">{COPY.pickerDone}</Text>
             </Pressable>
           ) : null}
         </View>
       ) : null}
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text className="mt-1 text-tag">{error}</Text> : null}
     </View>
   );
 }

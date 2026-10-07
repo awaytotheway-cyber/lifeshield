@@ -3,18 +3,17 @@ import { useState } from "react";
 import { Linking, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, DangerButton, TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextField } from "@/components/ui/TextField";
 import { COPY } from "@/lib/copy";
 import { requestAccountDeletion } from "@/lib/data-export";
-import { colors, spacing } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function DeleteAccountScreen() {
   const router = useRouter();
@@ -57,7 +56,7 @@ export default function DeleteAccountScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.privacyDeleteTitle}
         onBack={() => router.replace(routes.settingsPrivacy)}
@@ -66,7 +65,7 @@ export default function DeleteAccountScreen() {
       <Text style={styles.warning}>{COPY.privacyDeleteWarning}</Text>
 
       {done ? (
-        <GlassCard intensity="card" style={styles.card}>
+        <Sheet style={styles.card}>
           <Text style={styles.done}>{COPY.privacyDeleteSubmitted}</Text>
           <PrimaryButton
             title={COPY.signOut}
@@ -74,9 +73,9 @@ export default function DeleteAccountScreen() {
               void signOut();
             }}
           />
-        </GlassCard>
+        </Sheet>
       ) : (
-        <GlassCard intensity="card" style={styles.card}>
+        <Sheet style={styles.card}>
           <TextField
             label={COPY.privacyDeleteReason}
             value={reason}
@@ -108,7 +107,7 @@ export default function DeleteAccountScreen() {
               }}
             />
           </View>
-        </GlassCard>
+        </Sheet>
       )}
     </Screen>
   );
@@ -116,37 +115,37 @@ export default function DeleteAccountScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   warning: {
     marginTop: 12,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.coral,
+    color: Accent.tag,
   },
   card: {
-    marginTop: spacing.md,
-    padding: spacing.base,
+    marginTop: Measure.loose,
+    padding: Measure.base,
   },
   actions: {
-    marginTop: spacing.md,
+    marginTop: Measure.loose,
     gap: 8,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
   done: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
-    marginBottom: spacing.md,
+    color: Ink.full,
+    marginBottom: Measure.loose,
   },
 });

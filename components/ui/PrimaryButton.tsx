@@ -8,17 +8,8 @@ import {
   type ViewStyle,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import { Accent, Edge, Ink, Measure, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
 
-import {
-  Accent,
-  Edge,
-  Ink,
-  Measure,
-  Paper,
-  Rule,
-  SpecimenType,
-  TRACK,
-} from "@/lib/specimen-tokens";
 
 type PrimaryButtonProps = {
   label: string;
@@ -65,7 +56,7 @@ export function PrimaryButton({
 
   const outline = tone === "outline";
   const base = tone === "tag" ? Accent.tag : Ink.full;
-  const pressedFill = tone === "tag" ? "#8C2C1A" : "#36332D";
+  const pressedFill = tone === "tag" ? Accent.tagPressed : Ink.pressed;
 
   return (
     <Pressable

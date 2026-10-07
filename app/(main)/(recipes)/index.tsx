@@ -9,7 +9,6 @@ import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextInput } from "@/components/ui/TextInput";
 import { TextButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   loadRecipes,
   loadSavedRecipeIds,
@@ -17,8 +16,8 @@ import {
   type RecipeRow,
 } from "@/lib/recipes";
 import { recipeDetailHref, routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type Filter = "all" | "quick" | "medium";
 
@@ -59,7 +58,7 @@ export default function RecipesListScreen() {
   if (!session) return <Redirect href={routes.login} />;
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.recipesTitle}
         onBack={() => router.replace(routes.home)}
@@ -67,7 +66,7 @@ export default function RecipesListScreen() {
       />
       <Text style={styles.body}>{COPY.recipesSubtitle}</Text>
 
-      <View style={{ marginTop: spacing.sm }}>
+      <View style={{ marginTop: Measure.tight }}>
         <TextInput
           label="Search"
           placeholder={COPY.recipesSearchPlaceholder}
@@ -144,72 +143,71 @@ export default function RecipesListScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   chips: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.base,
+    marginTop: Measure.tight,
+    marginBottom: Measure.base,
     flexDirection: "row",
     gap: 8,
   },
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: radius.chip,
-    backgroundColor: colors.white,
+    borderRadius: Edge.tag,
+    backgroundColor: Paper.mount,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: Ink.rule,
   },
-  chipOn: { backgroundColor: colors.primaryBlue, borderColor: colors.primaryBlue },
-  chipText: { fontFamily: fontFamily.bodySemi, fontSize: 15, color: colors.charcoal },
-  chipTextOn: { color: colors.white },
+  chipOn: { backgroundColor: Accent.tag, borderColor: Accent.tag },
+  chipText: { fontFamily: SpecimenType.monoBold, fontSize: 15, color: Ink.full },
+  chipTextOn: { color: Paper.mount },
   card: {
-    marginBottom: spacing.sm,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    marginBottom: Measure.tight,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
   },
   cardPressed: { opacity: 0.85 },
   name: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 19,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   meta: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.slate,
+    color: Ink.soft,
   },
   rowMeta: {
-    marginTop: spacing.sm,
+    marginTop: Measure.tight,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   metaLight: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.mist,
+    color: Ink.faint,
   },
   savedBadge: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 14,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   tags: {
-    marginTop: spacing.micro,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.hair,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.mist,
+    color: Ink.faint,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

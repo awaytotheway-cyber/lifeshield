@@ -1,22 +1,21 @@
 import { Redirect, useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon, type IconName } from "@/components/specimen/Icon";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { COPY } from "@/lib/copy";
-import { colors, spacing, tapTarget } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType, tapTarget } from "@/lib/specimen-tokens";
 
 type LinkRow = {
   title: string;
   subtitle?: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   href: typeof routes.settingsNotifications | typeof routes.profile | typeof routes.settingsPrivacy | typeof routes.settingsHelp | typeof routes.settingsAbout | typeof routes.appointments | typeof routes.prescriptions | typeof routes.notificationsInbox | typeof routes.plan | typeof routes.labResults | typeof routes.store;
 };
 
@@ -65,7 +64,7 @@ export default function SettingsIndex() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <View style={styles.top}>
         <MenuButton accessibilityLabel={COPY.settingsOpenMenu} />
         <Text style={styles.title} accessibilityRole="header">
@@ -77,7 +76,7 @@ export default function SettingsIndex() {
         <TrustBanner />
       </View>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Sheet style={styles.card}>
         {LINKS.map((link) => (
           <Pressable
             key={link.title}
@@ -86,12 +85,12 @@ export default function SettingsIndex() {
             onPress={() => router.push(link.href)}
             style={styles.row}
           >
-            <Feather name={link.icon} size={20} color={colors.primaryBlue} />
+            <Icon name={link.icon} size={20} color={Accent.tag} />
             <Text style={styles.rowLabel}>{link.title}</Text>
-            <Feather name="chevron-right" size={20} color={colors.mist} />
+            <Icon name="chevron-right" size={20} color={Ink.faint} />
           </Pressable>
         ))}
-      </GlassCard>
+      </Sheet>
     </Screen>
   );
 }
@@ -104,39 +103,39 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 34,
     lineHeight: 40,
     letterSpacing: -0.6,
-    color: colors.deepTeal,
+    color: Accent.tag,
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   banner: {
-    marginTop: spacing.md,
+    marginTop: Measure.loose,
   },
   card: {
-    marginTop: spacing.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
+    marginTop: Measure.loose,
+    paddingVertical: Measure.tight,
+    paddingHorizontal: Measure.tight,
   },
   row: {
     minHeight: tapTarget,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: Measure.tight,
     paddingVertical: 10,
   },
   rowLabel: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

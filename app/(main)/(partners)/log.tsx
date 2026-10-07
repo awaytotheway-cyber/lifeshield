@@ -8,11 +8,10 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { logActivity, type ActivityType } from "@/lib/partners";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 const TYPE_OPTIONS = [
   { value: "walk", label: "Walk" },
@@ -63,14 +62,14 @@ export default function LogActivityScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.partnersLogActivityCta}
         onBack={() => router.back()}
         backLabel={COPY.partnersTitle}
       />
 
-      <View style={{ marginTop: spacing.base }}>
+      <View style={{ marginTop: Measure.base }}>
         <ChoiceToggle
           label={COPY.activityFormType}
           options={TYPE_OPTIONS}
@@ -80,7 +79,7 @@ export default function LogActivityScreen() {
         />
       </View>
 
-      <View style={{ marginTop: spacing.base }}>
+      <View style={{ marginTop: Measure.base }}>
         <TextInput
           label={COPY.activityFormMinutes}
           value={minutes}
@@ -90,7 +89,7 @@ export default function LogActivityScreen() {
         />
       </View>
 
-      <View style={{ marginTop: spacing.base }}>
+      <View style={{ marginTop: Measure.base }}>
         <ChoiceToggle
           label={COPY.activityFormIntensity}
           options={INTENSITY_OPTIONS}
@@ -100,7 +99,7 @@ export default function LogActivityScreen() {
         />
       </View>
 
-      <View style={{ marginTop: spacing.base }}>
+      <View style={{ marginTop: Measure.base }}>
         <TextInput
           label={COPY.activityFormNote}
           value={note}
@@ -113,7 +112,7 @@ export default function LogActivityScreen() {
 
       {message ? <Text style={styles.error}>{message}</Text> : null}
 
-      <View style={{ marginTop: spacing.md }}>
+      <View style={{ marginTop: Measure.loose }}>
         <PrimaryButton title={COPY.activityFormSave} loading={busy} onPress={save} />
         <TextButton title="Cancel" onPress={() => router.back()} />
       </View>
@@ -123,8 +122,8 @@ export default function LogActivityScreen() {
 
 const styles = StyleSheet.create({
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

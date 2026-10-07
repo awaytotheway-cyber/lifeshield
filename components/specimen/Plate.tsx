@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
 import { Image } from "expo-image";
-
 import {
   Edge,
   Ink,
@@ -11,6 +10,7 @@ import {
   TRACK,
   type PlateKey,
 } from "@/lib/specimen-tokens";
+
 
 type PlateProps = {
   plate: PlateKey;

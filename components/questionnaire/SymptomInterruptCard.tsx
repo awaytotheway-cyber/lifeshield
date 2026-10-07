@@ -1,9 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
 import { RadioGroup } from "@/components/ui/RadioGroup";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 type SymptomInterruptCardProps = {
   question: string;
@@ -13,7 +12,7 @@ type SymptomInterruptCardProps = {
 };
 
 /**
- * Mid-questionnaire safety gate look: coral callout, not a red panic screen.
+ * Mid-questionnaire safety gate: a tagged callout, not a red panic screen.
  */
 export function SymptomInterruptCard({
   question,
@@ -24,7 +23,7 @@ export function SymptomInterruptCard({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.coral} />
+        <Icon name="alert-triangle" size={20} color={Accent.tag} />
         <Text style={styles.title}>One important question</Text>
       </View>
       <Text style={styles.body}>{question}</Text>
@@ -46,11 +45,11 @@ export function SymptomInterruptCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.coralLight,
-    borderRadius: radius.alert,
+    backgroundColor: Accent.tagWash,
+    borderRadius: Edge.hair,
     borderLeftWidth: 2,
-    borderLeftColor: colors.coral,
-    padding: spacing.base,
+    borderLeftColor: Accent.tag,
+    padding: Measure.base,
   },
   header: {
     flexDirection: "row",
@@ -59,15 +58,15 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
-    color: colors.coral,
+    color: Accent.tag,
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

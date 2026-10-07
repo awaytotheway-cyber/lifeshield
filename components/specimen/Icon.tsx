@@ -1,4 +1,5 @@
-import { Feather as RawFeather } from "@expo/vector-icons";
+import type { StyleProp, ViewStyle } from "react-native";
+import { View } from "react-native";
 
 import {
   SpecimenIcon,
@@ -7,25 +8,26 @@ import {
 import { Ink } from "@/lib/specimen-tokens";
 
 /**
- * Drop-in replacement for `<Feather />` backed by PRESCOPE's own glyphs.
+ * The app's icon lookup — every name resolves to a PRESCOPE glyph.
  *
- * Screens across the app were written against Feather names. Rather
- * than rewrite 30 call sites, this shim keeps the same API and maps the
- * names we have drawn ourselves onto SpecimenIcon. Anything not yet in
- * the house set falls through to real Feather, so nothing breaks — the
- * fallback list is the to-draw queue.
+ * Screens refer to icons by a stable semantic name. There is no vendor
+ * icon set behind this any more and no fallthrough: if a name is not
+ * drawn, that is a compile error rather than a Feather glyph quietly
+ * appearing in the middle of a hand-drawn set.
  */
 
-const MAP: Record<string, SpecimenIconName> = {
+const MAP = {
   // Navigation
   home: "sheet",
   map: "survey",
   compass: "compass",
   menu: "index",
   list: "slip",
+  grid: "compass",
   "chevron-left": "chevronLeft",
   "chevron-right": "chevronRight",
   "chevron-down": "chevronDown",
+  "chevron-up": "chevronUp",
   "arrow-left": "chevronLeft",
   "arrow-right": "chevronRight",
 
@@ -33,10 +35,26 @@ const MAP: Record<string, SpecimenIconName> = {
   check: "check",
   "check-circle": "check",
   plus: "plus",
+  minus: "minus",
+  x: "cross",
   search: "lens",
   bell: "bell",
   lock: "lock",
   shield: "lock",
+  camera: "camera",
+  "edit-3": "nib",
+  "edit-2": "nib",
+  edit: "nib",
+  settings: "dial",
+  star: "star",
+  flag: "tag",
+
+  // Notices
+  info: "note",
+  "help-circle": "query",
+  help: "query",
+  "alert-triangle": "caution",
+  "alert-circle": "caution",
 
   // Domain
   activity: "vial",
@@ -55,40 +73,31 @@ const MAP: Record<string, SpecimenIconName> = {
   package: "tag",
   tag: "tag",
   "shopping-bag": "tag",
-  grid: "compass",
   "toggle-right": "key",
   key: "key",
   sun: "seedling",
   feather: "seedling",
-};
+  cpu: "press",
+  circle: "ring",
+  "play-circle": "advance",
+  "more-horizontal": "ellipsis",
+  inbox: "tray",
+  "message-circle": "letter",
+  "refresh-cw": "recur",
+  eye: "eye",
+  "eye-off": "eyeShut",
+} as const satisfies Record<string, SpecimenIconName>;
 
-type FeatherShimProps = {
-  name: string;
+export type IconName = keyof typeof MAP;
+
+type IconProps = {
+  name: IconName;
   size?: number;
   color?: string;
-  style?: unknown;
+  style?: StyleProp<ViewStyle>;
 };
 
-export function Feather({
-  name,
-  size = 24,
-  color = Ink.full,
-  style,
-}: FeatherShimProps) {
-  const mapped = MAP[name];
-  if (mapped) {
-    return <SpecimenIcon name={mapped} size={size} color={color} />;
-  }
-  // Not drawn yet — fall through so the screen still renders.
-  return (
-    <RawFeather
-      name={name as never}
-      size={size}
-      color={color}
-      style={style as never}
-    />
-  );
+export function Icon({ name, size = 24, color = Ink.full, style }: IconProps) {
+  const glyph = <SpecimenIcon name={MAP[name]} size={size} color={color} />;
+  return style ? <View style={style}>{glyph}</View> : glyph;
 }
-
-/** Keep the namespace shape so `keyof typeof Feather.glyphMap` still types. */
-Feather.glyphMap = RawFeather.glyphMap;

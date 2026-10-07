@@ -8,11 +8,11 @@ import {
   UIManager,
   View,
 } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { Colors, Radii, Spacing, Typography } from "@/lib/design-tokens";
+import { Accent, Edge, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 if (
   Platform.OS === "android" &&
@@ -39,12 +39,12 @@ type InterventionCardProps = {
   status: Extract<StatusChipKind, "approved" | "draft" | "critical">;
   statusLabel: string;
   onPress?: () => void;
-  /** Flagged items render on the tint surface instead of white glass. */
+  /** Flagged items render on the tint surface instead of a plain mount. */
   flagged?: boolean;
 };
 
 /**
- * Plan item card — PRESCOPE v2.
+ * Plan item card.
  *
  * "Clinical basis" expands inline with LayoutAnimation rather than
  * pushing a new screen; keeping the reader in place is what makes the
@@ -77,13 +77,13 @@ export function InterventionCard({
       disabled={!onPress}
       style={({ pressed }) => (pressed && onPress ? { opacity: 0.92 } : null)}
     >
-      <GlassCard
-        variant={flagged ? "tint" : "onWhite"}
-        radius={Radii.card}
-        padding={Spacing.card}
+      <Sheet
+        variant={flagged ? "tint" : "mount"}
+        radius={Edge.mount}
+        padding={Measure.base}
       >
         <View style={styles.top}>
-          <Feather name={icon} size={20} color={Colors.orangeDark} />
+          <Icon name={icon} size={20} color={Accent.tag} />
           <View style={styles.topText}>
             <Text style={styles.title}>{title}</Text>
             <StatusChip kind={status} label={statusLabel} />
@@ -103,10 +103,10 @@ export function InterventionCard({
             onPress={toggle}
             style={styles.expand}
           >
-            <Feather
+            <Icon
               name={open ? "chevron-down" : "chevron-right"}
               size={14}
-              color={Colors.orangeDark}
+              color={Accent.tag}
             />
             <Text style={styles.expandLabel}>Clinical basis</Text>
           </Pressable>
@@ -115,7 +115,7 @@ export function InterventionCard({
         {open && clinicalBasis ? (
           <Text style={styles.basis}>{clinicalBasis}</Text>
         ) : null}
-      </GlassCard>
+      </Sheet>
     </Pressable>
   );
 }
@@ -123,49 +123,49 @@ export function InterventionCard({
 const styles = StyleSheet.create({
   top: {
     flexDirection: "row",
-    gap: Spacing.md,
+    gap: Measure.snug,
   },
   topText: {
     flex: 1,
-    gap: Spacing.sm,
+    gap: Measure.tight,
     alignItems: "flex-start",
   },
   title: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.bodyLarge,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.bodyLarge,
     lineHeight: 23,
-    color: Colors.charcoal,
+    color: Ink.full,
   },
   whyLabel: {
-    marginTop: Spacing.md,
-    fontFamily: Typography.medium,
-    fontSize: Typography.micro,
+    marginTop: Measure.snug,
+    fontFamily: SpecimenType.medium,
+    fontSize: SpecimenType.micro,
     letterSpacing: 0.6,
-    color: Colors.mutedText,
+    color: Ink.faint,
   },
   why: {
-    marginTop: Spacing.xs,
-    fontFamily: Typography.regular,
+    marginTop: Measure.hair,
+    fontFamily: SpecimenType.regular,
     fontSize: 16,
     lineHeight: 24,
-    color: Colors.bodyText,
+    color: Ink.soft,
   },
   expand: {
-    marginTop: Spacing.md,
+    marginTop: Measure.snug,
     minHeight: 44,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
   expandLabel: {
-    fontFamily: Typography.semibold,
+    fontFamily: SpecimenType.semibold,
     fontSize: 16,
-    color: Colors.orangeDark,
+    color: Accent.tag,
   },
   basis: {
-    fontFamily: Typography.regular,
-    fontSize: Typography.secondary,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.secondary,
     lineHeight: 21,
-    color: Colors.bodyText,
+    color: Ink.soft,
   },
 });

@@ -6,8 +6,9 @@
 
 @config "./tailwind.config.js";
 
-/* PRESCOPE — SPECIMEN. Paper and ink.
-   Must match tailwind.config.js and lib/specimen-tokens.ts. */
+/* PRESCOPE — SPECIMEN. Paper, ink, and one accent.
+   The only colour vocabulary in the app. Must match
+   tailwind.config.js and lib/specimen-tokens.ts. */
 @theme {
   --color-paperSheet: #f5f2eb;
   --color-paperMount: #fcfbf7;
@@ -25,42 +26,4 @@
   --color-sageWash: #e7eade;
   --color-ochre: #9a6b28;
   --color-ochreWash: #f4ebda;
-  --color-primaryBlue: #a4341f;
-  --color-deepNavy: #1b1a17;
-  --color-skyBlue: #a4341f;
-  --color-iceBlue: #f5f2eb;
-  --color-deepTeal: #a4341f;
-  --color-midTeal: #a4341f;
-  --color-lightTeal: #f3e4e0;
-  --color-teal: #a4341f;
-  --color-sageLight: #e7eade;
-  --color-coral: #a4341f;
-  --color-coralLight: #f3e4e0;
-  --color-amber: #9a6b28;
-  --color-amberLight: #f4ebda;
-  --color-cream: #f5f2eb;
-  --color-white: #fcfbf7;
-  --color-slate: #56524a;
-  --color-mist: #8c8678;
-  --color-border: #d8d2c4;
-  --color-charcoal: #1b1a17;
-  --color-orangeDark: #a4341f;
-  --color-orangeBright: #a4341f;
-  --color-orangeLight: #a4341f;
-  --color-softWhite: #f5f2eb;
-  --color-pureWhite: #fcfbf7;
-  --color-orangeTint: #f3e4e0;
-  --color-orangeTintDeep: #eae5d8;
-  --color-darkText: #1b1a17;
-  --color-bodyText: #56524a;
-  --color-mutedText: #8c8678;
-  --color-placeholderText: #b4ae9f;
-  --color-borderLight: #d8d2c4;
-  --color-borderMedium: #bdb5a2;
-  --color-successGreen: #5f6b4c;
-  --color-warningAmber: #9a6b28;
-  --color-dangerRed: #a4341f;
-  --color-riskLow: #5f6b4c;
-  --color-riskModerate: #9a6b28;
-  --color-riskHigh: #a4341f;
 }

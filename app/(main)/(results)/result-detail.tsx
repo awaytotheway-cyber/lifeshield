@@ -18,6 +18,7 @@ import {
 } from "@/lib/test-results";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent } from "@/lib/specimen-tokens";
 
 export default function ResultDetailScreen() {
   const router = useRouter();
@@ -89,17 +90,17 @@ export default function ResultDetailScreen() {
   return (
     <Screen scroll>
       <BackBar onPress={() => router.back()} label="Results" />
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-inkFull">
         {COPY.labResultDetailTitle}
       </Text>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <ActivityIndicator className="mt-6" color={Accent.tag} />
       ) : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-tag">{message}</Text>
           <Button
             title={COPY.labResultsRetry}
             variant="ghost"
@@ -120,27 +121,27 @@ export default function ResultDetailScreen() {
             plainName={row.plain_name ?? undefined}
           />
 
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
-            <Text className="text-sm text-teal">{COPY.labResultValueLabel}</Text>
-            <Text className="mt-1 text-charcoal">
+          <View className="mt-4 rounded-xl bg-paperMount px-4 py-4">
+            <Text className="text-sm text-tag">{COPY.labResultValueLabel}</Text>
+            <Text className="mt-1 text-inkFull">
               {valueBits.length > 0
                 ? valueBits.join(" ")
                 : COPY.labResultNoValue}
             </Text>
-            <Text className="mt-4 text-sm text-teal">
+            <Text className="mt-4 text-sm text-tag">
               {COPY.labResultRangeLabel}
             </Text>
-            <Text className="mt-1 text-charcoal">
+            <Text className="mt-1 text-inkFull">
               {row.reference_range?.trim()
                 ? row.reference_range
                 : COPY.labResultNoRange}
             </Text>
           </View>
 
-          <Text className="mt-4 text-center text-charcoal">
+          <Text className="mt-4 text-center text-inkFull">
             {meaningForFlag(row.flag)}
           </Text>
-          <Text className="mt-3 text-center text-sm text-teal">
+          <Text className="mt-3 text-center text-sm text-tag">
             {COPY.labResultNotDiagnosis}
           </Text>
 
@@ -162,7 +163,7 @@ export default function ResultDetailScreen() {
           ) : null}
 
           {pdfMessage ? (
-            <Text className="mt-2 text-center text-coral">{pdfMessage}</Text>
+            <Text className="mt-2 text-center text-tag">{pdfMessage}</Text>
           ) : null}
         </>
       ) : null}

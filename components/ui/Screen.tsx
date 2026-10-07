@@ -7,8 +7,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { Ink, Measure, Paper, Rule } from "@/lib/specimen-tokens";
+
 
 type ScreenProps = {
   children: ReactNode;
@@ -26,9 +26,9 @@ type ScreenProps = {
 /**
  * The page — SPECIMEN.
  *
- * Flat laboratory paper. The gradient wash and blurred blobs are gone:
+ * Flat laboratory paper:
  * in this system depth comes from hairline rules and generous space,
- * never from atmosphere behind a glass panel.
+ * never from atmosphere behind a panel.
  */
 export function Screen({
   children,

@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily, typography } from "@/lib/typography";
+import { Sheet } from "@/components/specimen/Sheet";
+import { Accent, Ink, Measure, SpecimenType, TypeStyle } from "@/lib/specimen-tokens";
 
 export type MilestoneStat = {
   id: string;
@@ -19,7 +18,7 @@ type MilestoneStatStripProps = {
  */
 export function MilestoneStatStrip({ stats }: MilestoneStatStripProps) {
   return (
-    <GlassCard intensity="card" style={styles.card}>
+    <Sheet style={styles.card}>
       <View style={styles.row}>
         {stats.map((stat, index) => (
           <View
@@ -31,14 +30,14 @@ export function MilestoneStatStrip({ stats }: MilestoneStatStripProps) {
           </View>
         ))}
       </View>
-    </GlassCard>
+    </Sheet>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    paddingVertical: spacing.base,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: Measure.base,
+    paddingHorizontal: Measure.tight,
   },
   row: {
     flexDirection: "row",
@@ -47,22 +46,22 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     alignItems: "center",
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: Measure.tight,
   },
   cellBorder: {
     borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: colors.border,
+    borderRightColor: Ink.rule,
   },
   value: {
-    ...typography.heroStat,
-    color: colors.primaryBlue,
+    ...TypeStyle.readingLarge,
+    color: Accent.tag,
   },
   label: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "center",
   },
 });

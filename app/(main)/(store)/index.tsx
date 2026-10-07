@@ -12,7 +12,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { hrefForConsent } from "@/lib/consent-flow";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import {
   canPurchase,
   consentTypeForProduct,
@@ -27,9 +26,9 @@ import {
   type ProductRow,
 } from "@/lib/store";
 import { loadUserContext } from "@/lib/user-context";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 /**
  * Store — checkpoint 1 of 3 for canPurchase() (add-to-cart).
@@ -180,7 +179,7 @@ export default function StoreScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX} centered={false}>
+    <Screen contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.storeTitle}
         onBack={() => router.replace(routes.home)}
@@ -316,33 +315,33 @@ export default function StoreScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
     textAlign: "center",
     marginBottom: 8,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
     textAlign: "center",
   },
   ok: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.sage,
+    color: Accent.sage,
     textAlign: "center",
   },
   group: {
     marginTop: 16,
     marginBottom: 8,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 20,
-    color: colors.deepTeal,
+    color: Accent.tag,
   },
   recGap: {
     marginBottom: 12,
@@ -363,22 +362,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: colors.white,
+    backgroundColor: Paper.mount,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: Ink.rule,
   },
   chipOn: {
-    backgroundColor: colors.primaryBlue,
-    borderColor: colors.primaryBlue,
+    backgroundColor: Accent.tag,
+    borderColor: Accent.tag,
   },
   chipText: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 14,
-    color: colors.charcoal,
+    color: Ink.full,
     textTransform: "capitalize",
   },
   chipTextOn: {
-    color: colors.white,
+    color: Paper.mount,
   },
   columns: {
     gap: 8,

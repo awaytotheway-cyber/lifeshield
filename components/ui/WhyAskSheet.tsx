@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Sheet } from "@/components/specimen/Sheet";
 import { COPY } from "@/lib/copy";
-import { colors, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Ink, SpecimenType, tapTarget } from "@/lib/specimen-tokens";
 
 type WhyAskButtonProps = {
   explanation: string;
   accessibilityLabel?: string;
 };
 
-/** Feather info icon that opens a one-paragraph “why we ask” sheet. */
+/** Info mark that opens a one-paragraph “why we ask” sheet. */
 export function WhyAskButton({
   explanation,
   accessibilityLabel = COPY.whyWeAsk,
@@ -29,7 +28,7 @@ export function WhyAskButton({
         onPress={() => setOpen(true)}
         style={styles.infoHit}
       >
-        <Feather name="info" size={16} color={colors.orangeDark} />
+        <Icon name="info" size={16} color={Accent.tag} />
       </Pressable>
       <Modal
         visible={open}
@@ -39,7 +38,7 @@ export function WhyAskButton({
       >
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
           <Pressable onPress={() => undefined}>
-            <GlassSurface intensity="sheet" style={styles.sheet}>
+            <Sheet variant="sheet" style={styles.sheet}>
             <SafeAreaView edges={["bottom"]}>
               <Text style={styles.title}>{COPY.whyWeAsk}</Text>
               <Text style={styles.body}>{explanation}</Text>
@@ -52,7 +51,7 @@ export function WhyAskButton({
                 <Text style={styles.closeText}>{COPY.whyWeAskClose}</Text>
               </Pressable>
             </SafeAreaView>
-            </GlassSurface>
+            </Sheet>
           </Pressable>
         </Pressable>
       </Modal>
@@ -88,30 +87,30 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.2,
-    color: colors.slate,
+    color: Ink.soft,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: Ink.scrim,
   },
   sheet: {
     padding: 20,
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
-    color: colors.deepTeal,
+    color: Accent.tag,
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   closeHit: {
     minHeight: tapTarget,
@@ -120,8 +119,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeText: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.midTeal,
+    color: Accent.tag,
   },
 });

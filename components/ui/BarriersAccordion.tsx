@@ -1,12 +1,11 @@
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { TextInput } from "@/components/ui/TextInput";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
 import {
   BARRIER_TYPE_ORDER,
   barrierTypeLabel,
@@ -132,10 +131,10 @@ export function BarriersAccordion({ userId, category, sourceType, sourceId }: Pr
                         </Text>
                       ) : null}
                     </View>
-                    <Feather
+                    <Icon
                       name={open ? "chevron-up" : "chevron-down"}
                       size={20}
-                      color={colors.primaryBlue}
+                      color={Accent.tag}
                     />
                   </Pressable>
 
@@ -289,7 +288,7 @@ function FeedbackPrompt({
         ))}
       </View>
 
-      <View style={{ marginTop: spacing.sm }}>
+      <View style={{ marginTop: Measure.tight }}>
         <TextInput
           label={COPY.barriersFeedbackNoteLabel}
           placeholder={COPY.barriersFeedbackNotePlaceholder}
@@ -302,7 +301,7 @@ function FeedbackPrompt({
 
       {message ? <Text style={fbStyles.error}>{message}</Text> : null}
 
-      <View style={{ marginTop: spacing.sm }}>
+      <View style={{ marginTop: Measure.tight }}>
         <PrimaryButton
           title={COPY.barriersFeedbackSave}
           loading={busy}
@@ -315,113 +314,112 @@ function FeedbackPrompt({
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.md,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
+    marginTop: Measure.loose,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
+    padding: Measure.base,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   group: {
-    marginTop: spacing.base,
+    marginTop: Measure.base,
   },
   groupTitle: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.4,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
-    marginBottom: spacing.sm,
+    marginBottom: Measure.tight,
   },
   item: {
-    marginBottom: spacing.sm,
+    marginBottom: Measure.tight,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.alert,
+    borderColor: Ink.rule,
+    borderRadius: Edge.hair,
     overflow: "hidden",
   },
   itemHeader: {
     paddingVertical: 12,
-    paddingHorizontal: spacing.base,
+    paddingHorizontal: Measure.base,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.iceBlue,
+    backgroundColor: Paper.sheet,
   },
   itemTitle: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   tryingBadge: {
     marginTop: 2,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
     letterSpacing: 0.3,
-    color: colors.primaryBlue,
+    color: Accent.tag,
     textTransform: "uppercase",
   },
   itemBody: {
-    padding: spacing.base,
-    backgroundColor: colors.white,
-    gap: spacing.sm,
+    padding: Measure.base,
+    backgroundColor: Paper.mount,
+    gap: Measure.tight,
   },
   strategy: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   subLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
     letterSpacing: 0.4,
     textTransform: "uppercase",
   },
   subText: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });
 
 const fbStyles = StyleSheet.create({
   wrap: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    borderRadius: radius.alert,
-    backgroundColor: colors.riskLowLight,
-    gap: spacing.sm,
+    marginTop: Measure.base,
+    padding: Measure.base,
+    borderRadius: Edge.hair,
+    backgroundColor: Accent.sageWash,
+    gap: Measure.tight,
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   body: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   row: {
     flexDirection: "row",
@@ -431,44 +429,44 @@ const fbStyles = StyleSheet.create({
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: radius.chip,
-    backgroundColor: colors.white,
+    borderRadius: Edge.tag,
+    backgroundColor: Paper.mount,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: Ink.rule,
   },
   numChip: {
     minWidth: 40,
     alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 8,
-    borderRadius: radius.chip,
-    backgroundColor: colors.white,
+    borderRadius: Edge.tag,
+    backgroundColor: Paper.mount,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: Ink.rule,
   },
   chipSelected: {
-    backgroundColor: colors.primaryBlue,
-    borderColor: colors.primaryBlue,
+    backgroundColor: Accent.tag,
+    borderColor: Accent.tag,
   },
   chipText: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 15,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   chipTextSelected: {
-    color: colors.white,
+    color: Paper.mount,
   },
   likelihoodLabel: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
     letterSpacing: 0.3,
     textTransform: "uppercase",
   },
   error: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

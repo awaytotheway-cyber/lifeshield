@@ -1,6 +1,7 @@
+import type { IconName } from "@/components/specimen/Icon";
 import Svg, { Circle, G, Line, Path, Rect } from "react-native-svg";
-
 import { Ink } from "@/lib/specimen-tokens";
+
 
 /**
  * PRESCOPE's own iconography — drawn for this app, not imported.
@@ -11,7 +12,7 @@ import { Ink } from "@/lib/specimen-tokens";
  *  · Round caps and joins — an engraver's burin, not a geometric grid
  *  · Botanical and laboratory motifs in preference to generic UI symbols
  *
- * Deliberately NOT a Feather/Material clone: the recognisable silhouettes
+ * Deliberately not a stock icon set: the recognisable silhouettes
  * here are a leaf-sheet, a specimen vial, a survey line, a pressed seed.
  */
 
@@ -37,7 +38,26 @@ export type SpecimenIconName =
   | "check"
   | "plus"
   | "bell"
-  | "lock";
+  | "lock"
+  | "chevronUp"
+  | "minus"
+  | "cross"        // dismiss — a cancellation cross, struck by hand
+  | "caution"      // a field warning triangle
+  | "note"         // an annotation mark — "see note"
+  | "query"        // an unanswered query on a label
+  | "star"         // a collector's star — a noted specimen
+  | "camera"       // plate camera
+  | "nib"          // edit — a pen nib
+  | "dial"         // settings — an instrument dial
+  | "press"        // apparatus — a specimen press
+  | "ring"         // a blank registration mark
+  | "advance"      // begin / play — a mark set in motion
+  | "ellipsis"     // more — a continuation mark
+  | "tray"         // empty state — an empty specimen tray
+  | "letter"       // message — a correspondence card
+  | "recur"        // repeat / retest — a return cycle
+  | "eye"          // reveal
+  | "eyeShut";     // conceal
 
 type SpecimenIconProps = {
   name: SpecimenIconName;
@@ -268,6 +288,157 @@ const GLYPHS: Record<
       <Rect x="4.8" y="10.6" width="14.4" height="10" rx="0.8" {...s} />
       <Path d="M8.4 10.6 V7.8 a3.6 3.6 0 0 1 7.2 0 v2.8" {...s} />
       <Path d="M12 14.4 v2.6" {...s} strokeWidth={s.strokeWidth * 1.1} />
+    </G>
+  ),
+
+  chevronUp: (s) => <Path d="M6.4 14.8 L12 9.2 17.6 14.8" {...s} />,
+
+  minus: (s) => (
+    <Path d="M4.6 12 h14.8" {...s} strokeWidth={s.strokeWidth * 1.25} />
+  ),
+
+  // Struck through by hand, the way a label is cancelled.
+  cross: (s) => (
+    <G>
+      <Path d="M6.2 6.2 L17.8 17.8" {...s} strokeWidth={s.strokeWidth * 1.25} />
+      <Path d="M17.8 6.2 L6.2 17.8" {...s} strokeWidth={s.strokeWidth * 1.25} />
+    </G>
+  ),
+
+  // A surveyor's warning triangle, set on its base.
+  caution: (s, color) => (
+    <G>
+      <Path d="M12 3.6 L21.4 19.8 H2.6Z" {...s} />
+      <Path d="M12 9.6 v4.4" {...s} strokeWidth={s.strokeWidth * 1.15} />
+      <Circle cx="12" cy="16.8" r="1" fill={color} stroke="none" />
+    </G>
+  ),
+
+  // An annotation mark: the note indicator on a printed label.
+  note: (s, color) => (
+    <G>
+      <Circle cx="12" cy="12" r="9" {...s} />
+      <Path d="M12 11 v5.4" {...s} strokeWidth={s.strokeWidth * 1.1} />
+      <Circle cx="12" cy="7.9" r="1" fill={color} stroke="none" />
+    </G>
+  ),
+
+  // An open query against an entry.
+  query: (s, color) => (
+    <G>
+      <Circle cx="12" cy="12" r="9" {...s} />
+      <Path d="M9.4 9.4 a2.7 2.7 0 0 1 5.3 0.7 c0 1.8 -2.7 2 -2.7 4" {...s} />
+      <Circle cx="12" cy="17.1" r="1" fill={color} stroke="none" />
+    </G>
+  ),
+
+  // A collector's star — marks a specimen worth returning to.
+  star: (s, color) => (
+    <Path
+      d="M12 3.4 L14.5 9.3 20.9 9.9 16.1 14.2 17.5 20.4 12 17.1 6.5 20.4 7.9 14.2 3.1 9.9 9.5 9.3Z"
+      {...s}
+      fill={color}
+      fillOpacity={0.14}
+    />
+  ),
+
+  // A plate camera with its bellows front.
+  camera: (s) => (
+    <G>
+      <Path d="M3.2 8.4 h3.4 l1.6 -2.2 h7.6 l1.6 2.2 h3.4 a0.8 0.8 0 0 1 0.8 0.8 v9 a0.8 0.8 0 0 1 -0.8 0.8 H3.2 a0.8 0.8 0 0 1 -0.8 -0.8 v-9 a0.8 0.8 0 0 1 0.8 -0.8Z" {...s} />
+      <Circle cx="12" cy="13.6" r="3.6" {...s} />
+      <Circle cx="12" cy="13.6" r="1.3" {...s} strokeWidth={s.strokeWidth * 0.8} />
+    </G>
+  ),
+
+  // A pen nib — the mark of an edit made by hand.
+  nib: (s, color) => (
+    <G>
+      <Path d="M8.4 20.4 L4.2 20.4 4.2 16.2 15.4 5 19.6 9.2Z" {...s} />
+      <Path d="M13.3 7.1 L17.5 11.3" {...s} strokeWidth={s.strokeWidth * 0.85} />
+      <Circle cx="6.3" cy="18.3" r="0.9" fill={color} stroke="none" />
+    </G>
+  ),
+
+  // An instrument dial, not a cogwheel.
+  dial: (s, color) => (
+    <G>
+      <Circle cx="12" cy="12" r="8.6" {...s} />
+      <Circle cx="12" cy="12" r="1.2" fill={color} stroke="none" />
+      <Path d="M12 12 L16 8.6" {...s} strokeWidth={s.strokeWidth * 1.1} />
+      <Line x1="12" y1="3.4" x2="12" y2="5.2" {...s} strokeWidth={s.strokeWidth * 0.8} />
+      <Line x1="20.6" y1="12" x2="18.8" y2="12" {...s} strokeWidth={s.strokeWidth * 0.8} />
+      <Line x1="12" y1="20.6" x2="12" y2="18.8" {...s} strokeWidth={s.strokeWidth * 0.8} />
+      <Line x1="3.4" y1="12" x2="5.2" y2="12" {...s} strokeWidth={s.strokeWidth * 0.8} />
+    </G>
+  ),
+
+  ring: (s) => <Circle cx="12" cy="12" r="8.6" {...s} />,
+
+  advance: (s, color) => (
+    <G>
+      <Circle cx="12" cy="12" r="8.6" {...s} />
+      <Path d="M10.2 8.6 L16 12 10.2 15.4Z" fill={color} stroke="none" />
+    </G>
+  ),
+
+  // A continuation mark, as printed at the foot of a column.
+  ellipsis: (s, color) => (
+    <G>
+      <Circle cx="5.4" cy="12" r="1.5" fill={color} stroke="none" />
+      <Circle cx="12" cy="12" r="1.5" fill={color} stroke="none" />
+      <Circle cx="18.6" cy="12" r="1.5" fill={color} stroke="none" />
+    </G>
+  ),
+
+  // An empty specimen tray, waiting to be filled.
+  tray: (s) => (
+    <G>
+      <Path d="M3.2 13.4 L5.6 5.6 h12.8 l2.4 7.8" {...s} />
+      <Path d="M3.2 13.4 h4.6 a0.4 0.4 0 0 1 0.4 0.4 a1.6 1.6 0 0 0 1.6 1.6 h4.4 a1.6 1.6 0 0 0 1.6 -1.6 a0.4 0.4 0 0 1 0.4 -0.4 h4.6 v4.6 a0.8 0.8 0 0 1 -0.8 0.8 H4 a0.8 0.8 0 0 1 -0.8 -0.8Z" {...s} />
+    </G>
+  ),
+
+  // A correspondence card with its fold.
+  letter: (s) => (
+    <G>
+      <Rect x="3" y="5.4" width="18" height="13.2" rx="0.6" {...s} />
+      <Path d="M3.6 6.2 L12 12.6 20.4 6.2" {...s} strokeWidth={s.strokeWidth * 0.9} />
+    </G>
+  ),
+
+  // A return cycle — the sample comes back round.
+  recur: (s, color) => (
+    <G>
+      <Path d="M20 12 a8 8 0 1 1 -2.5 -5.8" {...s} />
+      <Path d="M20.4 3.6 v4.2 h-4.2Z" fill={color} stroke="none" />
+    </G>
+  ),
+
+  eye: (s) => (
+    <G>
+      <Path d="M2.4 12 C5 7.8 8.4 5.8 12 5.8 s7 2 9.6 6.2 C19 16.2 15.6 18.2 12 18.2 S5 16.2 2.4 12Z" {...s} />
+      <Circle cx="12" cy="12" r="2.9" {...s} />
+    </G>
+  ),
+
+  eyeShut: (s) => (
+    <G>
+      <Path d="M2.4 12 C5 7.8 8.4 5.8 12 5.8 s7 2 9.6 6.2 C19 16.2 15.6 18.2 12 18.2 S5 16.2 2.4 12Z" {...s} />
+      <Circle cx="12" cy="12" r="2.9" {...s} />
+      <Path d="M4.4 19.6 L19.6 4.4" {...s} strokeWidth={s.strokeWidth * 1.3} />
+    </G>
+  ),
+
+  // A specimen press: two boards under tension.
+  press: (s) => (
+    <G>
+      <Rect x="3.6" y="5" width="16.8" height="3.2" rx="0.5" {...s} />
+      <Rect x="3.6" y="15.8" width="16.8" height="3.2" rx="0.5" {...s} />
+      <Path d="M7.4 8.2 v7.6" {...s} strokeWidth={s.strokeWidth * 0.85} />
+      <Path d="M16.6 8.2 v7.6" {...s} strokeWidth={s.strokeWidth * 0.85} />
+      <Path d="M9.8 11.2 h4.4" {...s} strokeWidth={s.strokeWidth * 0.8} />
+      <Path d="M9.8 13 h4.4" {...s} strokeWidth={s.strokeWidth * 0.8} />
     </G>
   ),
 };

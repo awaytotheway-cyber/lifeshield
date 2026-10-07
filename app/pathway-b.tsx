@@ -6,11 +6,10 @@ import { PathwayBBanner } from "@/components/ui/PathwayBBanner";
 import { Screen } from "@/components/ui/Screen";
 import { TextButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 /**
  * Pathway B — outside the main tabs on purpose.
@@ -50,7 +49,7 @@ export default function PathwayBScreen() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <PathwayBBanner
         onFindDoctor={() => {
           setNotice(COPY.pathwayBFindDoctorHint);
@@ -74,16 +73,16 @@ export default function PathwayBScreen() {
 const styles = StyleSheet.create({
   locked: {
     marginTop: 16,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   notice: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

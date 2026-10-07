@@ -4,16 +4,15 @@ import { Redirect, useRouter } from "expo-router";
 import { StyleSheet, Text } from "react-native";
 
 import { TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function AboutSettingsScreen() {
   const router = useRouter();
@@ -35,7 +34,7 @@ export default function AboutSettingsScreen() {
   }
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.aboutTitle}
         onBack={() => router.replace(routes.settings)}
@@ -45,7 +44,7 @@ export default function AboutSettingsScreen() {
       </Text>
       <Text style={styles.body}>{COPY.aboutBody}</Text>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Sheet style={styles.card}>
         <Text style={styles.label}>{COPY.aboutVersion}</Text>
         <Text style={styles.value}>{version}</Text>
         <Text style={[styles.label, styles.gap]}>{COPY.aboutCompany}</Text>
@@ -66,42 +65,42 @@ export default function AboutSettingsScreen() {
             void WebBrowser.openBrowserAsync(legalPageUrl("terms"));
           }}
         />
-      </GlassCard>
+      </Sheet>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   brand: {
-    fontFamily: fontFamily.display,
+    fontFamily: SpecimenType.serif,
     fontSize: 40,
     letterSpacing: -0.8,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   body: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   card: {
-    marginTop: spacing.md,
-    padding: spacing.base,
+    marginTop: Measure.loose,
+    padding: Measure.base,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
   },
   gap: {
     marginTop: 16,
   },
   value: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

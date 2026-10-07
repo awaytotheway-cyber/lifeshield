@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, type ViewStyle } from "react-native";
-
 import { Accent, Edge, Ink, Paper, Rule, SpecimenType, TRACK } from "@/lib/specimen-tokens";
+
 
 /** v2 variant API. */
 export type StatusChipVariant =
@@ -29,7 +29,7 @@ type StatusChipProps = {
 
 /**
  * Small pill with a semantic colour. The 'orange' variant uses the
- * brand gradient and white text — reserved for 'Approved' / hero
+ * solid ink and paper text — reserved for 'Approved' / hero
  * highlights.
  */
 export function StatusChip({ label, variant, kind, style }: StatusChipProps) {
@@ -96,9 +96,9 @@ const PALETTE: Record<Exclude<StatusChipVariant, "orange">, {
   text: string;
   border?: string;
 }> = {
-  success: { bg: Accent.sageWash, text: Accent.sage, border: "#CFD6C2" },
-  warning: { bg: Accent.ochreWash, text: Accent.ochre, border: "#E2D2B4" },
-  danger: { bg: Accent.tagWash, text: Accent.tag, border: "#E3C8C1" },
+  success: { bg: Accent.sageWash, text: Accent.sage, border: Accent.sageEdge },
+  warning: { bg: Accent.ochreWash, text: Accent.ochre, border: Accent.ochreEdge },
+  danger: { bg: Accent.tagWash, text: Accent.tag, border: Accent.tagEdge },
   pending: { bg: Paper.sheetDeep, text: Ink.soft, border: Ink.rule },
 };
 

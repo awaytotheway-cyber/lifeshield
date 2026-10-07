@@ -4,14 +4,13 @@ import { Linking, Platform, StyleSheet, Text } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { ColorSwitch } from "@/components/ui/ColorSwitch";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TimePicker } from "@/components/ui/TimePicker";
 import { Toast } from "@/components/ui/Toast";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import {
   loadExtendedProfile,
@@ -26,9 +25,9 @@ import {
   registerForPushNotifications,
 } from "@/lib/push-notifications";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function NotificationsSettingsScreen() {
   const router = useRouter();
@@ -128,7 +127,7 @@ export default function NotificationsSettingsScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
+    <Screen scroll contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.settingsNotifyTitle}
         onBack={() => router.replace(routes.settings)}
@@ -136,7 +135,7 @@ export default function NotificationsSettingsScreen() {
       <Text style={styles.body}>{COPY.settingsNotifyBody}</Text>
       {loading ? <StaticSkeleton rows={3} /> : null}
       {!loading ? (
-        <GlassCard intensity="card" style={styles.card}>
+        <Sheet style={styles.card}>
           <ColorSwitch
             label={COPY.settingsNotifyReminders}
             value={prefs.notify_reminders}
@@ -163,7 +162,7 @@ export default function NotificationsSettingsScreen() {
             value={prefs.preferred_notify_time ?? ""}
             onChange={(next) => update({ preferred_notify_time: next || null })}
           />
-        </GlassCard>
+        </Sheet>
       ) : null}
       {pushNote ? <Text style={styles.note}>{pushNote}</Text> : null}
       {message ? <Text style={styles.error}>{message}</Text> : null}
@@ -184,27 +183,27 @@ export default function NotificationsSettingsScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   card: {
-    marginTop: spacing.md,
-    padding: spacing.base,
-    marginBottom: spacing.md,
+    marginTop: Measure.loose,
+    padding: Measure.base,
+    marginBottom: Measure.loose,
   },
   note: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
 });

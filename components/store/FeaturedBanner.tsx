@@ -23,9 +23,8 @@ type FeaturedBannerProps = {
 /**
  * The featured collection — SPECIMEN.
  *
- * Was a gradient card with decorative circles. It is now a mounted
- * plate: an archival image on the left, typeset copy on the right,
- * hairline frame.
+ * A mounted plate: an archival image on the left, typeset copy on the
+ * right, hairline frame.
  */
 export function FeaturedBanner({
   title,

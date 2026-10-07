@@ -7,7 +7,6 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   adjustIngredientsForPortions,
   loadRecipeById,
@@ -18,8 +17,8 @@ import {
   type RecipeRow,
 } from "@/lib/recipes";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 export default function RecipeDetailScreen() {
   const router = useRouter();
@@ -73,7 +72,7 @@ export default function RecipeDetailScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={row?.name ?? COPY.recipesTitle}
         onBack={() => router.back()}
@@ -157,7 +156,7 @@ export default function RecipeDetailScreen() {
             </>
           ) : null}
 
-          <View style={{ marginTop: spacing.md }}>
+          <View style={{ marginTop: Measure.loose }}>
             <PrimaryButton
               title={isSaved ? COPY.recipesUnsaveCta : COPY.recipesSaveCta}
               loading={busy}
@@ -182,91 +181,90 @@ function MetaItem({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   card: {
-    marginTop: spacing.base,
-    padding: spacing.md,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    ...shadows.card,
+    marginTop: Measure.base,
+    padding: Measure.loose,
+    backgroundColor: Paper.mount,
+    borderRadius: Edge.mount,
   },
   desc: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 24,
-    color: colors.slate,
+    color: Ink.soft,
   },
   metaRow: {
-    marginTop: spacing.base,
+    marginTop: Measure.base,
     flexDirection: "row",
-    gap: spacing.base,
+    gap: Measure.base,
   },
   metaItem: { alignItems: "flex-start" },
   metaLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
     letterSpacing: 0.3,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
   },
   metaValue: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 16,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   portionsRow: {
-    marginTop: spacing.base,
+    marginTop: Measure.base,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   portionsLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
-    color: colors.slate,
+    color: Ink.soft,
   },
   portionsControls: {
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.sm,
+    gap: Measure.tight,
   },
   portionBtn: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.iceBlue,
+    backgroundColor: Paper.sheet,
     alignItems: "center",
     justifyContent: "center",
   },
   portionBtnText: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 20,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   portionsValue: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
     minWidth: 24,
     textAlign: "center",
   },
   sectionLabel: {
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
-    fontFamily: fontFamily.bodyMedium,
+    marginTop: Measure.loose,
+    marginBottom: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
     letterSpacing: 0.4,
     textTransform: "uppercase",
   },
   line: {
     marginBottom: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   error: {
-    marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    color: colors.riskHigh,
+    marginTop: Measure.base,
+    fontFamily: SpecimenType.mono,
+    color: Accent.tag,
   },
 });

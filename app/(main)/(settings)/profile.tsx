@@ -5,19 +5,19 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { TextButton } from "@/components/ui/Button";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { DatePicker } from "@/components/ui/DatePicker";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Sheet } from "@/components/specimen/Sheet";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { GradientHero } from "@/components/ui/GradientHero";
+import { PageHead } from "@/components/specimen/PageHead";
 import { InitialsAvatar } from "@/components/ui/InitialsAvatar";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
@@ -26,8 +26,7 @@ import { Toast } from "@/components/ui/Toast";
 import { isAdminEmail, SEX_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
-import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
-import { Accent, Ink } from "@/lib/specimen-tokens";
+
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import {
   ALLERGY_OPTIONS,
@@ -49,9 +48,9 @@ import {
   type ProfileFormParsed,
 } from "@/lib/profile-extended";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Edge, Ink, Measure, SpecimenType, tapTarget } from "@/lib/specimen-tokens";
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -188,7 +187,7 @@ export default function ProfileScreen() {
   return (
     <Screen scroll contentPadding={0}>
       {/* Taller hero — profile deserves the space. */}
-      <GradientHero
+      <PageHead
         height={260}
         onBack={() => router.replace(routes.settings)}
         backLabel="Back to settings"
@@ -204,7 +203,7 @@ export default function ProfileScreen() {
             <Text style={styles.heroSince}>Member since {memberSince}</Text>
           ) : null}
         </View>
-      </GradientHero>
+      </PageHead>
 
       <View style={styles.profileBodyPad}>
       <Text style={styles.body}>{COPY.profileBody}</Text>
@@ -215,7 +214,7 @@ export default function ProfileScreen() {
 
       {!loading ? (
         <>
-          <GlassCard intensity="card" style={styles.photoCard}>
+          <Sheet style={styles.photoCard}>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={
@@ -232,7 +231,7 @@ export default function ProfileScreen() {
                 />
               ) : (
                 <View style={styles.avatarPlaceholder}>
-                  <Feather name="camera" size={28} color={colors.primaryBlue} />
+                  <Icon name="camera" size={28} color={Accent.tag} />
                 </View>
               )}
             </Pressable>
@@ -243,9 +242,9 @@ export default function ProfileScreen() {
             {avatarUri ? (
               <TextButton title={COPY.profilePhotoRemove} onPress={() => void removePhoto()} />
             ) : null}
-          </GlassCard>
+          </Sheet>
 
-          <GlassCard intensity="card" style={styles.formCard}>
+          <Sheet style={styles.formCard}>
             <Controller
               control={control}
               name="fullName"
@@ -427,7 +426,7 @@ export default function ProfileScreen() {
                 />
               )}
             />
-          </GlassCard>
+          </Sheet>
 
           {saveMessage ? <Text style={styles.error}>{saveMessage}</Text> : null}
 
@@ -490,26 +489,26 @@ const styles = StyleSheet.create({
   },
   heroName: {
     marginTop: 12,
-    fontFamily: fontFamily.heading,
+    fontFamily: SpecimenType.serif,
     fontSize: 24,
     letterSpacing: -0.4,
     color: Ink.full,
   },
   heroEmail: {
     marginTop: 6,
-    fontFamily: fontFamily.regular,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     color: Ink.soft,
   },
   heroSince: {
     marginTop: 4,
-    fontFamily: fontFamily.regular,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     color: Ink.ghost,
   },
   profileBodyPad: {
-    paddingHorizontal: spacing.screenX,
-    paddingTop: spacing.base,
+    paddingHorizontal: Measure.gutter,
+    paddingTop: Measure.base,
   },
   topRow: {
     flexDirection: "row",
@@ -520,28 +519,28 @@ const styles = StyleSheet.create({
   },
   body: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
     lineHeight: 26,
-    color: colors.slate,
+    color: Ink.soft,
   },
   error: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
   note: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.amber,
+    color: Accent.ochre,
   },
   photoCard: {
-    marginTop: spacing.md,
+    marginTop: Measure.loose,
     alignItems: "center",
-    padding: spacing.base,
+    padding: Measure.base,
   },
   avatarHit: {
     minWidth: tapTarget,
@@ -556,57 +555,57 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: colors.lightTeal,
+    backgroundColor: Accent.tagWash,
     alignItems: "center",
     justifyContent: "center",
   },
   formCard: {
-    marginTop: spacing.md,
-    padding: spacing.base,
-    marginBottom: spacing.md,
+    marginTop: Measure.loose,
+    padding: Measure.base,
+    marginBottom: Measure.loose,
   },
   label: {
     marginTop: 16,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.2,
-    color: colors.slate,
+    color: Ink.soft,
   },
   value: {
     marginTop: 4,
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   hint: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.mist,
+    color: Ink.faint,
   },
   computed: {
     marginTop: 8,
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   section: {
     marginTop: 24,
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: Ink.full,
   },
   badge: {
     marginTop: 12,
     alignSelf: "flex-start",
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.chip,
+    backgroundColor: Accent.sageWash,
+    borderRadius: Edge.tag,
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
   badgeText: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.sage,
+    color: Accent.sage,
   },
 });

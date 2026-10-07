@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, type TextStyle } from "react-native";
-
-import { Colors, Typography } from "@/lib/design-tokens";
+import { Ink, SpecimenType } from "@/lib/specimen-tokens";
 
 type Size = "hero" | "card" | "inline" | "small";
 
@@ -42,52 +41,52 @@ export function DataValue({
 const STYLES: Record<Size, { value: TextStyle; unit: TextStyle }> = {
   hero: {
     value: {
-      fontFamily: Typography.monoBold,
-      fontSize: Typography.dataHero,
-      lineHeight: Typography.dataHero + 4,
-      color: Colors.charcoal,
+      fontFamily: SpecimenType.monoBold,
+      fontSize: SpecimenType.dataHero,
+      lineHeight: SpecimenType.dataHero + 4,
+      color: Ink.full,
     },
     unit: {
-      fontFamily: Typography.regular,
-      fontSize: Typography.secondary,
-      color: Colors.bodyText,
+      fontFamily: SpecimenType.regular,
+      fontSize: SpecimenType.secondary,
+      color: Ink.soft,
     },
   },
   card: {
     value: {
-      fontFamily: Typography.monoBold,
-      fontSize: Typography.dataCard,
-      lineHeight: Typography.dataCard + 4,
-      color: Colors.charcoal,
+      fontFamily: SpecimenType.monoBold,
+      fontSize: SpecimenType.dataCard,
+      lineHeight: SpecimenType.dataCard + 4,
+      color: Ink.full,
     },
     unit: {
-      fontFamily: Typography.regular,
-      fontSize: Typography.label,
-      color: Colors.mutedText,
+      fontFamily: SpecimenType.regular,
+      fontSize: SpecimenType.label,
+      color: Ink.faint,
     },
   },
   inline: {
     value: {
-      fontFamily: Typography.mono,
-      fontSize: Typography.dataInline,
-      color: Colors.charcoal,
+      fontFamily: SpecimenType.mono,
+      fontSize: SpecimenType.dataInline,
+      color: Ink.full,
     },
     unit: {
-      fontFamily: Typography.regular,
-      fontSize: Typography.secondary,
-      color: Colors.mutedText,
+      fontFamily: SpecimenType.regular,
+      fontSize: SpecimenType.secondary,
+      color: Ink.faint,
     },
   },
   small: {
     value: {
-      fontFamily: Typography.mono,
-      fontSize: Typography.dataSmall,
-      color: Colors.charcoal,
+      fontFamily: SpecimenType.mono,
+      fontSize: SpecimenType.dataSmall,
+      color: Ink.full,
     },
     unit: {
-      fontFamily: Typography.regular,
-      fontSize: Typography.micro,
-      color: Colors.mutedText,
+      fontFamily: SpecimenType.regular,
+      fontSize: SpecimenType.micro,
+      color: Ink.faint,
     },
   },
 };

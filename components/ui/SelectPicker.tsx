@@ -7,13 +7,12 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
 import { COPY } from "@/lib/copy";
-import { fontFamily } from "@/lib/typography";
+import { Accent, Edge, Ink, inputHeight, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type Option = { value: string; label: string };
 
@@ -54,7 +53,7 @@ export function SelectPicker({
         <Text style={selected ? styles.value : styles.placeholder}>
           {selected?.label ?? placeholder ?? COPY.pickOption}
         </Text>
-        <Feather name="chevron-down" size={20} color={colors.slate} />
+        <Icon name="chevron-down" size={20} color={Ink.soft} />
       </Pressable>
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -85,7 +84,7 @@ export function SelectPicker({
                     >
                       <Text style={styles.rowLabel}>{option.label}</Text>
                       {isOn ? (
-                        <Feather name="check" size={20} color={colors.midTeal} />
+                        <Icon name="check" size={20} color={Accent.tag} />
                       ) : null}
                     </Pressable>
                   );
@@ -104,67 +103,66 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
     letterSpacing: 0.2,
-    color: colors.slate,
+    color: Ink.soft,
     marginBottom: 8,
   },
   field: {
     minHeight: inputHeight,
-    borderRadius: radius.input,
+    borderRadius: Edge.none,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
+    borderColor: Ink.rule,
+    backgroundColor: Paper.mount,
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   value: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
     flex: 1,
   },
   placeholder: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.mist,
+    color: Ink.faint,
     flex: 1,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.coral,
+    color: Accent.tag,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: Ink.scrim,
   },
   sheet: {
-    backgroundColor: colors.white,
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
+    backgroundColor: Paper.mount,
+    borderTopLeftRadius: Edge.mount,
+    borderTopRightRadius: Edge.mount,
     paddingHorizontal: 20,
     paddingTop: 8,
     maxHeight: "70%",
-    ...shadows.modal,
   },
   sheetHandle: {
     alignSelf: "center",
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.border,
+    backgroundColor: Ink.rule,
     marginBottom: 12,
   },
   sheetTitle: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 19,
-    color: colors.charcoal,
+    color: Ink.full,
     marginBottom: 8,
   },
   sheetScroll: {
@@ -176,16 +174,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: Ink.rule,
   },
   rowOn: {
-    backgroundColor: colors.lightTeal,
+    backgroundColor: Accent.tagWash,
     marginHorizontal: -20,
     paddingHorizontal: 20,
   },
   rowLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 17,
-    color: colors.charcoal,
+    color: Ink.full,
   },
 });

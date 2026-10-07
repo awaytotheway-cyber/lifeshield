@@ -1,3 +1,4 @@
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 import { useEffect, useRef } from "react";
 import {
   Animated,
@@ -8,12 +9,9 @@ import {
   type ViewStyle,
 } from "react-native";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
-
 type ToastProps = {
   message: string | null;
-  /** success = teal, danger = coral (destructive confirms only). */
+  /** success = sage, danger = tag (destructive confirms only). */
   tone?: "success" | "danger" | "info";
   style?: StyleProp<ViewStyle>;
   onHide?: () => void;
@@ -59,10 +57,10 @@ export function Toast({
 
   const bg =
     tone === "danger"
-      ? colors.riskHigh
+      ? Accent.tag
       : tone === "info"
-        ? colors.deepNavy
-        : colors.riskLow;
+        ? Ink.full
+        : Accent.sage;
 
   return (
     <Animated.View
@@ -78,19 +76,19 @@ export function Toast({
 const styles = StyleSheet.create({
   wrap: {
     position: "absolute",
-    left: spacing.screenX,
-    right: spacing.screenX,
-    bottom: spacing.lg,
-    borderRadius: radius.alert,
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.mdSm,
+    left: Measure.gutter,
+    right: Measure.gutter,
+    bottom: Measure.section,
+    borderRadius: Edge.hair,
+    paddingHorizontal: Measure.base,
+    paddingVertical: Measure.snug,
     zIndex: 50,
   },
   text: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.white,
+    color: Paper.mount,
     textAlign: "center",
   },
 });

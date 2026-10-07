@@ -13,7 +13,7 @@ import {
   TRACK,
 } from "@/lib/specimen-tokens";
 
-type GradientHeroProps = {
+type PageHeadProps = {
   children?: ReactNode;
   height?: number;
   bottomRadius?: number;
@@ -23,20 +23,19 @@ type GradientHeroProps = {
 };
 
 /**
- * Formerly the orange gradient hero. In SPECIMEN there is no gradient:
- * a page opens on paper under the signature heavy-over-hair double rule.
+ * The head of a page: an optional back row, then the signature
+ * heavy-over-hair double rule, then whatever title the screen sets.
  *
- * The component keeps its name and props so the screens that already
- * call it convert without edits. `height` is now a minimum, because a
- * paper head sizes to its content rather than reserving a slab.
+ * `height` is a minimum, not a reservation — a paper head sizes to its
+ * content rather than holding open a slab of colour.
  */
-export function GradientHero({
+export function PageHead({
   children,
   height = 180,
   paddingH = Measure.gutter,
   onBack,
   backLabel = "Back",
-}: GradientHeroProps) {
+}: PageHeadProps) {
   const back = () => {
     if (Platform.OS !== "web") {
       void Haptics.selectionAsync().catch(() => {});

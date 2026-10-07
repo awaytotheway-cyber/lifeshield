@@ -6,10 +6,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
-import { spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Measure } from "@/lib/specimen-tokens";
 
 /**
  * Notification inbox shell. Follow-up reminders live on Follow-up;
@@ -31,7 +31,7 @@ export default function NotificationsInboxScreen() {
   }
 
   return (
-    <Screen contentPadding={spacing.screenX}>
+    <Screen contentPadding={Measure.gutter}>
       <ScreenHeader
         title={COPY.notifInboxTitle}
         onBack={() => router.back()}

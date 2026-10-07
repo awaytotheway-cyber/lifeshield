@@ -20,6 +20,7 @@ import { isStripePublishableKeyConfigured } from "@/lib/stripe-config";
 import { loadUserContext } from "@/lib/user-context";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent } from "@/lib/specimen-tokens";
 
 /**
  * Checkout — checkpoint 3 of 3 for canPurchase() (before Payment Sheet).
@@ -113,26 +114,26 @@ export default function CheckoutScreen() {
   return (
     <Screen scroll>
       <BackBar onPress={() => router.back()} label="Cart" />
-      <Text className="text-center text-2xl text-charcoal">{COPY.checkoutTitle}</Text>
-      <Text className="mt-4 text-center text-charcoal">{COPY.checkoutBody}</Text>
+      <Text className="text-center text-2xl text-inkFull">{COPY.checkoutTitle}</Text>
+      <Text className="mt-4 text-center text-inkFull">{COPY.checkoutBody}</Text>
 
       {!stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
+        <Text className="mt-4 text-center text-sm text-inkFull">
           {COPY.checkoutStripeKeyMissing}
         </Text>
       ) : null}
 
       {!stripeNative && stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
+        <Text className="mt-4 text-center text-sm text-inkFull">
           {COPY.checkoutWebUnsupported}
         </Text>
       ) : null}
 
-      {loadingCart ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loadingCart ? <ActivityIndicator className="mt-6" color={Accent.tag} /> : null}
 
       {cartMessage ? (
         <>
-          <Text className="mt-4 text-center text-coral">{cartMessage}</Text>
+          <Text className="mt-4 text-center text-tag">{cartMessage}</Text>
           <Button
             title={COPY.storeRetry}
             variant="ghost"
@@ -144,14 +145,14 @@ export default function CheckoutScreen() {
       ) : null}
 
       {!loadingCart && !cartMessage && purchasableLines.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.checkoutEmptyCart}</Text>
+        <Text className="mt-6 text-center text-inkFull">{COPY.checkoutEmptyCart}</Text>
       ) : null}
 
       {!loadingCart && !cartMessage
         ? purchasableLines.map((line) => {
             const lineTotal = line.product.price * line.quantity;
             return (
-              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
+              <View key={line.id} className="mt-4 rounded-xl bg-paperMount px-4 py-4">
                 <ClinicalTerm
                   plainName={line.product.plain_name}
                   plainExplanation={
@@ -160,7 +161,7 @@ export default function CheckoutScreen() {
                   }
                   medicalName={line.product.clinical_name}
                 />
-                <Text className="mt-2 text-teal">
+                <Text className="mt-2 text-tag">
                   {formatProductPrice(line.product)} × {line.quantity} = ₹
                   {lineTotal.toLocaleString("en-IN")}
                 </Text>
@@ -170,12 +171,12 @@ export default function CheckoutScreen() {
         : null}
 
       {!loadingCart && !cartMessage && purchasableLines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
+        <View className="mt-6 rounded-xl border border-tag bg-paperMount px-4 py-4">
+          <Text className="text-center text-inkFull">{COPY.cartTotal}</Text>
+          <Text className="mt-2 text-center text-2xl text-tag">
             ₹{displayTotal.toLocaleString("en-IN")}
           </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
+          <Text className="mt-2 text-center text-sm text-inkFull">
             {COPY.cartTotalNote}
           </Text>
         </View>
@@ -211,7 +212,7 @@ export default function CheckoutScreen() {
 
       {errorMessage ? (
         <>
-          <Text className="mt-4 text-center text-coral">{errorMessage}</Text>
+          <Text className="mt-4 text-center text-tag">{errorMessage}</Text>
           {canUsePaymentSheet && canPay ? (
             <Button
               title={COPY.checkoutRetryPay}
@@ -224,7 +225,7 @@ export default function CheckoutScreen() {
         </>
       ) : null}
 
-      <Text className="mt-4 text-center text-sm text-charcoal">
+      <Text className="mt-4 text-center text-sm text-inkFull">
         {COPY.checkoutDay5Note}
       </Text>
 

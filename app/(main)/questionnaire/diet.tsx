@@ -103,7 +103,7 @@ export default function DietEnvironmentScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-tag">{loadMessage}</Text>
       ) : null}
 
       <Controller

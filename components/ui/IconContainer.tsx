@@ -1,13 +1,12 @@
 import { StyleSheet, View, type ViewStyle } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
-
-import { Colors, Radii } from "@/lib/design-tokens";
+import { Icon, type IconName } from "@/components/specimen/Icon";
+import { Accent, Edge, Ink, Paper } from "@/lib/specimen-tokens";
 
 type Size = "sm" | "md" | "lg";
-type Variant = "orange" | "white" | "dark" | "glass";
+type Variant = "tag" | "paper" | "ink";
 
 type IconContainerProps = {
-  icon: keyof typeof Feather.glyphMap;
+  icon: IconName;
   size?: Size;
   variant?: Variant;
   color?: string;
@@ -18,22 +17,21 @@ const SPEC: Record<
   Size,
   { box: number; radius: number; icon: number }
 > = {
-  sm: { box: 36, radius: Radii.icon, icon: 18 },
-  md: { box: 44, radius: Radii.icon + 2, icon: 22 },
-  lg: { box: 52, radius: Radii.iconLarge, icon: 24 },
+  sm: { box: 36, radius: Edge.hair, icon: 18 },
+  md: { box: 44, radius: Edge.hair + 2, icon: 22 },
+  lg: { box: 52, radius: Edge.hair, icon: 24 },
 };
 
 const VARIANT_STYLE: Record<Variant, { bg: string; iconColor: string }> = {
-  orange: { bg: Colors.orangeTint, iconColor: Colors.orangeDark },
-  white: { bg: Colors.pureWhite, iconColor: Colors.charcoal },
-  dark: { bg: Colors.charcoal, iconColor: Colors.pureWhite },
-  glass: { bg: "rgba(255,255,255,0.20)", iconColor: Colors.pureWhite },
+  tag: { bg: Accent.tagWash, iconColor: Accent.tag },
+  paper: { bg: Paper.mount, iconColor: Ink.full },
+  ink: { bg: Ink.full, iconColor: Paper.sheet },
 };
 
 export function IconContainer({
   icon,
   size = "md",
-  variant = "orange",
+  variant = "tag",
   color,
   style,
 }: IconContainerProps) {
@@ -52,7 +50,7 @@ export function IconContainer({
         style,
       ]}
     >
-      <Feather name={icon} size={spec.icon} color={color ?? v.iconColor} />
+      <Icon name={icon} size={spec.icon} color={color ?? v.iconColor} />
     </View>
   );
 }

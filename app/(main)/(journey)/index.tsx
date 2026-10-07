@@ -1,14 +1,14 @@
+import { Accent, Edge, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import type { Href } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   buildTenStepRows,
   completedCount,
@@ -22,7 +22,6 @@ import { hasOwnInterventions } from "@/lib/plan";
 import { hasOwnTestResults } from "@/lib/test-results";
 import { loadOwnGoals } from "@/lib/weekly-goals";
 import { loadUserContext } from "@/lib/user-context";
-import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import {
@@ -117,7 +116,7 @@ export default function JourneyDashboardScreen() {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
 
   return (
-    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+    <Screen scroll contentPadding={Measure.gutter} centered={false}>
       <ScreenHeader
         title={COPY.journeyDashTitle}
         onBack={() => router.replace(routes.home)}
@@ -134,7 +133,7 @@ export default function JourneyDashboardScreen() {
 
       {done >= 3 ? (
         <View style={styles.celebrate}>
-          <Feather name="star" size={16} color={colors.riskModerate} />
+          <Icon name="star" size={16} color={Accent.ochre} />
           <Text style={styles.celebrateText}>{COPY.journeyDashCelebrate}</Text>
         </View>
       ) : null}
@@ -180,21 +179,21 @@ export default function JourneyDashboardScreen() {
 function StateBadge({ state }: { state: "complete" | "current" | "upcoming" }) {
   const bg =
     state === "complete"
-      ? colors.riskLowLight
+      ? Accent.sageWash
       : state === "current"
-        ? colors.iceBlue
+        ? Paper.sheet
         : "transparent";
   const fg =
     state === "complete"
-      ? colors.riskLow
+      ? Accent.sage
       : state === "current"
-        ? colors.primaryBlue
-        : colors.mist;
+        ? Accent.tag
+        : Ink.faint;
   const icon =
     state === "complete" ? "check-circle" : state === "current" ? "play-circle" : "circle";
   return (
     <View style={[badgeStyles.wrap, { backgroundColor: bg }]}>
-      <Feather name={icon} size={14} color={fg} />
+      <Icon name={icon} size={14} color={fg} />
       <Text style={[badgeStyles.text, { color: fg }]}>{state}</Text>
     </View>
   );
@@ -207,10 +206,10 @@ const badgeStyles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: radius.chip,
+    borderRadius: Edge.tag,
   },
   text: {
-    fontFamily: fontFamily.bodySemi,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 13,
     textTransform: "uppercase",
     letterSpacing: 0.3,
@@ -219,91 +218,90 @@ const badgeStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   body: {
-    marginTop: spacing.sm,
-    fontFamily: fontFamily.body,
+    marginTop: Measure.tight,
+    fontFamily: SpecimenType.mono,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   progressCard: {
-    marginTop: spacing.base,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.iceBlue,
+    marginTop: Measure.base,
+    padding: Measure.base,
+    borderRadius: Edge.mount,
+    backgroundColor: Paper.sheet,
     alignItems: "center",
   },
   progressValue: {
-    fontFamily: fontFamily.heroStat,
+    fontFamily: SpecimenType.monoBold,
     fontSize: 44,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   progressLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 14,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
     letterSpacing: 0.3,
   },
   celebrate: {
-    marginTop: spacing.sm,
-    padding: spacing.sm,
+    marginTop: Measure.tight,
+    padding: Measure.tight,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    borderRadius: radius.alert,
-    backgroundColor: colors.amberLight,
+    borderRadius: Edge.hair,
+    backgroundColor: Accent.ochreWash,
   },
   celebrateText: {
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   card: {
-    marginTop: spacing.sm,
-    padding: spacing.base,
-    borderRadius: radius.card,
-    backgroundColor: colors.white,
-    ...shadows.card,
+    marginTop: Measure.tight,
+    padding: Measure.base,
+    borderRadius: Edge.mount,
+    backgroundColor: Paper.mount,
   },
   cardComplete: { opacity: 0.9 },
   cardCurrent: {
     borderWidth: 2,
-    borderColor: colors.primaryBlue,
+    borderColor: Accent.tag,
   },
   cardPressed: { opacity: 0.85 },
   rowTop: {
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    gap: spacing.sm,
+    gap: Measure.tight,
   },
   title: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
-    color: colors.charcoal,
+    color: Ink.full,
   },
   desc: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
+    fontFamily: SpecimenType.mono,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.slate,
+    color: Ink.soft,
   },
   metricsRow: {
-    marginTop: spacing.sm,
+    marginTop: Measure.tight,
     flexDirection: "row",
-    gap: spacing.md,
+    gap: Measure.loose,
   },
   metric: { alignItems: "flex-start" },
   metricValue: {
-    fontFamily: fontFamily.displaySemi,
+    fontFamily: SpecimenType.serif,
     fontSize: 18,
-    color: colors.primaryBlue,
+    color: Accent.tag,
   },
   metricLabel: {
-    fontFamily: fontFamily.bodyMedium,
+    fontFamily: SpecimenType.mono,
     fontSize: 13,
-    color: colors.slate,
+    color: Ink.soft,
     textTransform: "uppercase",
     letterSpacing: 0.3,
   },

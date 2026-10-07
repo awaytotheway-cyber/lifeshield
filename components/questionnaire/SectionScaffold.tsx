@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Feather } from "@/components/specimen/Icon";
+import { Icon } from "@/components/specimen/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SectionCompleteCard } from "@/components/questionnaire/SectionCompleteCard";
@@ -17,11 +17,11 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { Colors, Spacing, Typography } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { Accent, Ink, Measure, Paper, SpecimenType } from "@/lib/specimen-tokens";
 
 type SectionScaffoldProps = {
   title: string;
@@ -44,12 +44,12 @@ type SectionScaffoldProps = {
 };
 
 /**
- * Shared chrome for questionnaire sections — PRESCOPE v2.
+ * Shared chrome for questionnaire sections.
  *
- * Deliberately NOT a GradientHero: this is a focused task screen with a
+ * Deliberately NOT a PageHead: this is a focused task screen with a
  * white sticky header, a FLUSH edge-to-edge progress bar (no horizontal
  * padding — the editorial detail that keeps it from looking generic),
- * and a sticky gradient Continue button that stays above the keyboard.
+ * and a sticky Continue button that stays above the keyboard.
  */
 export function SectionScaffold({
   title,
@@ -125,7 +125,7 @@ export function SectionScaffold({
             onPress={() => router.replace(routes.questionnaire)}
             style={styles.headerSide}
           >
-            <Feather name="chevron-left" size={24} color={Colors.charcoal} />
+            <Icon name="chevron-left" size={24} color={Ink.full} />
           </Pressable>
         )}
 
@@ -233,22 +233,22 @@ export function SectionScaffold({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: Colors.softWhite,
+    backgroundColor: Paper.sheet,
   },
   flex: { flex: 1 },
-  pad: { paddingHorizontal: Spacing.screenH },
+  pad: { paddingHorizontal: Measure.gutter },
 
   headerWrap: {
-    backgroundColor: Colors.pureWhite,
+    backgroundColor: Paper.mount,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.borderLight,
+    borderBottomColor: Ink.rule,
   },
   headerRow: {
     height: 56,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: Spacing.base,
+    paddingHorizontal: Measure.base,
   },
   headerSide: {
     minWidth: 56,
@@ -258,54 +258,54 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   headerTitle: {
-    fontFamily: Typography.semibold,
-    fontSize: Typography.body,
-    color: Colors.charcoal,
+    fontFamily: SpecimenType.semibold,
+    fontSize: SpecimenType.body,
+    color: Ink.full,
   },
   skip: {
-    fontFamily: Typography.semibold,
+    fontFamily: SpecimenType.semibold,
     fontSize: 16,
-    color: Colors.orangeDark,
+    color: Accent.tag,
   },
 
   scrollContent: {
-    paddingHorizontal: Spacing.screenH,
+    paddingHorizontal: Measure.gutter,
     paddingBottom: 24,
   },
   title: {
     marginTop: 28,
-    fontFamily: Typography.heading,
+    fontFamily: SpecimenType.heading,
     fontSize: 28,
     lineHeight: 34,
     letterSpacing: -0.5,
-    color: Colors.charcoal,
+    color: Ink.full,
   },
   subtitle: {
     marginTop: 8,
-    fontFamily: Typography.regular,
-    fontSize: Typography.body,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.body,
     lineHeight: 25,
-    color: Colors.bodyText,
+    color: Ink.soft,
   },
   body: {
     marginTop: 24,
   },
 
   footerWrap: {
-    backgroundColor: Colors.pureWhite,
+    backgroundColor: Paper.mount,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: Colors.borderLight,
-    paddingHorizontal: Spacing.screenH,
-    paddingTop: Spacing.base,
-    paddingBottom: Spacing.sm,
+    borderTopColor: Ink.rule,
+    paddingHorizontal: Measure.gutter,
+    paddingTop: Measure.base,
+    paddingBottom: Measure.tight,
   },
   error: {
-    fontFamily: Typography.regular,
-    fontSize: Typography.secondary,
+    fontFamily: SpecimenType.regular,
+    fontSize: SpecimenType.secondary,
     lineHeight: 20,
-    color: Colors.dangerRed,
+    color: Accent.tag,
     textAlign: "center",
-    marginBottom: Spacing.sm,
+    marginBottom: Measure.tight,
   },
   completeWrap: {
     flex: 1,
