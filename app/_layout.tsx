@@ -1,10 +1,10 @@
 // Must be the first import so NativeWind styles load before anything renders.
 import "../global.css";
 
-// SwimClub-style clinical-dossier system: Space Grotesk (workhorse),
+// Primary type system: Instrument Sans (workhorse — body + headings),
 // JetBrains Mono (uppercase micro-copy), VT323 (LCD/pixel display).
-// Manrope/Inter/DM Mono still load so any screen holding an old fontFamily
-// literal keeps rendering during the conversion.
+// Space Grotesk / Manrope / Inter / DM Mono still load so any screen holding
+// an old fontFamily literal keeps rendering during the conversion.
 import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 import {
   Inter_400Regular,
@@ -98,6 +98,12 @@ function AuthGate() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    InstrumentSans_400Regular: require("../assets/fonts/InstrumentSans-Regular.ttf"),
+    InstrumentSans_500Medium: require("../assets/fonts/InstrumentSans-Medium.ttf"),
+    InstrumentSans_600SemiBold: require("../assets/fonts/InstrumentSans-SemiBold.ttf"),
+    InstrumentSans_700Bold: require("../assets/fonts/InstrumentSans-Bold.ttf"),
+    InstrumentSans_400Regular_Italic: require("../assets/fonts/InstrumentSans-Italic.ttf"),
+    InstrumentSans_500Medium_Italic: require("../assets/fonts/InstrumentSans-MediumItalic.ttf"),
     SpaceGrotesk_400Regular,
     SpaceGrotesk_500Medium,
     SpaceGrotesk_700Bold,
