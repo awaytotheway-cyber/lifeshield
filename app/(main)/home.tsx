@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
+import { HomeStatCards } from "@/components/ui/HomeStatCards";
 import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
@@ -18,6 +18,7 @@ import {
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
+import { greetingFor } from "@/lib/greeting";
 import {
   currentJourneyStep,
   isJourneyStepComplete,
@@ -255,20 +256,6 @@ export default function HomeScreen() {
 
   const consentCount = (agreed.brca ? 1 : 0) + (agreed.ctc ? 1 : 0) + (agreed.snp ? 1 : 0);
 
-  const milestoneStats: [
-    { id: string; value: string | number; label: string },
-    { id: string; value: string | number; label: string },
-    { id: string; value: string | number; label: string },
-  ] = [
-    { id: "sections", value: `${questionnaireCount}/10`, label: "Questionnaire" },
-    { id: "consents", value: `${consentCount}/3`, label: "Consents" },
-    {
-      id: "tests",
-      value: hasRecommendations ? "Ready" : "Soon",
-      label: "Test plan",
-    },
-  ];
-
   const homeFeatures = [
     { id: "science", label: "Science-backed rules", icon: "cpu" as const },
     { id: "private", label: "Private by default", icon: "lock" as const },
@@ -282,6 +269,11 @@ export default function HomeScreen() {
         <MenuButton />
         <Text style={styles.brand}>{COPY.appName}</Text>
       </View>
+
+      <Text style={styles.greeting}>
+        {greetingFor(session.user.user_metadata?.full_name)}
+      </Text>
+      <Text style={styles.greetingSub}>{COPY.homeGreetingSub}</Text>
       <Text style={styles.tagline}>{COPY.tagline}</Text>
       <Text style={styles.headline}>{headlineFor(current)}</Text>
 
@@ -290,7 +282,16 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.stats}>
-        <MilestoneStatStrip stats={milestoneStats} />
+        <HomeStatCards
+          questionnaireCount={questionnaireCount}
+          questionnaireTotal={10}
+          consentCount={consentCount}
+          consentTotal={3}
+          testPlanReady={hasRecommendations}
+          onPressQuestionnaire={() => {
+            router.replace(routes.questionnaire);
+          }}
+        />
       </View>
 
       <View style={styles.features}>
@@ -416,11 +417,28 @@ const styles = StyleSheet.create({
   },
   brand: {
     flex: 1,
-    fontFamily: fontFamily.display,
-    fontSize: 34,
-    lineHeight: 40,
-    letterSpacing: -0.6,
+    fontFamily: fontFamily.displaySemi,
+    fontSize: 15,
+    lineHeight: 20,
+    letterSpacing: 0.6,
     color: colors.primaryBlue,
+    textAlign: "left",
+  },
+  greeting: {
+    marginTop: 20,
+    fontFamily: fontFamily.display,
+    fontSize: 26,
+    lineHeight: 32,
+    letterSpacing: -0.5,
+    color: colors.deepNavy,
+    textAlign: "left",
+  },
+  greetingSub: {
+    marginTop: 4,
+    fontFamily: fontFamily.body,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.slate,
     textAlign: "left",
   },
   trust: {
@@ -433,10 +451,12 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   tagline: {
-    marginTop: 12,
+    marginTop: 10,
     fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    fontSize: 13,
+    lineHeight: 18,
+    // Regulatory disclaimer — keep at slate or darker so it stays
+    // WCAG AA legible. colors.mist fails contrast on the iceBlue screen.
     color: colors.slate,
     textAlign: "left",
   },

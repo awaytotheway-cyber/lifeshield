@@ -122,6 +122,7 @@ export const COPY = {
   homeOpenFollowUp: "Open follow-up",
   homeClinicalTermPreview: "Preview wording (admin)",
   homeEnterResults: "Enter a lab result (admin)",
+  homeGreetingSub: "Here's your wellness overview",
   homeJourneyTitle: "Your journey",
   homeStepSafety: "Safety check",
   homeStepConsents: "Consents (3)",
