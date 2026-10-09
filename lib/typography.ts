@@ -1,18 +1,19 @@
-﻿/**
+/**
  * Type styles for PRESCOPE. Font names match the files loaded in app/_layout.tsx.
- * Headings: Manrope. Body: Inter. Hero stats: oversized Manrope display.
- * If fonts are still loading, React Native falls back to the system font.
+ * Primary face: Instrument Sans (body + headings). Lab/medical names stay in
+ * DM Mono for scanability. If fonts are still loading, React Native falls
+ * back to the system font.
  */
 
 export const fontFamily = {
   /** Screen titles and section headings. */
-  display: "Manrope_700Bold",
-  displaySemi: "Manrope_600SemiBold",
+  display: "InstrumentSans_700Bold",
+  displaySemi: "InstrumentSans_600SemiBold",
   /** Oversized hero numbers (risk score, days-until-check). */
-  heroStat: "Manrope_800ExtraBold",
-  body: "Inter_400Regular",
-  bodyMedium: "Inter_500Medium",
-  bodySemi: "Inter_600SemiBold",
+  heroStat: "InstrumentSans_700Bold",
+  body: "InstrumentSans_400Regular",
+  bodyMedium: "InstrumentSans_500Medium",
+  bodySemi: "InstrumentSans_600SemiBold",
   /** Lab / medical names — keep mono for scanability. */
   medical: "DMMono_400Regular",
 } as const;

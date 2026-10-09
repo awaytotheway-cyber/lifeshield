@@ -87,6 +87,14 @@ function AuthGate() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
+    InstrumentSans_400Regular: require("../assets/fonts/InstrumentSans-Regular.ttf"),
+    InstrumentSans_500Medium: require("../assets/fonts/InstrumentSans-Medium.ttf"),
+    InstrumentSans_600SemiBold: require("../assets/fonts/InstrumentSans-SemiBold.ttf"),
+    InstrumentSans_700Bold: require("../assets/fonts/InstrumentSans-Bold.ttf"),
+    InstrumentSans_400Regular_Italic: require("../assets/fonts/InstrumentSans-Italic.ttf"),
+    InstrumentSans_500Medium_Italic: require("../assets/fonts/InstrumentSans-MediumItalic.ttf"),
+    // Keep the Manrope / Inter / DM Mono bundles loaded so any screen holding
+    // an old fontFamily literal keeps rendering during the transition.
     Manrope_600SemiBold,
     Manrope_700Bold,
     Manrope_800ExtraBold,
