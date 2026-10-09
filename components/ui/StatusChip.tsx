@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors, hairline, spacing } from "@/lib/design-tokens";
+import { colors } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 export type StatusChipKind =
@@ -16,10 +16,8 @@ type StatusChipProps = {
 };
 
 /**
- * SwimClub status chip — sharp corners, 1px black outline, uppercase
- * mono label. "critical" flips fill to tabloid orange (the one accent).
- * Kind is preserved for callsite compatibility; the visual is intentionally
- * monochrome so status reads like a stamped label, not decoration.
+ * Small status pill. Use a calm phrase — never a raw number as the headline.
+ * Coral only for genuine high-risk (critical).
  */
 export function StatusChip({ kind, label }: StatusChipProps) {
   const palette = palettes[kind];
@@ -29,59 +27,41 @@ export function StatusChip({ kind, label }: StatusChipProps) {
         styles.chip,
         {
           backgroundColor: palette.bg,
-          borderColor: palette.border,
+          borderWidth: palette.border ? 1 : 0,
+          borderColor: palette.border ?? "transparent",
         },
       ]}
     >
-      <Text style={[styles.text, { color: palette.text }]}>
-        {label.toUpperCase()}
-      </Text>
+      <Text style={[styles.text, { color: palette.text }]}>{label}</Text>
     </View>
   );
 }
 
-const palettes: Record<
-  StatusChipKind,
-  { bg: string; text: string; border: string }
-> = {
-  normal: {
-    bg: colors.paperWhite,
-    text: colors.inkBlack,
-    border: colors.inkBlack,
-  },
+const palettes = {
+  normal: { bg: colors.riskLowLight, text: colors.riskLow, border: undefined },
   attention: {
-    bg: colors.paperWhite,
-    text: colors.inkBlack,
-    border: colors.inkBlack,
+    bg: colors.riskModerateLight,
+    text: colors.riskModerate,
+    border: undefined,
   },
   critical: {
-    bg: colors.tabloidOrange,
-    text: colors.inkBlack,
-    border: colors.inkBlack,
+    bg: colors.riskHighLight,
+    text: colors.riskHigh,
+    border: undefined,
   },
-  approved: {
-    bg: colors.inkBlack,
-    text: colors.paperWhite,
-    border: colors.inkBlack,
-  },
-  draft: {
-    bg: colors.paperWhite,
-    text: colors.ironGray,
-    border: colors.ash,
-  },
-};
+  approved: { bg: colors.primaryBlue, text: colors.white, border: undefined },
+  draft: { bg: "transparent", text: colors.slate, border: colors.border },
+} as const;
 
 const styles = StyleSheet.create({
   chip: {
     alignSelf: "flex-start",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.micro,
-    borderRadius: 0,
-    borderWidth: hairline,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderRadius: 20,
   },
   text: {
-    fontFamily: fontFamily.mono,
-    fontSize: 11,
-    letterSpacing: 0.6,
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: 12,
   },
 });

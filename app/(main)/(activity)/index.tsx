@@ -2,12 +2,9 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { AnnouncementBar } from "@/components/ui/AnnouncementBar";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { MonoLabel } from "@/components/ui/MonoLabel";
-import { OrangeStatPanel } from "@/components/ui/OrangeStatPanel";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -25,7 +22,7 @@ import {
   type DailyBucket,
 } from "@/lib/activity";
 import { loadRecentActivity } from "@/lib/activity-io";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -127,110 +124,69 @@ export default function ActivityScreen() {
     );
   }
 
-  const stepsBucket = todayByKind.get("steps") ?? null;
-  const activeBucket = todayByKind.get("active_minutes") ?? null;
-  const sleepBucket = todayByKind.get("sleep_minutes") ?? null;
-
   return (
-    <Screen scroll contentPadding={0}>
-      <AnnouncementBar message="clinical activity dossier · daily log" />
+    <Screen scroll>
+      <ScreenHeader title="Activity" onBack={() => router.back()} />
 
-      <View style={styles.body}>
-        <ScreenHeader title="Activity" onBack={() => router.back()} />
-
-        <View style={styles.actionRow}>
-          <PrimaryButton
-            title="Log a reading"
-            onPress={() => router.push(routes.activityLog)}
-          />
-          <TextButton
-            title="Connect health sources"
-            onPress={() => router.push(routes.activitySources)}
-          />
-        </View>
-
-        {state === "loading" ? (
-          <View style={styles.skeletons}>
-            <StaticSkeleton rows={3} />
-          </View>
-        ) : null}
-
-        {state === "error" && errorMessage ? (
-          <GlassCard intensity="card" style={styles.errorCard}>
-            <MonoLabel size={12}>Error</MonoLabel>
-            <Text style={styles.errorHeading}>Couldn&apos;t load activity</Text>
-            <Text style={styles.errorBody}>{errorMessage}</Text>
-          </GlassCard>
-        ) : null}
-
-        {state === "ready" && snapshots.length === 0 ? (
-          <EmptyState
-            icon="activity"
-            heading="Nothing tracked yet"
-            explanation="Log your first reading below, or connect HealthKit / Google Fit when the bridge lands."
-          />
-        ) : null}
+      <View style={styles.actionRow}>
+        <PrimaryButton
+          title="Log a reading"
+          onPress={() => router.push(routes.activityLog)}
+        />
+        <TextButton
+          title="Connect health sources"
+          onPress={() => router.push(routes.activitySources)}
+        />
       </View>
 
-      {snapshots.length > 0 ? (
-        <OrangeStatPanel
-          stats={[
-            {
-              label: "steps today",
-              value: pixelValue(stepsBucket?.total ?? 0, 0),
-            },
-            {
-              label: "active min",
-              value: pixelValue(activeBucket?.total ?? 0, 0),
-            },
-            {
-              label: "sleep hrs",
-              value: pixelValue((sleepBucket?.total ?? 0) / 60, 1),
-            },
-          ]}
+      {state === "loading" ? (
+        <View style={styles.skeletons}>
+          <StaticSkeleton rows={3} />
+        </View>
+      ) : null}
+
+      {state === "error" && errorMessage ? (
+        <GlassCard intensity="card" style={styles.errorCard}>
+          <Text style={styles.errorHeading}>Couldn't load activity</Text>
+          <Text style={styles.errorBody}>{errorMessage}</Text>
+        </GlassCard>
+      ) : null}
+
+      {state === "ready" && snapshots.length === 0 ? (
+        <EmptyState
+          icon="activity"
+          heading="Nothing tracked yet"
+          explanation="Log your first reading below, or connect HealthKit / Google Fit when the bridge lands."
         />
       ) : null}
 
-      <View style={styles.body}>
-        <MonoLabel size={12} style={styles.sectionLabel}>
-          Today · summary
-        </MonoLabel>
-        <View style={styles.summaryGrid}>
-          {ALL_KINDS.map((kind) => (
-            <SummaryTile
-              key={kind}
-              kind={kind}
-              bucket={todayByKind.get(kind) ?? null}
-            />
-          ))}
-        </View>
-
-        {recentActivityRows.length > 0 ? (
-          <>
-            <MonoLabel size={12} style={styles.sectionLabel}>
-              Recent readings
-            </MonoLabel>
-            <FlatList
-              data={recentActivityRows}
-              scrollEnabled={false}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <RecentRow snapshot={item} />}
-              ItemSeparatorComponent={() => <View style={styles.divider} />}
-            />
-          </>
-        ) : null}
+      <Text style={styles.sectionHeading}>Today</Text>
+      <View style={styles.summaryGrid}>
+        {ALL_KINDS.map((kind) => (
+          <SummaryTile
+            key={kind}
+            kind={kind}
+            bucket={todayByKind.get(kind) ?? null}
+          />
+        ))}
       </View>
+
+      {recentActivityRows.length > 0 ? (
+        <>
+          <Text style={styles.sectionHeading}>Recent readings</Text>
+          <FlatList
+            data={recentActivityRows}
+            scrollEnabled={false}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <RecentRow snapshot={item} />}
+            ItemSeparatorComponent={() => (
+              <View style={{ height: spacing.micro }} />
+            )}
+          />
+        </>
+      ) : null}
     </Screen>
   );
-}
-
-function pixelValue(value: number, decimals: number): string {
-  if (!Number.isFinite(value)) return "—";
-  if (decimals === 0) {
-    if (value >= 10_000) return `${Math.round(value / 1000)}k`;
-    return String(Math.round(value));
-  }
-  return value.toFixed(decimals);
 }
 
 function SummaryTile({
@@ -246,23 +202,21 @@ function SummaryTile({
   const direction = targetDirection(kind);
   return (
     <GlassCard intensity="card" style={styles.tile}>
-      <MonoLabel size={11}>{KIND_LABELS[kind]}</MonoLabel>
+      <Text style={styles.tileLabel}>{KIND_LABELS[kind]}</Text>
       <Text style={styles.tileValue}>
         {bucket ? formatValue(kind, value) : "—"}
       </Text>
       {target > 0 ? (
         <>
           <ProgressBar current={percent} total={100} />
-          <MonoLabel size={11} color={colors.ironGray} style={styles.tileTarget}>
+          <Text style={styles.tileTarget}>
             {direction === "higher_better"
               ? `${percent}% of ${formatValue(kind, target)}`
-              : `${percent}% target ≤ ${formatValue(kind, target)}`}
-          </MonoLabel>
+              : `${percent}% (target ≤ ${formatValue(kind, target)})`}
+          </Text>
         </>
       ) : (
-        <MonoLabel size={11} color={colors.ironGray} style={styles.tileTarget}>
-          No target set
-        </MonoLabel>
+        <Text style={styles.tileTarget}>No target set</Text>
       )}
     </GlassCard>
   );
@@ -272,24 +226,17 @@ function RecentRow({ snapshot }: { snapshot: ActivitySnapshot }) {
   const date = snapshot.recorded_at.slice(0, 10);
   return (
     <View style={styles.recentRow}>
-      <MonoLabel size={11} style={styles.recentDate}>
-        {date}
-      </MonoLabel>
+      <Text style={styles.recentDate}>{date}</Text>
       <Text style={styles.recentKind}>{KIND_LABELS[snapshot.kind]}</Text>
       <Text style={styles.recentValue}>
         {formatValue(snapshot.kind, snapshot.value)}
       </Text>
-      <MonoLabel size={10} color={colors.ironGray}>
-        {snapshot.source}
-      </MonoLabel>
+      <Text style={styles.recentSource}>{snapshot.source}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  body: {
-    paddingHorizontal: spacing.screenX,
-  },
   actionRow: {
     gap: spacing.sm,
     marginTop: spacing.sm,
@@ -299,78 +246,91 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
+    borderRadius: radius.card,
+    ...shadows.card,
   },
   errorHeading: {
-    fontFamily: fontFamily.groteskBold,
-    fontSize: 21,
-    color: colors.inkBlack,
-    marginTop: spacing.micro,
-    marginBottom: spacing.sm,
+    fontFamily: fontFamily.displaySemi,
+    fontSize: 16,
+    color: colors.riskHigh,
+    marginBottom: spacing.micro,
   },
   errorBody: {
-    fontFamily: fontFamily.grotesk,
-    fontSize: 15,
-    color: colors.ironGray,
+    fontFamily: fontFamily.body,
+    fontSize: 14,
+    color: colors.slate,
   },
-  sectionLabel: {
-    marginTop: spacing.lg,
+  sectionHeading: {
+    fontFamily: fontFamily.displaySemi,
+    fontSize: 18,
+    color: colors.deepNavy,
+    marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   summaryGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 0,
-    // Grid cells share a hairline — set border on the tile directly.
+    gap: spacing.sm,
   },
   tile: {
-    flexBasis: "50%",
-    flexGrow: 0,
+    flexBasis: "48%",
+    flexGrow: 1,
     padding: spacing.base,
-    borderTopWidth: 0,
-    borderRightWidth: 0,
-    borderBottomWidth: 1,
-    borderLeftWidth: 1,
-    borderColor: colors.inkBlack,
-    marginLeft: -1,
-    marginBottom: -1,
+    borderRadius: radius.card,
+    ...shadows.card,
+  },
+  tileLabel: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 12,
+    color: colors.slate,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: spacing.micro,
   },
   tileValue: {
-    fontFamily: fontFamily.groteskBold,
-    fontSize: 26,
-    color: colors.inkBlack,
-    marginTop: spacing.sm,
+    fontFamily: fontFamily.display,
+    fontSize: 22,
+    color: colors.deepNavy,
     marginBottom: spacing.sm,
   },
   tileTarget: {
-    marginTop: spacing.sm,
+    fontFamily: fontFamily.body,
+    fontSize: 12,
+    color: colors.slate,
+    marginTop: spacing.micro,
   },
   recentRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.base,
-    borderTopWidth: 1,
-    borderTopColor: colors.smoke,
-    backgroundColor: colors.paperWhite,
-    gap: spacing.sm,
-  },
-  divider: {
-    height: 0,
+    borderRadius: radius.card,
+    backgroundColor: colors.glassChrome,
   },
   recentDate: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 12,
+    color: colors.primaryBlue,
     minWidth: 90,
   },
   recentKind: {
     flex: 1,
-    fontFamily: fontFamily.grotesk,
-    fontSize: 14,
-    color: colors.inkBlack,
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    color: colors.charcoal,
   },
   recentValue: {
-    fontFamily: fontFamily.groteskBold,
-    fontSize: 14,
-    color: colors.inkBlack,
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 13,
+    color: colors.deepNavy,
     marginRight: spacing.sm,
+  },
+  recentSource: {
+    fontFamily: fontFamily.body,
+    fontSize: 11,
+    color: colors.slate,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });
 

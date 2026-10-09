@@ -9,12 +9,14 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
+import { GlassCard } from "@/components/ui/GlassCard";
 import { PressScale } from "@/components/ui/PressScale";
 import {
   colors,
-  hairline,
   primaryButtonHeight,
-  spacing,
+  radius,
+  secondaryButtonHeight,
+  shadows,
   tapTarget,
 } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
@@ -35,23 +37,19 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   icon?: keyof typeof Feather.glyphMap;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
-  /**
-   * When true, the button paints white outline + white text so it can sit
-   * on the capsule-black hero or an orange stat panel. Defaults to false
-   * (black outline + black text on paper white).
-   */
-  onDark?: boolean;
 };
 
+function darkerPrimary(pressed: boolean) {
+  return pressed ? "#234FBF" : colors.primaryBlue;
+}
+
+function darkerCoral(pressed: boolean) {
+  return pressed ? "#E05555" : colors.riskHigh;
+}
+
 /**
- * SwimClub button — always outlined, never filled with color. The system
- * uses black-on-white by default and white-on-dark inside the hero band.
- * "Primary" and "secondary" both render the same outlined shape; the
- * difference is only weight (primary = full-height ~44px, secondary =
- * same height, kept as an alias for callsite semantics).
- *
- * The "danger" variant paints the border and label in tabloid orange —
- * the ONE chromatic accent — used only for destructive confirms.
+ * Shared button. Prefer PrimaryButton / SecondaryButton names in new screens.
+ * Older screens still pass title + variant="ghost".
  */
 export function Button({
   title = "",
@@ -61,7 +59,6 @@ export function Button({
   icon,
   accessibilityLabel,
   style,
-  onDark = false,
   ...rest
 }: ButtonProps) {
   const isDisabled = Boolean(disabled || loading);
@@ -77,11 +74,7 @@ export function Button({
         disabled={isDisabled}
         style={[styles.iconBtn, isDisabled && styles.iconDisabled, style]}
       >
-        <Feather
-          name={icon ?? "more-horizontal"}
-          size={20}
-          color={onDark ? colors.paperWhite : colors.inkBlack}
-        />
+        <Feather name={icon ?? "more-horizontal"} size={20} color={colors.primaryBlue} />
       </PressScale>
     );
   }
@@ -97,19 +90,16 @@ export function Button({
       >
         {({ pressed }) =>
           loading ? (
-            <ActivityIndicator
-              color={onDark ? colors.paperWhite : colors.inkBlack}
-            />
+            <ActivityIndicator color={colors.skyBlue} />
           ) : (
             <Text
               style={[
                 styles.textLabel,
-                onDark ? styles.textLabelOnDark : null,
                 pressed && !isDisabled ? styles.textLabelPressed : null,
                 isDisabled && styles.disabledText,
               ]}
             >
-              {title.toUpperCase()}
+              {title}
             </Text>
           )
         }
@@ -117,17 +107,34 @@ export function Button({
     );
   }
 
+  if (resolvedVariant === "secondary") {
+    return (
+      <PressScale
+        {...rest}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        disabled={isDisabled}
+        style={({ pressed }) => [
+          styles.secondaryWrap,
+          pressed && !isDisabled ? styles.secondaryPressed : null,
+          isDisabled && styles.disabledWrap,
+          style,
+        ]}
+      >
+        <GlassCard intensity="button" style={styles.secondaryGlass}>
+          {loading ? (
+            <ActivityIndicator color={colors.primaryBlue} />
+          ) : (
+            <Text style={[styles.secondaryLabel, isDisabled && styles.disabledText]}>
+              {title}
+            </Text>
+          )}
+        </GlassCard>
+      </PressScale>
+    );
+  }
+
   const isDanger = resolvedVariant === "danger";
-  const borderColor = isDanger
-    ? colors.tabloidOrange
-    : onDark
-      ? colors.paperWhite
-      : colors.inkBlack;
-  const textColor = isDanger
-    ? colors.tabloidOrange
-    : onDark
-      ? colors.paperWhite
-      : colors.inkBlack;
 
   return (
     <PressScale
@@ -136,39 +143,27 @@ export function Button({
       accessibilityLabel={label}
       disabled={isDisabled}
       style={({ pressed }) => [
-        styles.outlined,
-        {
-          borderColor,
-          backgroundColor:
-            pressed && !isDisabled
-              ? onDark
-                ? "rgba(255,255,255,0.08)"
-                : "rgba(0,0,0,0.06)"
-              : "transparent",
-        },
-        isDisabled && styles.outlinedDisabled,
+        styles.primary,
+        { backgroundColor: isDanger ? darkerCoral(pressed) : darkerPrimary(pressed) },
+        !isDisabled ? shadows.button : null,
+        isDisabled && styles.primaryDisabled,
         style,
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={textColor} />
+        <ActivityIndicator color={colors.white} />
       ) : (
         <View style={styles.row}>
           {icon ? (
             <Feather
               name={icon}
-              size={16}
-              color={isDisabled ? colors.ash : textColor}
+              size={18}
+              color={isDisabled ? colors.mist : colors.white}
               style={styles.iconGap}
             />
           ) : null}
-          <Text
-            style={[
-              styles.outlinedLabel,
-              { color: isDisabled ? colors.ash : textColor },
-            ]}
-          >
-            {title.toUpperCase()}
+          <Text style={[styles.primaryLabel, isDisabled && styles.disabledText]}>
+            {title}
           </Text>
         </View>
       )}
@@ -197,40 +192,57 @@ export function IconButton(props: ButtonProps) {
 }
 
 const styles = StyleSheet.create({
-  outlined: {
-    marginTop: spacing.base,
+  primary: {
+    marginTop: 16,
     minHeight: primaryButtonHeight,
-    borderWidth: hairline,
-    borderRadius: 0,
+    borderRadius: radius.button,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: 24,
     width: "100%",
   },
-  outlinedDisabled: {
-    borderColor: colors.ash,
+  primaryDisabled: {
+    backgroundColor: colors.border,
+    shadowOpacity: 0,
+    elevation: 0,
   },
-  outlinedLabel: {
-    fontFamily: fontFamily.mono,
-    fontSize: 13,
-    letterSpacing: 1.3,
+  primaryLabel: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 15,
+    color: colors.white,
+  },
+  secondaryWrap: {
+    marginTop: 16,
+    width: "100%",
+    borderRadius: radius.button,
+    overflow: "hidden",
+  },
+  secondaryGlass: {
+    minHeight: secondaryButtonHeight,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+    width: "100%",
+  },
+  secondaryPressed: {
+    opacity: 0.85,
+  },
+  secondaryLabel: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 15,
+    color: colors.primaryBlue,
   },
   textBtn: {
-    marginTop: spacing.sm,
+    marginTop: 8,
     minHeight: tapTarget,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: 8,
   },
   textLabel: {
-    fontFamily: fontFamily.mono,
-    fontSize: 13,
-    letterSpacing: 1,
-    color: colors.inkBlack,
-  },
-  textLabelOnDark: {
-    color: colors.paperWhite,
+    fontFamily: fontFamily.body,
+    fontSize: 15,
+    color: colors.skyBlue,
   },
   textLabelPressed: {
     textDecorationLine: "underline",
@@ -238,7 +250,7 @@ const styles = StyleSheet.create({
   iconBtn: {
     width: tapTarget,
     height: tapTarget,
-    borderRadius: 0,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -249,13 +261,13 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   disabledText: {
-    color: colors.ash,
+    color: colors.mist,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
   },
   iconGap: {
-    marginRight: spacing.sm,
+    marginRight: 8,
   },
 });
