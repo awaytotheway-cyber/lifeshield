@@ -1,49 +1,40 @@
 /**
- * Type styles for PRESCOPE.
+ * Type styles for PRESCOPE — SwimClub-style clinical-dossier system.
  *
- * Primary families:
- *   Body / headings   → Instrument Sans (workhorse)
- *   Micro-copy        → JetBrains Mono (uppercase, +2% letter-spacing)
- *   Display numerals  → VT323 (LCD / pixel look — only at 60px+)
+ * Three families:
+ *   Body / headings   → Space Grotesk (substitute for Px Grotesk)
+ *   Micro-copy        → JetBrains Mono (substitute for Apercu Mono Pro,
+ *                       set uppercase with +2% letter-spacing)
+ *   Display numerals  → VT323 (substitute for the Swimclub pixel face —
+ *                       LCD/bitmap look, ONLY at 60px+)
  *
- * `grotesk*` aliases are preserved so existing screens keep rendering; they
- * now resolve to Instrument Sans. Legacy aliases (display, displaySemi,
- * heroStat, body, bodyMedium, bodySemi, medical) likewise map onto the new
- * primary family.
+ * Legacy aliases (display, displaySemi, heroStat, body, bodyMedium,
+ * bodySemi, medical) keep older screens working while they gradually
+ * adopt the new names (grotesk, groteskBold, mono, pixel).
  */
 
 export const fontFamily = {
-  // ---------- Primary (Instrument Sans) ----------
-  sans: "InstrumentSans_400Regular",
-  sansMedium: "InstrumentSans_500Medium",
-  sansSemi: "InstrumentSans_600SemiBold",
-  sansBold: "InstrumentSans_700Bold",
-  sansItalic: "InstrumentSans_400Regular_Italic",
-  sansMediumItalic: "InstrumentSans_500Medium_Italic",
-
-  // ---------- Grotesk aliases (now Instrument Sans) ----------
-  grotesk: "InstrumentSans_400Regular",
-  groteskMedium: "InstrumentSans_500Medium",
-  groteskBold: "InstrumentSans_700Bold",
-
+  // ---------- SwimClub canonical ----------
+  grotesk: "SpaceGrotesk_400Regular",
+  groteskMedium: "SpaceGrotesk_500Medium",
+  groteskBold: "SpaceGrotesk_700Bold",
   /** Uppercase micro-copy — labels, nav, stamped tokens. */
   mono: "JetBrainsMono_400Regular",
   /** Giant LCD / 7-segment numerals. Never below 60px. */
   pixel: "VT323_400Regular",
 
-  // ---------- Legacy aliases ----------
-  display: "InstrumentSans_700Bold",
-  displaySemi: "InstrumentSans_500Medium",
+  // ---------- Legacy aliases (map old system → SwimClub) ----------
+  display: "SpaceGrotesk_700Bold",
+  displaySemi: "SpaceGrotesk_500Medium",
   heroStat: "VT323_400Regular",
-  body: "InstrumentSans_400Regular",
-  bodyMedium: "InstrumentSans_500Medium",
-  bodySemi: "InstrumentSans_700Bold",
+  body: "SpaceGrotesk_400Regular",
+  bodyMedium: "SpaceGrotesk_500Medium",
+  bodySemi: "SpaceGrotesk_700Bold",
   medical: "JetBrainsMono_400Regular",
 } as const;
 
 /**
- * Type scale (unchanged — Instrument Sans slots cleanly into the SwimClub
- * sizes).
+ * SwimClub type scale. Sizes match the reference:
  *   caption   12  · line 1.3
  *   body-sm   15  · line 1.7
  *   sub       21  · line 1.3
@@ -55,7 +46,7 @@ export const fontFamily = {
  */
 export const typography = {
   display: {
-    fontFamily: fontFamily.sansBold,
+    fontFamily: fontFamily.groteskBold,
     fontSize: 52,
     lineHeight: 55,
     letterSpacing: -0.5,
@@ -68,32 +59,32 @@ export const typography = {
     letterSpacing: 0,
   },
   h1: {
-    fontFamily: fontFamily.sansBold,
+    fontFamily: fontFamily.groteskBold,
     fontSize: 37,
     lineHeight: 41,
     letterSpacing: -0.25,
   },
   h2: {
-    fontFamily: fontFamily.sansBold,
+    fontFamily: fontFamily.groteskBold,
     fontSize: 31,
     lineHeight: 34,
   },
   h3: {
-    fontFamily: fontFamily.sansSemi,
+    fontFamily: fontFamily.groteskBold,
     fontSize: 21,
     lineHeight: 27,
   },
   body: {
-    fontFamily: fontFamily.sans,
+    fontFamily: fontFamily.grotesk,
     fontSize: 15,
     lineHeight: 26,
   },
   bodySm: {
-    fontFamily: fontFamily.sans,
+    fontFamily: fontFamily.grotesk,
     fontSize: 13,
     lineHeight: 20,
   },
-  /** Uppercase label — mono, tight tracking. */
+  /** SwimClub uppercase label — mono, tight tracking, small caps feel. */
   label: {
     fontFamily: fontFamily.mono,
     fontSize: 12,
