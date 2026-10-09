@@ -244,6 +244,48 @@ export default function MainLayout() {
             }}
           />
           <Tabs.Screen
+            name="(activity)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(goals)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(meal-plans)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(medications)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(recipes)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
+            name="(reminders)"
+            options={{
+              href: null,
+              tabBarStyle: { display: "none" },
+            }}
+          />
+          <Tabs.Screen
             name="clinical-term-preview"
             options={{
               href: null,
