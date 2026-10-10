@@ -6,6 +6,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { ExploreGrid, type ExploreItem } from "@/components/ui/ExploreGrid";
+import { HomeSkeleton } from "@/components/ui/HomeSkeleton";
 import { HomeStatCards } from "@/components/ui/HomeStatCards";
 import { TrustBadgeGrid } from "@/components/ui/TrustBadgeGrid";
 import { TrustBanner } from "@/components/ui/TrustBanner";
@@ -201,8 +202,8 @@ export default function HomeScreen() {
 
   if (loading) {
     return (
-      <Screen>
-        <Text style={styles.loading}>{COPY.authLoading}</Text>
+      <Screen scroll contentPadding={spacing.screenX}>
+        <HomeSkeleton />
       </Screen>
     );
   }
@@ -460,12 +461,6 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  loading: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
-    textAlign: "center",
-  },
   menuRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -158,13 +158,18 @@ export default function QuestionnaireHubScreen() {
             <Text style={styles.progress}>
               {COPY.hubProgressLabel}: {doneCount} / {total}
             </Text>
-            <View style={styles.track}>
-              <View
-                style={[
-                  styles.fill,
-                  { width: `${total > 0 ? (doneCount / total) * 100 : 0}%` },
-                ]}
-              />
+            <View style={styles.progressRow}>
+              <View style={styles.track}>
+                <View
+                  style={[
+                    styles.fill,
+                    { width: `${total > 0 ? (doneCount / total) * 100 : 0}%` },
+                  ]}
+                />
+              </View>
+              <Text style={styles.percent}>
+                {total > 0 ? Math.round((doneCount / total) * 100) : 0}%
+              </Text>
             </View>
             <SetupBanners />
             {hubLoading ? <StaticSkeleton rows={4} /> : null}
@@ -226,8 +231,14 @@ const styles = StyleSheet.create({
     color: colors.slate,
     textAlign: "left",
   },
-  track: {
+  progressRow: {
     marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.mdSm,
+  },
+  track: {
+    flex: 1,
     height: 4,
     backgroundColor: colors.border,
     borderRadius: 2,
@@ -235,7 +246,13 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: 4,
+    borderRadius: 2,
     backgroundColor: colors.sage,
+  },
+  percent: {
+    fontFamily: fontFamily.medical,
+    fontSize: 13,
+    color: colors.slate,
   },
   error: {
     marginTop: 12,
