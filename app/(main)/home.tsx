@@ -1,11 +1,13 @@
+import { Feather } from "@expo/vector-icons";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { ExploreGrid, type ExploreItem } from "@/components/ui/ExploreGrid";
 import { HomeStatCards } from "@/components/ui/HomeStatCards";
-import { PillFeatureGrid } from "@/components/ui/PillFeatureGrid";
+import { TrustBadgeGrid } from "@/components/ui/TrustBadgeGrid";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
 import { Screen } from "@/components/ui/Screen";
@@ -41,13 +43,52 @@ import {
 } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
 
-const LOOP_LABELS: { id: JourneyStepId; label: string }[] = [
-  { id: "questionnaire", label: COPY.homeStepQuestionnaire },
-  { id: "tests", label: COPY.homeStepTests },
-  { id: "results", label: COPY.homeStepLabResults },
-  { id: "plan", label: COPY.homeStepPlan },
-  { id: "store", label: COPY.homeStepOrderTrack },
-  { id: "followup", label: COPY.homeStepFollowUp },
+const LOOP_LABELS: {
+  id: JourneyStepId;
+  label: string;
+  icon: keyof typeof Feather.glyphMap;
+}[] = [
+  { id: "questionnaire", label: COPY.homeStepQuestionnaire, icon: "clipboard" },
+  { id: "tests", label: COPY.homeStepTests, icon: "droplet" },
+  { id: "results", label: COPY.homeStepLabResults, icon: "bar-chart-2" },
+  { id: "plan", label: COPY.homeStepPlan, icon: "heart" },
+  { id: "store", label: COPY.homeStepOrderTrack, icon: "package" },
+  { id: "followup", label: COPY.homeStepFollowUp, icon: "calendar" },
+];
+
+const TRUST_BADGES = [
+  {
+    id: "science",
+    label: "Science-backed",
+    description: "Rules from published guidance",
+    icon: "cpu" as const,
+    color: colors.primaryBlue,
+    tint: colors.iceBlue,
+  },
+  {
+    id: "private",
+    label: "Private by default",
+    description: "Row-level security on every row",
+    icon: "lock" as const,
+    color: colors.sage,
+    tint: colors.sageLight,
+  },
+  {
+    id: "calm",
+    label: "Calm, clear steps",
+    description: "One next action at a time",
+    icon: "heart" as const,
+    color: colors.coral,
+    tint: colors.coralLight,
+  },
+  {
+    id: "track",
+    label: "Track your journey",
+    description: "See progress as you go",
+    icon: "trending-up" as const,
+    color: colors.amber,
+    tint: colors.amberLight,
+  },
 ];
 
 function journeyState(
@@ -237,31 +278,99 @@ export default function HomeScreen() {
       id: "safety",
       title: COPY.homeStepSafety,
       state: "complete",
+      icon: "shield",
+      subtitle: "Cleared",
     },
     {
       id: "consents",
-      title: `${COPY.homeStepConsents}${consentsDone ? "" : nextConsent ? ` — ${nextConsent}` : ""}`,
+      title: COPY.homeStepConsents,
       state: consentsDone ? "complete" : "current",
+      icon: "file-text",
+      subtitle: consentsDone
+        ? "All signed"
+        : nextConsent
+          ? `Next: ${nextConsent.toUpperCase()}`
+          : undefined,
     },
     ...LOOP_LABELS.map((item) => {
-      const extra =
-        item.id === "questionnaire" ? ` — ${questionnaireCount}/10` : "";
+      const state = journeyState(
+        loopStepState(item.id, current, journey),
+        item.id,
+        journey,
+      );
+      // Only the questionnaire carries a count; the lock icon already says
+      // "not yet" for the rest, so repeating it on every row is just noise.
+      const subtitle =
+        item.id === "questionnaire"
+          ? `${questionnaireCount} of 10 sections`
+          : undefined;
       return {
         id: item.id,
-        title: `${item.label}${extra}`,
-        state: journeyState(loopStepState(item.id, current, journey), item.id, journey),
+        title: item.label,
+        state,
+        icon: item.icon,
+        subtitle,
       };
     }),
   ];
 
   const consentCount = (agreed.brca ? 1 : 0) + (agreed.ctc ? 1 : 0) + (agreed.snp ? 1 : 0);
 
-  const homeFeatures = [
-    { id: "science", label: "Science-backed rules", icon: "cpu" as const },
-    { id: "private", label: "Private by default", icon: "lock" as const },
-    { id: "calm", label: "Calm, clear next steps", icon: "heart" as const },
-    { id: "track", label: "Track your journey", icon: "map" as const },
-  ];
+  // Secondary destinations, gated by the same rules the old text links used.
+  const exploreItems: ExploreItem[] = [
+    {
+      show: current !== "questionnaire",
+      id: "questionnaire",
+      label: COPY.homeOpenQuestionnaire,
+      icon: "clipboard" as const,
+      go: () => router.replace(routes.questionnaire),
+    },
+    {
+      show:
+        (hasRecommendations || questionnaireCount >= 10) && current !== "tests",
+      id: "results",
+      label: COPY.homeOpenResults,
+      icon: "list" as const,
+      go: () => router.replace(routes.results),
+    },
+    {
+      show: hasLabResults && current !== "results",
+      id: "labResults",
+      label: COPY.homeOpenLabResults,
+      icon: "droplet" as const,
+      go: () => router.push(routes.labResults),
+    },
+    {
+      show: (hasLabResults || hasPlan) && current !== "plan",
+      id: "plan",
+      label: COPY.homeOpenPlan,
+      icon: "heart" as const,
+      go: () => router.push(routes.plan),
+    },
+    {
+      show: hasPlan && current !== "store",
+      id: "store",
+      label: COPY.homeOpenStore,
+      icon: "shopping-bag" as const,
+      go: () => router.push(routes.store),
+    },
+    {
+      show: hasStoreOrders && current !== "followup",
+      id: "orders",
+      label: COPY.homeOpenOrders,
+      icon: "package" as const,
+      go: () => router.push(routes.orders),
+    },
+    {
+      show: hasPlan && current !== "followup",
+      id: "followUp",
+      label: COPY.homeOpenFollowUp,
+      icon: "calendar" as const,
+      go: () => router.push(routes.followUp),
+    },
+  ]
+    .filter((item) => item.show)
+    .map(({ id, label, icon, go }) => ({ id, label, icon, onPress: go }));
 
   return (
     <Screen scroll contentPadding={spacing.screenX}>
@@ -295,7 +404,7 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.features}>
-        <PillFeatureGrid features={homeFeatures} />
+        <TrustBadgeGrid badges={TRUST_BADGES} />
       </View>
 
       <Text style={styles.section}>{COPY.homeJourneyTitle}</Text>
@@ -309,70 +418,17 @@ export default function HomeScreen() {
 
       <SetupBanners />
 
-      <Text style={styles.hint}>{COPY.homePrimaryHint}</Text>
-      <PrimaryButton title={COPY[primary.titleKey]} onPress={goPrimary} />
+      <Text style={styles.ctaHeading}>{COPY.homePrimaryHint}</Text>
+      <PrimaryButton
+        title={COPY[primary.titleKey]}
+        iconTrailing="arrow-right"
+        onPress={goPrimary}
+      />
 
-      {consentsDone ? (
+      {consentsDone && exploreItems.length > 0 ? (
         <>
           <Text style={styles.also}>{COPY.homeAlsoAvailable}</Text>
-          {current !== "questionnaire" ? (
-            <TextButton
-              title={COPY.homeOpenQuestionnaire}
-              onPress={() => {
-                router.replace(routes.questionnaire);
-              }}
-            />
-          ) : null}
-          {hasRecommendations || questionnaireCount >= 10 ? (
-            current !== "tests" ? (
-              <TextButton
-                title={COPY.homeOpenResults}
-                onPress={() => {
-                  router.replace(routes.results);
-                }}
-              />
-            ) : null
-          ) : null}
-          {hasLabResults && current !== "results" ? (
-            <TextButton
-              title={COPY.homeOpenLabResults}
-              onPress={() => {
-                router.push(routes.labResults);
-              }}
-            />
-          ) : null}
-          {(hasLabResults || hasPlan) && current !== "plan" ? (
-            <TextButton
-              title={COPY.homeOpenPlan}
-              onPress={() => {
-                router.push(routes.plan);
-              }}
-            />
-          ) : null}
-          {hasPlan && current !== "store" ? (
-            <TextButton
-              title={COPY.homeOpenStore}
-              onPress={() => {
-                router.push(routes.store);
-              }}
-            />
-          ) : null}
-          {hasStoreOrders && current !== "followup" ? (
-            <TextButton
-              title={COPY.homeOpenOrders}
-              onPress={() => {
-                router.push(routes.orders);
-              }}
-            />
-          ) : null}
-          {hasPlan && current !== "followup" ? (
-            <TextButton
-              title={COPY.homeOpenFollowUp}
-              onPress={() => {
-                router.push(routes.followUp);
-              }}
-            />
-          ) : null}
+          <ExploreGrid items={exploreItems} />
         </>
       ) : null}
 
@@ -486,17 +542,21 @@ const styles = StyleSheet.create({
     color: colors.coral,
     textAlign: "left",
   },
-  hint: {
-    marginTop: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.slate,
+  ctaHeading: {
+    marginTop: 24,
+    marginBottom: 12,
+    fontFamily: fontFamily.display,
+    fontSize: 16,
+    lineHeight: 22,
+    color: colors.deepNavy,
     textAlign: "left",
   },
   also: {
     marginTop: 24,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
+    marginBottom: 12,
+    fontFamily: fontFamily.displaySemi,
+    fontSize: 14,
+    lineHeight: 20,
     color: colors.slate,
     textAlign: "left",
   },

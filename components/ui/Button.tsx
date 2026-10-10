@@ -35,6 +35,8 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   variant?: ButtonVariant;
   /** Feather icon name for IconButton (and optional leading icon). */
   icon?: keyof typeof Feather.glyphMap;
+  /** Trailing icon, for forward actions where a leading arrow reads wrong. */
+  iconTrailing?: keyof typeof Feather.glyphMap;
   accessibilityLabel?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -57,6 +59,7 @@ export function Button({
   variant = "primary",
   disabled,
   icon,
+  iconTrailing,
   accessibilityLabel,
   style,
   ...rest
@@ -165,6 +168,14 @@ export function Button({
           <Text style={[styles.primaryLabel, isDisabled && styles.disabledText]}>
             {title}
           </Text>
+          {iconTrailing ? (
+            <Feather
+              name={iconTrailing}
+              size={18}
+              color={isDisabled ? colors.mist : colors.white}
+              style={styles.iconGapTrailing}
+            />
+          ) : null}
         </View>
       )}
     </PressScale>
@@ -269,5 +280,8 @@ const styles = StyleSheet.create({
   },
   iconGap: {
     marginRight: 8,
+  },
+  iconGapTrailing: {
+    marginLeft: 8,
   },
 });

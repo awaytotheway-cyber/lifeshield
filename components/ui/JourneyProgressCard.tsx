@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import type { ReactNode } from "react";
+import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import Animated, {
   useAnimatedStyle,
@@ -18,6 +19,10 @@ export type JourneyStepItem = {
   id: string;
   title: string;
   state: JourneyStepState;
+  /** Feather glyph shown inside the indicator for the current step. */
+  icon?: keyof typeof Feather.glyphMap;
+  /** Short status line under the title. */
+  subtitle?: string;
 };
 
 type JourneyProgressCardProps = {
@@ -25,21 +30,74 @@ type JourneyProgressCardProps = {
   onContinue?: () => void;
 };
 
+const INDICATOR = 32;
+
+function Indicator({
+  step,
+  pulseNode,
+}: {
+  step: JourneyStepItem;
+  pulseNode: ReactNode;
+}) {
+  if (step.state === "complete") {
+    return (
+      <View style={[styles.indicator, styles.indicatorComplete]}>
+        <Feather name="check" size={16} color={colors.white} />
+      </View>
+    );
+  }
+
+  if (step.state === "current") {
+    return (
+      <View style={styles.indicatorWrap}>
+        {pulseNode}
+        <View style={[styles.indicator, styles.indicatorCurrent]}>
+          <Feather name={step.icon ?? "play"} size={15} color={colors.white} />
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.indicator, styles.indicatorUpcoming]}>
+      <Feather name="lock" size={13} color={colors.mist} />
+    </View>
+  );
+}
+
 /**
- * Home-style vertical timeline. Built now so later screens can drop it in.
+ * Vertical journey timeline. Completed steps carry a solid sage rail down to
+ * the next step; anything not yet reached uses a dashed rail. The current
+ * step is lifted onto an iceBlue card with its own Continue action.
  */
 export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardProps) {
   const reduceMotion = useReducedMotion();
-  const pulse = useAnimatedStyle(() => {
+
+  const pulseStyle = useAnimatedStyle<ViewStyle>(() => {
     if (reduceMotion) {
-      return { opacity: 1 };
+      return { opacity: 0, transform: [{ scale: 1 }] };
     }
     return {
       opacity: withRepeat(
-        withSequence(withTiming(1, { duration: 700 }), withTiming(0.45, { duration: 700 })),
+        withSequence(
+          withTiming(0.4, { duration: 120 }),
+          withTiming(0, { duration: 1380 }),
+        ),
         -1,
-        true,
+        false,
       ),
+      transform: [
+        {
+          scale: withRepeat(
+            withSequence(
+              withTiming(1, { duration: 120 }),
+              withTiming(1.55, { duration: 1380 }),
+            ),
+            -1,
+            false,
+          ),
+        },
+      ],
     };
   });
 
@@ -47,41 +105,59 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
     <GlassCard intensity="card" style={styles.card}>
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
-        const color =
-          step.state === "complete"
-            ? colors.riskLow
-            : step.state === "current"
-              ? colors.primaryBlue
-              : colors.border;
-        const textColor =
-          step.state === "upcoming" ? colors.mist : colors.deepNavy;
-        const weight = step.state === "current" ? fontFamily.bodySemi : fontFamily.body;
+        const railDone = step.state === "complete";
 
         return (
           <View key={step.id} style={styles.row}>
             <View style={styles.rail}>
-              {step.state === "current" ? (
-                <Animated.View style={[styles.dot, { backgroundColor: color }, pulse]} />
-              ) : (
-                <View style={[styles.dot, { backgroundColor: color }]} />
+              <Indicator
+                step={step}
+                pulseNode={
+                  <Animated.View style={[styles.pulseRing, pulseStyle]} />
+                }
+              />
+              {isLast ? null : (
+                <View
+                  style={[styles.line, railDone ? styles.lineDone : styles.linePending]}
+                />
               )}
-              {isLast ? null : <View style={styles.line} />}
             </View>
-            <View style={styles.body}>
-              <Text style={[styles.title, { color: textColor, fontFamily: weight }]}>
-                {step.title}
-              </Text>
-              {step.state === "current" && onContinue ? (
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Continue"
-                  onPress={onContinue}
-                  style={styles.chip}
+
+            <View style={[styles.body, isLast ? styles.bodyLast : null]}>
+              <View
+                style={[
+                  styles.bodyInner,
+                  step.state === "current" ? styles.bodyCurrent : null,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.title,
+                    step.state === "upcoming" ? styles.titleUpcoming : null,
+                    step.state === "current" ? styles.titleCurrent : null,
+                  ]}
                 >
-                  <Text style={styles.chipText}>Continue</Text>
-                  <Feather name="chevron-right" size={14} color={colors.primaryBlue} />
-                </Pressable>
-              ) : null}
+                  {step.title}
+                </Text>
+                {step.subtitle ? (
+                  <Text style={styles.subtitle}>{step.subtitle}</Text>
+                ) : null}
+
+                {step.state === "current" && onContinue ? (
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Continue"
+                    onPress={onContinue}
+                    style={({ pressed }) => [
+                      styles.chip,
+                      pressed ? styles.chipPressed : null,
+                    ]}
+                  >
+                    <Text style={styles.chipText}>Continue</Text>
+                    <Feather name="arrow-right" size={14} color={colors.white} />
+                  </Pressable>
+                ) : null}
+              </View>
             </View>
           </View>
         );
@@ -96,47 +172,112 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    minHeight: 44,
   },
   rail: {
-    width: 24,
+    width: INDICATOR,
     alignItems: "center",
   },
-  dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginTop: 4,
+  indicatorWrap: {
+    width: INDICATOR,
+    height: INDICATOR,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pulseRing: {
+    position: "absolute",
+    width: INDICATOR,
+    height: INDICATOR,
+    borderRadius: INDICATOR / 2,
+    backgroundColor: colors.primaryBlue,
+  },
+  indicator: {
+    width: INDICATOR,
+    height: INDICATOR,
+    borderRadius: INDICATOR / 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  indicatorComplete: {
+    backgroundColor: colors.riskLow,
+  },
+  indicatorCurrent: {
+    backgroundColor: colors.primaryBlue,
+  },
+  indicatorUpcoming: {
+    borderWidth: 2,
+    borderColor: colors.border,
+    backgroundColor: colors.white,
   },
   line: {
     flex: 1,
-    width: 2,
-    backgroundColor: colors.border,
+    width: 0,
+    minHeight: 12,
     marginVertical: 4,
+  },
+  lineDone: {
+    borderLeftWidth: 2,
+    borderLeftColor: colors.riskLow,
+  },
+  // Dashed renders solid on some Android builds; acceptable degradation.
+  linePending: {
+    borderLeftWidth: 2,
+    borderStyle: "dashed",
+    borderLeftColor: colors.border,
   },
   body: {
     flex: 1,
-    paddingBottom: 16,
-    paddingLeft: 8,
+    paddingBottom: spacing.base,
+    paddingLeft: spacing.mdSm,
+  },
+  bodyLast: {
+    paddingBottom: 0,
+  },
+  bodyInner: {
+    paddingVertical: 4,
+  },
+  bodyCurrent: {
+    backgroundColor: colors.iceBlue,
+    borderRadius: 14,
+    padding: spacing.mdSm,
+    marginTop: -4,
   },
   title: {
+    fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
-    lineHeight: 24,
+    lineHeight: 21,
+    color: colors.deepNavy,
+  },
+  titleCurrent: {
+    fontFamily: fontFamily.displaySemi,
+    color: colors.deepNavy,
+  },
+  titleUpcoming: {
+    color: colors.mist,
+  },
+  subtitle: {
+    marginTop: 2,
+    fontFamily: fontFamily.body,
+    fontSize: 12,
+    lineHeight: 16,
+    color: colors.slate,
   },
   chip: {
-    marginTop: 8,
+    marginTop: spacing.mdSm,
     alignSelf: "flex-start",
-    minHeight: 32,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    backgroundColor: colors.lightTeal,
+    minHeight: 36,
+    paddingHorizontal: spacing.base,
+    borderRadius: 18,
+    backgroundColor: colors.primaryBlue,
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 6,
+  },
+  chipPressed: {
+    backgroundColor: "#234FBF",
   },
   chipText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.primaryBlue,
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 13,
+    color: colors.white,
   },
 });

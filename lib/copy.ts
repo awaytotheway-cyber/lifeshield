@@ -135,8 +135,8 @@ export const COPY = {
   homeStepDone: "Done",
   homeStepNext: "You are here",
   homeStepWaiting: "Waiting",
-  homePrimaryHint: "One next step:",
-  homeAlsoAvailable: "Also available",
+  homePrimaryHint: "Continue your journey",
+  homeAlsoAvailable: "Explore",
   signOut: "Sign out",
 
   clinicalTermPreviewTitle: "Wording preview",
