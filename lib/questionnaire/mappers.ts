@@ -128,6 +128,10 @@ export function skippedReproductiveToJson(
   return {
     [SKIPPED_REPRODUCTIVE_DETAIL_KEY]: true,
     contraceptive_use: false,
+    // The HRT question is not shown on this path, so this records "not
+    // asked" rather than "no". An active medication tagged "hormones" still
+    // sets the hormone-therapy fact — see lib/rules-facts.ts.
+    hrt_use: false,
     amenorrhoea: false,
     breastfeeding: false,
     [SYMPTOM_INTERRUPT_CLEARED_KEY]: interruptCleared,
@@ -148,6 +152,7 @@ export function reproductiveToJson(
       parsed.contraceptiveUse === "yes"
         ? parseFiniteNumber(parsed.contraceptiveDurationYears)
         : null,
+    hrt_use: parsed.hrtUse === "yes",
     amenorrhoea: parsed.amenorrhoea === "yes",
     amenorrhoea_episodes:
       parsed.amenorrhoea === "yes"
@@ -175,6 +180,7 @@ export function jsonToReproductiveForm(
   json: Record<string, unknown> | null,
 ): ReproductiveForm {
   const contraceptive = yesNoFromUnknown(json?.contraceptive_use);
+  const hrt = yesNoFromUnknown(json?.hrt_use);
   const amenorrhoea = yesNoFromUnknown(json?.amenorrhoea);
   const regularity = json?.menstrual_regularity;
   const meno = json?.menopausal_status;
@@ -185,6 +191,7 @@ export function jsonToReproductiveForm(
       undefined) as ReproductiveForm["contraceptiveUse"],
     contraceptiveType: String(json?.contraceptive_type ?? ""),
     contraceptiveDurationYears: numberToField(json?.contraceptive_duration_years),
+    hrtUse: (hrt || undefined) as ReproductiveForm["hrtUse"],
     amenorrhoea: (amenorrhoea || undefined) as ReproductiveForm["amenorrhoea"],
     amenorrhoeaEpisodes: numberToField(json?.amenorrhoea_episodes),
     amenorrhoeaCause: String(json?.amenorrhoea_cause ?? ""),

@@ -302,10 +302,11 @@ export async function regenerateDraftPlan(
     return { ok: false, rows: [], message: COPY.missingKeys };
   }
   try {
-    const [engine, results, genetics] = await Promise.all([
+    const [engine, results, genetics, medications] = await Promise.all([
       useQuestionnaireStore.getState().loadForEngine(userId),
       loadOwnTestResults(userId),
       loadLatestGeneticResults(userId),
+      loadOwnMedications(userId),
     ]);
     if (!engine.ok) {
       return {
@@ -321,6 +322,10 @@ export async function regenerateDraftPlan(
     const facts = factsFromSavedAnswers({
       bmi: engine.bmi,
       sections: engine.sections,
+      // Drives the hormone-therapy and anticoagulant facts behind the
+      // DIM/I3C and omega-3 practitioner check. A failed load yields no
+      // rows, which is the same as having none.
+      medications: medications.rows,
     });
     const labs = labsFromTestResults(results.rows);
     // Merge SNP flags from the caller's most recent genetic panel(s) on

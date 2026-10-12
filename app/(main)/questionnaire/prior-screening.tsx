@@ -31,6 +31,7 @@ import {
 import { collectRecommendations, PHASE1_LABS } from "@/lib/rules-engine";
 import { loadClinicalThresholds } from "@/lib/load-thresholds";
 import { factsFromSavedAnswers } from "@/lib/rules-facts";
+import { loadOwnMedications } from "@/lib/supplements-io";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
@@ -129,7 +130,10 @@ export default function PriorScreeningScreen() {
     }
 
     try {
-      const bundle = await loadForEngine(session.user.id);
+      const [bundle, medications] = await Promise.all([
+        loadForEngine(session.user.id),
+        loadOwnMedications(session.user.id),
+      ]);
       if (!bundle.ok) {
         setSaveMessage(bundle.message ?? COPY.resultsSaveFailed);
         return;
@@ -137,6 +141,9 @@ export default function PriorScreeningScreen() {
       const facts = factsFromSavedAnswers({
         bmi: bundle.bmi,
         sections: bundle.sections,
+        // Hormone therapy here can trigger the DUTCH test and stool
+        // analysis, so the test recommendations written below need it.
+        medications: medications.rows,
       });
       const thresholds = await loadClinicalThresholds();
       const recommendations = collectRecommendations(

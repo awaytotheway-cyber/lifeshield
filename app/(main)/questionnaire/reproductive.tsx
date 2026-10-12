@@ -431,6 +431,23 @@ export default function ReproductiveScreen() {
         </>
       ) : null}
 
+      <Controller
+        control={control}
+        name="hrtUse"
+        render={({ field: { value, onChange } }) => (
+          <RadioGroup
+            label={label(
+              "hrt_use",
+              "Are you using, or have you used in the last 12 months, hormone replacement therapy (HRT)?",
+            )}
+            options={opts("hrt_use", YES_NO_OPTIONS)}
+            value={value}
+            onChange={onChange}
+            error={errors.hrtUse?.message}
+          />
+        )}
+      />
+
       <ClinicalTerm termKey="amenorrhoea" />
       <Controller
         control={control}

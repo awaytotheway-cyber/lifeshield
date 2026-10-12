@@ -15,6 +15,7 @@ import {
 } from "@/lib/purchase-gates";
 import { factsFromSavedAnswers } from "@/lib/rules-facts";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { loadOwnMedications } from "@/lib/supplements-io";
 import { loadOwnTestResults } from "@/lib/test-results";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 
@@ -76,16 +77,22 @@ export async function loadUserContext(
   }
 
   try {
-    const [consent, engine, results, interventions] = await Promise.all([
-      loadConsentFlags(userId),
-      useQuestionnaireStore.getState().loadForEngine(userId),
-      loadOwnTestResults(userId),
-      loadOwnInterventions(userId),
-    ]);
+    const [consent, engine, results, interventions, medications] =
+      await Promise.all([
+        loadConsentFlags(userId),
+        useQuestionnaireStore.getState().loadForEngine(userId),
+        loadOwnTestResults(userId),
+        loadOwnInterventions(userId),
+        loadOwnMedications(userId),
+      ]);
 
     const sections = engine.ok ? engine.sections : {};
     const bmi = engine.ok ? engine.bmi : null;
-    const facts = factsFromSavedAnswers({ bmi, sections });
+    const facts = factsFromSavedAnswers({
+      bmi,
+      sections,
+      medications: medications.rows,
+    });
 
     const labs = results.ok ? labsFromTestResults(results.rows) : null;
     const thyroidAntibodiesPositive = labs?.thyroidAntibodiesPositive ?? null;

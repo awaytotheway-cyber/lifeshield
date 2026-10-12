@@ -7,12 +7,18 @@ import { parseFiniteNumber } from "@/lib/questionnaire/numbers";
 
 export type RulesFacts = {
   contraceptiveUse: boolean;
-  /** HRT is not a dedicated field in Phase 1; always false until that question exists. */
+  /**
+   * Systemic hormone therapy. True from the reproductive-section HRT answer,
+   * or from an active medication tagged "hormones" — the medication route
+   * also covers users whose reproductive detail questions were skipped.
+   * Triggers the DUTCH test and stool analysis.
+   */
   hrtUse: boolean;
   /**
-   * Blood-thinner use is not a dedicated Phase 1 question.
-   * Leave false unless a later screen (or a test) sets it.
-   * Used only for DIM/I3C and high-dose omega-3 interaction checks.
+   * Anticoagulant use, from an active medication tagged "blood_thinners".
+   * There is no questionnaire item for this on purpose: the medications list
+   * is user-maintained and stays current, where a one-off answer would not.
+   * Gates the DIM/I3C and high-dose omega-3 practitioner check.
    */
   bloodThinners: boolean;
   gallstones: boolean;
@@ -60,9 +66,43 @@ export function occupationIsHighRisk(occupation: string): boolean {
   return HIGH_RISK_OCCUPATIONS.some((job) => text.includes(job));
 }
 
+/** Just enough of a medication row to answer "is this code active?". */
+export type MedicationFact = {
+  contraindication_codes: readonly string[];
+  active: boolean;
+};
+
+/**
+ * Contraindication tags are free text on the medications table. Match
+ * case-insensitively and ignore inactive rows so a stopped prescription
+ * does not keep gating a recommendation forever.
+ */
+export function hasActiveMedicationCode(
+  medications: readonly MedicationFact[] | undefined,
+  code: string,
+): boolean {
+  if (!medications) {
+    return false;
+  }
+  const wanted = code.trim().toLowerCase();
+  return medications.some(
+    (med) =>
+      med.active &&
+      med.contraindication_codes.some(
+        (raw) => typeof raw === "string" && raw.trim().toLowerCase() === wanted,
+      ),
+  );
+}
+
 export function factsFromSavedAnswers(input: {
   bmi: unknown;
   sections: Record<string, Record<string, unknown> | null>;
+  /**
+   * Omit when the caller has no medication data. Both hormone-therapy and
+   * anticoagulant facts then fall back to the questionnaire alone, which is
+   * the pre-existing behaviour.
+   */
+  medications?: readonly MedicationFact[];
 }): RulesFacts {
   const reproductive = input.sections.reproductive_menstrual;
   const comorbidities = input.sections.comorbidities;
@@ -81,8 +121,10 @@ export function factsFromSavedAnswers(input: {
 
   return {
     contraceptiveUse: isYes(reproductive?.contraceptive_use),
-    hrtUse: false,
-    bloodThinners: false,
+    hrtUse:
+      isYes(reproductive?.hrt_use) ||
+      hasActiveMedicationCode(input.medications, "hormones"),
+    bloodThinners: hasActiveMedicationCode(input.medications, "blood_thinners"),
     gallstones: isYes(comorbidities?.gallstones),
     chronicGutInfection: infections.includes("gut"),
     bmi: parseFiniteNumber(input.bmi),
