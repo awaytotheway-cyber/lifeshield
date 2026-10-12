@@ -5,6 +5,10 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -15,6 +19,8 @@ import {
   GILBERT_OPTIONS,
   YES_NO_OPTIONS,
 } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import {
   jsonToComorbiditiesForm,
@@ -42,6 +48,21 @@ export default function ComorbiditiesScreen() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [showComplete, setShowComplete] = useState(false);
   const [bmi, setBmi] = useState<number | null>(null);
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+
+  const SECTION = "comorbidities";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
 
   const {
     control,
@@ -72,6 +93,7 @@ export default function ComorbiditiesScreen() {
         setLoadMessage(sectionResult.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToComorbiditiesForm(sectionResult.responses));
+        custom.hydrate(sectionResult.responses as Record<string, unknown>);
       }
       const profileBmi = parseFiniteNumber(profileResult.profile?.bmi);
       setBmi(profileBmi);
@@ -87,11 +109,10 @@ export default function ComorbiditiesScreen() {
       return;
     }
     setSaveMessage(null);
-    const result = await saveSection(
-      session.user.id,
-      "comorbidities",
-      comorbiditiesToJson(values),
-    );
+    const result = await saveSection(session.user.id, "comorbidities", {
+      ...comorbiditiesToJson(values),
+      ...custom.toJson(),
+    });
     if (!result.ok) {
       setSaveMessage(result.message ?? COPY.sectionSaveFailed);
       return;
@@ -124,8 +145,8 @@ export default function ComorbiditiesScreen() {
         name="gilbert"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Have you been told you have this mild bilirubin difference?"
-            options={GILBERT_OPTIONS}
+            label={label("gilbert", "Have you been told you have this mild bilirubin difference?")}
+            options={opts("gilbert", GILBERT_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.gilbert?.message}
@@ -138,8 +159,8 @@ export default function ComorbiditiesScreen() {
         name="gallstones"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Gallstones"
-            options={YES_NO_OPTIONS}
+            label={label("gallstones", "Gallstones")}
+            options={opts("gallstones", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.gallstones?.message}
@@ -152,8 +173,8 @@ export default function ComorbiditiesScreen() {
         name="obesity"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Obesity"
-            options={YES_NO_OPTIONS}
+            label={label("obesity", "Obesity")}
+            options={opts("obesity", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.obesity?.message}
@@ -169,8 +190,8 @@ export default function ComorbiditiesScreen() {
         name="diabetes"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Diabetes"
-            options={YES_NO_OPTIONS}
+            label={label("diabetes", "Diabetes")}
+            options={opts("diabetes", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.diabetes?.message}
@@ -183,8 +204,8 @@ export default function ComorbiditiesScreen() {
         name="thyroidDisease"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Thyroid condition"
-            options={YES_NO_OPTIONS}
+            label={label("thyroid_disease", "Thyroid condition")}
+            options={opts("thyroid_disease", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.thyroidDisease?.message}
@@ -215,8 +236,8 @@ export default function ComorbiditiesScreen() {
         name="autoimmuneThyroid"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Active autoimmune thyroid condition (the two types above)"
-            options={YES_NO_OPTIONS}
+            label={label("autoimmune_thyroid", "Active autoimmune thyroid condition (the two types above)")}
+            options={opts("autoimmune_thyroid", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.autoimmuneThyroid?.message}
@@ -230,8 +251,8 @@ export default function ComorbiditiesScreen() {
         name="chronicInfections"
         render={({ field: { value, onChange } }) => (
           <CheckboxGroup
-            label="Ongoing or repeated infections (choose all that apply)"
-            options={CHRONIC_INFECTION_OPTIONS}
+            label={label("chronic_infections", "Ongoing or repeated infections (choose all that apply)")}
+            options={opts("chronic_infections", CHRONIC_INFECTION_OPTIONS)}
             values={value}
             onChange={onChange}
             error={errors.chronicInfections?.message}
@@ -239,6 +260,11 @@ export default function ComorbiditiesScreen() {
         )}
       />
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }

@@ -24,6 +24,7 @@ import {
 } from "@/components/ErrorBoundary";
 import { NotificationBootstrap } from "@/components/NotificationBootstrap";
 import { StripeRoot } from "@/components/StripeRoot";
+import { ContentProvider } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
 import { SessionProvider } from "@/lib/session";
@@ -115,8 +116,10 @@ export default function RootLayout() {
         ) : (
           <StripeRoot>
             <SessionProvider>
-              <StatusBar style="dark" />
-              <AuthGate />
+              <ContentProvider>
+                <StatusBar style="dark" />
+                <AuthGate />
+              </ContentProvider>
             </SessionProvider>
           </StripeRoot>
         )}

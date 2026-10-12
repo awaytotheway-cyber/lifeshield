@@ -22,6 +22,8 @@ import {
   TeamOutlined,
   UnorderedListOutlined,
   AuditOutlined,
+  FileTextOutlined,
+  FormOutlined,
 } from "@ant-design/icons";
 import { App as AntdApp, ConfigProvider } from "antd";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
@@ -36,6 +38,17 @@ import {
   ClinicalThresholdList,
   ClinicalThresholdShow,
 } from "./pages/clinical-thresholds";
+import {
+  AppCopyCreate,
+  AppCopyEdit,
+  AppCopyList,
+} from "./pages/app-copy";
+import {
+  ContentFieldCreate,
+  ContentFieldEdit,
+  ContentFieldList,
+  ContentFieldShow,
+} from "./pages/content-fields";
 import {
   ClinicCreate,
   ClinicEdit,
@@ -111,6 +124,28 @@ export default function App() {
             routerProvider={routerProvider}
             notificationProvider={useNotificationProvider}
             resources={[
+              {
+                name: "content_fields",
+                list: "/content-fields",
+                create: "/content-fields/create",
+                edit: "/content-fields/edit/:id",
+                show: "/content-fields/show/:id",
+                meta: {
+                  label: "Questionnaire questions",
+                  icon: <FormOutlined />,
+                },
+              },
+              {
+                name: "app_copy",
+                list: "/app-copy",
+                create: "/app-copy/create",
+                edit: "/app-copy/edit/:id",
+                meta: {
+                  label: "Onboarding copy",
+                  icon: <FileTextOutlined />,
+                  id: "copy_key",
+                },
+              },
               {
                 name: "clinical_thresholds",
                 list: "/clinical-thresholds",
@@ -269,6 +304,17 @@ export default function App() {
                   index
                   element={<NavigateToResource resource="clinics" />}
                 />
+                <Route path="/content-fields">
+                  <Route index element={<ContentFieldList />} />
+                  <Route path="create" element={<ContentFieldCreate />} />
+                  <Route path="edit/:id" element={<ContentFieldEdit />} />
+                  <Route path="show/:id" element={<ContentFieldShow />} />
+                </Route>
+                <Route path="/app-copy">
+                  <Route index element={<AppCopyList />} />
+                  <Route path="create" element={<AppCopyCreate />} />
+                  <Route path="edit/:id" element={<AppCopyEdit />} />
+                </Route>
                 <Route path="/clinical-thresholds">
                   <Route index element={<ClinicalThresholdList />} />
                   <Route path="create" element={<ClinicalThresholdCreate />} />
