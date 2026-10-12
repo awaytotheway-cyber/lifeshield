@@ -14,6 +14,7 @@ import { RadioGroup } from "@/components/ui/RadioGroup";
 import {
   COSMETICS_OPTIONS,
   FOOD_FREQUENCY_OPTIONS,
+  YES_NO_UNSURE_OPTIONS,
   IODINE_SOURCE_OPTIONS,
   NAIL_VARNISH_OPTIONS,
   SOMETIMES_FREQUENCY_OPTIONS,
@@ -252,6 +253,40 @@ export default function DietEnvironmentScreen() {
             values={value}
             onChange={onChange}
             error={errors.iodineSources?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="predatoryFish"
+        render={({ field: { value, onChange } }) => (
+          <RadioGroup
+            label={label(
+              "predatory_fish",
+              "How often do you eat large fish such as tuna, swordfish, shark, or king mackerel?",
+            )}
+            options={opts("predatory_fish", FOOD_FREQUENCY_OPTIONS)}
+            value={value}
+            onChange={onChange}
+            error={errors.predatoryFish?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="wellWater"
+        render={({ field: { value, onChange } }) => (
+          <RadioGroup
+            label={label(
+              "well_water",
+              "Does your drinking water come from a well or borehole?",
+            )}
+            options={opts("well_water", YES_NO_UNSURE_OPTIONS)}
+            value={value}
+            onChange={onChange}
+            error={errors.wellWater?.message}
           />
         )}
       />

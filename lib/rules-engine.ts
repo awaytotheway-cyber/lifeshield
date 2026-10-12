@@ -162,6 +162,15 @@ export function shouldOrderStoolAnalysis(
   labs: LabInputs = PHASE1_LABS,
   thresholds: ClinicalThresholdValues = THRESHOLDS,
 ): RuleResult {
+  // Rule A — oestrogen recirculation risk.
+  if (facts.estrogenDominantCondition) {
+    return {
+      recommended: true,
+      reason:
+        "History of an oestrogen-dominant condition (severe PMS, endometriosis, or fibroids).",
+    };
+  }
+
   // Estrogen-related history in Phase 1 = contraceptive / HRT (COMT SNP is null).
   if (facts.contraceptiveUse || facts.hrtUse) {
     return {
@@ -177,12 +186,19 @@ export function shouldOrderStoolAnalysis(
     };
   }
 
-  if (facts.chronicGutInfection || facts.gallstones) {
+  // Rule B — gut infection, gallbladder disease, or persistent disturbance.
+  if (
+    facts.chronicGutInfection ||
+    facts.gallstones ||
+    facts.digestiveDisturbance
+  ) {
     return {
       recommended: true,
       reason: facts.chronicGutInfection
         ? "Chronic gut infection reported on the questionnaire."
-        : "Gallstones reported on the questionnaire.",
+        : facts.gallstones
+          ? "Gallstones reported on the questionnaire."
+          : "Ongoing digestive symptoms reported on the questionnaire.",
     };
   }
 
@@ -236,6 +252,14 @@ export function shouldOrderUrinaryIodine(
     };
   }
 
+  // DELIBERATE DEVIATION from the source rule, agreed with the product
+  // owner. The doc's Group B reads "low dietary iodine/seaweed intake
+  // combined with high intake of processed foods"; this fires on low iodine
+  // alone. Requiring the processed-food limb would stop offering the test to
+  // low-iodine users who eat well, and the safer error here is to suggest a
+  // cheap urinary test more often, not less. The processed-food answers are
+  // captured (diet_environment.packaged_food / takeaway) if this is ever
+  // narrowed to match the doc exactly.
   if (facts.dietaryIodineLow) {
     return {
       recommended: true,
@@ -273,8 +297,15 @@ export function shouldOrderHeavyMetals(
   thresholds: ClinicalThresholdValues = THRESHOLDS,
 ): RuleResult {
   const occupationRisk = occupationIsHighRisk(facts.occupation);
+  // Rule A lists occupational AND dietary/environmental routes together:
+  // industrial work, welding, dentistry, frequent large predatory fish, or
+  // well water.
   const environmental =
-    facts.pollutantExposure || facts.vehicleExhaust || occupationRisk;
+    facts.pollutantExposure ||
+    facts.vehicleExhaust ||
+    occupationRisk ||
+    facts.predatoryFishFrequent ||
+    facts.wellWater;
 
   if (environmental) {
     const bits: string[] = [];
@@ -288,6 +319,12 @@ export function shouldOrderHeavyMetals(
     }
     if (facts.vehicleExhaust) {
       bits.push("vehicle exhaust exposure");
+    }
+    if (facts.predatoryFishFrequent) {
+      bits.push("frequent large predatory fish");
+    }
+    if (facts.wellWater) {
+      bits.push("well water");
     }
     return {
       recommended: true,

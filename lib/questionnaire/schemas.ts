@@ -85,6 +85,7 @@ export const reproductiveSchema = z
     ageAtFirstBirth: z.string(),
     breastfeeding: yesNoSchema,
     breastfeedingMonths: z.string(),
+    estrogenConditions: z.array(z.string()).min(1, "Please choose at least one"),
   })
   .superRefine((values, ctx) => {
     if (values.contraceptiveUse === "yes") {
@@ -164,6 +165,7 @@ export const emptyReproductive = (): ReproductiveForm => ({
   ageAtFirstBirth: "",
   breastfeeding: undefined as unknown as ReproductiveForm["breastfeeding"],
   breastfeedingMonths: "",
+  estrogenConditions: [],
 });
 
 export const radiationSchema = z
@@ -239,6 +241,9 @@ export const comorbiditiesSchema = z
     thyroidType: z.string(),
     autoimmuneThyroid: yesNoSchema,
     chronicInfections: z.array(z.string()).min(1, "Please choose at least one"),
+    digestiveDisturbance: z
+      .array(z.string())
+      .min(1, "Please choose at least one"),
   })
   .superRefine((values, ctx) => {
     if (values.thyroidDisease === "yes" && !values.thyroidType.trim()) {
@@ -263,6 +268,7 @@ export const emptyComorbidities = (): ComorbiditiesForm => ({
   autoimmuneThyroid:
     undefined as unknown as ComorbiditiesForm["autoimmuneThyroid"],
   chronicInfections: [],
+  digestiveDisturbance: [],
 });
 
 const relativeSchema = z.object({
@@ -503,6 +509,12 @@ export const dietEnvironmentSchema = z.object({
   }),
   cosmetics: z.array(z.string()).min(1, "Please choose at least one"),
   iodineSources: z.array(z.string()).min(1, "Please choose at least one"),
+  predatoryFish: z.enum(["daily", "weekly", "monthly", "rarely", "never"], {
+    message: "Please choose how often you eat large fish",
+  }),
+  wellWater: z.enum(["yes", "no", "unsure"], {
+    message: "Please answer the drinking-water question",
+  }),
 });
 
 export type DietEnvironmentForm = z.input<typeof dietEnvironmentSchema>;
@@ -518,6 +530,8 @@ export const emptyDietEnvironment = (): DietEnvironmentForm => ({
   nailVarnish: undefined as unknown as DietEnvironmentForm["nailVarnish"],
   cosmetics: [],
   iodineSources: [],
+  predatoryFish: undefined as unknown as DietEnvironmentForm["predatoryFish"],
+  wellWater: undefined as unknown as DietEnvironmentForm["wellWater"],
 });
 
 const mammogramRowSchema = z.object({

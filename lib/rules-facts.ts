@@ -23,6 +23,21 @@ export type RulesFacts = {
   bloodThinners: boolean;
   gallstones: boolean;
   chronicGutInfection: boolean;
+  /**
+   * Severe PMS, endometriosis or uterine fibroids — the oestrogen-dominant
+   * conditions stool analysis Rule A names as a recirculation risk.
+   */
+  estrogenDominantCondition: boolean;
+  /**
+   * Ongoing bloating, reflux, loose stools or constipation. The third limb
+   * of stool analysis Rule B, alongside gut infection and gallbladder
+   * disease.
+   */
+  digestiveDisturbance: boolean;
+  /** Frequent large predatory fish — heavy-metal Rule A. */
+  predatoryFishFrequent: boolean;
+  /** Drinking water from a well — heavy-metal Rule A. */
+  wellWater: boolean;
   bmi: number | null;
   autoimmuneThyroid: boolean;
   dietaryIodineLow: boolean;
@@ -40,6 +55,10 @@ export const EMPTY_RULES_FACTS: RulesFacts = {
   bloodThinners: false,
   gallstones: false,
   chronicGutInfection: false,
+  estrogenDominantCondition: false,
+  digestiveDisturbance: false,
+  predatoryFishFrequent: false,
+  wellWater: false,
   bmi: null,
   autoimmuneThyroid: false,
   dietaryIodineLow: false,
@@ -52,6 +71,14 @@ export const EMPTY_RULES_FACTS: RulesFacts = {
 
 function isYes(value: unknown): boolean {
   return value === true || value === "yes";
+}
+
+/**
+ * True when a multi-select holds a real answer rather than only the
+ * "none of these" escape or nothing at all.
+ */
+function hasRealSelection(values: readonly string[]): boolean {
+  return values.some((item) => item !== "none" && item.trim() !== "");
 }
 
 function stringList(value: unknown): string[] {
@@ -127,6 +154,17 @@ export function factsFromSavedAnswers(input: {
     bloodThinners: hasActiveMedicationCode(input.medications, "blood_thinners"),
     gallstones: isYes(comorbidities?.gallstones),
     chronicGutInfection: infections.includes("gut"),
+    estrogenDominantCondition: hasRealSelection(
+      stringList(reproductive?.estrogen_conditions),
+    ),
+    digestiveDisturbance: hasRealSelection(
+      stringList(comorbidities?.digestive_disturbance),
+    ),
+    // "Frequent" per the source rule — monthly or rarer is not a
+    // meaningful mercury exposure signal.
+    predatoryFishFrequent:
+      diet?.predatory_fish === "daily" || diet?.predatory_fish === "weekly",
+    wellWater: isYes(diet?.well_water),
     bmi: parseFiniteNumber(input.bmi),
     autoimmuneThyroid: isYes(comorbidities?.autoimmune_thyroid),
     dietaryIodineLow: diet == null ? false : !hasRealIodine,

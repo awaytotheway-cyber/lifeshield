@@ -16,6 +16,7 @@ import { TextField } from "@/components/ui/TextField";
 import {
   BMI_OBESITY_HINT,
   CHRONIC_INFECTION_OPTIONS,
+  DIGESTIVE_DISTURBANCE_OPTIONS,
   GILBERT_OPTIONS,
   YES_NO_OPTIONS,
 } from "@/lib/constants";
@@ -256,6 +257,27 @@ export default function ComorbiditiesScreen() {
             values={value}
             onChange={onChange}
             error={errors.chronicInfections?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="digestiveDisturbance"
+        render={({ field: { value, onChange } }) => (
+          <CheckboxGroup
+            label={label(
+              "digestive_disturbance",
+              "Do you have ongoing digestive problems?",
+            )}
+            options={opts(
+              "digestive_disturbance",
+              DIGESTIVE_DISTURBANCE_OPTIONS,
+            )}
+            values={value}
+            onChange={onChange}
+            exclusiveValue="none"
+            error={errors.digestiveDisturbance?.message}
           />
         )}
       />

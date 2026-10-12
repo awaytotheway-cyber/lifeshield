@@ -11,12 +11,14 @@ import {
 } from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { SymptomInterrupt } from "@/components/questionnaire/SymptomInterrupt";
+import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { TextField } from "@/components/ui/TextField";
 import {
   CONTRACEPTIVE_TYPE_OPTIONS,
+  ESTROGEN_CONDITION_OPTIONS,
   MENOPAUSAL_STATUS_OPTIONS,
   MENSTRUAL_REGULARITY_OPTIONS,
   YES_NO_OPTIONS,
@@ -604,6 +606,24 @@ export default function ReproductiveScreen() {
           )}
         />
       ) : null}
+
+      <Controller
+        control={control}
+        name="estrogenConditions"
+        render={({ field: { value, onChange } }) => (
+          <CheckboxGroup
+            label={label(
+              "estrogen_conditions",
+              "Have you been told you have any of these?",
+            )}
+            options={opts("estrogen_conditions", ESTROGEN_CONDITION_OPTIONS)}
+            values={value}
+            onChange={onChange}
+            exclusiveValue="none"
+            error={errors.estrogenConditions?.message}
+          />
+        )}
+      />
 
     </SectionScaffold>
   );

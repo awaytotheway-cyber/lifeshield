@@ -53,6 +53,10 @@ VALUES
 ('reproductive_menstrual','live_births','Number of live births',NULL,'number','[]',80,true,true,'app form'),
 ('reproductive_menstrual','breastfeeding','Have you breastfed?',NULL,'yes_no',
   '[{"value":"yes","label":"Yes"},{"value":"no","label":"No"}]',90,true,true,'app form'),
+('reproductive_menstrual','estrogen_conditions','Have you been told you have any of these?','Choose all that apply.','multi_select',
+  '[{"value":"severe_pms","label":"Severe PMS"},{"value":"endometriosis","label":"Endometriosis"},{"value":"fibroids","label":"Uterine fibroids"},{"value":"none","label":"None of these"}]',
+  95,true,true,
+  'rules engine — oestrogen-dominant conditions trigger stool analysis (Rule A)'),
 
 -- ---------- 3. Radiation & occupation ----------
 ('radiation_occupational','radiation_exposure','Have you had radiation exposure?','Medical or work-related.','yes_no',
@@ -82,6 +86,10 @@ VALUES
 ('comorbidities','chronic_infections','Ongoing or repeated infections','Choose all that apply.','multi_select',
   '[{"value":"dental","label":"Dental"},{"value":"gut","label":"Gut"},{"value":"urinary","label":"Urinary"},{"value":"chest_respiratory","label":"Chest / respiratory"},{"value":"sinus","label":"Sinus"},{"value":"skin","label":"Skin"},{"value":"none","label":"None"}]',
   70,true,true,'rules engine — the "gut" option triggers stool analysis'),
+('comorbidities','digestive_disturbance','Do you have ongoing digestive problems?','Choose all that apply.','multi_select',
+  '[{"value":"bloating","label":"Ongoing bloating"},{"value":"reflux","label":"Reflux or heartburn"},{"value":"loose_stools","label":"Loose stools"},{"value":"constipation","label":"Constipation"},{"value":"none","label":"None of these"}]',
+  80,true,true,
+  'rules engine — persistent digestive disturbance triggers stool analysis (Rule B)'),
 
 -- ---------- 5. Family history ----------
 ('family_history','breast_cancer','Family history of breast cancer',NULL,'yes_no',
@@ -158,6 +166,14 @@ VALUES
 ('diet_environment','iodine_sources','Which of these do you have regularly?','Iodine sources.','multi_select',
   '[{"value":"iodised_salt","label":"Iodised salt"},{"value":"seafood","label":"Seafood"},{"value":"seaweed","label":"Seaweed"},{"value":"dairy","label":"Dairy"},{"value":"none","label":"None of these"}]',
   80,true,true,'rules engine — "none of these" triggers urinary iodine testing'),
+('diet_environment','predatory_fish','How often do you eat large fish such as tuna, swordfish, shark, or king mackerel?',NULL,'single_select',
+  '[{"value":"daily","label":"Daily"},{"value":"weekly","label":"Weekly"},{"value":"monthly","label":"Monthly"},{"value":"rarely","label":"Rarely"},{"value":"never","label":"Never"}]',
+  90,true,true,
+  'rules engine — daily or weekly triggers heavy-metal testing (Rule A)'),
+('diet_environment','well_water','Does your drinking water come from a well or borehole?',NULL,'yes_no_unsure',
+  '[{"value":"yes","label":"Yes"},{"value":"no","label":"No"},{"value":"unsure","label":"Not sure"}]',
+  95,true,true,
+  'rules engine — well water triggers heavy-metal testing (Rule A)'),
 
 -- ---------- 10. Prior screening ----------
 ('prior_screening','previous_mammogram','Have you had a mammogram before?',NULL,'yes_no',

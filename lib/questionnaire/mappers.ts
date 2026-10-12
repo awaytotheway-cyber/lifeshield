@@ -3,6 +3,11 @@ import {
   SYMPTOM_INTERRUPT_CLEARED_KEY,
 } from "@/lib/constants";
 import { numberToField, parseFiniteNumber } from "@/lib/questionnaire/numbers";
+
+/** Accepted stored values, so a stale or hand-edited row cannot select a
+ *  radio option the form does not offer. */
+const FOOD_FREQ = new Set(["daily", "weekly", "monthly", "rarely", "never"]);
+const WELL_WATER = new Set(["yes", "no", "unsure"]);
 import type {
   ComorbiditiesForm,
   ComorbiditiesParsed,
@@ -172,6 +177,7 @@ export function reproductiveToJson(
       parsed.breastfeeding === "yes"
         ? parseFiniteNumber(parsed.breastfeedingMonths)
         : null,
+    estrogen_conditions: parsed.estrogenConditions,
     [SYMPTOM_INTERRUPT_CLEARED_KEY]: interruptCleared,
   };
 }
@@ -208,6 +214,7 @@ export function jsonToReproductiveForm(
     breastfeeding: (breastfeeding ||
       undefined) as ReproductiveForm["breastfeeding"],
     breastfeedingMonths: numberToField(json?.breastfeeding_months),
+    estrogenConditions: stringArray(json?.estrogen_conditions),
   };
 }
 
@@ -261,6 +268,7 @@ export function comorbiditiesToJson(
       parsed.thyroidDisease === "yes" ? parsed.thyroidType.trim() : null,
     autoimmune_thyroid: parsed.autoimmuneThyroid === "yes",
     chronic_infections: parsed.chronicInfections,
+    digestive_disturbance: parsed.digestiveDisturbance,
   };
 }
 
@@ -287,6 +295,7 @@ export function jsonToComorbiditiesForm(
     chronicInfections: Array.isArray(infections)
       ? infections.filter((item): item is string => typeof item === "string")
       : [],
+    digestiveDisturbance: stringArray(json?.digestive_disturbance),
   };
 }
 
@@ -546,6 +555,8 @@ export function dietEnvironmentToJson(
     nail_varnish: parsed.nailVarnish,
     cosmetics: parsed.cosmetics,
     iodine_sources: parsed.iodineSources,
+    predatory_fish: parsed.predatoryFish,
+    well_water: parsed.wellWater,
   };
 }
 
@@ -587,6 +598,12 @@ export function jsonToDietEnvironmentForm(
       : undefined) as DietEnvironmentForm["nailVarnish"],
     cosmetics: stringArray(json?.cosmetics),
     iodineSources: stringArray(json?.iodine_sources),
+    predatoryFish: (FOOD_FREQ.has(String(json?.predatory_fish))
+      ? json?.predatory_fish
+      : undefined) as DietEnvironmentForm["predatoryFish"],
+    wellWater: (WELL_WATER.has(String(json?.well_water))
+      ? json?.well_water
+      : undefined) as DietEnvironmentForm["wellWater"],
   };
 }
 

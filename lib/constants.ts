@@ -342,6 +342,29 @@ export const STRESS_REACH_OUT_OPTIONS = [
   { value: "never", label: "Never" },
 ] as const;
 
+/**
+ * Oestrogen-dominant conditions — stool analysis Rule A names these three
+ * explicitly as an oestrogen-recirculation risk.
+ */
+export const ESTROGEN_CONDITION_OPTIONS = [
+  { value: "severe_pms", label: "Severe PMS" },
+  { value: "endometriosis", label: "Endometriosis" },
+  { value: "fibroids", label: "Uterine fibroids" },
+  { value: "none", label: "None of these" },
+] as const;
+
+/**
+ * Persistent digestive disturbance — the third limb of stool analysis
+ * Rule B, alongside chronic gut infection and gallbladder disease.
+ */
+export const DIGESTIVE_DISTURBANCE_OPTIONS = [
+  { value: "bloating", label: "Ongoing bloating" },
+  { value: "reflux", label: "Reflux or heartburn" },
+  { value: "loose_stools", label: "Loose stools" },
+  { value: "constipation", label: "Constipation" },
+  { value: "none", label: "None of these" },
+] as const;
+
 export const FOOD_FREQUENCY_OPTIONS = [
   { value: "daily", label: "Daily" },
   { value: "weekly", label: "Weekly" },
