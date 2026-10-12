@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text } from "react-native";
 
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -15,6 +19,8 @@ import {
   SOMETIMES_FREQUENCY_OPTIONS,
   SUNCREAM_OPTIONS,
 } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import {
   dietEnvironmentToJson,
@@ -32,6 +38,20 @@ import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 
 export default function DietEnvironmentScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "diet_environment";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
@@ -64,6 +84,7 @@ export default function DietEnvironmentScreen() {
         setLoadMessage(result.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToDietEnvironmentForm(result.responses));
+        custom.hydrate(result.responses as Record<string, unknown>);
       }
       setReady(true);
     })();
@@ -80,7 +101,10 @@ export default function DietEnvironmentScreen() {
     const result = await saveSection(
       session.user.id,
       "diet_environment",
-      dietEnvironmentToJson(values),
+      {
+        ...dietEnvironmentToJson(values),
+        ...custom.toJson(),
+      },
     );
     if (!result.ok) {
       setSaveMessage(result.message ?? COPY.sectionSaveFailed);
@@ -111,8 +135,8 @@ export default function DietEnvironmentScreen() {
         name="cannedFood"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Canned / tinned food"
-            options={FOOD_FREQUENCY_OPTIONS}
+            label={label("canned_food", "Canned / tinned food")}
+            options={opts("canned_food", FOOD_FREQUENCY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.cannedFood?.message}
@@ -125,8 +149,8 @@ export default function DietEnvironmentScreen() {
         name="packagedFood"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Packaged / processed food"
-            options={FOOD_FREQUENCY_OPTIONS}
+            label={label("packaged_food", "Packaged / processed food")}
+            options={opts("packaged_food", FOOD_FREQUENCY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.packagedFood?.message}
@@ -139,8 +163,8 @@ export default function DietEnvironmentScreen() {
         name="takeaway"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Takeaway"
-            options={FOOD_FREQUENCY_OPTIONS}
+            label={label("takeaway", "Takeaway")}
+            options={opts("takeaway", FOOD_FREQUENCY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.takeaway?.message}
@@ -153,8 +177,8 @@ export default function DietEnvironmentScreen() {
         name="microwave"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Microwave use"
-            options={SOMETIMES_FREQUENCY_OPTIONS}
+            label={label("microwave", "Microwave use")}
+            options={opts("microwave", SOMETIMES_FREQUENCY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.microwave?.message}
@@ -167,8 +191,8 @@ export default function DietEnvironmentScreen() {
         name="plastic"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Plastic containers / wrap"
-            options={SOMETIMES_FREQUENCY_OPTIONS}
+            label={label("plastic", "Plastic containers / wrap")}
+            options={opts("plastic", SOMETIMES_FREQUENCY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.plastic?.message}
@@ -181,8 +205,8 @@ export default function DietEnvironmentScreen() {
         name="suncream"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Suncream"
-            options={SUNCREAM_OPTIONS}
+            label={label("suncream", "Suncream")}
+            options={opts("suncream", SUNCREAM_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.suncream?.message}
@@ -195,8 +219,8 @@ export default function DietEnvironmentScreen() {
         name="nailVarnish"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Nail varnish / gels"
-            options={NAIL_VARNISH_OPTIONS}
+            label={label("nail_varnish", "Nail varnish / gels")}
+            options={opts("nail_varnish", NAIL_VARNISH_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.nailVarnish?.message}
@@ -223,8 +247,8 @@ export default function DietEnvironmentScreen() {
         name="iodineSources"
         render={({ field: { value, onChange } }) => (
           <CheckboxGroup
-            label={COPY.iodineSourcesLabel}
-            options={IODINE_SOURCE_OPTIONS}
+            label={label("iodine_sources", COPY.iodineSourcesLabel)}
+            options={opts("iodine_sources", IODINE_SOURCE_OPTIONS)}
             values={value}
             onChange={onChange}
             error={errors.iodineSources?.message}
@@ -232,6 +256,11 @@ export default function DietEnvironmentScreen() {
         )}
       />
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }

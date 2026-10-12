@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Text } from "react-native";
 
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import {
@@ -11,6 +15,8 @@ import {
   STRESS_REACH_OUT_OPTIONS,
   STRESS_VIEW_OPTIONS,
 } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import { jsonToStressForm, stressToJson } from "@/lib/questionnaire/mappers";
 import {
@@ -25,6 +31,20 @@ import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 
 export default function StressScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "stress";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
@@ -57,6 +77,7 @@ export default function StressScreen() {
         setLoadMessage(result.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToStressForm(result.responses));
+        custom.hydrate(result.responses as Record<string, unknown>);
       }
       setReady(true);
     })();
@@ -73,7 +94,10 @@ export default function StressScreen() {
     const result = await saveSection(
       session.user.id,
       "stress",
-      stressToJson(values),
+      {
+        ...stressToJson(values),
+        ...custom.toJson(),
+      },
     );
     if (!result.ok) {
       setSaveMessage(result.message ?? COPY.sectionSaveFailed);
@@ -106,8 +130,8 @@ export default function StressScreen() {
         name="stressLevel"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="How would you rate your usual stress?"
-            options={STRESS_LEVEL_OPTIONS}
+            label={label("stress_level", "How would you rate your usual stress?")}
+            options={opts("stress_level", STRESS_LEVEL_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.stressLevel?.message}
@@ -120,8 +144,8 @@ export default function StressScreen() {
         name="stressView"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.stressExactView}
-            options={STRESS_VIEW_OPTIONS}
+            label={label("stress_view", COPY.stressExactView)}
+            options={opts("stress_view", STRESS_VIEW_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.stressView?.message}
@@ -134,8 +158,8 @@ export default function StressScreen() {
         name="stressReachOut"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.stressExactReachOut}
-            options={STRESS_REACH_OUT_OPTIONS}
+            label={label("stress_reach_out", COPY.stressExactReachOut)}
+            options={opts("stress_reach_out", STRESS_REACH_OUT_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.stressReachOut?.message}
@@ -143,6 +167,11 @@ export default function StressScreen() {
         )}
       />
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }

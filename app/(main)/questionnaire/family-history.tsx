@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Text, View } from "react-native";
 
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { SymptomInterrupt } from "@/components/questionnaire/SymptomInterrupt";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +15,8 @@ import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { FAMILY_RELATIONSHIP_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import {
   familyHistoryToJson,
@@ -30,6 +36,20 @@ import { useTriageStore } from "@/stores/triage-store";
 
 export default function FamilyHistoryScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "family_history";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
@@ -79,6 +99,7 @@ export default function FamilyHistoryScreen() {
         setLoadMessage(result.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToFamilyHistoryForm(result.responses));
+        custom.hydrate(result.responses as Record<string, unknown>);
         if (result.responses && !interruptClearedFromJson(result.responses)) {
           setShowInterrupt(true);
         }
@@ -100,7 +121,10 @@ export default function FamilyHistoryScreen() {
     return saveSection(
       session.user.id,
       "family_history",
-      familyHistoryToJson(parsed, interruptCleared),
+      {
+        ...familyHistoryToJson(parsed, interruptCleared),
+        ...custom.toJson(),
+      },
     );
   };
 
@@ -203,8 +227,8 @@ export default function FamilyHistoryScreen() {
         name="breastCancer"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Breast cancer in the family?"
-            options={YES_NO_OPTIONS}
+            label={label("breast_cancer", "Breast cancer in the family?")}
+            options={opts("breast_cancer", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.breastCancer?.message}
@@ -270,8 +294,8 @@ export default function FamilyHistoryScreen() {
         name="ovarianCancer"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Ovarian cancer in the family?"
-            options={YES_NO_OPTIONS}
+            label={label("ovarian_cancer", "Ovarian cancer in the family?")}
+            options={opts("ovarian_cancer", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.ovarianCancer?.message}
@@ -299,8 +323,8 @@ export default function FamilyHistoryScreen() {
         name="colonCancer"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Colon cancer in the family?"
-            options={YES_NO_OPTIONS}
+            label={label("colon_cancer", "Colon cancer in the family?")}
+            options={opts("colon_cancer", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.colonCancer?.message}
@@ -328,8 +352,8 @@ export default function FamilyHistoryScreen() {
         name="melanoma"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Melanoma in the family?"
-            options={YES_NO_OPTIONS}
+            label={label("melanoma", "Melanoma in the family?")}
+            options={opts("melanoma", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.melanoma?.message}
@@ -352,6 +376,11 @@ export default function FamilyHistoryScreen() {
         />
       ) : null}
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }

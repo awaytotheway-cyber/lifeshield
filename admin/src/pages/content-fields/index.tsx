@@ -225,8 +225,13 @@ export function ContentFieldCreate() {
         description="The app shows questions you add at the end of the section you choose. Answers are saved with the rest of that section but are not read by the clinical rules engine — they are for information only."
       />
       <Form {...formProps} layout="vertical" initialValues={{ sort_order: 100, required: false, is_active: true, options: [] }}>
-        <Form.Item label="Section" name="section" rules={[{ required: true }]}>
-          <Select options={SECTIONS} />
+        <Form.Item
+          label="Section"
+          name="section"
+          rules={[{ required: true }]}
+          extra="Demographics is not listed: it saves to the patient profile rather than a questionnaire section, so there is nowhere to store an extra answer."
+        >
+          <Select options={SECTIONS.filter((s) => s.value !== "demographics")} />
         </Form.Item>
         <Form.Item
           label="Field key"

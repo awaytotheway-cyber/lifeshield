@@ -5,6 +5,10 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { SymptomInterrupt } from "@/components/questionnaire/SymptomInterrupt";
 import { NumberInput } from "@/components/ui/NumberInput";
@@ -17,6 +21,8 @@ import {
   MENSTRUAL_REGULARITY_OPTIONS,
   YES_NO_OPTIONS,
 } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import {
   interruptClearedFromJson,
@@ -40,6 +46,20 @@ type ProfileSex = "male" | "female" | "other" | null;
 
 export default function ReproductiveScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "reproductive_menstrual";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
@@ -100,6 +120,7 @@ export default function ReproductiveScreen() {
           setLoadMessage(sectionResult.message ?? COPY.sectionLoadFailed);
         } else {
           reset(jsonToReproductiveForm(sectionResult.responses));
+          custom.hydrate(sectionResult.responses as Record<string, unknown>);
           // Safety first: if they already saved but have not answered the
           // interrupt, show it — even on the male skip path. Never skip this.
           if (
@@ -136,7 +157,10 @@ export default function ReproductiveScreen() {
     return saveSection(
       session.user.id,
       "reproductive_menstrual",
-      reproductiveToJson(parsed, interruptCleared),
+      {
+        ...reproductiveToJson(parsed, interruptCleared),
+        ...custom.toJson(),
+      },
     );
   };
 
@@ -147,7 +171,10 @@ export default function ReproductiveScreen() {
     return saveSection(
       session.user.id,
       "reproductive_menstrual",
-      skippedReproductiveToJson(interruptCleared),
+      {
+        ...skippedReproductiveToJson(interruptCleared),
+        ...custom.toJson(),
+      },
     );
   };
 
@@ -287,6 +314,11 @@ export default function ReproductiveScreen() {
         <Text className="mt-4 text-center text-charcoal">
           {COPY.reproductiveNeedSection1}
         </Text>
+        <CustomFields
+          section={SECTION}
+          answers={custom.answers}
+          setAnswer={custom.setAnswer}
+        />
       </SectionScaffold>
     );
   }
@@ -345,7 +377,7 @@ export default function ReproductiveScreen() {
         name="ageAtFirstPeriod"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Age at first period"
+            label={label("age_at_first_period", "Age at first period")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -359,8 +391,8 @@ export default function ReproductiveScreen() {
         name="contraceptiveUse"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.contraceptiveUseLabel}
-            options={YES_NO_OPTIONS}
+            label={label("contraceptive_use", COPY.contraceptiveUseLabel)}
+            options={opts("contraceptive_use", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.contraceptiveUse?.message}
@@ -405,8 +437,8 @@ export default function ReproductiveScreen() {
         name="amenorrhoea"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Have you had missed periods?"
-            options={YES_NO_OPTIONS}
+            label={label("amenorrhoea", "Have you had missed periods?")}
+            options={opts("amenorrhoea", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.amenorrhoea?.message}
@@ -450,8 +482,8 @@ export default function ReproductiveScreen() {
         name="menstrualRegularity"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.menstrualRegularityLabel}
-            options={MENSTRUAL_REGULARITY_OPTIONS}
+            label={label("menstrual_regularity", COPY.menstrualRegularityLabel)}
+            options={opts("menstrual_regularity", MENSTRUAL_REGULARITY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.menstrualRegularity?.message}
@@ -463,7 +495,7 @@ export default function ReproductiveScreen() {
         name="cycleLengthDays"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Cycle length (days)"
+            label={label("cycle_length_days", "Cycle length (days)")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -476,8 +508,8 @@ export default function ReproductiveScreen() {
         name="menopausalStatus"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.menoStatusLabel}
-            options={MENOPAUSAL_STATUS_OPTIONS}
+            label={label("menopausal_status", COPY.menoStatusLabel)}
+            options={opts("menopausal_status", MENOPAUSAL_STATUS_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.menopausalStatus?.message}
@@ -490,7 +522,7 @@ export default function ReproductiveScreen() {
         name="pregnancies"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Pregnancies"
+            label={label("pregnancies", "Pregnancies")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -503,7 +535,7 @@ export default function ReproductiveScreen() {
         name="liveBirths"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Live births"
+            label={label("live_births", "Live births")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -532,8 +564,8 @@ export default function ReproductiveScreen() {
         name="breastfeeding"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Breastfeeding"
-            options={YES_NO_OPTIONS}
+            label={label("breastfeeding", "Breastfeeding")}
+            options={opts("breastfeeding", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.breastfeeding?.message}

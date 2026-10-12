@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Text } from "react-native";
 
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { NumberInput } from "@/components/ui/NumberInput";
@@ -20,6 +24,8 @@ import {
   YES_NO_OPTIONS,
   YES_NO_UNSURE_OPTIONS,
 } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import {
   jsonToLifestyleForm,
@@ -37,6 +43,20 @@ import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 
 export default function LifestyleScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "lifestyle";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
@@ -71,6 +91,7 @@ export default function LifestyleScreen() {
         setLoadMessage(result.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToLifestyleForm(result.responses));
+        custom.hydrate(result.responses as Record<string, unknown>);
       }
       setReady(true);
     })();
@@ -89,7 +110,10 @@ export default function LifestyleScreen() {
         const result = await saveSection(
           session.user.id,
           "lifestyle",
-          lifestyleToJson(values),
+          {
+        ...lifestyleToJson(values),
+        ...custom.toJson(),
+      },
         );
         if (!result.ok) {
           setSaveMessage(result.message ?? COPY.sectionSaveFailed);
@@ -127,7 +151,7 @@ export default function LifestyleScreen() {
         name="sleepHours"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Sleep hours per night"
+            label={label("sleep_hours", "Sleep hours per night")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -141,8 +165,8 @@ export default function LifestyleScreen() {
         name="sleepQuality"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Sleep quality"
-            options={SLEEP_QUALITY_OPTIONS}
+            label={label("sleep_quality", "Sleep quality")}
+            options={opts("sleep_quality", SLEEP_QUALITY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.sleepQuality?.message}
@@ -155,8 +179,8 @@ export default function LifestyleScreen() {
         name="relationships"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Relationships / social support"
-            options={RELATIONSHIP_SUPPORT_OPTIONS}
+            label={label("relationships", "Relationships / social support")}
+            options={opts("relationships", RELATIONSHIP_SUPPORT_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.relationships?.message}
@@ -183,8 +207,8 @@ export default function LifestyleScreen() {
         name="exerciseFrequency"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Exercise frequency"
-            options={EXERCISE_FREQUENCY_OPTIONS}
+            label={label("exercise_frequency", "Exercise frequency")}
+            options={opts("exercise_frequency", EXERCISE_FREQUENCY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.exerciseFrequency?.message}
@@ -211,8 +235,8 @@ export default function LifestyleScreen() {
         name="waterIntake"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Water intake"
-            options={WATER_INTAKE_OPTIONS}
+            label={label("water_intake", "Water intake")}
+            options={opts("water_intake", WATER_INTAKE_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.waterIntake?.message}
@@ -225,7 +249,7 @@ export default function LifestyleScreen() {
         name="placeOfWork"
         render={({ field: { value, onChange, onBlur } }) => (
           <TextField
-            label={COPY.placeOfWorkLabel}
+            label={label("place_of_work", COPY.placeOfWorkLabel)}
             hint={COPY.placeOfWorkHint}
             value={value}
             onChangeText={onChange}
@@ -287,8 +311,8 @@ export default function LifestyleScreen() {
         name="pollutantExposure"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.pollutantExposureLabel}
-            options={YES_NO_UNSURE_OPTIONS}
+            label={label("pollutant_exposure", COPY.pollutantExposureLabel)}
+            options={opts("pollutant_exposure", YES_NO_UNSURE_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.pollutantExposure?.message}
@@ -301,8 +325,8 @@ export default function LifestyleScreen() {
         name="vehicleExhaust"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.vehicleExhaustLabel}
-            options={YES_NO_OPTIONS}
+            label={label("vehicle_exhaust", COPY.vehicleExhaustLabel)}
+            options={opts("vehicle_exhaust", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.vehicleExhaust?.message}
@@ -310,6 +334,11 @@ export default function LifestyleScreen() {
         )}
       />
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }

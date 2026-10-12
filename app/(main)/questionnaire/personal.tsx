@@ -5,6 +5,10 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Text } from "react-native";
 
 import { QuestionCard } from "@/components/questionnaire/QuestionCard";
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
@@ -15,6 +19,8 @@ import {
   SMOKING_OPTIONS,
   YES_NO_OPTIONS,
 } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import {
   calcPackYears,
@@ -33,6 +39,20 @@ import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 
 export default function PersonalHistoryScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "personal_history";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
@@ -73,6 +93,7 @@ export default function PersonalHistoryScreen() {
         setLoadMessage(result.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToPersonalHistoryForm(result.responses));
+        custom.hydrate(result.responses as Record<string, unknown>);
       }
       setReady(true);
     })();
@@ -89,7 +110,10 @@ export default function PersonalHistoryScreen() {
     const result = await saveSection(
       session.user.id,
       "personal_history",
-      personalHistoryToJson(values),
+      {
+        ...personalHistoryToJson(values),
+        ...custom.toJson(),
+      },
     );
     if (!result.ok) {
       setSaveMessage(result.message ?? COPY.sectionSaveFailed);
@@ -120,8 +144,8 @@ export default function PersonalHistoryScreen() {
         name="smoking"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Smoking"
-            options={SMOKING_OPTIONS}
+            label={label("smoking", "Smoking")}
+            options={opts("smoking", SMOKING_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.smoking?.message}
@@ -169,8 +193,8 @@ export default function PersonalHistoryScreen() {
         name="vaping"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Vaping"
-            options={YES_NO_OPTIONS}
+            label={label("vaping", "Vaping")}
+            options={opts("vaping", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.vaping?.message}
@@ -204,7 +228,7 @@ export default function PersonalHistoryScreen() {
           name="alcoholUnitsPerWeek"
           render={({ field: { value, onChange, onBlur } }) => (
             <NumberInput
-              label="Units per week"
+              label={label("alcohol_units_per_week", "Units per week")}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -219,8 +243,8 @@ export default function PersonalHistoryScreen() {
         name="recreationalDrugs"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Recreational drugs"
-            options={YES_NO_OPTIONS}
+            label={label("recreational_drugs", "Recreational drugs")}
+            options={opts("recreational_drugs", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.recreationalDrugs?.message}
@@ -250,8 +274,8 @@ export default function PersonalHistoryScreen() {
         name="caffeine"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Caffeine (cups per day)"
-            options={CAFFEINE_OPTIONS}
+            label={label("caffeine", "Caffeine (cups per day)")}
+            options={opts("caffeine", CAFFEINE_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.caffeine?.message}
@@ -259,6 +283,11 @@ export default function PersonalHistoryScreen() {
         )}
       />
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }

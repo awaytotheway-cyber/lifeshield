@@ -18,6 +18,8 @@ import {
   SEX_OPTIONS,
   WAIST_MEASURE_HINT,
 } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
 import {
@@ -37,6 +39,19 @@ import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 
 export default function DemographicsScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const SECTION = "demographics";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadProfile = useQuestionnaireStore((state) => state.loadProfile);
   const saveProfile = useQuestionnaireStore((state) => state.saveProfile);
@@ -128,7 +143,7 @@ export default function DemographicsScreen() {
         name="dateOfBirth"
         render={({ field: { value, onChange } }) => (
           <DatePicker
-            label="Date of birth"
+            label={label("date_of_birth", "Date of birth")}
             value={value}
             onChange={onChange}
             error={errors.dateOfBirth?.message}
@@ -146,8 +161,8 @@ export default function DemographicsScreen() {
         name="sex"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Sex"
-            options={SEX_OPTIONS}
+            label={label("sex", "Sex")}
+            options={opts("sex", SEX_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.sex?.message}
@@ -160,7 +175,7 @@ export default function DemographicsScreen() {
         name="heightCm"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Height (cm)"
+            label={label("height_cm", "Height (cm)")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -173,7 +188,7 @@ export default function DemographicsScreen() {
         name="weightKg"
         render={({ field: { value, onChange, onBlur } }) => (
           <NumberInput
-            label="Weight (kg)"
+            label={label("weight_kg", "Weight (kg)")}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -192,7 +207,7 @@ export default function DemographicsScreen() {
           name="waistCm"
           render={({ field: { value, onChange, onBlur } }) => (
             <NumberInput
-              label="Waist measurement"
+              label={label("waist_cm", "Waist measurement")}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -208,7 +223,7 @@ export default function DemographicsScreen() {
           name="hipCm"
           render={({ field: { value, onChange, onBlur } }) => (
             <NumberInput
-              label="Hip measurement"
+              label={label("hip_cm", "Hip measurement")}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -226,8 +241,8 @@ export default function DemographicsScreen() {
         name="ethnicity"
         render={({ field: { value, onChange } }) => (
           <SelectPicker
-            label="Ethnicity"
-            options={ETHNICITY_OPTIONS}
+            label={label("ethnicity", "Ethnicity")}
+            options={opts("ethnicity", ETHNICITY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.ethnicity?.message}
@@ -257,8 +272,8 @@ export default function DemographicsScreen() {
         name="countryOfOrigin"
         render={({ field: { value, onChange } }) => (
           <SelectPicker
-            label="Country of origin"
-            options={COUNTRY_OPTIONS}
+            label={label("country_of_origin", "Country of origin")}
+            options={opts("country_of_origin", COUNTRY_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.countryOfOrigin?.message}

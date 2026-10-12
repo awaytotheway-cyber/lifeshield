@@ -4,12 +4,18 @@ import { useEffect, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Text } from "react-native";
 
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { TextField } from "@/components/ui/TextField";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { NIGHT_SHIFT_OPTIONS, RADIATION_TYPE_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
 import {
@@ -28,6 +34,20 @@ import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 
 export default function RadiationScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "radiation_occupational";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
@@ -66,6 +86,7 @@ export default function RadiationScreen() {
         setLoadMessage(result.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToRadiationForm(result.responses));
+        custom.hydrate(result.responses as Record<string, unknown>);
       }
       setReady(true);
     })();
@@ -82,7 +103,10 @@ export default function RadiationScreen() {
     const result = await saveSection(
       session.user.id,
       "radiation_occupational",
-      radiationToJson(values),
+      {
+        ...radiationToJson(values),
+        ...custom.toJson(),
+      },
     );
     if (!result.ok) {
       setSaveMessage(result.message ?? COPY.sectionSaveFailed);
@@ -113,8 +137,8 @@ export default function RadiationScreen() {
         name="radiationExposure"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Have you had radiation exposure?"
-            options={YES_NO_OPTIONS}
+            label={label("radiation_exposure", "Have you had radiation exposure?")}
+            options={opts("radiation_exposure", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.radiationExposure?.message}
@@ -173,7 +197,7 @@ export default function RadiationScreen() {
         name="occupation"
         render={({ field: { value, onChange, onBlur } }) => (
           <TextField
-            label={COPY.occupationLabel}
+            label={label("occupation", COPY.occupationLabel)}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -188,8 +212,8 @@ export default function RadiationScreen() {
         name="nightShift"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label={COPY.nightShiftLabel}
-            options={NIGHT_SHIFT_OPTIONS}
+            label={label("night_shift", COPY.nightShiftLabel)}
+            options={opts("night_shift", NIGHT_SHIFT_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.nightShift?.message}
@@ -212,6 +236,11 @@ export default function RadiationScreen() {
         />
       ) : null}
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }

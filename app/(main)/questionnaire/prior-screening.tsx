@@ -4,12 +4,18 @@ import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Text, View } from "react-native";
 
+import {
+  CustomFields,
+  useCustomAnswers,
+} from "@/components/questionnaire/CustomFields";
 import { SectionScaffold } from "@/components/questionnaire/SectionScaffold";
 import { Button } from "@/components/ui/Button";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { MAMMOGRAM_FINDING_OPTIONS, YES_NO_OPTIONS } from "@/lib/constants";
+import { resolveLabel, resolveOptionLabel } from "@/lib/app-content";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
 import {
@@ -32,6 +38,20 @@ import { useTriageStore } from "@/stores/triage-store";
 
 export default function PriorScreeningScreen() {
   const router = useRouter();
+  const content = useAppContent();
+  const custom = useCustomAnswers();
+  const SECTION = "prior_screening";
+  const label = (key: string, fallback: string) =>
+    resolveLabel(content, SECTION, key, fallback);
+  // Locked rows keep their option values; only the labels can move.
+  const opts = (
+    key: string,
+    options: readonly { value: string; label: string }[],
+  ) =>
+    options.map((option) => ({
+      value: option.value,
+      label: resolveOptionLabel(content, SECTION, key, option.value, option.label),
+    }));
   const session = useAuthStore((state) => state.session);
   const triageStatus = useTriageStore((state) => state.status);
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
@@ -76,6 +96,7 @@ export default function PriorScreeningScreen() {
         setLoadMessage(result.message ?? COPY.sectionLoadFailed);
       } else {
         reset(jsonToPriorScreeningForm(result.responses));
+        custom.hydrate(result.responses as Record<string, unknown>);
       }
       setReady(true);
     })();
@@ -97,7 +118,10 @@ export default function PriorScreeningScreen() {
     const saved = await saveSection(
       session.user.id,
       "prior_screening",
-      priorScreeningToJson(values),
+      {
+        ...priorScreeningToJson(values),
+        ...custom.toJson(),
+      },
     );
     if (!saved.ok) {
       setSaveMessage(saved.message ?? COPY.sectionSaveFailed);
@@ -153,8 +177,8 @@ export default function PriorScreeningScreen() {
         name="previousMammogram"
         render={({ field: { value, onChange } }) => (
           <RadioGroup
-            label="Have you had a previous mammogram?"
-            options={YES_NO_OPTIONS}
+            label={label("previous_mammogram", "Have you had a previous mammogram?")}
+            options={opts("previous_mammogram", YES_NO_OPTIONS)}
             value={value}
             onChange={onChange}
             error={errors.previousMammogram?.message}
@@ -214,6 +238,11 @@ export default function PriorScreeningScreen() {
         </View>
       ) : null}
 
+      <CustomFields
+        section={SECTION}
+        answers={custom.answers}
+        setAnswer={custom.setAnswer}
+      />
     </SectionScaffold>
   );
 }
