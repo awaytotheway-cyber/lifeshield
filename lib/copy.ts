@@ -166,6 +166,19 @@ export const COPY = {
     "Based on your answers, seeing a doctor soon is the right next step. This app will be here when you're ready to return.\n\nContact a doctor, nurse, or local urgent care. If this feels like an emergency, use your local emergency number.",
   pathwayBLockedNote:
     "The questionnaire is paused on purpose. You can’t go back to change these answers. This screen stays after you close and reopen PRESCOPE.",
+  // ---- Tier 1 escalation (BRCA / CTC) ----
+  ctcStopTitle: "Your result needs a specialist",
+  ctcStopBody:
+    "One of your Tier 1 results came back positive. The right next step is a specialist, not this app.\n\nPlease contact your doctor to arrange a specialist referral. Bring your result with you — it is saved in PRESCOPE under Results.",
+  ctcStopPausedNote:
+    "The preventative screening steps are paused on purpose while a specialist reviews this. This screen stays after you close and reopen PRESCOPE. Nothing you have entered is lost.",
+  ctcStopNotADiagnosis:
+    "A positive result here is not a diagnosis. It means a specialist should look at it.",
+  brcaReferralTitle: "Genetic counselling recommended",
+  brcaReferralBody:
+    "Your BRCA1/2 result came back positive. The protocol recommends genetic counselling and a referral to a specialist breast-risk clinic. Your clinician will decide whether the risk-modification steps here continue alongside that, or pause.",
+  brcaReferralNote:
+    "You can keep using PRESCOPE. This is a referral, not a stop.",
   pathwayBFindDoctor: "Find a doctor",
   pathwayBSavePlace: "Save my place",
   pathwayBSaved:

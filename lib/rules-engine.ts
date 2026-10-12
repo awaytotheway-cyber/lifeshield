@@ -40,6 +40,17 @@ export type LabInputs = {
   snpCyp1b1: boolean | null;
   snpComtImpaired: boolean | null;
   snpMthfr: boolean | null;
+  /**
+   * Phase I pharmacokinetic genes. Separate from CYP1A1/CYP1B1 above, which
+   * are oestrogen-metabolism genes: these five drive drug and botanical
+   * clearance, and a loss-of-function or altered-function allele in any of
+   * them triggers the CYP450 functional assessment.
+   */
+  snpCyp1a2: boolean | null;
+  snpCyp2c9: boolean | null;
+  snpCyp2c19: boolean | null;
+  snpCyp2d6: boolean | null;
+  snpCyp3a4: boolean | null;
   cortisolAbnormal: boolean | null;
   fastingInsulin: number | null;
   tsh: number | null;
@@ -64,6 +75,11 @@ export const PHASE1_LABS: LabInputs = {
   snpCyp1b1: null,
   snpComtImpaired: null,
   snpMthfr: null,
+  snpCyp1a2: null,
+  snpCyp2c9: null,
+  snpCyp2c19: null,
+  snpCyp2d6: null,
+  snpCyp3a4: null,
   cortisolAbnormal: null,
   fastingInsulin: null,
   tsh: null,
@@ -300,6 +316,70 @@ export function shouldOrderHeavyMetals(
   };
 }
 
+/** Phase I pharmacokinetic genes behind the CYP450 assessment. */
+const PHARMACOKINETIC_CYPS: {
+  field: keyof Pick<
+    LabInputs,
+    "snpCyp1a2" | "snpCyp2c9" | "snpCyp2c19" | "snpCyp2d6" | "snpCyp3a4"
+  >;
+  gene: string;
+}[] = [
+  { field: "snpCyp1a2", gene: "CYP1A2" },
+  { field: "snpCyp2c9", gene: "CYP2C9" },
+  { field: "snpCyp2c19", gene: "CYP2C19" },
+  { field: "snpCyp2d6", gene: "CYP2D6" },
+  { field: "snpCyp3a4", gene: "CYP3A4/5" },
+];
+
+/**
+ * CYP450 liver-enzyme functional assessment.
+ *
+ * Source rule: a loss-of-function or altered-function allele in CYP1A2,
+ * CYP2C9, CYP2C19, CYP2D6 or CYP3A4/5 on the Tier 2 SNP panel. There is no
+ * questionnaire route — this is genetics only, so before a SNP panel comes
+ * back every field is null and the rule stays silent rather than guessing.
+ */
+export function shouldOrderCYP450(
+  _facts: RulesFacts,
+  labs: LabInputs = PHASE1_LABS,
+): RuleResult {
+  const hits = PHARMACOKINETIC_CYPS.filter(
+    (entry) => labs[entry.field] === true,
+  ).map((entry) => entry.gene);
+
+  if (hits.length > 0) {
+    return {
+      recommended: true,
+      reason: `Altered-function allele on the SNP panel: ${hits.join(", ")}.`,
+    };
+  }
+
+  const anyKnown = PHARMACOKINETIC_CYPS.some(
+    (entry) => labs[entry.field] !== null,
+  );
+  if (!anyKnown) {
+    return {
+      recommended: false,
+      reason: `${DEFERRED_LABS} (needs the Tier 2 SNP panel).`,
+    };
+  }
+
+  return {
+    recommended: false,
+    reason: "No altered-function phase I CYP allele on the SNP panel.",
+  };
+}
+
+/**
+ * Automation note from the source rules: a CYP450 hit warns clinicians
+ * about poor phase I detoxification before DIM, I3C or high-dose botanicals
+ * are started. Feeds the same practitioner check as hormones and
+ * anticoagulants.
+ */
+export function hasPharmacokineticFlag(labs: LabInputs): boolean {
+  return PHARMACOKINETIC_CYPS.some((entry) => labs[entry.field] === true);
+}
+
 const TIER4: {
   term: TermKey;
   run: (
@@ -312,6 +392,7 @@ const TIER4: {
   { term: "stool", run: shouldOrderStoolAnalysis },
   { term: "urinaryIodine", run: shouldOrderUrinaryIodine },
   { term: "heavyMetals", run: shouldOrderHeavyMetals },
+  { term: "cyp450", run: shouldOrderCYP450 },
 ];
 
 const BASELINE: { term: TermKey; reason: string }[] = [
@@ -685,12 +766,16 @@ function toDraftRow(
   pair: EngineInterventionPair,
   facts: RulesFacts,
   medicationCodes: Set<string>,
+  labs: LabInputs,
 ): DraftIntervention {
-  // Two paths to a clinician interaction flag:
-  //   1) Legacy questionnaire signal (contraceptives / HRT / blood thinners)
+  // Three paths to a clinician interaction flag:
+  //   1) Questionnaire signal (contraceptives / HRT / blood thinners)
   //      combined with the pair's needsInteractionCheck bit.
-  //   2) Phase E: the pair's contraindication codes overlap the user's
-  //      medication contraindication codes.
+  //   2) The pair's contraindication codes overlap the user's medication
+  //      contraindication codes.
+  //   3) An altered-function phase I CYP allele. The source rules call for
+  //      a pharmacokinetic warning before DIM, I3C or high-dose botanicals
+  //      specifically — which is what needsInteractionCheck marks.
   const questionnaireHit =
     pair.needsInteractionCheck && hormoneOrBloodThinnerInteraction(facts);
   const codes = pair.contraindication_codes ?? [];
@@ -698,6 +783,8 @@ function toDraftRow(
     codes.length > 0 &&
     medicationCodes.size > 0 &&
     codes.some((code) => medicationCodes.has(code.toLowerCase()));
+  const pharmacokineticHit =
+    pair.needsInteractionCheck && hasPharmacokineticFlag(labs);
 
   return {
     trigger_finding: pair.trigger_finding,
@@ -707,7 +794,8 @@ function toDraftRow(
     description: pair.description,
     clinical_basis: pair.clinical_basis,
     status: "draft",
-    clinician_interaction_check: questionnaireHit || medicationHit,
+    clinician_interaction_check:
+      questionnaireHit || medicationHit || pharmacokineticHit,
   };
 }
 
@@ -746,7 +834,7 @@ export function mapResultsToInterventions(
     if (!findingIsPresent(pair.id, facts, labs, thresholds)) {
       continue;
     }
-    out.push(toDraftRow(pair, facts, codeSet));
+    out.push(toDraftRow(pair, facts, codeSet, labs));
   }
 
   return out;

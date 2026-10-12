@@ -26,7 +26,15 @@ import type { LabInputs } from "@/lib/rules-engine";
  *  genetics without an explicit mapping. */
 export type GeneticLabSubset = Pick<
   LabInputs,
-  "snpMthfr" | "snpComtImpaired" | "snpCyp1a1" | "snpCyp1b1"
+  | "snpMthfr"
+  | "snpComtImpaired"
+  | "snpCyp1a1"
+  | "snpCyp1b1"
+  | "snpCyp1a2"
+  | "snpCyp2c9"
+  | "snpCyp2c19"
+  | "snpCyp2d6"
+  | "snpCyp3a4"
 >;
 
 const IMPAIRED_GENOTYPES = new Set([
@@ -92,10 +100,20 @@ function readGeneStatus(value: unknown): boolean | undefined {
 }
 
 const GENE_TO_LAB: Record<string, keyof GeneticLabSubset> = {
+  // Oestrogen metabolism — drive the DUTCH and stool rules.
   mthfr: "snpMthfr",
   comt: "snpComtImpaired",
   cyp1a1: "snpCyp1a1",
   cyp1b1: "snpCyp1b1",
+  // Phase I pharmacokinetics — drive the CYP450 assessment. CYP3A4 and
+  // CYP3A5 are reported together by most panels and the source rule treats
+  // them as one trigger, so both aliases land on the same field.
+  cyp1a2: "snpCyp1a2",
+  cyp2c9: "snpCyp2c9",
+  cyp2c19: "snpCyp2c19",
+  cyp2d6: "snpCyp2d6",
+  cyp3a4: "snpCyp3a4",
+  cyp3a5: "snpCyp3a4",
 };
 
 function readGeneMap(source: Record<string, unknown>): Partial<GeneticLabSubset> {

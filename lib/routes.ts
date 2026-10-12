@@ -55,6 +55,7 @@ export const routes = {
   consentCtc: "/(main)/(consent)/ctc" as Href,
   consentSnp: "/(main)/(consent)/snp" as Href,
   pathwayB: "/pathway-b" as Href,
+  escalation: "/escalation" as Href,
   goals: "/(main)/(goals)" as Href,
   goalsNew: "/(main)/(goals)/new" as Href,
   reminders: "/(main)/(reminders)" as Href,

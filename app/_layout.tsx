@@ -81,6 +81,14 @@ function AuthGate() {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="escalation"
+          options={{
+            gestureEnabled: false,
+            animation: "none",
+            headerShown: false,
+          }}
+        />
       </Stack>
     </>
   );

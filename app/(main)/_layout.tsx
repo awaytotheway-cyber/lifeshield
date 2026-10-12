@@ -1,5 +1,6 @@
 import { Redirect, Tabs, usePathname } from "expo-router";
 import { Feather } from "@expo/vector-icons";
+import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
@@ -18,6 +19,7 @@ import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
+import { useEscalationStore } from "@/stores/escalation-store";
 import { useTriageStore } from "@/stores/triage-store";
 
 function consentScreenFromPath(pathname: string): SequentialConsent | null {
@@ -47,7 +49,18 @@ export default function MainLayout() {
   const triageStatus = useTriageStore((state) => state.status);
   const consentLoaded = useConsentStore((state) => state.loaded);
   const agreed = useConsentStore((state) => state.agreed);
+  const ctcPositive = useEscalationStore((state) => state.state.ctcPositive);
+  const loadEscalation = useEscalationStore((state) => state.load);
   const pathname = usePathname();
+
+  // Tier 1 results can arrive while the user is mid-pathway, so re-check on
+  // every mount of the tab shell rather than once at sign-in.
+  const userId = session?.user.id;
+  useEffect(() => {
+    if (userId) {
+      void loadEscalation(userId);
+    }
+  }, [userId, loadEscalation]);
 
   // Only block the tab shell until the first consent fetch finishes.
   // Later refreshes must not trap users on a spinner when opening Follow-up.
@@ -76,6 +89,14 @@ export default function MainLayout() {
 
   if (triageStatus === "locked") {
     return <Redirect href={routes.pathwayB} />;
+  }
+
+  // A positive CTC pauses the whole preventative arm pending specialist
+  // review, so it gates the tab shell exactly like a symptomatic triage.
+  // A positive BRCA deliberately does not: that is a referral, shown as a
+  // banner, and the clinician decides whether these steps continue.
+  if (ctcPositive) {
+    return <Redirect href={routes.escalation} />;
   }
 
   const onSymptomCheck = pathname.includes("symptom-check");

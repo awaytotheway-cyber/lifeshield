@@ -6,6 +6,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { ExploreGrid, type ExploreItem } from "@/components/ui/ExploreGrid";
+import { BrcaReferralBanner } from "@/components/ui/BrcaReferralBanner";
 import { HomeSkeleton } from "@/components/ui/HomeSkeleton";
 import { HomeStatCards } from "@/components/ui/HomeStatCards";
 import { TrustBadgeGrid } from "@/components/ui/TrustBadgeGrid";
@@ -386,6 +387,10 @@ export default function HomeScreen() {
       <Text style={styles.greetingSub}>{COPY.homeGreetingSub}</Text>
       <Text style={styles.tagline}>{COPY.tagline}</Text>
       <Text style={styles.headline}>{headlineFor(current)}</Text>
+
+      <View style={styles.trust}>
+        <BrcaReferralBanner />
+      </View>
 
       <View style={styles.trust}>
         <TrustBanner />
