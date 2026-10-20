@@ -149,6 +149,9 @@ git commit -m "feat: switch typography to Schibsted Grotesk"
 - Create: `components/ui/TwoTone.tsx`
 - Create: `components/ui/MossPattern.tsx`
 - Create: `components/ui/InitialDisc.tsx`
+- Create: `lib/initials.ts`
+- Test: `lib/initials.test.ts`
+- Modify: `package.json` (append `test:initials`; append to the aggregate `test` script — never rewrite the scripts block)
 
 **Interfaces:**
 - Produces:
@@ -506,7 +509,7 @@ git commit -m "feat: add buddy search and connection logic"
 - Consumes: `connectionPair` (Task 10).
 - Produces:
   - `validateMessage(body: string): { ok: true; body: string } | { ok: false; reason: "empty" | "too_long" }` — trims, rejects empty, caps at 2000 characters
-  - `groupByDay(msgs: Message[]): { day: string; label: string; messages: Message[] }[]` — label is `"Today"`, `"Yesterday"`, or `"12 October"`
+  - `groupByDay(msgs: Message[], now?: Date): { day: string; label: string; messages: Message[] }[]` — label is `"Today"`, `"Yesterday"`, or `"12 October"`; `now` defaults to `new Date()` and exists so tests are not time-dependent
   - `unreadCount(msgs: Message[], userId: string): number`
   - `sendMessage`, `subscribeToThread` (Supabase Realtime channel)
   - `type Message = { id: string; connection_id: string; sender_id: string; body: string; created_at: string; read_at: string | null }`
@@ -530,10 +533,13 @@ assert.equal(validateMessage("x".repeat(2000)).ok, true);
 const msg = (id: string, at: string, sender = "them", read: string | null = null) =>
   ({ id, connection_id: "c", sender_id: sender, body: "b", created_at: at, read_at: read });
 
-const days = groupByDay([msg("1", "2026-10-19T08:00:00Z"), msg("2", "2026-10-20T08:00:00Z")]);
+// `now` is injected so this test does not change meaning tomorrow
+const NOW = new Date("2026-10-20T12:00:00Z");
+const days = groupByDay([msg("1", "2026-10-19T08:00:00Z"), msg("2", "2026-10-20T08:00:00Z")], NOW);
 assert.equal(days.length, 2);
 assert.equal(days[1].label, "Today");
 assert.equal(days[0].label, "Yesterday");
+assert.equal(groupByDay([msg("3", "2026-10-12T08:00:00Z")], NOW)[0].label, "12 October");
 
 // unread counts only the other party's unread messages
 assert.equal(unreadCount([msg("1", "2026-10-20T08:00:00Z"), msg("2", "2026-10-20T09:00:00Z", "me")], "me"), 1);
