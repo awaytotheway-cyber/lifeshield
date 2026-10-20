@@ -101,11 +101,18 @@ export const typography = {
     lineHeight: 34,
     letterSpacing: -1,
   },
-  /** @deprecated use `displayXL`. */
+  /**
+   * Holds the pre-Moss metrics (40 / 44 / -1) on purpose: MilestoneStatStrip
+   * renders three of these side by side in a `flex: 1` row, so inheriting
+   * displayXL's 46 would grow them 15% and risk clipping on narrow screens.
+   * Only the face and weight are remapped — Moss has no 800.
+   * @deprecated pick `displayXL` or `displayL` deliberately when the strip is
+   * redesigned, rather than inheriting this hold.
+   */
   heroStat: {
     fontFamily: fontFamily.heroStat,
-    fontSize: 46,
-    lineHeight: 42,
-    letterSpacing: -1.6,
+    fontSize: 40,
+    lineHeight: 44,
+    letterSpacing: -1,
   },
 } as const;
