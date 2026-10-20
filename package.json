@@ -94,6 +94,8 @@
     "test:shopping-list": "npx --yes tsx --tsconfig tsconfig.json lib/shopping-list.test.ts",
     "test:lab-search": "npx --yes tsx --tsconfig tsconfig.json lib/lab-search.test.ts",
     "test:supplements": "npx --yes tsx --tsconfig tsconfig.json lib/supplements.test.ts",
+    "test:tokens": "npx --yes tsx --tsconfig tsconfig.json lib/design-tokens.test.ts",
+    "test": "npm run test:rules && npm run test:results && npm run test:lab-results && npm run test:plan && npm run test:followup && npm run test:journey && npm run test:purchase-gates && npm run test:stripe-config && npm run test:notifications && npm run test:push && npm run test:lab-provider && npm run test:feature-flags && npm run test:goals && npm run test:menu && npm run test:reminders && npm run test:intervention-templates && npm run test:intervention-templates-seed && npm run test:intervention-progress && npm run test:recipes && npm run test:meal-planner && npm run test:shopping-list && npm run test:lab-search && npm run test:supplements && npm run test:tokens",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
   },

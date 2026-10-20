@@ -1,76 +1,91 @@
 ﻿/**
- * PRESCOPE design tokens — blue-primary glassmorphism system.
- * Change a value here (and in tailwind.config.js + global.css if it is a colour)
- * instead of hunting through screens for hex codes.
+ * PRESCOPE design tokens — the Moss design language.
  *
- * Legacy aliases (deepTeal, cream, sage…) keep older screens working while
- * they gradually adopt the new names (primaryBlue, iceBlue, riskLow…).
+ * Change a value here (and in tailwind.config.js + global.css if it is a
+ * colour) instead of hunting through screens for hex codes.
+ *
+ * Moss is flat and quiet: paper ground, white cards, one black button per
+ * screen. There are no borders on cards, no shadows, no elevation, no blur,
+ * and no gradient other than `heroGradient` — so this file deliberately
+ * exports none of those. The blue glassmorphism aliases are gone; nothing
+ * here remaps an old name to a new colour.
  */
 
 export const colors = {
-  /** Brand primary — buttons, active tabs, key accents. */
-  primaryBlue: "#2B5FE0",
-  /** Dark text / navy glass tint base. */
-  deepNavy: "#0B1E4D",
-  /** Softer blue for secondary actions and highlights. */
-  skyBlue: "#6FA8F5",
-  /** Default screen atmosphere (never plain white behind glass). */
-  iceBlue: "#EAF1FF",
+  /** Primary text and the single black button. */
+  ink: "#0C0C0A",
+  /** Secondary text — supporting copy, captions that still must read. */
+  inkSoft: "#4F4F49",
+  /** Grey headline words. As a headline colour, 24px and up only. */
+  inkFaint: "#8A8A84",
 
-  /** Glass fills — light cards / dark chrome overlays. */
-  glassFill: "rgba(255,255,255,0.55)",
-  glassFillDark: "rgba(11,30,77,0.45)",
-  glassChrome: "rgba(255,255,255,0.42)",
-  glassBorder: "rgba(255,255,255,0.3)",
-
-  /** Risk semantics ONLY — never decorative coral. */
-  riskLow: "#2FB8A6",
-  riskLowLight: "#E6F8F5",
-  riskModerate: "#F5A623",
-  riskModerateLight: "#FEF4E3",
-  riskHigh: "#F26D6D",
-  riskHighLight: "#FDECEC",
-
+  /** Screen ground. White is for cards, never for the screen. */
+  paper: "#F1F1EF",
+  /** Cards. */
   white: "#FFFFFF",
-  charcoal: "#0B1E4D",
-  slate: "#4A5568",
-  mist: "#9AA5B4",
-  border: "#D4E0F5",
-  shadow: "rgba(43,95,224,0.12)",
 
-  // ——— Legacy aliases (map old teal/cream system → blue glass) ———
-  deepTeal: "#2B5FE0",
-  midTeal: "#6FA8F5",
-  lightTeal: "#D6E4FF",
-  sage: "#2FB8A6",
-  sageLight: "#E6F8F5",
-  coral: "#F26D6D",
-  coralLight: "#FDECEC",
-  amber: "#F5A623",
-  amberLight: "#FEF4E3",
-  cream: "#EAF1FF",
-  teal: "#2B5FE0",
+  /** Text-safe green (5.7:1 on white) — links, active state, moss labels. */
+  mossDeep: "#5F6D17",
+  /** Gradient body and progress fill. */
+  mossMid: "#7D9022",
+  /** Gradient top and solid fills — never text. */
+  mossBright: "#A3B82E",
+  /** Chips, soft fills, selected rows. */
+  mossTint: "#EFF2E2",
+
+  /** The only divider: 1px, used sparingly. Never a card border. */
+  hairline: "#E4E4E0",
 } as const;
 
-/** Everyday names so screens do not guess which blue to use. */
-export const semantic = {
-  actionPrimary: colors.primaryBlue,
-  actionSecondary: colors.skyBlue,
-  success: colors.riskLow,
-  warning: colors.riskModerate,
-  danger: colors.riskHigh,
-  information: colors.lightTeal,
-  disabledBg: colors.border,
-  disabledText: colors.mist,
+/** The three clinical statuses a result may carry. */
+export type StatusKind = "withinRange" | "worthWatching" | "worthDiscussing";
+
+/** A status chip's two colours and the word it must always display. */
+export type StatusTone = {
+  fill: string;
+  text: string;
+  label: string;
+};
+
+/**
+ * Clinical status is lightness, not hue — green → amber → clay, never
+ * green → red, so the three stay distinct in greyscale and for colour-blind
+ * readers. Every chip carries its word: colour is never the only signal.
+ */
+export const status: Record<StatusKind, StatusTone> = {
+  withinRange: { fill: "#EFF2E2", text: "#4A5612", label: "Within range" },
+  worthWatching: { fill: "#F0E6D2", text: "#7A5610", label: "Worth watching" },
+  worthDiscussing: { fill: "#F3DED4", text: "#9C3E16", label: "Worth discussing" },
+};
+
+/**
+ * Three radii, and no others anywhere in the codebase:
+ * `surface` for anything you look at, `control` for anything you press,
+ * `pill` for round things.
+ */
+export const radius = {
+  surface: 20,
+  control: 4,
+  pill: 999,
 } as const;
 
-/** Soft gradient stops for Screen backgrounds. */
-export const gradients = {
-  screen: ["#EAF1FF", "#D6E4FF", "#C8DBFF"] as const,
-  screenLocations: [0, 0.55, 1] as const,
-} as const;
+/**
+ * The only gradient in the app. Reserved for hero bands and the assessment
+ * intro — one per screen, and never behind body copy.
+ *
+ * CSS equivalent: `linear-gradient(155deg, #A3B82E 0%, #7D9022 42%, #4C5812 100%)`.
+ */
+export const heroGradient = {
+  colors: ["#A3B82E", "#7D9022", "#4C5812"],
+  locations: [0, 0.42, 1],
+  angle: 155,
+} as const satisfies {
+  colors: readonly string[];
+  locations: readonly number[];
+  angle: 155;
+};
 
-/** 8-point grid (4px for tiny tweaks). */
+/** 8-point grid (4px for tiny tweaks). `screenX` is the 24px screen gutter. */
 export const spacing = {
   micro: 4,
   sm: 8,
@@ -80,56 +95,11 @@ export const spacing = {
   lg: 32,
   xl: 40,
   xxl: 48,
-  screenX: 20,
+  screenX: 24,
 } as const;
 
-export const radius = {
-  input: 12,
-  button: 16,
-  alert: 16,
-  card: 24,
-  radioCard: 20,
-  chip: 20,
-  sheet: 28,
-  /** Tailwind rounded-2xl ≈ 16; glass cards use a slightly fuller corner. */
-  glass: 16,
-} as const;
-
-export const shadows = {
-  card: {
-    shadowColor: colors.primaryBlue,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
-    elevation: 4,
-  },
-  button: {
-    shadowColor: colors.primaryBlue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.22,
-    shadowRadius: 16,
-    elevation: 4,
-  },
-  modal: {
-    shadowColor: colors.deepNavy,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 32,
-    elevation: 8,
-  },
-  focusGlow: {
-    shadowColor: colors.skyBlue,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.18,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-} as const;
-
+/** Nothing interactive may be smaller than this in either dimension. */
 export const tapTarget = 44;
-export const inputHeight = 56;
-export const primaryButtonHeight = 56;
-export const secondaryButtonHeight = 52;
 
-/** BlurView intensity used by GlassCard (native glass look). */
-export const glassBlurIntensity = 40;
+/** Every control — button, input, select — is this tall. */
+export const controlHeight = 56;
