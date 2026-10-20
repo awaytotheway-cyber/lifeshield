@@ -1,17 +1,12 @@
 // Must be the first import so NativeWind styles load before anything renders.
 import "../global.css";
 
-import { DMMono_400Regular } from "@expo-google-fonts/dm-mono";
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-} from "@expo-google-fonts/inter";
-import {
-  Manrope_600SemiBold,
-  Manrope_700Bold,
-  Manrope_800ExtraBold,
-} from "@expo-google-fonts/manrope";
+  SchibstedGrotesk_400Regular,
+  SchibstedGrotesk_500Medium,
+  SchibstedGrotesk_600SemiBold,
+  SchibstedGrotesk_700Bold,
+} from "@expo-google-fonts/schibsted-grotesk";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -96,21 +91,11 @@ function AuthGate() {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    InstrumentSans_400Regular: require("../assets/fonts/InstrumentSans-Regular.ttf"),
-    InstrumentSans_500Medium: require("../assets/fonts/InstrumentSans-Medium.ttf"),
-    InstrumentSans_600SemiBold: require("../assets/fonts/InstrumentSans-SemiBold.ttf"),
-    InstrumentSans_700Bold: require("../assets/fonts/InstrumentSans-Bold.ttf"),
-    InstrumentSans_400Regular_Italic: require("../assets/fonts/InstrumentSans-Italic.ttf"),
-    InstrumentSans_500Medium_Italic: require("../assets/fonts/InstrumentSans-MediumItalic.ttf"),
-    // Keep the Manrope / Inter / DM Mono bundles loaded so any screen holding
-    // an old fontFamily literal keeps rendering during the transition.
-    Manrope_600SemiBold,
-    Manrope_700Bold,
-    Manrope_800ExtraBold,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    DMMono_400Regular,
+    // Moss uses one face in four weights; nothing else is loaded.
+    SchibstedGrotesk_400Regular,
+    SchibstedGrotesk_500Medium,
+    SchibstedGrotesk_600SemiBold,
+    SchibstedGrotesk_700Bold,
   });
 
   // If a font file fails, keep going with system fonts rather than a blank screen.
