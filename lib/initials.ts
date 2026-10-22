@@ -25,7 +25,12 @@ export function initialsFor(name: string): string {
     .split(/\s+/)
     .filter((word) => word.length > 0)
     .slice(0, 2)
-    .map((word) => Array.from(word)[0] ?? "")
-    .join("")
-    .toUpperCase();
+    .map((word) => {
+      const first = Array.from(word)[0] ?? "";
+      // Uppercasing can expand one letter into several ("ß" -> "SS"), and the
+      // disc has room for exactly one glyph per word, so take the first again
+      // after the case change rather than before it.
+      return Array.from(first.toUpperCase())[0] ?? "";
+    })
+    .join("");
 }
