@@ -91,6 +91,7 @@
     "test:lab-search": "npx --yes tsx --tsconfig tsconfig.json lib/lab-search.test.ts",
     "test:supplements": "npx --yes tsx --tsconfig tsconfig.json lib/supplements.test.ts",
     "test:tokens": "npx --yes tsx --tsconfig tsconfig.json lib/design-tokens.test.ts",
+    "test:initials": "npx --yes tsx --tsconfig tsconfig.json lib/initials.test.ts",
     "test": "node scripts/run-tests.mjs",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
