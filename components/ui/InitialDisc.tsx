@@ -56,7 +56,10 @@ export function InitialDisc({
         ]}
         // One or two glyphs must never wrap or shrink to two lines.
         numberOfLines={1}
-        allowFontScaling={false}
+        // The disc is a fixed circle, so unbounded scaling would clip the
+        // monogram — but a cap still honours part of the user's text setting,
+        // where switching scaling off would honour none of it.
+        maxFontSizeMultiplier={1.3}
       >
         {initials}
       </Text>
