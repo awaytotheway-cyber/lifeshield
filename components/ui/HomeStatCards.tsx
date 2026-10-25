@@ -1,9 +1,9 @@
 import { Feather } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
-import { GlassCard } from "@/components/ui/GlassCard";
 import { PressScale } from "@/components/ui/PressScale";
 import { ProgressRing } from "@/components/ui/ProgressRing";
+import { Surface } from "@/components/ui/Surface";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
@@ -40,7 +40,7 @@ export function HomeStatCards({
         accessibilityLabel={`Questionnaire, ${questionnaireCount} of ${questionnaireTotal} sections complete`}
         onPress={onPressQuestionnaire}
       >
-        <GlassCard intensity="card" style={styles.primaryCard}>
+        <Surface padded={false} style={styles.primaryCard}>
           <ProgressRing
             current={questionnaireCount}
             total={questionnaireTotal}
@@ -56,11 +56,11 @@ export function HomeStatCards({
             <Text style={styles.primaryLabel}>Sections complete</Text>
           </View>
           <Feather name="chevron-right" size={20} color={colors.mist} />
-        </GlassCard>
+        </Surface>
       </PressScale>
 
       <View style={styles.row}>
-        <GlassCard intensity="card" style={styles.smallCard}>
+        <Surface padded={false} style={styles.smallCard}>
           <View
             style={[
               styles.badge,
@@ -77,9 +77,9 @@ export function HomeStatCards({
             {consentsDone ? "All signed" : `${consentCount} of ${consentTotal}`}
           </Text>
           <Text style={styles.smallLabel}>Consents</Text>
-        </GlassCard>
+        </Surface>
 
-        <GlassCard intensity="card" style={styles.smallCard}>
+        <Surface padded={false} style={styles.smallCard}>
           <View
             style={[
               styles.badge,
@@ -98,7 +98,7 @@ export function HomeStatCards({
           <Text style={styles.smallLabel}>
             {testPlanReady ? "Test plan" : "After questionnaire"}
           </Text>
-        </GlassCard>
+        </Surface>
       </View>
     </View>
   );

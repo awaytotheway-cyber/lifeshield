@@ -8,7 +8,7 @@ type ProgressRingProps = {
   total: number;
   size?: number;
   thickness?: number;
-  /** Ring colour. Track is always the pale border blue. */
+  /** Ring colour. The track is always `hairline`. */
   color?: string;
   children?: React.ReactNode;
 };
@@ -16,13 +16,16 @@ type ProgressRingProps = {
 /**
  * Circular progress ring with the filled arc starting at 12 o'clock.
  * Children render centred inside the ring.
+ *
+ * `mossMid` on a `hairline` track, like `ProgressBar` — the same two colours
+ * mean the same thing whichever shape the progress takes.
  */
 export function ProgressRing({
   current,
   total,
   size = 64,
   thickness = 6,
-  color = colors.primaryBlue,
+  color = colors.mossMid,
   children,
 }: ProgressRingProps) {
   const safeTotal = total > 0 ? total : 1;
@@ -38,7 +41,7 @@ export function ProgressRing({
           cx={center}
           cy={center}
           r={radius}
-          stroke={colors.border}
+          stroke={colors.hairline}
           strokeWidth={thickness}
           fill="none"
         />

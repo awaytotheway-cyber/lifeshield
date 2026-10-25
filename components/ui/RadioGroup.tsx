@@ -2,8 +2,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { LabelRow } from "@/components/ui/WhyAskSheet";
-import { colors, radius } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, radius, status } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type Option = { value: string; label: string; description?: string };
 
@@ -14,18 +14,29 @@ type RadioGroupProps = {
   /** Empty string means “cleared” (tap the same option again). */
   onChange: (value: string) => void;
   error?: string;
-  /** Kept so older screens still compile; cards use the design-system colours. */
+  /** Kept so older screens still compile; rows use the design-system colours. */
   color?: string;
   /** If false, tapping a selected option does not clear it (used on triage). */
   allowClear?: boolean;
   /** Optional “Why do we ask this?” sheet for intrusive questions. */
   whyAsk?: string;
-  /** When this option is selected, use coral styling (symptom Yes only). */
+  /** When this option is selected, use the clay styling (symptom Yes only). */
   dangerValue?: string;
 };
 
+/** The one height every choice row shares. Comfortably past the 44pt floor. */
+const ROW_HEIGHT = 52;
+
+/** Clay, borrowed from `worthDiscussing` — for errors and the symptom Yes. */
+const CLAY = status.worthDiscussing.text;
+
 /**
- * Full-width choice cards (not tiny dots). Tap again to unselect unless allowClear is false.
+ * Full-width choice rows. The whole row is the target, not a dot beside it.
+ *
+ * An unselected row is bare — no border, no fill, just its words on the card
+ * it sits on. Selecting one fills it with `mossTint` and adds a check, so the
+ * answer reads from the fill and the mark, never from colour alone. Tap the
+ * selected row again to clear it unless `allowClear` is false.
  */
 export function RadioGroup({
   label,
@@ -53,13 +64,14 @@ export function RadioGroup({
               onPress={() => {
                 onChange(selected && allowClear ? "" : option.value);
               }}
-              style={[
-                styles.card,
-                selected ? styles.cardSelected : styles.cardIdle,
-                dangerSelected ? styles.cardDanger : null,
+              style={({ pressed }) => [
+                styles.row,
+                pressed && !selected ? styles.rowPressed : null,
+                selected ? styles.rowSelected : null,
+                dangerSelected ? styles.rowDanger : null,
               ]}
             >
-              <View style={styles.cardText}>
+              <View style={styles.rowText}>
                 <Text style={styles.optionLabel}>{option.label}</Text>
                 {option.description ? (
                   <Text style={styles.optionDesc}>{option.description}</Text>
@@ -69,7 +81,7 @@ export function RadioGroup({
                 <Feather
                   name="check"
                   size={20}
-                  color={dangerSelected ? colors.coral : colors.midTeal}
+                  color={dangerSelected ? CLAY : colors.mossDeep}
                 />
               ) : null}
             </Pressable>
@@ -86,51 +98,42 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   list: {
-    gap: 8,
+    gap: 4,
   },
-  card: {
-    minHeight: 56,
-    borderRadius: radius.radioCard,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  row: {
+    minHeight: ROW_HEIGHT,
+    borderRadius: radius.control,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  cardIdle: {
-    backgroundColor: colors.white,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+  rowPressed: {
+    backgroundColor: colors.paper,
   },
-  cardSelected: {
-    backgroundColor: colors.lightTeal,
-    borderWidth: 2,
-    borderColor: colors.midTeal,
+  rowSelected: {
+    backgroundColor: colors.mossTint,
   },
-  cardDanger: {
-    backgroundColor: colors.coralLight,
-    borderWidth: 2,
-    borderColor: colors.coral,
+  rowDanger: {
+    backgroundColor: status.worthDiscussing.fill,
   },
-  cardText: {
+  rowText: {
     flex: 1,
     paddingRight: 12,
   },
   optionLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typography.body,
+    color: colors.ink,
   },
   optionDesc: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    marginTop: 2,
+    ...typography.label,
+    color: colors.inkSoft,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typography.label,
+    color: CLAY,
   },
 });

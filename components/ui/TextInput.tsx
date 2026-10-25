@@ -8,8 +8,8 @@ import {
 } from "react-native";
 
 import { IconButton } from "@/components/ui/Button";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, controlHeight, status } from "@/lib/design-tokens";
+import { fontFamily, typography } from "@/lib/typography";
 
 type FieldProps = RNTextInputProps & {
   label: string;
@@ -17,8 +17,15 @@ type FieldProps = RNTextInputProps & {
   hint?: string;
 };
 
+/** Errors borrow the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
 /**
- * Standard text field: label above, 56px box, teal glow when focused.
+ * The Moss text field: a 13px label, 56px of room, and a rule underneath.
+ *
+ * There is no box. A field is marked by the 1.5px ink rule along its bottom
+ * edge, which thickens to 2px while focused and turns clay on an error — so
+ * focus and error read without a border, a shadow or a glow anywhere.
  */
 export function TextInput({
   label,
@@ -42,7 +49,7 @@ export function TextInput({
       <View>
         <RNTextInput
           accessibilityLabel={label}
-          placeholderTextColor={colors.mist}
+          placeholderTextColor={colors.inkFaint}
           autoCapitalize="none"
           autoCorrect={false}
           secureTextEntry={showEye ? passwordHidden : false}
@@ -89,48 +96,45 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typography.label,
+    color: colors.inkSoft,
+    marginBottom: 4,
   },
   hint: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.midTeal,
-    marginBottom: 8,
+    ...typography.label,
+    color: colors.inkFaint,
+    marginBottom: 4,
   },
   input: {
-    minHeight: inputHeight,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    paddingHorizontal: 16,
+    minHeight: controlHeight,
+    // No box: the rule under the field is the whole affordance. Keeping the
+    // bottom border alone means focus can thicken it without the text ever
+    // shifting sideways.
+    borderBottomWidth: 1.5,
+    borderBottomColor: colors.ink,
+    backgroundColor: "transparent",
+    paddingHorizontal: 0,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   inputWithEye: {
     paddingRight: 52,
   },
   eye: {
     position: "absolute",
-    right: 4,
+    right: 0,
     top: 6,
   },
   inputFocus: {
-    borderColor: colors.midTeal,
-    ...shadows.focusGlow,
+    borderBottomWidth: 2,
   },
   inputError: {
-    borderColor: colors.coral,
+    borderBottomColor: CLAY,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typography.label,
+    color: CLAY,
   },
 });

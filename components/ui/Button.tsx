@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Pressable,
   StyleSheet,
   Text,
   View,
@@ -9,14 +10,11 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { PressScale } from "@/components/ui/PressScale";
 import {
   colors,
-  primaryButtonHeight,
+  controlHeight,
   radius,
-  secondaryButtonHeight,
-  shadows,
+  status,
   tapTarget,
 } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
@@ -41,17 +39,32 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   style?: StyleProp<ViewStyle>;
 };
 
-function darkerPrimary(pressed: boolean) {
-  return pressed ? "#234FBF" : colors.primaryBlue;
-}
-
-function darkerCoral(pressed: boolean) {
-  return pressed ? "#E05555" : colors.riskHigh;
-}
+/**
+ * Pressed primary. Ink darkened just enough to register the press without
+ * reading as a second colour — the only press state the system defines.
+ */
+const INK_PRESSED = "#2A2A26";
 
 /**
- * Shared button. Prefer PrimaryButton / SecondaryButton names in new screens.
- * Older screens still pass title + variant="ghost".
+ * Disabled label. Darker than `inkFaint` so it still clears 4.5:1 on the
+ * `hairline` disabled fill, and lighter than `inkSoft` so it reads as off.
+ */
+const DISABLED_TEXT = "#6B6B65";
+
+/** Destructive actions borrow the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
+/**
+ * The Moss button. Flat ink, one radius, no shadow, no bounce.
+ *
+ * Exactly one `primary` belongs on a screen — everything else is `secondary`
+ * (a 1px ink outline on nothing) or `text` (an underlined link). `ghost` is
+ * kept as a name because 27 screens still ask for it; it renders the
+ * secondary outline, which is what those screens meant by "not the primary".
+ * `icon` likewise keeps its name and loses its glass: a bare 44pt hit area.
+ *
+ * There is no `PressScale` here. Moss does not bounce; a press darkens or
+ * fills, and that is the whole feedback vocabulary.
  */
 export function Button({
   title = "",
@@ -65,91 +78,127 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = Boolean(disabled || loading);
-  const resolvedVariant = variant === "ghost" ? "text" : variant;
+  // `ghost` was the glass outline button. Moss has one outline, so it maps
+  // straight onto `secondary` rather than renaming 27 call sites.
+  const resolvedVariant = variant === "ghost" ? "secondary" : variant;
   const label = accessibilityLabel ?? title;
 
   if (resolvedVariant === "icon") {
     return (
-      <PressScale
-        {...rest}
-        accessibilityRole="button"
-        accessibilityLabel={label}
-        disabled={isDisabled}
-        style={[styles.iconBtn, isDisabled && styles.iconDisabled, style]}
-      >
-        <Feather name={icon ?? "more-horizontal"} size={20} color={colors.primaryBlue} />
-      </PressScale>
-    );
-  }
-
-  if (resolvedVariant === "text") {
-    return (
-      <PressScale
-        {...rest}
-        accessibilityRole="button"
-        accessibilityLabel={label}
-        disabled={isDisabled}
-        style={[styles.textBtn, isDisabled && styles.disabledWrap, style]}
-      >
-        {({ pressed }) =>
-          loading ? (
-            <ActivityIndicator color={colors.skyBlue} />
-          ) : (
-            <Text
-              style={[
-                styles.textLabel,
-                pressed && !isDisabled ? styles.textLabelPressed : null,
-                isDisabled && styles.disabledText,
-              ]}
-            >
-              {title}
-            </Text>
-          )
-        }
-      </PressScale>
-    );
-  }
-
-  if (resolvedVariant === "secondary") {
-    return (
-      <PressScale
+      <Pressable
         {...rest}
         accessibilityRole="button"
         accessibilityLabel={label}
         disabled={isDisabled}
         style={({ pressed }) => [
-          styles.secondaryWrap,
-          pressed && !isDisabled ? styles.secondaryPressed : null,
-          isDisabled && styles.disabledWrap,
+          styles.iconBtn,
+          pressed && !isDisabled ? styles.iconPressed : null,
           style,
         ]}
       >
-        <GlassCard intensity="button" style={styles.secondaryGlass}>
-          {loading ? (
-            <ActivityIndicator color={colors.primaryBlue} />
-          ) : (
-            <Text style={[styles.secondaryLabel, isDisabled && styles.disabledText]}>
-              {title}
-            </Text>
-          )}
-        </GlassCard>
-      </PressScale>
+        <Feather
+          name={icon ?? "more-horizontal"}
+          size={20}
+          color={isDisabled ? DISABLED_TEXT : colors.ink}
+        />
+      </Pressable>
     );
   }
 
-  const isDanger = resolvedVariant === "danger";
+  if (resolvedVariant === "text") {
+    return (
+      <Pressable
+        {...rest}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        disabled={isDisabled}
+        style={[styles.textBtn, style]}
+      >
+        {loading ? (
+          <ActivityIndicator color={colors.ink} />
+        ) : (
+          // The underline is the affordance, so it is always drawn — a
+          // tertiary action that only underlines on hover is invisible on a
+          // phone. React Native has no `textUnderlineOffset`; the spec's 4px
+          // offset lands only where the platform supplies one.
+          <Text
+            style={[styles.textLabel, isDisabled ? styles.disabledText : null]}
+          >
+            {title}
+          </Text>
+        )}
+      </Pressable>
+    );
+  }
+
+  if (resolvedVariant === "secondary" || resolvedVariant === "danger") {
+    const isDanger = resolvedVariant === "danger";
+    const outline = isDisabled
+      ? colors.hairline
+      : isDanger
+        ? CLAY
+        : colors.ink;
+    const labelColor = isDisabled
+      ? DISABLED_TEXT
+      : isDanger
+        ? CLAY
+        : colors.ink;
+
+    return (
+      <Pressable
+        {...rest}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+        disabled={isDisabled}
+        style={({ pressed }) => [
+          styles.outline,
+          { borderColor: outline },
+          pressed && !isDisabled ? styles.outlinePressed : null,
+          style,
+        ]}
+      >
+        {loading ? (
+          <ActivityIndicator color={colors.ink} />
+        ) : (
+          <View style={styles.row}>
+            {icon ? (
+              <Feather
+                name={icon}
+                size={18}
+                color={labelColor}
+                style={styles.iconGap}
+              />
+            ) : null}
+            <Text style={[styles.label, { color: labelColor }]}>{title}</Text>
+            {iconTrailing ? (
+              <Feather
+                name={iconTrailing}
+                size={18}
+                color={labelColor}
+                style={styles.iconGapTrailing}
+              />
+            ) : null}
+          </View>
+        )}
+      </Pressable>
+    );
+  }
 
   return (
-    <PressScale
+    <Pressable
       {...rest}
       accessibilityRole="button"
       accessibilityLabel={label}
       disabled={isDisabled}
       style={({ pressed }) => [
         styles.primary,
-        { backgroundColor: isDanger ? darkerCoral(pressed) : darkerPrimary(pressed) },
-        !isDisabled ? shadows.button : null,
-        isDisabled && styles.primaryDisabled,
+        {
+          backgroundColor: isDisabled
+            ? colors.hairline
+            : pressed
+              ? INK_PRESSED
+              : colors.ink,
+        },
         style,
       ]}
     >
@@ -161,24 +210,29 @@ export function Button({
             <Feather
               name={icon}
               size={18}
-              color={isDisabled ? colors.mist : colors.white}
+              color={isDisabled ? DISABLED_TEXT : colors.white}
               style={styles.iconGap}
             />
           ) : null}
-          <Text style={[styles.primaryLabel, isDisabled && styles.disabledText]}>
+          <Text
+            style={[
+              styles.label,
+              { color: isDisabled ? DISABLED_TEXT : colors.white },
+            ]}
+          >
             {title}
           </Text>
           {iconTrailing ? (
             <Feather
               name={iconTrailing}
               size={18}
-              color={isDisabled ? colors.mist : colors.white}
+              color={isDisabled ? DISABLED_TEXT : colors.white}
               style={styles.iconGapTrailing}
             />
           ) : null}
         </View>
       )}
-    </PressScale>
+    </Pressable>
   );
 }
 
@@ -204,44 +258,35 @@ export function IconButton(props: ButtonProps) {
 
 const styles = StyleSheet.create({
   primary: {
+    // The 16pt lead keeps the rhythm the screens were written against; the
+    // screen tasks set their own spacing when they rebuild each layout.
     marginTop: 16,
-    minHeight: primaryButtonHeight,
-    borderRadius: radius.button,
+    minHeight: controlHeight,
+    borderRadius: radius.control,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
     width: "100%",
   },
-  primaryDisabled: {
-    backgroundColor: colors.border,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-  primaryLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.white,
-  },
-  secondaryWrap: {
+  outline: {
     marginTop: 16,
-    width: "100%",
-    borderRadius: radius.button,
-    overflow: "hidden",
-  },
-  secondaryGlass: {
-    minHeight: secondaryButtonHeight,
+    minHeight: controlHeight,
+    borderRadius: radius.control,
+    borderWidth: 1,
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
     width: "100%",
   },
-  secondaryPressed: {
-    opacity: 0.85,
+  // A press fills the outline with the paper ground rather than tinting it:
+  // the outline button carries no colour of its own to darken.
+  outlinePressed: {
+    backgroundColor: colors.paper,
   },
-  secondaryLabel: {
+  label: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 15,
-    color: colors.primaryBlue,
   },
   textBtn: {
     marginTop: 8,
@@ -251,28 +296,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   textLabel: {
-    fontFamily: fontFamily.body,
+    fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
-    color: colors.skyBlue,
-  },
-  textLabelPressed: {
+    color: colors.ink,
     textDecorationLine: "underline",
   },
   iconBtn: {
     width: tapTarget,
     height: tapTarget,
-    borderRadius: 10,
+    borderRadius: radius.control,
     alignItems: "center",
     justifyContent: "center",
   },
-  iconDisabled: {
-    opacity: 0.5,
-  },
-  disabledWrap: {
-    opacity: 1,
+  iconPressed: {
+    backgroundColor: colors.paper,
   },
   disabledText: {
-    color: colors.mist,
+    color: DISABLED_TEXT,
   },
   row: {
     flexDirection: "row",

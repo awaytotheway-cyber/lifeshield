@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { colors, radius } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, radius, status } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type Option = { value: string; label: string };
 
@@ -16,6 +16,17 @@ type CheckboxGroupProps = {
   exclusiveValue?: string;
 };
 
+/** The one height every choice row shares. Comfortably past the 44pt floor. */
+const ROW_HEIGHT = 52;
+
+/** Clay, borrowed from `worthDiscussing` — Moss has no red for errors. */
+const CLAY = status.worthDiscussing.text;
+
+/**
+ * Multi-select choice rows, built to the same rule as `RadioGroup`: the whole
+ * row is the target, an unchosen row is bare, and a chosen one fills with
+ * `mossTint` and carries a check.
+ */
 export function CheckboxGroup({
   label,
   options,
@@ -51,11 +62,15 @@ export function CheckboxGroup({
               accessibilityLabel={option.label}
               accessibilityState={{ checked: selected }}
               onPress={() => toggle(option.value)}
-              style={[styles.card, selected ? styles.cardSelected : styles.cardIdle]}
+              style={({ pressed }) => [
+                styles.row,
+                pressed && !selected ? styles.rowPressed : null,
+                selected ? styles.rowSelected : null,
+              ]}
             >
               <Text style={styles.optionLabel}>{option.label}</Text>
               {selected ? (
-                <Feather name="check" size={20} color={colors.midTeal} />
+                <Feather name="check" size={20} color={colors.mossDeep} />
               ) : null}
             </Pressable>
           );
@@ -71,45 +86,37 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typography.label,
+    color: colors.inkSoft,
+    marginBottom: 4,
   },
   list: {
-    gap: 8,
+    gap: 4,
   },
-  card: {
-    minHeight: 56,
-    borderRadius: radius.radioCard,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  row: {
+    minHeight: ROW_HEIGHT,
+    borderRadius: radius.control,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  cardIdle: {
-    backgroundColor: colors.white,
-    borderWidth: 1.5,
-    borderColor: colors.border,
+  rowPressed: {
+    backgroundColor: colors.paper,
   },
-  cardSelected: {
-    backgroundColor: colors.lightTeal,
-    borderWidth: 2,
-    borderColor: colors.midTeal,
+  rowSelected: {
+    backgroundColor: colors.mossTint,
   },
   optionLabel: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typography.body,
+    color: colors.ink,
     paddingRight: 12,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typography.label,
+    color: CLAY,
   },
 });

@@ -3,10 +3,9 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
-import { colors, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, radius, tapTarget } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type WhyAskButtonProps = {
   explanation: string;
@@ -29,7 +28,7 @@ export function WhyAskButton({
         onPress={() => setOpen(true)}
         style={styles.infoHit}
       >
-        <Feather name="info" size={16} color={colors.midTeal} />
+        <Feather name="info" size={16} color={colors.mossDeep} />
       </Pressable>
       <Modal
         visible={open}
@@ -39,20 +38,25 @@ export function WhyAskButton({
       >
         <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
           <Pressable onPress={() => undefined}>
-            <GlassSurface intensity="sheet" style={styles.sheet}>
-            <SafeAreaView edges={["bottom"]}>
-              <Text style={styles.title}>{COPY.whyWeAsk}</Text>
-              <Text style={styles.body}>{explanation}</Text>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={COPY.whyWeAskClose}
-                onPress={() => setOpen(false)}
-                style={styles.closeHit}
-              >
-                <Text style={styles.closeText}>{COPY.whyWeAskClose}</Text>
-              </Pressable>
-            </SafeAreaView>
-            </GlassSurface>
+            {/*
+              A plain white sheet, not a frosted one: Moss has no blur, so the
+              sheet is told from the dimmed screen behind it by its fill and
+              its rounded top corners alone.
+            */}
+            <View style={styles.sheet}>
+              <SafeAreaView edges={["bottom"]}>
+                <Text style={styles.title}>{COPY.whyWeAsk}</Text>
+                <Text style={styles.body}>{explanation}</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={COPY.whyWeAskClose}
+                  onPress={() => setOpen(false)}
+                  style={styles.closeHit}
+                >
+                  <Text style={styles.closeText}>{COPY.whyWeAskClose}</Text>
+                </Pressable>
+              </SafeAreaView>
+            </View>
           </Pressable>
         </Pressable>
       </Modal>
@@ -65,6 +69,10 @@ type LabelRowProps = {
   whyAsk?: string;
 };
 
+/**
+ * The field label every control shares: 13px `inkSoft` above the control,
+ * with the optional “why we ask” icon on the same line.
+ */
 export function LabelRow({ label, whyAsk }: LabelRowProps) {
   return (
     <View style={styles.labelRow}>
@@ -84,34 +92,33 @@ const styles = StyleSheet.create({
   labelRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   label: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    // Ink at 28% — the dim is the ground colour, not a tinted wash.
+    backgroundColor: "rgba(12,12,10,0.28)",
   },
   sheet: {
+    backgroundColor: colors.white,
+    borderTopLeftRadius: radius.surface,
+    borderTopRightRadius: radius.surface,
     padding: 20,
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    color: colors.deepTeal,
+    ...typography.title,
+    color: colors.ink,
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typography.body,
+    color: colors.inkSoft,
   },
   closeHit: {
     minHeight: tapTarget,
@@ -120,8 +127,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeText: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
+    ...typography.body,
+    color: colors.ink,
+    textDecorationLine: "underline",
   },
 });

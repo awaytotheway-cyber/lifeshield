@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { PathwayBHandoff } from "@/components/illustrations";
 import { DangerButton, TextButton } from "@/components/ui/Button";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
@@ -17,7 +17,7 @@ type PathwayBBannerProps = {
  */
 export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProps) {
   return (
-    <GlassSurface intensity="card" style={styles.wrap}>
+    <Surface padded={false} style={styles.wrap}>
       <View style={styles.illustration}>
         <PathwayBHandoff width={160} height={140} />
       </View>
@@ -29,7 +29,7 @@ export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProp
       {onSavePlace ? (
         <TextButton title={COPY.pathwayBSavePlace} onPress={onSavePlace} />
       ) : null}
-    </GlassSurface>
+    </Surface>
   );
 }
 

@@ -65,7 +65,7 @@ export function NumberInput({
           onPress={() => nudge(-1)}
           style={styles.stepBtn}
         >
-          <Feather name="minus" size={18} color={colors.deepTeal} />
+          <Feather name="minus" size={18} color={colors.ink} />
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -73,7 +73,7 @@ export function NumberInput({
           onPress={() => nudge(1)}
           style={styles.stepBtn}
         >
-          <Feather name="plus" size={18} color={colors.deepTeal} />
+          <Feather name="plus" size={18} color={colors.ink} />
         </Pressable>
       </View>
     </View>
@@ -87,13 +87,15 @@ const styles = StyleSheet.create({
     gap: 8,
     marginTop: 8,
   },
+  // The two nudges are secondary controls, so they take the secondary
+  // treatment: a 1px ink outline on nothing, at the 44pt floor.
   stepBtn: {
     minWidth: tapTarget,
     minHeight: tapTarget,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
+    borderRadius: radius.control,
+    borderWidth: 1,
+    borderColor: colors.ink,
+    backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
   },

@@ -1,6 +1,6 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Surface } from "@/components/ui/Surface";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
@@ -46,8 +46,8 @@ export function ProductCard({
       onPress={onOpen}
       disabled={!onOpen}
     >
-      <GlassSurface
-        intensity="card"
+      <Surface
+        padded={false}
         style={[styles.card, isGrid ? styles.cardGrid : styles.cardRow]}
       >
       {imageUri ? (
@@ -78,7 +78,7 @@ export function ProductCard({
           </Pressable>
         ) : null}
       </View>
-      </GlassSurface>
+      </Surface>
     </Pressable>
   );
 }

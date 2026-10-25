@@ -1,67 +1,47 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors } from "@/lib/design-tokens";
+import { radius, status, type StatusKind } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
-export type StatusChipKind =
-  | "normal"
-  | "attention"
-  | "critical"
-  | "approved"
-  | "draft";
-
 type StatusChipProps = {
-  kind: StatusChipKind;
-  label: string;
+  kind: StatusKind;
+  /**
+   * Override the word. Omit it and the chip uses the status's own label, which
+   * is the wording the three statuses are specified with.
+   */
+  label?: string;
 };
 
 /**
- * Small status pill. Use a calm phrase — never a raw number as the headline.
- * Coral only for genuine high-risk (critical).
+ * The clinical status chip: a pill, a fill, and always a word.
+ *
+ * Colour is never the only signal, so there is no icon-only or dot-only form
+ * of this component — `label` can be reworded but not removed. The three
+ * fills differ in lightness rather than hue (moss → sand → clay), so they
+ * stay distinct in greyscale and for colour-blind readers.
  */
 export function StatusChip({ kind, label }: StatusChipProps) {
-  const palette = palettes[kind];
+  const tone = status[kind];
+
   return (
-    <View
-      style={[
-        styles.chip,
-        {
-          backgroundColor: palette.bg,
-          borderWidth: palette.border ? 1 : 0,
-          borderColor: palette.border ?? "transparent",
-        },
-      ]}
-    >
-      <Text style={[styles.text, { color: palette.text }]}>{label}</Text>
+    <View style={[styles.chip, { backgroundColor: tone.fill }]}>
+      <Text style={[styles.text, { color: tone.text }]}>
+        {label ?? tone.label}
+      </Text>
     </View>
   );
 }
 
-const palettes = {
-  normal: { bg: colors.riskLowLight, text: colors.riskLow, border: undefined },
-  attention: {
-    bg: colors.riskModerateLight,
-    text: colors.riskModerate,
-    border: undefined,
-  },
-  critical: {
-    bg: colors.riskHighLight,
-    text: colors.riskHigh,
-    border: undefined,
-  },
-  approved: { bg: colors.primaryBlue, text: colors.white, border: undefined },
-  draft: { bg: "transparent", text: colors.slate, border: colors.border },
-} as const;
-
 const styles = StyleSheet.create({
   chip: {
     alignSelf: "flex-start",
-    paddingHorizontal: 6,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 20,
+    borderRadius: radius.pill,
   },
   text: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
+    lineHeight: 16,
   },
 });

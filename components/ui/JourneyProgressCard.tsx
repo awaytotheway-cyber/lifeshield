@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { colors, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
@@ -102,7 +102,7 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
   });
 
   return (
-    <GlassCard intensity="card" style={styles.card}>
+    <Surface padded={false} style={styles.card}>
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
         const railDone = step.state === "complete";
@@ -162,7 +162,7 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
           </View>
         );
       })}
-    </GlassCard>
+    </Surface>
   );
 }
 
