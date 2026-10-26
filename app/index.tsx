@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
 
-import { WelcomeFigure } from "@/components/illustrations";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { COPY } from "@/lib/copy";
@@ -45,7 +44,6 @@ export default function SplashScreen() {
     return (
       <Animated.View style={[styles.wrap, { opacity }]}>
         <GlassSurface intensity="card" style={styles.panel}>
-          <WelcomeFigure width={200} height={180} />
           <Text style={styles.brand}>{COPY.appName}</Text>
           <Text style={styles.tagline}>{COPY.splashSubtitle}</Text>
         </GlassSurface>

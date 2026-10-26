@@ -18,8 +18,6 @@ type OnboardingShellProps = {
   body: string;
   /** Shown from screen 2 onward. Does not skip the terms agreement. */
   onSkip?: () => void;
-  /** Optional drawing above the title. Replaces the small icon when set. */
-  illustration?: ReactNode;
   children?: ReactNode;
   footer: ReactNode;
   /** Show solid trust banner (welcome). */
@@ -35,7 +33,6 @@ export function OnboardingShell({
   title,
   body,
   onSkip,
-  illustration,
   children,
   footer,
   showTrustBanner = false,
@@ -62,13 +59,9 @@ export function OnboardingShell({
       ) : null}
 
       <GlassCard intensity="card" style={styles.panel}>
-        {illustration ? (
-          <View style={styles.illustration}>{illustration}</View>
-        ) : (
-          <View style={styles.iconCircle}>
-            <Feather name={icon} size={24} color={colors.primaryBlue} />
-          </View>
-        )}
+        <View style={styles.iconCircle}>
+          <Feather name={icon} size={24} color={colors.primaryBlue} />
+        </View>
 
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.body}>{body}</Text>
@@ -111,12 +104,6 @@ const styles = StyleSheet.create({
   panel: {
     padding: spacing.md,
     marginBottom: 8,
-  },
-  illustration: {
-    alignSelf: "center",
-    alignItems: "center",
-    marginTop: 8,
-    marginBottom: 24,
   },
   iconCircle: {
     width: 56,

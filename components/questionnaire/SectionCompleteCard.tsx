@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { SectionComplete } from "@/components/illustrations";
+import { MossPattern } from "@/components/ui/MossPattern";
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
@@ -52,7 +52,16 @@ export function SectionCompleteCard({
 
   return (
     <Animated.View style={[styles.card, motionStyle]}>
-      <SectionComplete width={80} height={80} />
+      {/*
+        A band of the motif rather than a drawn tick: the card already says
+        "Section complete", so a picture of completion would only say it
+        twice. Negative margins pull it out of the card's padding so it runs
+        to the edges, where the card's radius clips it — the same band-then-
+        copy shape as `EmptyState`.
+      */}
+      <View style={styles.band}>
+        <MossPattern height={72} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
     </Animated.View>
@@ -65,6 +74,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     padding: spacing.md,
     alignItems: "center",
+    overflow: "hidden",
+  },
+  band: {
+    alignSelf: "stretch",
+    marginTop: -spacing.md,
+    marginHorizontal: -spacing.md,
   },
   title: {
     marginTop: 12,

@@ -1,6 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
-import { PathwayBHandoff } from "@/components/illustrations";
 import { DangerButton, TextButton } from "@/components/ui/Button";
 import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
@@ -15,15 +14,14 @@ type PathwayBBannerProps = {
 /**
  * Calm hand-off for Pathway B — a plain white card, not a red screen of doom.
  *
- * The illustration stays for now: removing the illustration set is its own
- * task, and this banner’s drawing goes with it.
+ * No drawing above the title. The handoff illustration went with the rest of
+ * the set, and nothing replaced it: a graphic here would be the second thing
+ * on the card asking to be looked at, and the one thing that matters is the
+ * sentence telling the user to see a doctor.
  */
 export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProps) {
   return (
     <Surface padded={false} style={styles.wrap}>
-      <View style={styles.illustration}>
-        <PathwayBHandoff width={160} height={140} />
-      </View>
       <Text style={styles.title}>{COPY.pathwayBTitle}</Text>
       <Text style={styles.body}>{COPY.pathwayBBody}</Text>
       {onFindDoctor ? (
@@ -39,10 +37,6 @@ export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProp
 const styles = StyleSheet.create({
   wrap: {
     padding: spacing.md,
-  },
-  illustration: {
-    alignItems: "center",
-    marginBottom: 16,
   },
   title: {
     ...typography.displayL,

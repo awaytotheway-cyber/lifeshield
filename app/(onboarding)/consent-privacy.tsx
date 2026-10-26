@@ -15,7 +15,6 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ShieldTrust } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { GlassSurface } from "@/components/ui/GlassSurface";
 import { Screen } from "@/components/ui/Screen";
@@ -151,9 +150,6 @@ export default function ConsentPrivacyScreen() {
           accessibilityLabel="Prescope logo"
         />
       </View>
-      <View style={styles.shieldWrap}>
-        <ShieldTrust width={120} height={120} />
-      </View>
       <Text style={styles.title}>{COPY.consentGateTitle}</Text>
 
       <GlassSurface intensity="card" style={styles.summaryCard}>
@@ -246,10 +242,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 72,
     height: 72,
-  },
-  shieldWrap: {
-    alignItems: "center",
-    marginBottom: spacing.sm,
   },
   title: {
     ...typography.h1,

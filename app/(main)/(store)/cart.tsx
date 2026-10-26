@@ -2,12 +2,13 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
-import { EmptyBox } from "@/components/illustrations";
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
 import { Button } from "@/components/ui/Button";
+import { MossPattern } from "@/components/ui/MossPattern";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
+import { radius } from "@/lib/design-tokens";
 import { canPurchase, type PurchaseGateResult } from "@/lib/purchase-gates";
 import { routes } from "@/lib/routes";
 import {
@@ -206,7 +207,19 @@ export default function CartScreen() {
 
       {!loading && !message && lines.length === 0 ? (
         <View className="mt-6 items-center">
-          <EmptyBox width={100} height={100} />
+          {/*
+            The one empty state in the app that does not go through
+            `EmptyState`: it carries a single line rather than a heading and an
+            explanation. Same treatment though — a clipped band of the motif,
+            self-stretched because MossPattern fills its parent's width and
+            this column centres its children.
+          */}
+          <View
+            className="self-stretch overflow-hidden"
+            style={{ borderRadius: radius.surface }}
+          >
+            <MossPattern height={80} />
+          </View>
           <Text className="mt-4 text-center text-charcoal">{COPY.cartEmpty}</Text>
         </View>
       ) : null}
