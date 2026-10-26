@@ -93,10 +93,13 @@ const styles = StyleSheet.create({
     ...typography.title,
     color: colors.ink,
   },
+  // An 11px eyebrow cannot carry inkFaint (3.47:1 on white). The spec asks
+  // for 11px uppercase inkFaint micro labels generally; at that size it fails
+  // AA, so this one takes inkSoft.
   whyLabel: {
     marginTop: 12,
     ...typography.micro,
-    color: colors.inkFaint,
+    color: colors.inkSoft,
   },
   why: {
     marginTop: 4,

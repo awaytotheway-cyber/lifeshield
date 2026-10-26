@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   },
   hint: {
     ...typography.label,
-    color: colors.inkFaint,
+    color: colors.inkSoft,
     marginBottom: 4,
   },
   // Same rule as TextInput: no box, just the ink line under the control.
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     ...typography.body,
-    color: colors.inkFaint,
+    color: colors.inkSoft,
     flex: 1,
   },
   panel: {

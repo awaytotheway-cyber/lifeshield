@@ -49,7 +49,7 @@ export function TextInput({
       <View>
         <RNTextInput
           accessibilityLabel={label}
-          placeholderTextColor={colors.inkFaint}
+          placeholderTextColor={colors.inkSoft}
           autoCapitalize="none"
           autoCorrect={false}
           secureTextEntry={showEye ? passwordHidden : false}
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
   hint: {
     ...typography.label,
-    color: colors.inkFaint,
+    color: colors.inkSoft,
     marginBottom: 4,
   },
   input: {

@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     ...typography.body,
-    color: colors.inkFaint,
+    color: colors.inkSoft,
     flex: 1,
   },
   error: {

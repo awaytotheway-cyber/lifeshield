@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   medicalLabel: {
     marginTop: 8,
     ...typography.label,
-    color: colors.inkFaint,
+    color: colors.inkSoft,
   },
   medical: {
     ...typography.label,

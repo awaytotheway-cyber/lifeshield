@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   smallValueMuted: {
-    color: colors.inkFaint,
+    color: colors.inkSoft,
   },
   smallLabel: {
     marginTop: 2,

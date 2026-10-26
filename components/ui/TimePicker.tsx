@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   hint: {
     ...typography.label,
-    color: colors.inkFaint,
+    color: colors.inkSoft,
     marginBottom: 4,
   },
   duration: {

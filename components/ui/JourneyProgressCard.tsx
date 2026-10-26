@@ -249,8 +249,10 @@ const styles = StyleSheet.create({
     ...typography.title,
     color: colors.ink,
   },
+  // inkFaint is a headline colour at 24px and up only — at this title’s
+  // 20px it is 3.47:1 on white, under the 4.5:1 AA floor for normal text.
   titleUpcoming: {
-    color: colors.inkFaint,
+    color: colors.inkSoft,
   },
   subtitle: {
     marginTop: 2,
