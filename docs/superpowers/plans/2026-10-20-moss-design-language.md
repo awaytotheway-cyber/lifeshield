@@ -792,7 +792,21 @@ grep -rn "shadowOpacity\|elevation:\|BlurView\|expo-blur" app components
 ```
 Expected: no output outside a deliberate, commented exception.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 6: Catch the files the compiler and the greps above both miss**
+
+Step 1's worklist and step 4's greps only find files that referenced a *deleted token*. A file that hardcoded its colours, or styled itself with NativeWind utility classes, compiles cleanly and matches none of those patterns — it would stay pre-Moss forever, silently. Two sweeps close that:
+
+```bash
+# off-palette raw hex (every Moss value is excluded from the match)
+grep -rloP '#(?!0C0C0A|4F4F49|8A8A84|F1F1EF|FFFFFF|5F6D17|7D9022|A3B82E|EFF2E2|E4E4E0|4A5612|F0E6D2|7A5610|F3DED4|9C3E16|4C5812|2A2A26|6B6B65|C8D59A|fff|FFF)[0-9A-Fa-f]{6}\b' app components
+
+# pre-Moss NativeWind colour classes
+grep -rloP 'className="[^"]*(text|bg|border)-(charcoal|teal|sage|coral|cream|mist|slate|amber|blue)' app components
+```
+
+At the time this step was written the counts were **9 files** and **23 files** respectively. Both must reach zero. Renaming the class is not enough on its own — `text-charcoal` is a pre-Moss *concept*, so the file needs the Moss token, not a remapped alias.
+
+- [ ] **Step 7: Commit**
 
 ```bash
 git add -A app components lib global.css tailwind.config.js
