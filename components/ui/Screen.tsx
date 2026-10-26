@@ -75,7 +75,7 @@ export function Screen({
           style={styles.flex}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          {header ? <View style={pad}>{header}</View> : null}
+          {header ? <View style={[styles.header, pad]}>{header}</View> : null}
           {body}
           {footer ? (
             <SafeAreaView edges={["bottom"]} style={[styles.footer, pad]}>
@@ -113,8 +113,14 @@ const styles = StyleSheet.create({
   center: {
     justifyContent: "center",
   },
+  // Pinned chrome is white on the paper ground, exactly like a card: the fill
+  // is the whole separation cue, so there is no border, hairline or shadow
+  // between the chrome and the content that scrolls under it.
+  header: {
+    backgroundColor: colors.white,
+  },
   footer: {
-    backgroundColor: colors.paper,
+    backgroundColor: colors.white,
     paddingTop: 8,
     paddingBottom: 8,
   },
