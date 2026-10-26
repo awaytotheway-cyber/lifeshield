@@ -22,6 +22,7 @@ assert.equal(colors.mossDeep, "#5F6D17");
 assert.equal(colors.mossTint, "#EFF2E2");
 assert.equal(colors.inkSoft, "#4F4F49");
 assert.equal(colors.inkFaint, "#8A8A84");
+assert.equal(colors.inkMuted, "#6B6B65");
 assert.equal(colors.white, "#FFFFFF");
 assert.equal(colors.mossMid, "#7D9022");
 assert.equal(colors.mossBright, "#A3B82E");

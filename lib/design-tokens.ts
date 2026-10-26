@@ -18,6 +18,11 @@ export const colors = {
   inkSoft: "#4F4F49",
   /** Grey headline words. As a headline colour, 24px and up only. */
   inkFaint: "#8A8A84",
+  /**
+   * 11px uppercase micro labels and secondary meta. 5.36:1 on white, so it
+   * passes AA where `inkFaint` (3.47:1) does not.
+   */
+  inkMuted: "#6B6B65",
 
   /** Screen ground. White is for cards, never for the screen. */
   paper: "#F1F1EF",
