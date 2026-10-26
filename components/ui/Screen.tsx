@@ -6,16 +6,14 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { colors, gradients, spacing } from "@/lib/design-tokens";
+import { colors, spacing } from "@/lib/design-tokens";
 
 type ScreenProps = {
   children: ReactNode;
   scroll?: boolean;
-  /** Horizontal padding. Design system default is 20. */
+  /** Horizontal padding. The Moss screen gutter is 24. */
   contentPadding?: number;
   /** Stays pinned (questionnaire stepper, back row). */
   header?: ReactNode;
@@ -25,24 +23,14 @@ type ScreenProps = {
   centered?: boolean;
 };
 
-/** Soft blurred blobs so glass cards never sit on flat white. */
-function Atmosphere() {
-  return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <LinearGradient
-        colors={[...gradients.screen]}
-        locations={[...gradients.screenLocations]}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-      <View style={[styles.blob, styles.blobTL]} />
-      <View style={[styles.blob, styles.blobBR]} />
-      <View style={[styles.blob, styles.blobMid]} />
-    </View>
-  );
-}
-
+/**
+ * The Moss screen: a flat `paper` ground and nothing else.
+ *
+ * There is no gradient here (`heroGradient` belongs to a hero band inside a
+ * screen, never to the screen chrome), no blurred atmosphere, no shadow, no
+ * elevation and no border. Cards are told apart from the ground by their
+ * white fill alone, so the ground must stay completely quiet.
+ */
 export function Screen({
   children,
   scroll = false,
@@ -82,7 +70,6 @@ export function Screen({
 
   return (
     <View style={styles.root}>
-      <Atmosphere />
       <SafeAreaView style={styles.safe} edges={["top", "left", "right"]}>
         <KeyboardAvoidingView
           style={styles.flex}
@@ -91,11 +78,9 @@ export function Screen({
           {header ? <View style={pad}>{header}</View> : null}
           {body}
           {footer ? (
-            <GlassCard intensity="chrome" style={styles.footerGlass}>
-              <SafeAreaView edges={["bottom"]} style={[styles.footer, pad]}>
-                {footer}
-              </SafeAreaView>
-            </GlassCard>
+            <SafeAreaView edges={["bottom"]} style={[styles.footer, pad]}>
+              {footer}
+            </SafeAreaView>
           ) : null}
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -106,7 +91,7 @@ export function Screen({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.iceBlue,
+    backgroundColor: colors.paper,
   },
   safe: {
     flex: 1,
@@ -128,40 +113,9 @@ const styles = StyleSheet.create({
   center: {
     justifyContent: "center",
   },
-  footerGlass: {
-    overflow: "hidden",
-  },
   footer: {
-    backgroundColor: "transparent",
+    backgroundColor: colors.paper,
     paddingTop: 8,
     paddingBottom: 8,
-  },
-  blob: {
-    position: "absolute",
-    borderRadius: 999,
-    opacity: 0.45,
-  },
-  blobTL: {
-    width: 220,
-    height: 220,
-    top: -60,
-    left: -40,
-    backgroundColor: colors.skyBlue,
-  },
-  blobBR: {
-    width: 260,
-    height: 260,
-    bottom: -80,
-    right: -60,
-    backgroundColor: colors.primaryBlue,
-    opacity: 0.18,
-  },
-  blobMid: {
-    width: 160,
-    height: 160,
-    top: 280,
-    right: -30,
-    backgroundColor: "#A8C4F8",
-    opacity: 0.35,
   },
 });
