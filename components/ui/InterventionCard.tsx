@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
-import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { StatusChip } from "@/components/ui/StatusChip";
+import { Surface } from "@/components/ui/Surface";
+import { colors, spacing, type StatusKind } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 const CATEGORY_ICONS = {
   supplement: "droplet",
@@ -22,7 +22,7 @@ type InterventionCardProps = {
   why: string;
   clinicalBasis?: string;
   category?: keyof typeof CATEGORY_ICONS;
-  status: Extract<StatusChipKind, "approved" | "draft" | "critical">;
+  status: StatusKind;
   statusLabel: string;
   onPress?: () => void;
 };
@@ -49,9 +49,9 @@ export function InterventionCard({
       onPress={onPress}
       disabled={!onPress}
     >
-      <GlassSurface intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
       <View style={styles.top}>
-        <Feather name={icon} size={20} color={colors.deepTeal} />
+        <Feather name={icon} size={20} color={colors.ink} />
         <View style={styles.topText}>
           <Text style={styles.title}>{title}</Text>
           <StatusChip kind={status} label={statusLabel} />
@@ -72,14 +72,14 @@ export function InterventionCard({
       {open && clinicalBasis ? (
         <Text style={styles.basis}>{clinicalBasis}</Text>
       ) : null}
-      </GlassSurface>
+      </Surface>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    padding: spacing.base,
+    marginTop: spacing.mdSm,
   },
   top: {
     flexDirection: "row",
@@ -90,37 +90,32 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+    ...typography.title,
+    color: colors.ink,
   },
   whyLabel: {
     marginTop: 12,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.slate,
+    ...typography.micro,
+    color: colors.inkFaint,
   },
   why: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typography.body,
+    color: colors.inkSoft,
   },
   expand: {
     marginTop: 8,
     minHeight: 44,
     justifyContent: "center",
   },
+  // Tertiary action: an underlined link, not a tinted one.
   expandLabel: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.midTeal,
+    ...typography.body,
+    color: colors.ink,
+    textDecorationLine: "underline",
   },
   basis: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
 });

@@ -2,9 +2,16 @@ import { useState } from "react";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { Platform, Pressable, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
+import {
+  colors,
+  controlHeight,
+  radius,
+  status,
+  tapTarget,
+} from "@/lib/design-tokens";
 import {
   dateToHHmm,
   formatDisplayDuration,
@@ -12,10 +19,17 @@ import {
   isHHmm,
   type TimePickerFieldProps,
 } from "@/lib/datetime";
+import { typography } from "@/lib/typography";
+
+/** Clay, borrowed from `worthDiscussing` — Moss has no red for errors. */
+const CLAY = status.worthDiscussing.text;
 
 /**
  * iOS: spinning wheels (same idea as setting an alarm).
  * Android: the round clock face.
+ *
+ * The closed field takes the same no-box, ink-rule shape as every other
+ * control; the wheels sit on a plain white panel with no shadow.
  */
 export function TimePicker({
   label,
@@ -39,28 +53,28 @@ export function TimePicker({
   };
 
   return (
-    <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
-      {hint ? <Text className="mt-1 text-sm text-charcoal">{hint}</Text> : null}
+    <View style={styles.wrap}>
+      <Text style={styles.label}>{label}</Text>
+      {hint ? <Text style={styles.hint}>{hint}</Text> : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
         onPress={() => setOpen((current) => !current)}
-        className="mt-2 rounded-xl border border-sage bg-white px-4 py-3"
+        style={styles.field}
       >
-        <Text className="text-charcoal">
+        <Text style={isHHmm(value) ? styles.value : styles.placeholder}>
           {isHHmm(value)
             ? `${value} (${formatDisplayDuration(value)})`
             : COPY.pickTime}
         </Text>
       </Pressable>
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-coral">
+        <Text style={styles.warn}>
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
         </Text>
       ) : null}
       {open ? (
-        <View className="mt-2 items-center rounded-xl bg-white px-2 py-2">
+        <View style={styles.panel}>
           <DateTimePicker
             value={selected}
             mode="time"
@@ -69,20 +83,86 @@ export function TimePicker({
             minuteInterval={5}
             onChange={onPickerChange}
             themeVariant="light"
-            accentColor="#1A535C"
+            accentColor={colors.ink}
           />
           {Platform.OS === "ios" ? (
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel={COPY.pickerDone}
               onPress={() => setOpen(false)}
-              className="mt-2 items-center px-4 py-2"
+              style={styles.done}
             >
-              <Text className="text-teal">{COPY.pickerDone}</Text>
+              <Text style={styles.doneText}>{COPY.pickerDone}</Text>
             </Pressable>
           ) : null}
         </View>
       ) : null}
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: {
+    marginTop: 16,
+  },
+  label: {
+    ...typography.label,
+    color: colors.inkSoft,
+    marginBottom: 4,
+  },
+  hint: {
+    ...typography.label,
+    color: colors.inkFaint,
+    marginBottom: 4,
+  },
+  // Same rule as TextInput: no box, just the ink line under the control.
+  field: {
+    minHeight: controlHeight,
+    borderBottomWidth: 1.5,
+    borderBottomColor: colors.ink,
+    backgroundColor: "transparent",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  value: {
+    ...typography.body,
+    color: colors.ink,
+    flex: 1,
+  },
+  placeholder: {
+    ...typography.body,
+    color: colors.inkFaint,
+    flex: 1,
+  },
+  panel: {
+    marginTop: 8,
+    alignItems: "center",
+    borderRadius: radius.surface,
+    backgroundColor: colors.white,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+  },
+  done: {
+    minHeight: tapTarget,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+  },
+  // The panel's only action is tertiary, so it is an underlined link.
+  doneText: {
+    ...typography.body,
+    color: colors.ink,
+    textDecorationLine: "underline",
+  },
+  warn: {
+    marginTop: 8,
+    ...typography.label,
+    color: CLAY,
+  },
+  error: {
+    marginTop: 8,
+    ...typography.label,
+    color: CLAY,
+  },
+});

@@ -1,22 +1,28 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { GlassCard } from "@/components/ui/GlassCard";
-import { StatusChip, type StatusChipKind } from "@/components/ui/StatusChip";
-import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { StatusChip } from "@/components/ui/StatusChip";
+import { Surface } from "@/components/ui/Surface";
+import {
+  colors,
+  radius,
+  status as statusTones,
+  type StatusKind,
+} from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type ResultCardProps = {
   plainName: string;
   meaning: string;
   medicalName: string;
-  status: StatusChipKind;
+  status: StatusKind;
   statusLabel: string;
   onPress?: () => void;
 };
 
 /**
- * Results list row — polished glass card with risk-color accent.
- * Teal = calm/normal, amber = discuss, coral = genuine high-risk only.
+ * Results list row: a white card, a 4pt status rule down its left edge, and
+ * the chip’s own word beside the name. The card itself stays white — tinting
+ * the fill would make the status readable from colour alone.
  */
 export function ResultCard({
   plainName,
@@ -26,19 +32,7 @@ export function ResultCard({
   statusLabel,
   onPress,
 }: ResultCardProps) {
-  const barColor =
-    status === "critical"
-      ? colors.riskHigh
-      : status === "attention"
-        ? colors.riskModerate
-        : colors.riskLow;
-
-  const tintWash =
-    status === "critical"
-      ? "rgba(242,109,109,0.12)"
-      : status === "attention"
-        ? "rgba(245,166,35,0.12)"
-        : "rgba(47,184,166,0.12)";
+  const barColor = statusTones[status].text;
 
   return (
     <Pressable
@@ -47,11 +41,7 @@ export function ResultCard({
       onPress={onPress}
       disabled={!onPress}
     >
-      <GlassCard intensity="card" style={styles.card}>
-        <View
-          pointerEvents="none"
-          style={[styles.wash, { backgroundColor: tintWash }]}
-        />
+      <Surface style={styles.card}>
         <View style={[styles.bar, { backgroundColor: barColor }]} />
         <View style={styles.body}>
           <Text style={styles.name}>{plainName}</Text>
@@ -63,20 +53,16 @@ export function ResultCard({
             Medical name: <Text style={styles.medical}>{medicalName}</Text>
           </Text>
         </View>
-      </GlassCard>
+      </Surface>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: radius.radioCard,
-    padding: spacing.base,
-    paddingLeft: spacing.base + 4,
+    // Room for the status rule, which sits on the card’s own left edge.
+    paddingLeft: 24,
     overflow: "hidden",
-  },
-  wash: {
-    ...StyleSheet.absoluteFill,
   },
   bar: {
     position: "absolute",
@@ -85,17 +71,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: 4,
     zIndex: 2,
-    borderTopLeftRadius: radius.radioCard,
-    borderBottomLeftRadius: radius.radioCard,
+    borderTopLeftRadius: radius.surface,
+    borderBottomLeftRadius: radius.surface,
   },
   body: {
     position: "relative",
     zIndex: 1,
   },
   name: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: colors.deepNavy,
+    ...typography.title,
+    color: colors.ink,
   },
   row2: {
     marginTop: 8,
@@ -106,19 +91,16 @@ const styles = StyleSheet.create({
   },
   meaning: {
     flex: 1,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
   medicalLabel: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
+    ...typography.label,
+    color: colors.inkFaint,
   },
   medical: {
-    fontFamily: fontFamily.medical,
-    fontSize: 13,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
 });

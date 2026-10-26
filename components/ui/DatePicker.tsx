@@ -2,17 +2,23 @@ import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
-import { colors, inputHeight, radius } from "@/lib/design-tokens";
+import { colors, controlHeight, status } from "@/lib/design-tokens";
 import {
   localDateToIso,
   type DatePickerFieldProps,
 } from "@/lib/datetime";
 import { isValidIsoCalendarDate } from "@/lib/questionnaire/numbers";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
+
+/** Clay, borrowed from `worthDiscussing` — Moss has no red for errors. */
+const CLAY = status.worthDiscussing.text;
 
 /**
  * Default (web) date field. On iPhone Safari this is the system calendar.
  * Phones use DatePicker.native.tsx instead.
+ *
+ * The native control keeps its own calendar, but the closed field is styled
+ * to the same rule as every other input: no box, a 1.5px ink rule underneath.
  */
 export function DatePicker({
   label,
@@ -42,16 +48,18 @@ export function DatePicker({
         style={{
           marginTop: 0,
           width: "100%",
-          minHeight: inputHeight,
-          padding: 12,
-          borderRadius: radius.input,
-          borderWidth: 1.5,
+          minHeight: controlHeight,
+          paddingLeft: 0,
+          paddingRight: 0,
+          borderRadius: 0,
           borderStyle: "solid",
-          borderColor: colors.border,
-          backgroundColor: colors.white,
-          color: colors.charcoal,
+          borderWidth: 0,
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors.ink,
+          backgroundColor: "transparent",
+          color: colors.ink,
           fontSize: 15,
-          fontFamily: "Inter, system-ui, sans-serif",
+          fontFamily: typography.body.fontFamily,
         }}
       />
       {leftoverText ? (
@@ -69,28 +77,23 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typography.label,
+    color: colors.inkSoft,
+    marginBottom: 4,
   },
   hint: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typography.label,
+    color: colors.inkFaint,
+    marginBottom: 4,
   },
   warn: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typography.label,
+    color: CLAY,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typography.label,
+    color: CLAY,
   },
 });

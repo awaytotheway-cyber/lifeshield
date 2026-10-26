@@ -10,8 +10,11 @@ type TrustBannerProps = {
 };
 
 /**
- * Solid (NON-glass) trust/privacy strip — sits near the top of home/onboarding.
- * Solid fill keeps it readable and distinct from frosted cards below.
+ * Trust / privacy strip — sits near the top of home and onboarding.
+ *
+ * `mossTint` rather than an inverted slab: the copy here is reassurance, not
+ * a warning, so it reads as one of the quietest things on the screen. The
+ * wording is load-bearing (RLS, "not a diagnosis") and stays in full.
  */
 export function TrustBanner({
   title = "Your data stays private",
@@ -36,14 +39,14 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: spacing.mdSm,
     padding: spacing.base,
-    borderRadius: radius.alert,
-    backgroundColor: colors.deepNavy,
+    borderRadius: radius.surface,
+    backgroundColor: colors.mossTint,
   },
   iconWrap: {
     width: 36,
     height: 36,
-    borderRadius: 10,
-    backgroundColor: colors.primaryBlue,
+    borderRadius: radius.pill,
+    backgroundColor: colors.mossDeep,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -54,13 +57,13 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.displaySemi,
     fontSize: 15,
     lineHeight: 20,
-    color: colors.white,
+    color: colors.ink,
   },
   body: {
     marginTop: 4,
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: "rgba(255,255,255,0.82)",
+    color: colors.inkSoft,
   },
 });

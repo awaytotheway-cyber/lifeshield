@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Surface } from "@/components/ui/Surface";
 import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily, typography } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 
 export type MilestoneStat = {
   id: string;
@@ -49,20 +49,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: spacing.sm,
   },
+  // The only divider in the system, used sparingly — 1px, not a card border.
   cellBorder: {
-    borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: colors.border,
+    borderRightWidth: 1,
+    borderRightColor: colors.hairline,
   },
   value: {
     ...typography.heroStat,
-    color: colors.primaryBlue,
+    color: colors.ink,
   },
   label: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    lineHeight: 16,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
     textAlign: "center",
   },
 });

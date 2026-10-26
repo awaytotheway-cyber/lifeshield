@@ -1,16 +1,24 @@
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { COPY } from "@/lib/copy";
+import { colors, controlHeight, status } from "@/lib/design-tokens";
 import {
   formatDisplayDuration,
   isHHmm,
   toInputHHmm,
   type TimePickerFieldProps,
 } from "@/lib/datetime";
+import { typography } from "@/lib/typography";
+
+/** Clay, borrowed from `worthDiscussing` — Moss has no red for errors. */
+const CLAY = status.worthDiscussing.text;
 
 /**
  * Default (web) time field. On iPhone Safari this is the alarm-style clock.
  * Phones use TimePicker.native.tsx instead.
+ *
+ * Styled to the same rule as every other control: a 13px `inkSoft` label,
+ * 56pt of room, and a 1.5px ink rule underneath instead of a box.
  */
 export function TimePicker({
   label,
@@ -23,9 +31,9 @@ export function TimePicker({
   const leftoverText = value && !clockValue ? value : null;
 
   return (
-    <View className="mt-4">
-      <Text className="text-charcoal">{label}</Text>
-      {hint ? <Text className="mt-1 text-sm text-charcoal">{hint}</Text> : null}
+    <View style={styles.wrap}>
+      <Text style={styles.label}>{label}</Text>
+      {hint ? <Text style={styles.hint}>{hint}</Text> : null}
       <input
         type="time"
         aria-label={label}
@@ -35,30 +43,62 @@ export function TimePicker({
           onChange(event.target.value);
         }}
         style={{
-          marginTop: 8,
+          marginTop: 0,
           width: "100%",
-          minHeight: 48,
-          padding: 12,
-          borderRadius: 12,
-          borderWidth: 1,
+          minHeight: controlHeight,
+          paddingLeft: 0,
+          paddingRight: 0,
+          borderRadius: 0,
           borderStyle: "solid",
-          borderColor: "#A8C5A0",
-          backgroundColor: "#FFFFFF",
-          color: "#2D3436",
-          fontSize: 16,
+          borderWidth: 0,
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors.ink,
+          backgroundColor: "transparent",
+          color: colors.ink,
+          fontSize: 15,
+          fontFamily: typography.body.fontFamily,
         }}
       />
       {isHHmm(clockValue) ? (
-        <Text className="mt-1 text-sm text-teal">
-          {formatDisplayDuration(clockValue)}
-        </Text>
+        <Text style={styles.duration}>{formatDisplayDuration(clockValue)}</Text>
       ) : null}
       {leftoverText ? (
-        <Text className="mt-1 text-sm text-coral">
+        <Text style={styles.warn}>
           {COPY.timePickerLegacy.replace("{value}", leftoverText)}
         </Text>
       ) : null}
-      {error ? <Text className="mt-1 text-coral">{error}</Text> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: {
+    marginTop: 16,
+  },
+  label: {
+    ...typography.label,
+    color: colors.inkSoft,
+    marginBottom: 4,
+  },
+  hint: {
+    ...typography.label,
+    color: colors.inkFaint,
+    marginBottom: 4,
+  },
+  duration: {
+    marginTop: 8,
+    ...typography.label,
+    color: colors.mossDeep,
+  },
+  warn: {
+    marginTop: 8,
+    ...typography.label,
+    color: CLAY,
+  },
+  error: {
+    marginTop: 8,
+    ...typography.label,
+    color: CLAY,
+  },
+});

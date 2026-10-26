@@ -26,31 +26,31 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     gap: 12,
   },
+  // A card has no border, so the ghost does not grow one either — the white
+  // fill and the hairline blocks inside it are the whole shape.
   card: {
     backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
+    borderRadius: radius.surface,
     padding: spacing.base,
-    borderWidth: 1,
-    borderColor: colors.border,
   },
   bar: {
     height: 12,
     width: 88,
-    borderRadius: 6,
-    backgroundColor: colors.border,
+    borderRadius: radius.control,
+    backgroundColor: colors.hairline,
     marginBottom: 12,
   },
   lineWide: {
     height: 10,
     width: "100%",
-    borderRadius: 4,
-    backgroundColor: colors.border,
+    borderRadius: radius.control,
+    backgroundColor: colors.hairline,
   },
   lineShort: {
     marginTop: 8,
     height: 10,
     width: "55%",
-    borderRadius: 4,
-    backgroundColor: colors.border,
+    borderRadius: radius.control,
+    backgroundColor: colors.hairline,
   },
 });

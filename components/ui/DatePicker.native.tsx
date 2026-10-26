@@ -7,7 +7,7 @@ import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { COPY } from "@/lib/copy";
-import { colors, inputHeight, radius, shadows } from "@/lib/design-tokens";
+import { colors, controlHeight, radius, status, tapTarget } from "@/lib/design-tokens";
 import {
   formatDisplayDate,
   isoToLocalDate,
@@ -16,10 +16,15 @@ import {
   type DatePickerFieldProps,
 } from "@/lib/datetime";
 import { isValidIsoCalendarDate } from "@/lib/questionnaire/numbers";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
+
+/** Clay, borrowed from `worthDiscussing` — Moss has no red for errors. */
+const CLAY = status.worthDiscussing.text;
 
 /**
- * Native date field. Opens a bottom sheet (iOS) or the system calendar (Android).
+ * Native date field. Opens a bottom sheet (iOS) or the system calendar
+ * (Android). The closed field takes the same no-box, ink-rule shape as every
+ * other input; the sheet is a plain white panel with no blur or shadow.
  */
 export function DatePicker({
   label,
@@ -59,7 +64,7 @@ export function DatePicker({
         <Text style={hasCalendarValue ? styles.value : styles.placeholder}>
           {hasCalendarValue ? formatDisplayDate(value) : COPY.pickDate}
         </Text>
-        <Feather name="calendar" size={18} color={colors.slate} />
+        <Feather name="calendar" size={18} color={colors.inkSoft} />
       </Pressable>
       {leftoverText ? (
         <Text style={styles.warn}>
@@ -123,76 +128,70 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typography.label,
+    color: colors.inkSoft,
+    marginBottom: 4,
   },
   hint: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
-    marginBottom: 8,
+    ...typography.label,
+    color: colors.inkFaint,
+    marginBottom: 4,
   },
+  // Same rule as TextInput: no box, just the ink line under the control.
   field: {
-    minHeight: inputHeight,
-    borderRadius: radius.input,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    paddingHorizontal: 16,
+    minHeight: controlHeight,
+    borderBottomWidth: 1.5,
+    borderBottomColor: colors.ink,
+    backgroundColor: "transparent",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   value: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typography.body,
+    color: colors.ink,
     flex: 1,
   },
   placeholder: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.mist,
+    ...typography.body,
+    color: colors.inkFaint,
     flex: 1,
   },
   warn: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typography.label,
+    color: CLAY,
   },
   error: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    ...typography.label,
+    color: CLAY,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    // Ink at 28% — the dim is the ground colour, not a tinted wash.
+    backgroundColor: "rgba(12,12,10,0.28)",
   },
+  // A plain white panel: no blur behind it and no shadow under it.
   sheet: {
     backgroundColor: colors.white,
-    borderTopLeftRadius: radius.sheet,
-    borderTopRightRadius: radius.sheet,
+    borderTopLeftRadius: radius.surface,
+    borderTopRightRadius: radius.surface,
     paddingHorizontal: 12,
     paddingTop: 12,
-    ...shadows.modal,
   },
   done: {
-    minHeight: 44,
+    minHeight: tapTarget,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
     marginBottom: 8,
   },
+  // The sheet's only action is tertiary, so it is an underlined link.
   doneText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.midTeal,
+    ...typography.body,
+    color: colors.ink,
+    textDecorationLine: "underline",
   },
 });

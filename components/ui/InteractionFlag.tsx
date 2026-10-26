@@ -1,7 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+
+/**
+ * Sand, borrowed from `worthWatching`. Moss has no amber and no alert red:
+ * a caution carries the middle of the three clinical statuses.
+ */
+const SAND = status.worthWatching;
 
 type InteractionFlagProps = {
   reason?: string;
@@ -32,26 +38,26 @@ export function InteractionFlag({
 const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
-    backgroundColor: colors.amberLight,
-    paddingHorizontal: 6,
+    backgroundColor: SAND.fill,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 20,
+    borderRadius: radius.pill,
   },
   badgeText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.amber,
+    color: SAND.text,
   },
   callout: {
     marginTop: spacing.sm,
-    backgroundColor: colors.amberLight,
-    borderRadius: radius.alert,
+    backgroundColor: SAND.fill,
+    borderRadius: radius.surface,
     padding: spacing.mdSm,
   },
   calloutText: {
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.charcoal,
+    color: colors.ink,
   },
 });

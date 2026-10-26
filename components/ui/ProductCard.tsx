@@ -2,8 +2,8 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Surface } from "@/components/ui/Surface";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type UiProductCardProps = {
   name: string;
@@ -95,17 +95,19 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 4,
   },
+  // `radius.control` on the thumbnail: the system has three radii, and 20
+  // on an 80pt square would read as a lozenge rather than a photo.
   image: {
     width: 80,
     height: 80,
-    borderRadius: 10,
-    backgroundColor: colors.lightTeal,
+    borderRadius: radius.control,
+    backgroundColor: colors.mossTint,
   },
   imageGrid: {
     width: "100%",
     height: 80,
-    borderRadius: 10,
-    backgroundColor: colors.lightTeal,
+    borderRadius: radius.control,
+    backgroundColor: colors.mossTint,
     marginBottom: 8,
   },
   gridBody: {
@@ -115,42 +117,39 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
-    color: colors.charcoal,
+    ...typography.title,
+    color: colors.ink,
   },
   price: {
     marginTop: 4,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.deepTeal,
+    ...typography.body,
+    color: colors.ink,
   },
   desc: {
     marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
   blocked: {
     marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
+  // Was 32pt tall, which is under the floor. Nothing interactive goes below
+  // 44 in either dimension.
   add: {
     marginTop: 8,
     alignSelf: "flex-end",
-    height: 32,
+    minHeight: tapTarget,
+    minWidth: tapTarget,
     paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: colors.deepTeal,
+    borderRadius: radius.control,
+    backgroundColor: colors.ink,
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 44,
   },
   addText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
+    ...typography.label,
     color: colors.white,
   },
 });

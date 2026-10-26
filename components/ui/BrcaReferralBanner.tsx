@@ -2,9 +2,15 @@ import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 import { useEscalationStore } from "@/stores/escalation-store";
+
+/**
+ * Sand, borrowed from `worthWatching`. Moss has no amber and no alert red:
+ * a caution carries the middle of the three clinical statuses.
+ */
+const SAND = status.worthWatching;
 
 /**
  * Shown when BRCA1/2 came back positive. Deliberately a banner rather than
@@ -42,10 +48,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     gap: spacing.mdSm,
     padding: spacing.base,
-    borderRadius: radius.alert,
-    backgroundColor: colors.amberLight,
-    borderWidth: 1,
-    borderColor: colors.amber,
+    borderRadius: radius.surface,
+    backgroundColor: SAND.fill,
   },
   iconWrap: {
     width: 32,
@@ -53,7 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.amber,
+    backgroundColor: SAND.text,
   },
   textCol: {
     flex: 1,
@@ -62,20 +66,20 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.displaySemi,
     fontSize: 15,
     lineHeight: 20,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   body: {
     marginTop: 4,
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 19,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   note: {
     marginTop: 6,
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
     lineHeight: 17,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
 });

@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { PressScale } from "@/components/ui/PressScale";
 import { ProgressRing } from "@/components/ui/ProgressRing";
 import { Surface } from "@/components/ui/Surface";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, radius, spacing } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type HomeStatCardsProps = {
   questionnaireCount: number;
@@ -55,7 +55,7 @@ export function HomeStatCards({
             </Text>
             <Text style={styles.primaryLabel}>Sections complete</Text>
           </View>
-          <Feather name="chevron-right" size={20} color={colors.mist} />
+          <Feather name="chevron-right" size={20} color={colors.inkFaint} />
         </Surface>
       </PressScale>
 
@@ -64,13 +64,13 @@ export function HomeStatCards({
           <View
             style={[
               styles.badge,
-              { backgroundColor: consentsDone ? colors.sageLight : colors.iceBlue },
+              { backgroundColor: colors.mossTint },
             ]}
           >
             <Feather
               name={consentsDone ? "check" : "file-text"}
               size={18}
-              color={consentsDone ? colors.sage : colors.primaryBlue}
+              color={consentsDone ? colors.mossDeep : colors.ink}
             />
           </View>
           <Text style={styles.smallValue}>
@@ -83,13 +83,13 @@ export function HomeStatCards({
           <View
             style={[
               styles.badge,
-              { backgroundColor: testPlanReady ? colors.sageLight : colors.iceBlue },
+              { backgroundColor: colors.mossTint },
             ]}
           >
             <Feather
               name={testPlanReady ? "check-circle" : "lock"}
               size={18}
-              color={testPlanReady ? colors.sage : colors.mist}
+              color={testPlanReady ? colors.mossDeep : colors.inkFaint}
             />
           </View>
           <Text style={[styles.smallValue, !testPlanReady && styles.smallValueMuted]}>
@@ -118,22 +118,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   ringPercent: {
-    fontFamily: fontFamily.medical,
-    fontSize: 15,
-    color: colors.primaryBlue,
+    ...typography.body,
+    color: colors.ink,
   },
   primaryValue: {
-    fontFamily: fontFamily.display,
-    fontSize: 22,
-    lineHeight: 28,
-    color: colors.deepNavy,
+    ...typography.title,
+    color: colors.ink,
   },
   primaryLabel: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 18,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
   row: {
     flexDirection: "row",
@@ -147,25 +142,21 @@ const styles = StyleSheet.create({
   badge: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: spacing.sm,
   },
   smallValue: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 15,
-    lineHeight: 20,
-    color: colors.deepNavy,
+    ...typography.body,
+    color: colors.ink,
   },
   smallValueMuted: {
-    color: colors.mist,
+    color: colors.inkFaint,
   },
   smallLabel: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    lineHeight: 16,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
 });

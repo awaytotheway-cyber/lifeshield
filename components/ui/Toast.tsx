@@ -8,12 +8,12 @@ import {
   type ViewStyle,
 } from "react-native";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
 type ToastProps = {
   message: string | null;
-  /** success = teal, danger = coral (destructive confirms only). */
+  /** success = moss, danger = clay (destructive confirms only). */
   tone?: "success" | "danger" | "info";
   style?: StyleProp<ViewStyle>;
   onHide?: () => void;
@@ -57,12 +57,14 @@ export function Toast({
     return null;
   }
 
+  // Three grounds, all dark enough to carry white text: clay for a
+  // destructive confirm, ink for plain information, moss for a success.
   const bg =
     tone === "danger"
-      ? colors.riskHigh
+      ? status.worthDiscussing.text
       : tone === "info"
-        ? colors.deepNavy
-        : colors.riskLow;
+        ? colors.ink
+        : colors.mossDeep;
 
   return (
     <Animated.View
@@ -81,7 +83,7 @@ const styles = StyleSheet.create({
     left: spacing.screenX,
     right: spacing.screenX,
     bottom: spacing.lg,
-    borderRadius: radius.alert,
+    borderRadius: radius.surface,
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.mdSm,
     zIndex: 50,

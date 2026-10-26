@@ -5,7 +5,7 @@ import { DangerButton, TextButton } from "@/components/ui/Button";
 import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 
 type PathwayBBannerProps = {
   onFindDoctor?: () => void;
@@ -13,7 +13,10 @@ type PathwayBBannerProps = {
 };
 
 /**
- * Calm hand-off look for Pathway B — cream, not a red screen of doom.
+ * Calm hand-off for Pathway B — a plain white card, not a red screen of doom.
+ *
+ * The illustration stays for now: removing the illustration set is its own
+ * task, and this banner’s drawing goes with it.
  */
 export function PathwayBBanner({ onFindDoctor, onSavePlace }: PathwayBBannerProps) {
   return (
@@ -42,17 +45,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontFamily: fontFamily.display,
-    fontSize: 24,
-    lineHeight: 29,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+    ...typography.displayL,
+    color: colors.ink,
   },
   body: {
     marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    ...typography.body,
+    color: colors.inkSoft,
   },
 });

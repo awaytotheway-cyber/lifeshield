@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { IconButton } from "@/components/ui/Button";
 import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 
 type ScreenHeaderProps = {
   title: string;
@@ -44,11 +44,8 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+    ...typography.title,
+    color: colors.ink,
   },
   spacer: {
     width: 44,

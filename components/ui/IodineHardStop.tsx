@@ -1,8 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+
+/**
+ * Sand, borrowed from `worthWatching`. Moss has no amber and no alert red:
+ * a caution carries the middle of the three clinical statuses.
+ */
+const SAND = status.worthWatching;
 
 type IodineHardStopProps = {
   reason?: string;
@@ -17,7 +23,7 @@ export function IodineHardStop({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.amber} />
+        <Feather name="alert-triangle" size={20} color={SAND.text} />
         <Text style={styles.title}>This isn't recommended for you right now</Text>
       </View>
       <Text style={styles.body}>{reason}</Text>
@@ -27,10 +33,8 @@ export function IodineHardStop({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.amberLight,
-    borderWidth: 1,
-    borderColor: colors.amber,
-    borderRadius: radius.alert,
+    backgroundColor: SAND.fill,
+    borderRadius: radius.surface,
     padding: spacing.base,
   },
   header: {
@@ -42,13 +46,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   body: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: colors.inkSoft,
   },
 });

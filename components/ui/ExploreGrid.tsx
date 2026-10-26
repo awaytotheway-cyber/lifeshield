@@ -2,8 +2,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { PressScale } from "@/components/ui/PressScale";
-import { colors, spacing, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 export type ExploreItem = {
   id: string;
@@ -17,8 +17,9 @@ type ExploreGridProps = {
 };
 
 /**
- * Two-column grid of outlined secondary destinations. Replaces the stack of
- * bare text links under the primary call to action.
+ * Two-column grid of secondary destinations. Each cell takes the secondary
+ * button treatment — a 1px ink outline on nothing — because that is what
+ * every non-primary action in the system looks like.
  */
 export function ExploreGrid({ items }: ExploreGridProps) {
   if (items.length === 0) {
@@ -35,7 +36,7 @@ export function ExploreGrid({ items }: ExploreGridProps) {
           onPress={item.onPress}
           style={({ pressed }) => [styles.card, pressed ? styles.cardPressed : null]}
         >
-          <Feather name={item.icon} size={18} color={colors.primaryBlue} />
+          <Feather name={item.icon} size={18} color={colors.ink} />
           <Text style={styles.label} numberOfLines={2}>
             {item.label}
           </Text>
@@ -61,19 +62,17 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingVertical: spacing.mdSm,
     paddingHorizontal: spacing.base,
-    borderRadius: 14,
+    borderRadius: radius.control,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
+    borderColor: colors.ink,
+    backgroundColor: "transparent",
   },
   cardPressed: {
-    backgroundColor: colors.iceBlue,
+    backgroundColor: colors.paper,
   },
   label: {
     flex: 1,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 13,
-    lineHeight: 18,
-    color: colors.primaryBlue,
+    ...typography.label,
+    color: colors.ink,
   },
 });

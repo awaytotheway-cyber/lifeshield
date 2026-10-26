@@ -10,8 +10,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { Surface } from "@/components/ui/Surface";
-import { colors, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 export type JourneyStepState = "complete" | "current" | "upcoming";
 
@@ -60,15 +60,15 @@ function Indicator({
 
   return (
     <View style={[styles.indicator, styles.indicatorUpcoming]}>
-      <Feather name="lock" size={13} color={colors.mist} />
+      <Feather name="lock" size={13} color={colors.inkFaint} />
     </View>
   );
 }
 
 /**
- * Vertical journey timeline. Completed steps carry a solid sage rail down to
- * the next step; anything not yet reached uses a dashed rail. The current
- * step is lifted onto an iceBlue card with its own Continue action.
+ * Vertical journey timeline. Completed steps carry a solid moss rail down to
+ * the next step; anything not yet reached uses a dashed hairline. The current
+ * step sits on a `mossTint` block with its own Continue action.
  */
 export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardProps) {
   const reduceMotion = useReducedMotion();
@@ -187,25 +187,25 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: INDICATOR,
     height: INDICATOR,
-    borderRadius: INDICATOR / 2,
-    backgroundColor: colors.primaryBlue,
+    borderRadius: radius.pill,
+    backgroundColor: colors.mossMid,
   },
   indicator: {
     width: INDICATOR,
     height: INDICATOR,
-    borderRadius: INDICATOR / 2,
+    borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
   },
   indicatorComplete: {
-    backgroundColor: colors.riskLow,
+    backgroundColor: colors.mossDeep,
   },
   indicatorCurrent: {
-    backgroundColor: colors.primaryBlue,
+    backgroundColor: colors.ink,
   },
   indicatorUpcoming: {
-    borderWidth: 2,
-    borderColor: colors.border,
+    borderWidth: 1,
+    borderColor: colors.hairline,
     backgroundColor: colors.white,
   },
   line: {
@@ -216,13 +216,13 @@ const styles = StyleSheet.create({
   },
   lineDone: {
     borderLeftWidth: 2,
-    borderLeftColor: colors.riskLow,
+    borderLeftColor: colors.mossDeep,
   },
   // Dashed renders solid on some Android builds; acceptable degradation.
   linePending: {
     borderLeftWidth: 2,
     borderStyle: "dashed",
-    borderLeftColor: colors.border,
+    borderLeftColor: colors.hairline,
   },
   body: {
     flex: 1,
@@ -236,48 +236,45 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   bodyCurrent: {
-    backgroundColor: colors.iceBlue,
-    borderRadius: 14,
+    backgroundColor: colors.mossTint,
+    borderRadius: radius.control,
     padding: spacing.mdSm,
     marginTop: -4,
   },
   title: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    lineHeight: 21,
-    color: colors.deepNavy,
+    ...typography.body,
+    color: colors.ink,
   },
   titleCurrent: {
-    fontFamily: fontFamily.displaySemi,
-    color: colors.deepNavy,
+    ...typography.title,
+    color: colors.ink,
   },
   titleUpcoming: {
-    color: colors.mist,
+    color: colors.inkFaint,
   },
   subtitle: {
     marginTop: 2,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    lineHeight: 16,
-    color: colors.slate,
+    ...typography.label,
+    color: colors.inkSoft,
   },
+  // The step’s own action. Ink, like every primary — so a screen showing
+  // this card must not also carry a second black button.
   chip: {
     marginTop: spacing.mdSm,
     alignSelf: "flex-start",
-    minHeight: 36,
+    minHeight: tapTarget,
     paddingHorizontal: spacing.base,
-    borderRadius: 18,
-    backgroundColor: colors.primaryBlue,
+    borderRadius: radius.control,
+    backgroundColor: colors.ink,
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
   chipPressed: {
-    backgroundColor: "#234FBF",
+    backgroundColor: "#2A2A26",
   },
   chipText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 13,
+    ...typography.label,
     color: colors.white,
   },
 });
