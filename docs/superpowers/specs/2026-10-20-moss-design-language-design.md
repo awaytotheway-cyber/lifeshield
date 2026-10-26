@@ -52,7 +52,8 @@ single thing to tap. Moss appears as fills and progress, never as a button.
 |---|---|---|
 | `ink` | `#0C0C0A` | Headlines; the one primary button per screen |
 | `inkSoft` | `#4F4F49` | Body copy — 8.4:1 on paper |
-| `inkFaint` | `#8A8A84` | Grey headline words, **24px and up only** |
+| `inkFaint` | `#8A8A84` | Grey headline words, **24px and up only** (3.47:1 on white — clears the 3:1 large-text bar and nothing else) |
+| `inkMuted` | `#6B6B65` | **11px uppercase micro labels and secondary meta** — 5.36:1 on white, so it passes AA where `inkFaint` does not. Used 91 times across the boards (32 on 11px labels) though the colour board's own swatch table never declares it |
 | `paper` | `#F1F1EF` | Screen ground. White is for cards |
 | `white` | `#FFFFFF` | Cards |
 | `mossDeep` | `#5F6D17` | Text-safe green, 5.7:1 on white |

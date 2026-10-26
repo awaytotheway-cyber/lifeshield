@@ -12,12 +12,12 @@
 
 ## Global Constraints
 
-- **Colour, exact values:** `ink #0C0C0A` · `inkSoft #4F4F49` · `inkFaint #8A8A84` · `paper #F1F1EF` · `white #FFFFFF` · `mossDeep #5F6D17` · `mossMid #7D9022` · `mossBright #A3B82E` · `mossTint #EFF2E2` · `hairline #E4E4E0`.
+- **Colour, exact values:** `ink #0C0C0A` · `inkSoft #4F4F49` · `inkFaint #8A8A84` · `inkMuted #6B6B65` · `paper #F1F1EF` · `white #FFFFFF` · `mossDeep #5F6D17` · `mossMid #7D9022` · `mossBright #A3B82E` · `mossTint #EFF2E2` · `hairline #E4E4E0`.
 - **Clinical status, exact pairs:** within range `#EFF2E2`/`#4A5612`; worth watching `#F0E6D2`/`#7A5610`; worth discussing `#F3DED4`/`#9C3E16`. Never green→red. Every chip carries its word.
 - **Radius:** `surface 20` for anything you look at, `control 4` for anything you press, `pill 999` for round things. No other radius value appears in the codebase.
 - **Forbidden everywhere:** borders on cards, shadows, elevation, blur, and any gradient other than `heroGradient` (`155°, #A3B82E → #7D9022 → #4C5812`), max one per screen, never behind body copy.
 - **One black button per screen.** Secondary is an outline button or an underlined link.
-- **Type:** Schibsted Grotesk only. Weights 400 (grey headline words, body), 500 (labels, inactive tabs), 600 (titles, buttons, active tabs), 700 (display headlines only). `inkFaint` as a headline colour only at 24px and above.
+- **Type:** Schibsted Grotesk only. Weights 400 (grey headline words, body), 500 (labels, inactive tabs), 600 (titles, buttons, active tabs), 700 (display headlines only). `inkFaint` as a headline colour only at 24px and above (3.47:1 on white). Anything smaller that needs a grey uses `inkMuted #6B6B65` (5.36:1) or `inkSoft` (8.24:1) — never `inkFaint`.
 - **Sizes:** controls 56px tall; tap targets never below 44px; screen gutter 24px; card padding 20px.
 - **Copy:** clinical disclaimers, consent language and safety strips are never shortened. Prescope "does not diagnose, detect or treat any condition" — no copy may imply interpretation of a result.
 - **Social:** every new table has RLS; `social_v1` defaults `false`; blocking is enforced in RLS, not the UI.
@@ -772,7 +772,7 @@ Fix each remaining error — these are the screens still referencing deleted col
 
 - [ ] **Step 2: Apply the noise-reduction rules to every swept screen**
 
-Spec §6 governs the screens with no board of their own too. On each, remove: a page title duplicated in both header and body, decorative trust badges, a disclaimer already shown on the immediately preceding screen, and stat cards whose number only restates the sentence beside it. Convert boxed section headers to 11px uppercase `inkFaint` labels, and list rows to bold name + grey reason + right-aligned status.
+Spec §6 governs the screens with no board of their own too. On each, remove: a page title duplicated in both header and body, decorative trust badges, a disclaimer already shown on the immediately preceding screen, and stat cards whose number only restates the sentence beside it. Convert boxed section headers to 11px uppercase `inkMuted` labels (**not `inkFaint`** — at 11px that is 3.47:1 against AA's 4.5:1 requirement; `inkMuted` is the colour the boards actually use for these, at 5.36:1), and list rows to bold name + grey reason + right-aligned status.
 
 **Cut nothing load-bearing:** clinical disclaimers, consent language, safety copy and the "not a diagnosis" framing stay in full, including the first time they appear in any sequence.
 
