@@ -2,7 +2,6 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { EmptyHourglass, InsightLens } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { MilestoneStatStrip } from "@/components/ui/MilestoneStatStrip";
@@ -138,7 +137,6 @@ export default function ResultsScreen() {
             icon="bar-chart-2"
             heading={COPY.resultsEmptyHeading}
             explanation={COPY.resultsEmpty}
-            illustration={<EmptyHourglass width={100} height={100} />}
           />
           <PrimaryButton
             title={COPY.resultsOpenQuestionnaire}
@@ -154,11 +152,6 @@ export default function ResultsScreen() {
           data={listData}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
-          ListHeaderComponent={
-            <View style={styles.insight}>
-              <InsightLens width={120} height={100} />
-            </View>
-          }
           renderItem={({ item }) => {
             if (item.kind === "heading") {
               return <Text style={styles.group}>{item.title}</Text>;
@@ -226,10 +219,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.coral,
     textAlign: "center",
-  },
-  insight: {
-    alignItems: "center",
-    marginBottom: 8,
   },
   list: {
     paddingBottom: 32,

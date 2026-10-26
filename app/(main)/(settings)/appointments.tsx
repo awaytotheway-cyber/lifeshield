@@ -1,6 +1,5 @@
 import { Redirect, useRouter } from "expo-router";
 
-import { FollowUpCalendar } from "@/components/illustrations";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -35,7 +34,6 @@ export default function AppointmentsScreen() {
       <EmptyState
         heading={COPY.appointmentsEmptyHeading}
         explanation={COPY.appointmentsEmptyBody}
-        illustration={<FollowUpCalendar width={200} />}
       />
     </Screen>
   );

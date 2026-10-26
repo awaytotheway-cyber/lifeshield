@@ -1,8 +1,7 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
-import { PlanRoadmap } from "@/components/illustrations";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { InterventionCard } from "@/components/ui/InterventionCard";
@@ -75,8 +74,6 @@ export default function PlanScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [rows, setRows] = useState<InterventionRow[]>([]);
-  const windowWidth = useWindowDimensions().width;
-  const roadmapWidth = Math.max(160, windowWidth - spacing.screenX * 2);
   const [profile, setProfile] = useState<FeatureFlagProfile | null>(null);
 
   useEffect(() => {
@@ -236,11 +233,6 @@ export default function PlanScreen() {
           data={listData}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
-          ListHeaderComponent={
-            <View style={styles.roadmap}>
-              <PlanRoadmap width={roadmapWidth} height={120} />
-            </View>
-          }
           renderItem={({ item }) => {
             if (item.kind === "heading") {
               return <Text style={styles.group}>{item.title}</Text>;
@@ -334,10 +326,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.coral,
     textAlign: "center",
-  },
-  roadmap: {
-    alignItems: "center",
-    marginBottom: 8,
   },
   list: {
     paddingBottom: 16,

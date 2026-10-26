@@ -1,6 +1,5 @@
 import { Redirect, useRouter } from "expo-router";
 
-import { EmptyBox } from "@/components/illustrations";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
@@ -35,7 +34,6 @@ export default function PrescriptionsScreen() {
       <EmptyState
         heading={COPY.prescriptionsEmptyHeading}
         explanation={COPY.prescriptionsEmptyBody}
-        illustration={<EmptyBox width={180} />}
       />
     </Screen>
   );

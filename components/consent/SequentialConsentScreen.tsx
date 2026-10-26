@@ -1,7 +1,6 @@
-import type { ReactNode } from "react";
 import { useState } from "react";
 import { Redirect, useRouter } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Text } from "react-native";
 
 import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
@@ -22,8 +21,6 @@ import { useTriageStore } from "@/stores/triage-store";
 type ConsentScreenProps = {
   consentType: SequentialConsent;
   extraBody: string;
-  /** Drawing centred above the test explanation. */
-  illustration?: ReactNode;
 };
 
 /**
@@ -33,7 +30,6 @@ type ConsentScreenProps = {
 export function SequentialConsentScreen({
   consentType,
   extraBody,
-  illustration,
 }: ConsentScreenProps) {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
@@ -109,7 +105,6 @@ export function SequentialConsentScreen({
       <Text className="text-coral text-3xl">{COPY.appName}</Text>
       <Text className="mt-4 text-2xl text-charcoal">{COPY.consentTitle}</Text>
       <Text className="mt-3 text-charcoal">{COPY.consentIntro}</Text>
-      {illustration ? <View style={styles.illustration}>{illustration}</View> : null}
       <ClinicalTerm termKey={consentType} />
       <Text className="mt-4 text-charcoal">{extraBody}</Text>
       <SetupBanners />
@@ -148,11 +143,3 @@ export function SequentialConsentScreen({
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  illustration: {
-    alignItems: "center",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-});

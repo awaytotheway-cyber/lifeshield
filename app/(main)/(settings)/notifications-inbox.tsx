@@ -1,6 +1,5 @@
 import { Redirect, useRouter } from "expo-router";
 
-import { EmptyHourglass } from "@/components/illustrations";
 import { TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Screen } from "@/components/ui/Screen";
@@ -39,7 +38,6 @@ export default function NotificationsInboxScreen() {
       <EmptyState
         heading={COPY.notifInboxEmptyHeading}
         explanation={COPY.notifInboxEmptyBody}
-        illustration={<EmptyHourglass width={160} />}
       />
       <TextButton
         title={COPY.settingsOpenNotifications}
