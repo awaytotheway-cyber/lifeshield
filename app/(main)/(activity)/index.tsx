@@ -90,12 +90,24 @@ const EYEBROW_TODAY = "Today";
 const EYEBROW_WEEK = "Last seven days";
 const EYEBROW_RECENT = "Recent readings";
 
-/** Local YYYY-MM-DD — the same day key `bucketDaily` produces. */
-function ymd(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
+/**
+ * The day a reading belongs to, as YYYY-MM-DD in UTC.
+ *
+ * `bucketDaily` keys every bucket off `recorded_at.slice(0, 10)` — the UTC
+ * day of the stored timestamp — and a manual entry is written as midnight UTC
+ * of the day the person picked. The strip, the run and the today-per-kind map
+ * all read this one clock, so the three can never disagree about which day a
+ * reading landed on.
+ */
+function utcDay(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+/** The same instant, a whole number of UTC days earlier. */
+function minusDays(date: Date, days: number): Date {
+  const next = new Date(date);
+  next.setUTCDate(next.getUTCDate() - days);
+  return next;
 }
 
 /**
@@ -115,17 +127,28 @@ function loggedRun(
   loggedDays: ReadonlySet<string>,
   now: Date,
 ): { run: number; capped: boolean } {
-  const cursor = new Date(now);
-  if (!loggedDays.has(ymd(cursor))) {
-    cursor.setDate(cursor.getDate() - 1);
+  let cursor = new Date(now);
+  if (!loggedDays.has(utcDay(cursor))) {
+    cursor = minusDays(cursor, 1);
   }
   let run = 0;
-  while (run < PROVABLE_DAYS && loggedDays.has(ymd(cursor))) {
+  while (run < PROVABLE_DAYS && loggedDays.has(utcDay(cursor))) {
     run += 1;
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = minusDays(cursor, 1);
   }
   return { run, capped: run === PROVABLE_DAYS };
 }
+
+/**
+ * What the headline says before the rows arrive, and if they never do. A run
+ * of zero is a claim about the person's week; until the readings are in hand
+ * the screen has not earned it.
+ */
+const PENDING_HEADLINE: TwoTonePart[] = [
+  { text: "Your", tone: "bold" },
+  { text: " daily ", tone: "grey" },
+  { text: "readings", tone: "bold" },
+];
 
 /** The headline. One sentence, two tones, and never a number it cannot prove. */
 function headlineFor(run: number): TwoTonePart[] {
@@ -208,7 +231,7 @@ export default function ActivityScreen() {
   // (kind) is what the rows want.
   const todayByKind = useMemo(() => {
     const map = new Map<ActivityKind, DailyBucket>();
-    const todayYmd = new Date().toISOString().slice(0, 10);
+    const todayYmd = utcDay(new Date());
     for (const bucket of buckets) {
       if (map.has(bucket.kind)) continue;
       // First (newest) bucket wins; only mark it as "today" when the date
@@ -235,12 +258,11 @@ export default function ActivityScreen() {
   const week = useMemo(() => {
     const now = new Date();
     return Array.from({ length: STRIP_DAYS }, (_, index) => {
-      const date = new Date(now);
-      date.setDate(date.getDate() - (STRIP_DAYS - 1 - index));
-      const key = ymd(date);
+      const date = minusDays(now, STRIP_DAYS - 1 - index);
+      const key = utcDay(date);
       return {
         key,
-        initial: DAY_INITIALS[date.getDay()],
+        initial: DAY_INITIALS[date.getUTCDay()],
         logged: loggedDays.has(key),
         isToday: index === STRIP_DAYS - 1,
       };
@@ -308,7 +330,7 @@ export default function ActivityScreen() {
       </View>
 
       <View accessibilityRole="header" style={styles.headline}>
-        <TwoTone size="xl" parts={headlineFor(ready ? run : 0)} />
+        <TwoTone size="xl" parts={ready ? headlineFor(run) : PENDING_HEADLINE} />
       </View>
 
       {ready ? <Text style={styles.lede}>{lede}</Text> : null}
