@@ -16,6 +16,13 @@ type MilestoneStatStripProps = {
 
 /**
  * Three oversized display numbers — risk score, days-until-check, progress, etc.
+ *
+ * The numbers are set in `displayL`, the Moss scale's own hero-number step.
+ * They were held at the pre-Moss 40 by `typography.heroStat`, a deprecated
+ * alias kept alive solely for this component because inheriting `displayXL`'s
+ * 46 would have grown three side-by-side numbers past a narrow screen.
+ * `displayL` is 34 — smaller than the hold, so the row has more room than
+ * before, not less — and this was the alias's last consumer.
  */
 export function MilestoneStatStrip({ stats }: MilestoneStatStripProps) {
   return (
@@ -37,7 +44,9 @@ export function MilestoneStatStrip({ stats }: MilestoneStatStripProps) {
 
 const styles = StyleSheet.create({
   card: {
-    paddingVertical: spacing.base,
+    // The card inset is 20 top and bottom. The sides stay narrow on purpose:
+    // the three cells and the rules between them need the width.
+    paddingVertical: 20,
     paddingHorizontal: spacing.sm,
   },
   row: {
@@ -55,13 +64,15 @@ const styles = StyleSheet.create({
     borderRightColor: colors.hairline,
   },
   value: {
-    ...typography.heroStat,
+    ...typography.displayL,
     color: colors.ink,
   },
+  // The caption under a number is meta, so it takes the micro eyebrow:
+  // 11px uppercase in `inkMuted`, which clears AA where `inkFaint` does not.
   label: {
-    marginTop: 4,
-    ...typography.label,
-    color: colors.inkSoft,
+    marginTop: 6,
+    ...typography.micro,
+    color: colors.inkMuted,
     textAlign: "center",
   },
 });

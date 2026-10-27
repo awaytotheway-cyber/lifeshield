@@ -11,7 +11,7 @@ import Animated, {
 
 import { Surface } from "@/components/ui/Surface";
 import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
-import { typography } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 
 export type JourneyStepState = "complete" | "current" | "upcoming";
 
@@ -31,6 +31,12 @@ type JourneyProgressCardProps = {
 };
 
 const INDICATOR = 32;
+
+/**
+ * Pressed ink, the same value `Button` uses — darkened just enough to
+ * register the press without reading as a second colour.
+ */
+const INK_PRESSED = "#2A2A26";
 
 function Indicator({
   step,
@@ -168,7 +174,9 @@ export function JourneyProgressCard({ steps, onContinue }: JourneyProgressCardPr
 
 const styles = StyleSheet.create({
   card: {
-    padding: spacing.base,
+    // The Moss card inset is 20; this card sets it by hand because the rows
+    // inside it own their own vertical rhythm.
+    padding: 20,
   },
   row: {
     flexDirection: "row",
@@ -273,10 +281,13 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   chipPressed: {
-    backgroundColor: "#2A2A26",
+    backgroundColor: INK_PRESSED,
   },
+  // A button label, so it takes the button's metric — 15 at 600 — rather
+  // than the 13 of the field labels around it.
   chipText: {
-    ...typography.label,
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 15,
     color: colors.white,
   },
 });
