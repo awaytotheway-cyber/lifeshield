@@ -1,12 +1,9 @@
 import { Redirect, Tabs, usePathname } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
-import { AppDrawer } from "@/components/navigation/AppDrawer";
-import { DrawerProvider } from "@/components/navigation/DrawerContext";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { TabIcon } from "@/components/navigation/TabIcon";
 import {
   allConsentsAgreed,
   firstIncompleteConsent,
@@ -14,7 +11,7 @@ import {
   redirectIfConsentOutOfOrder,
   type SequentialConsent,
 } from "@/lib/consent-flow";
-import { colors } from "@/lib/design-tokens";
+import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
@@ -36,9 +33,15 @@ function consentScreenFromPath(pathname: string): SequentialConsent | null {
 }
 
 /**
- * Home / Questionnaire / More. Symptom check and consents live here too
- * but are hidden from the tab bar. Locked users never see these tabs.
- * Side drawer overlays the tabs without replacing journey safety gates.
+ * Home / Tests / Shop / Buddies / More — the five tabs, and no second
+ * navigation model beside them. Everything else in this group (symptom check,
+ * consents, the assessment, plan, follow-up, orders and the settings
+ * sub-screens) is reachable by route but hidden from the bar; the assessment
+ * is reached from Home's next-step card.
+ *
+ * Which tabs show is a presentation decision. Who is allowed where is decided
+ * by the gates below, and they are independent: a hidden tab is not a gate,
+ * and every redirect here still runs for a route typed in by hand.
  */
 export default function MainLayout() {
   const session = useAuthStore((state) => state.session);
@@ -162,166 +165,189 @@ export default function MainLayout() {
     onSettingsDeep;
 
   return (
-    <DrawerProvider>
-      <View style={styles.shell}>
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-            tabBarActiveTintColor: colors.primaryBlue,
-            tabBarInactiveTintColor: colors.slate,
-            tabBarLabelStyle: {
-              fontFamily: fontFamily.body,
-              fontSize: 13,
-            },
-            tabBarBackground: () =>
-              hideTabBar ? null : (
-                <GlassCard intensity="chrome" style={StyleSheet.absoluteFill} />
-              ),
-            tabBarStyle: hideTabBar
-              ? { display: "none" }
-              : {
-                  backgroundColor: "transparent",
-                  borderTopWidth: StyleSheet.hairlineWidth,
-                  borderTopColor: colors.glassBorder,
-                  elevation: 0,
-                  minHeight: 52,
-                },
-          }}
-        >
-          <Tabs.Screen
-            name="home"
-            options={{
-              title: "Home",
-              tabBarIcon: ({ color }) => (
-                <Feather name="home" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="questionnaire"
-            options={{
-              title: "Questionnaire",
-              tabBarIcon: ({ color }) => (
-                <Feather name="clipboard" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="(settings)"
-            options={{
-              title: "More",
-              tabBarIcon: ({ color }) => (
-                <Feather name="menu" size={24} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="(triage)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(consent)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(results)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(plan)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(followup)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(store)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(orders)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(activity)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(goals)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(meal-plans)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(medications)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(recipes)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="(reminders)"
-            options={{
-              href: null,
-              tabBarStyle: { display: "none" },
-            }}
-          />
-          <Tabs.Screen
-            name="clinical-term-preview"
-            options={{
-              href: null,
-              title: "Preview",
-            }}
-          />
-        </Tabs>
-        <AppDrawer unreadCount={0} />
-      </View>
-    </DrawerProvider>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        // The icons and labels colour themselves from `focused`, so these two
+        // only matter to the ripple and to anything that falls back to tint.
+        tabBarActiveTintColor: colors.ink,
+        tabBarInactiveTintColor: colors.inkFaint,
+        // One function for both states: the bar's two label weights are the
+        // whole of its active styling — there is no pill and no underline.
+        tabBarLabel: ({ focused, children }) => (
+          <Text style={[styles.label, focused ? styles.labelOn : styles.labelOff]}>
+            {children}
+          </Text>
+        ),
+        tabBarStyle: hideTabBar ? styles.barHidden : styles.bar,
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: "Home",
+          tabBarIcon: ({ focused }) => <TabIcon name="home" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="(results)"
+        options={{
+          title: "Tests",
+          tabBarIcon: ({ focused }) => <TabIcon name="tests" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="(store)"
+        options={{
+          title: "Shop",
+          tabBarIcon: ({ focused }) => <TabIcon name="shop" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="(buddies)"
+        options={{
+          title: "Buddies",
+          tabBarIcon: ({ focused }) => (
+            <TabIcon name="buddies" focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="(settings)"
+        options={{
+          title: "More",
+          tabBarIcon: ({ focused }) => <TabIcon name="more" focused={focused} />,
+        }}
+      />
+      {/*
+        Off the bar, still routable — and still gated. The assessment is one
+        of these now: Home's next-step card is the way in, which is why
+        `questionnaire` carries `href: null` rather than a sixth tab. Its
+        gates are untouched.
+      */}
+      <Tabs.Screen
+        name="questionnaire"
+        options={{
+          href: null,
+          title: "Questionnaire",
+        }}
+      />
+      <Tabs.Screen
+        name="(triage)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(consent)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(plan)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(followup)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(orders)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(activity)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(goals)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(meal-plans)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(medications)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(recipes)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="(reminders)"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="clinical-term-preview"
+        options={{
+          href: null,
+          title: "Preview",
+        }}
+      />
+    </Tabs>
   );
 }
 
 const styles = StyleSheet.create({
-  shell: {
-    flex: 1,
+  /**
+   * White, flat, and nothing else: no backdrop, no top border, no shadow and
+   * no elevation. The bar reads as chrome because the screen ground is paper
+   * and the bar is white, the same way a card does.
+   */
+  bar: {
+    backgroundColor: colors.white,
+    borderTopWidth: 0,
+    elevation: 0,
+    shadowOpacity: 0,
+    // minHeight, not height: a fixed height would override the bottom safe
+    // area the bar adds for itself and clip the labels on a notched phone.
+    paddingTop: spacing.mdSm,
+    minHeight: 64,
+  },
+  barHidden: {
+    display: "none",
+  },
+  label: {
+    fontSize: 10,
+  },
+  labelOn: {
+    fontFamily: fontFamily.bodySemi,
+    color: colors.ink,
+  },
+  labelOff: {
+    fontFamily: fontFamily.bodyMedium,
+    color: colors.inkFaint,
   },
 });
