@@ -2,13 +2,13 @@ import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { BackHandler, StyleSheet, Text } from "react-native";
 
+import { TextButton } from "@/components/ui/Button";
 import { PathwayBBanner } from "@/components/ui/PathwayBBanner";
 import { Screen } from "@/components/ui/Screen";
-import { TextButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -72,18 +72,15 @@ export default function PathwayBScreen() {
 }
 
 const styles = StyleSheet.create({
+  // Load-bearing: what Pathway B means and why the rest is paused.
   locked: {
-    marginTop: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    marginTop: spacing.base,
+    ...typography.label,
     color: colors.inkSoft,
   },
   notice: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    marginTop: spacing.mdSm,
+    ...typography.label,
     color: colors.ink,
   },
 });

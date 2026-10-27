@@ -16,11 +16,12 @@ import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import {
   colors,
+  controlHeight,
   radius,
   spacing,
   status,
@@ -49,7 +50,11 @@ function CheckCard({ label, checked, onToggle }: CheckCardProps) {
       accessibilityLabel={label}
       accessibilityState={{ checked }}
       onPress={onToggle}
-      style={[styles.checkCard, checked ? styles.checkOn : styles.checkOff]}
+      style={({ pressed }) => [
+        styles.checkCard,
+        checked ? styles.checkOn : styles.checkOff,
+        pressed && !checked ? styles.checkPressed : null,
+      ]}
     >
       <Text style={styles.checkLabel}>{label}</Text>
       {checked ? (
@@ -253,8 +258,8 @@ const styles = StyleSheet.create({
     height: 72,
   },
   title: {
-    ...typography.h1,
-    color: colors.mossDeep,
+    ...typography.displayL,
+    color: colors.ink,
     textAlign: "center",
     marginBottom: spacing.base,
   },
@@ -270,53 +275,51 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   summaryHeading: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    lineHeight: 22,
-    color: colors.mossDeep,
     marginBottom: spacing.sm,
+    ...typography.title,
+    color: colors.ink,
   },
   block: {
     marginTop: spacing.base,
   },
   blockTitle: {
+    marginBottom: spacing.micro,
+    ...typography.body,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
     color: colors.ink,
-    marginBottom: 4,
   },
+  // Consent wording. Every block below stays verbatim and in full.
   blockBody: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    ...typography.body,
     color: colors.inkSoft,
   },
+  // Built to the same rule as CheckboxGroup: the whole card is the target,
+  // and the fill alone says whether it is ticked. No outline on either state —
+  // the old 1.5px/2px rings were the glass system's selection cue.
   checkCard: {
     marginTop: spacing.sm,
-    minHeight: 56,
-    borderRadius: radius.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    minHeight: controlHeight,
+    borderRadius: radius.control,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.mdSm,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   checkOff: {
     backgroundColor: colors.white,
-    borderWidth: 1.5,
-    borderColor: colors.hairline,
   },
   checkOn: {
     backgroundColor: colors.mossTint,
-    borderWidth: 2,
-    borderColor: colors.mossDeep,
+  },
+  checkPressed: {
+    backgroundColor: colors.paper,
   },
   checkLabel: {
     flex: 1,
-    paddingRight: 12,
+    paddingRight: spacing.mdSm,
+    ...typography.body,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 15,
-    lineHeight: 22,
     color: colors.ink,
   },
   checkEmpty: {
@@ -325,49 +328,47 @@ const styles = StyleSheet.create({
   },
   error: {
     textAlign: "center",
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    ...typography.label,
     color: CLAY,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: "rgba(12,12,10,0.28)",
   },
   sheet: {
     padding: 20,
   },
   sheetTitle: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 17,
-    color: colors.mossDeep,
+    ...typography.title,
+    color: colors.ink,
   },
   sheetBody: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    marginTop: spacing.mdSm,
+    ...typography.body,
     color: colors.ink,
   },
   sheetRow: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     flexDirection: "row",
     justifyContent: "space-between",
   },
   sheetHit: {
     minHeight: tapTarget,
     justifyContent: "center",
-    paddingHorizontal: 4,
+    paddingHorizontal: spacing.micro,
   },
+  // Two tertiary links: the underline is the affordance, as it is everywhere.
   sheetClose: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
+    ...typography.body,
+    fontFamily: fontFamily.bodyMedium,
     color: CLAY,
+    textDecorationLine: "underline",
   },
   sheetBack: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    color: colors.mossDeep,
+    ...typography.body,
+    fontFamily: fontFamily.bodyMedium,
+    color: colors.ink,
+    textDecorationLine: "underline",
   },
 });

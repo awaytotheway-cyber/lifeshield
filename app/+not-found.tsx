@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import { typography } from "@/lib/typography";
 
@@ -46,19 +46,18 @@ const styles = StyleSheet.create({
   content: {
     alignItems: "center",
   },
+  // A tinted disc, not an outlined one — Moss puts no border on a surface.
   iconWell: {
     width: 88,
     height: 88,
-    borderRadius: 44,
+    borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.hairline,
+    backgroundColor: colors.mossTint,
     marginBottom: spacing.md,
   },
   title: {
-    ...typography.h1,
+    ...typography.displayL,
     color: colors.ink,
     textAlign: "center",
   },

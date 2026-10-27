@@ -21,9 +21,9 @@ import { NotificationBootstrap } from "@/components/NotificationBootstrap";
 import { StripeRoot } from "@/components/StripeRoot";
 import { ContentProvider } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
+import { colors, spacing } from "@/lib/design-tokens";
 import { SessionProvider } from "@/lib/session";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 
 export { ExpoRouterErrorBoundary as ErrorBoundary };
@@ -35,16 +35,17 @@ function BrandSplash({ message }: { message: string }) {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.mossTint,
+        // Paper is the screen ground. White is for cards, and a moss tint is
+        // for chips and selected rows — never for a whole screen.
+        backgroundColor: colors.paper,
       }}
     >
       <ActivityIndicator color={colors.mossDeep} />
       <Text
         style={{
-          marginTop: 16,
+          marginTop: spacing.base,
           color: colors.ink,
-          fontFamily: fontFamily.body,
-          fontSize: 15,
+          ...typography.body,
         }}
       >
         {message}

@@ -4,12 +4,12 @@ import { BackHandler, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { TextButton } from "@/components/ui/Button";
-import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import { colors, radius, spacing } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useEscalationStore } from "@/stores/escalation-store";
 
@@ -78,48 +78,42 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     alignItems: "center",
   },
+  // A tinted disc, not an outlined one: a white ring on a white card was a
+  // border doing nothing, and Moss puts no border on a surface.
   iconWell: {
     width: 64,
     height: 64,
-    borderRadius: 32,
+    borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.hairline,
+    backgroundColor: colors.mossTint,
     marginBottom: spacing.base,
   },
   title: {
-    fontFamily: fontFamily.display,
-    fontSize: 22,
-    lineHeight: 28,
+    ...typography.title,
     color: colors.ink,
     textAlign: "center",
   },
   body: {
     marginTop: spacing.mdSm,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    ...typography.body,
     color: colors.inkSoft,
     textAlign: "center",
   },
+  // The "not a diagnosis" framing. Load-bearing, so it keeps its own tinted
+  // panel rather than being folded into the body copy.
   reassure: {
     marginTop: spacing.base,
     padding: spacing.mdSm,
     borderRadius: radius.surface,
     backgroundColor: colors.mossTint,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 19,
+    ...typography.label,
     color: colors.ink,
     textAlign: "center",
   },
   paused: {
     marginTop: spacing.base,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    ...typography.label,
     color: colors.inkSoft,
   },
 });

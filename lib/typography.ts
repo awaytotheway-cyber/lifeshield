@@ -20,8 +20,6 @@ export const fontFamily = {
   display: "SchibstedGrotesk_700Bold",
   /** Titles, buttons, active tabs. */
   displaySemi: "SchibstedGrotesk_600SemiBold",
-  /** Oversized hero numbers (risk score, days-until-check). */
-  heroStat: "SchibstedGrotesk_700Bold",
   body: "SchibstedGrotesk_400Regular",
   bodyMedium: "SchibstedGrotesk_500Medium",
   bodySemi: "SchibstedGrotesk_600SemiBold",
@@ -81,38 +79,5 @@ export const typography = {
     letterSpacing: 1.5,
     textTransform: "uppercase",
   },
-
-  // ---------------------------------------------------------------------
-  // Legacy aliases. Screens still spreading the old scale keep rendering on
-  // the Moss scale until their own migration task rewrites them; delete each
-  // alias as its last consumer goes.
-  // ---------------------------------------------------------------------
-  /** @deprecated use `displayL`. */
-  display: {
-    fontFamily: fontFamily.display,
-    fontSize: 34,
-    lineHeight: 34,
-    letterSpacing: -1,
-  },
-  /** @deprecated use `displayL`. */
-  h1: {
-    fontFamily: fontFamily.display,
-    fontSize: 34,
-    lineHeight: 34,
-    letterSpacing: -1,
-  },
-  /**
-   * Holds the pre-Moss metrics (40 / 44 / -1) on purpose: MilestoneStatStrip
-   * renders three of these side by side in a `flex: 1` row, so inheriting
-   * displayXL's 46 would grow them 15% and risk clipping on narrow screens.
-   * Only the face and weight are remapped — Moss has no 800.
-   * @deprecated pick `displayXL` or `displayL` deliberately when the strip is
-   * redesigned, rather than inheriting this hold.
-   */
-  heroStat: {
-    fontFamily: fontFamily.heroStat,
-    fontSize: 40,
-    lineHeight: 44,
-    letterSpacing: -1,
-  },
 } as const;
+

@@ -5,10 +5,10 @@ import { StyleSheet, Text } from "react-native";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { PrimaryButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors, status } from "@/lib/design-tokens";
+import { spacing, status } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 
 /** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
@@ -64,11 +64,9 @@ export default function ConsentTermsScreen() {
 
 const styles = StyleSheet.create({
   error: {
-    marginTop: 16,
+    marginTop: spacing.base,
     textAlign: "center",
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    ...typography.label,
     color: CLAY,
   },
 });

@@ -6,8 +6,8 @@ import { useReducedMotion } from "react-native-reanimated";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
 import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
-import { fontFamily, typography } from "@/lib/typography";
+import { colors, spacing } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 import { useJourney } from "@/lib/use-journey";
 
 const SPLASH_HOLD_MS = 1800;
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: colors.paper,
-    paddingHorizontal: 20,
+    paddingHorizontal: spacing.screenX,
   },
   panel: {
     paddingHorizontal: 28,
@@ -72,19 +72,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     minWidth: "86%",
   },
+  // The one headline on the splash, on the display scale rather than a
+  // one-off 36. Ink, not moss: moss is a fill and a link colour, never a
+  // headline.
   brand: {
-    marginTop: 16,
-    ...typography.display,
-    fontSize: 36,
-    lineHeight: 42,
-    color: colors.mossDeep,
+    marginTop: spacing.base,
+    ...typography.displayL,
+    color: colors.ink,
     textAlign: "center",
   },
   tagline: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    marginTop: spacing.mdSm,
+    ...typography.body,
     color: colors.inkSoft,
     textAlign: "center",
   },
