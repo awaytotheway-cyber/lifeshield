@@ -43,6 +43,21 @@ export type BuddyMatch = {
   match_score: number;
 };
 
+/**
+ * A row from buddy_profile() — someone you ALREADY have a connection with.
+ *
+ * The same three shareable fields `BuddyMatch` carries, without the match
+ * score: once you are connected there is nothing to score. `connections`
+ * holds ids and nothing else, so this is the only way a buddy row or a chat
+ * header learns the name to print above it.
+ */
+export type BuddyProfile = {
+  user_id: string;
+  display_name: string;
+  city: string | null;
+  interests: string[];
+};
+
 export type ConnectionStatus = "requested" | "active" | "declined" | "inactive";
 
 /** A row from public.connections. Directional: requester_id asked addressee_id. */
@@ -103,6 +118,13 @@ export function displayNameFrom(
 }
 
 /**
+ * The two fields a subtitle is built from. Both `BuddyMatch` (discovery) and
+ * `BuddyProfile` (someone you are connected to) satisfy it, so one subtitle
+ * function serves the search results and the buddy rows alike.
+ */
+export type BuddyDescribable = Pick<BuddyMatch, "city" | "interests">;
+
+/**
  * The subtitle under a buddy's name — `"Mumbai · walking, 40s"`.
  *
  * Absent parts are dropped rather than rendered empty, so there is never a
@@ -110,7 +132,7 @@ export function displayNameFrom(
  * to say, which lets a caller skip the line entirely instead of rendering a
  * blank one.
  */
-export function describeBuddy(b: BuddyMatch): string {
+export function describeBuddy(b: BuddyDescribable): string {
   const parts: string[] = [];
 
   const city = (b.city ?? "").trim();
@@ -186,6 +208,10 @@ export type DiscoverBuddiesOutcome =
   | { ok: true; rows: BuddyMatch[] }
   | { ok: false; rows: []; message: string };
 
+export type LoadBuddyProfilesOutcome =
+  | { ok: true; rows: BuddyProfile[] }
+  | { ok: false; rows: []; message: string };
+
 export type LoadConnectionsOutcome =
   | { ok: true; rows: Connection[] }
   | { ok: false; rows: []; message: string };
@@ -218,6 +244,18 @@ function normaliseMatch(row: Record<string, unknown>): BuddyMatch {
       ? (row.shared_interests as string[])
       : [],
     match_score: Number(row.match_score ?? 0),
+  };
+}
+
+function normaliseProfile(row: Record<string, unknown>): BuddyProfile {
+  return {
+    user_id: String(row.user_id ?? ""),
+    display_name: displayNameFrom(
+      typeof row.display_name === "string" ? row.display_name : null,
+      null,
+    ),
+    city: typeof row.city === "string" ? row.city : null,
+    interests: Array.isArray(row.interests) ? (row.interests as string[]) : [],
   };
 }
 
@@ -301,6 +339,68 @@ export async function loadMyConnections(): Promise<LoadConnectionsOutcome> {
       ),
     };
   }
+}
+
+/**
+ * The shareable profiles of people I am already connected to, keyed by nothing
+ * — the caller matches them up by `user_id`.
+ *
+ * `connections` stores two ids and a status: no name, no city. So a buddy row
+ * and a chat header have nothing to print until this runs. buddy_profile() is
+ * SECURITY DEFINER and serves ONLY a user I have a connection with (active or
+ * requested), which is why discovery's RPC cannot answer this question and
+ * a direct `profiles` select cannot either — RLS keeps that to my own row.
+ *
+ * One call per id, because the function takes one id. They are issued together
+ * and settled independently: a buddy whose profile fails to load is omitted
+ * from `rows` rather than failing the whole screen, and the caller falls back
+ * to `displayNameFrom(null, null)`. `ok` is false only when every id failed,
+ * so a screen can tell "one name missing" from "this is not working".
+ */
+export async function loadBuddyProfiles(
+  ids: string[],
+): Promise<LoadBuddyProfilesOutcome> {
+  const wanted = [...new Set((ids ?? []).map((id) => (id ?? "").trim()))].filter(
+    (id) => id.length > 0,
+  );
+  if (wanted.length === 0) return { ok: true, rows: [] };
+
+  const { isSupabaseConfigured, supabase } = await loadSupabase();
+  if (!isSupabaseConfigured) return { ok: true, rows: [] };
+
+  let firstFailure: string | null = null;
+
+  const settled = await Promise.all(
+    wanted.map(async (id): Promise<BuddyProfile | null> => {
+      try {
+        const { data, error } = await supabase.rpc("buddy_profile", {
+          other_id: id,
+        });
+        if (error) {
+          firstFailure ??= messageFromUnknown(
+            error,
+            "We couldn't load your buddy's details.",
+          );
+          return null;
+        }
+        const row = Array.isArray(data) ? data[0] : data;
+        if (row == null) return null;
+        return normaliseProfile(row as Record<string, unknown>);
+      } catch (error: unknown) {
+        firstFailure ??= messageFromUnknown(
+          error,
+          "We couldn't load your buddy's details.",
+        );
+        return null;
+      }
+    }),
+  );
+
+  const rows = settled.filter((row): row is BuddyProfile => row != null);
+  if (rows.length === 0 && firstFailure) {
+    return { ok: false, rows: [], message: firstFailure };
+  }
+  return { ok: true, rows };
 }
 
 /**

@@ -70,7 +70,28 @@ export const routes = {
   activity: "/(main)/(activity)" as Href,
   activityLog: "/(main)/(activity)/log" as Href,
   activitySources: "/(main)/(settings)/health-permissions" as Href,
+  buddies: "/(main)/(buddies)" as Href,
 } as const;
+
+/**
+ * One buddy thread. `buddyId` is the other person (the connection stores two
+ * ids and the screen has to know which one is not me) and `name` is passed so
+ * the header can paint immediately; the screen re-reads both from
+ * `buddy_profile()` and never trusts the param for anything but the first
+ * frame.
+ */
+export function buddyChatHref(
+  connectionId: string,
+  buddyId: string,
+  name: string,
+): Href {
+  const params = new URLSearchParams({
+    connectionId,
+    buddyId,
+    name,
+  });
+  return `/(main)/(buddies)/chat?${params.toString()}` as Href;
+}
 
 export function resultDetailHref(id: string): Href {
   return `/(main)/(results)/result-detail?id=${encodeURIComponent(id)}` as Href;
