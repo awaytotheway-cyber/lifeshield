@@ -355,6 +355,7 @@ function StepButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.step,
+        disabled ? styles.stepDisabled : null,
         pressed && !disabled ? styles.stepPressed : null,
       ]}
     >
@@ -434,8 +435,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: colors.ink,
   },
-  // Disabled is `hairline` on `inkMuted`; the fill is already paper, so only
-  // the glyph steps back.
+  // Disabled is `hairline` on `inkMuted` — the one disabled pair the system
+  // defines, the same one the buttons use.
+  stepDisabled: {
+    backgroundColor: colors.hairline,
+  },
   stepOff: {
     color: colors.inkMuted,
   },

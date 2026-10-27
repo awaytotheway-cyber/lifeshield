@@ -392,30 +392,42 @@ export default function StoreScreen() {
                 </View>
               ) : null}
 
-              <Text style={styles.group}>{COPY.storeRecommended}</Text>
+              {/*
+                The heading only appears over something: with a single
+                recommendation the moss card above is the whole section, so
+                an empty "Based on your results" is not printed under it.
+              */}
               {visibleRecommended.length === 0 ? (
-                <EmptyState
-                  heading={COPY.storeRecommended}
-                  explanation={COPY.storeRecommendedEmpty}
-                />
-              ) : (
-                restRecommended.map((product) => (
-                  <View key={product.id} style={styles.rowGap}>
-                    <ProductCard
-                      product={product}
-                      gate={canPurchase(product, userContext)}
-                      tag="For you"
-                      onOpen={() => {
-                        router.push(productHref(product.id));
-                      }}
-                      onAdd={() => {
-                        void handleAdd(product);
-                      }}
-                      adding={addingId === product.id}
-                    />
-                  </View>
-                ))
-              )}
+                <>
+                  <Text style={styles.group}>{COPY.storeRecommended}</Text>
+                  <EmptyState
+                    heading={COPY.storeRecommended}
+                    explanation={COPY.storeRecommendedEmpty}
+                  />
+                </>
+              ) : null}
+
+              {restRecommended.length > 0 ? (
+                <>
+                  <Text style={styles.group}>{COPY.storeRecommended}</Text>
+                  {restRecommended.map((product) => (
+                    <View key={product.id} style={styles.rowGap}>
+                      <ProductCard
+                        product={product}
+                        gate={canPurchase(product, userContext)}
+                        tag="For you"
+                        onOpen={() => {
+                          router.push(productHref(product.id));
+                        }}
+                        onAdd={() => {
+                          void handleAdd(product);
+                        }}
+                        adding={addingId === product.id}
+                      />
+                    </View>
+                  ))}
+                </>
+              ) : null}
 
               <Text style={styles.group}>{COPY.storeFullCatalog}</Text>
               {visibleCatalog.length === 0 ? (

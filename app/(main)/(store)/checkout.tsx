@@ -1,12 +1,15 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Platform, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
-import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StripePayButton } from "@/components/checkout/StripePayButton";
-import { Button } from "@/components/ui/Button";
+import { IconButton, PrimaryButton, TextButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
+import { Surface } from "@/components/ui/Surface";
+import { TwoTone } from "@/components/ui/TwoTone";
 import { COPY } from "@/lib/copy";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import { canPurchase } from "@/lib/purchase-gates";
 import { orderPlacedHref, routes } from "@/lib/routes";
 import {
@@ -17,8 +20,24 @@ import {
 } from "@/lib/store";
 import { isStripePublishableKeyConfigured } from "@/lib/stripe-config";
 import { loadUserContext } from "@/lib/user-context";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
+/**
+ * The running total, at the detail board's 28 with tracking at -3% of the
+ * size. A price rather than a headline, so plain `Text` and not `TwoTone`.
+ */
+const TOTAL = {
+  fontFamily: fontFamily.display,
+  fontSize: 28,
+  lineHeight: 28,
+  // 28 x -0.03
+  letterSpacing: -0.8,
+} as const;
 
 /**
  * Checkout — checkpoint 3 of 3 for canPurchase() (before Payment Sheet).
@@ -111,29 +130,39 @@ export default function CheckoutScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">{COPY.checkoutTitle}</Text>
-      <Text className="mt-4 text-center text-charcoal">{COPY.checkoutBody}</Text>
+      <View style={styles.topRow}>
+        <IconButton
+          icon="arrow-left"
+          accessibilityLabel={COPY.storeBackCart}
+          onPress={() => {
+            router.replace(routes.storeCart);
+          }}
+          style={styles.back}
+        />
+      </View>
+
+      <View accessibilityRole="header">
+        <TwoTone size="xl" parts={[{ text: COPY.checkoutTitle, tone: "bold" }]} />
+      </View>
+
+      {/* What the server charges and what this screen is not. Never trimmed. */}
+      <Text style={styles.lede}>{COPY.checkoutBody}</Text>
 
       {!stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
-          {COPY.checkoutStripeKeyMissing}
-        </Text>
+        <Text style={styles.note}>{COPY.checkoutStripeKeyMissing}</Text>
       ) : null}
 
       {!stripeNative && stripeKeyReady ? (
-        <Text className="mt-4 text-center text-sm text-charcoal">
-          {COPY.checkoutWebUnsupported}
-        </Text>
+        <Text style={styles.note}>{COPY.checkoutWebUnsupported}</Text>
       ) : null}
 
-      {loadingCart ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loadingCart ? <StaticSkeleton rows={3} /> : null}
 
       {cartMessage ? (
         <>
-          <Text className="mt-4 text-center text-coral">{cartMessage}</Text>
-          <Button
+          <Text style={styles.error}>{cartMessage}</Text>
+          <TextButton
             title={COPY.storeRetry}
-            variant="ghost"
             onPress={() => {
               loadCheckoutCart();
             }}
@@ -142,43 +171,35 @@ export default function CheckoutScreen() {
       ) : null}
 
       {!loadingCart && !cartMessage && purchasableLines.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.checkoutEmptyCart}</Text>
+        <Text style={styles.note}>{COPY.checkoutEmptyCart}</Text>
       ) : null}
 
       {!loadingCart && !cartMessage
         ? purchasableLines.map((line) => {
             const lineTotal = line.product.price * line.quantity;
             return (
-              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
-                <ClinicalTerm
-                  plainName={line.product.plain_name}
-                  plainExplanation={
-                    line.product.plain_description?.trim() ||
-                    "In your checkout."
-                  }
-                  medicalName={line.product.clinical_name}
-                />
-                <Text className="mt-2 text-teal">
+              <Surface key={line.id} style={styles.line}>
+                <Text style={styles.lineName}>{line.product.plain_name}</Text>
+                <Text style={styles.lineMaths}>
                   {formatProductPrice(line.product)} × {line.quantity} = ₹
                   {lineTotal.toLocaleString("en-IN")}
                 </Text>
-              </View>
+              </Surface>
             );
           })
         : null}
 
       {!loadingCart && !cartMessage && purchasableLines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
+        <Surface style={styles.totalCard}>
+          <Text style={styles.eyebrow}>{COPY.cartTotal}</Text>
+          <Text style={styles.total}>
             ₹{displayTotal.toLocaleString("en-IN")}
           </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
-            {COPY.cartTotalNote}
-          </Text>
-        </View>
+          <Text style={styles.totalNote}>{COPY.cartTotalNote}</Text>
+        </Surface>
       ) : null}
 
+      {/* The one black button on this screen, whichever branch renders it. */}
       {canUsePaymentSheet && session.user.id ? (
         <StripePayButton
           disabled={!canPay}
@@ -192,7 +213,7 @@ export default function CheckoutScreen() {
           }}
         />
       ) : (
-        <Button
+        <PrimaryButton
           title={COPY.checkoutPay}
           disabled={!canPay || !stripeKeyReady}
           onPress={() => {
@@ -209,11 +230,10 @@ export default function CheckoutScreen() {
 
       {errorMessage ? (
         <>
-          <Text className="mt-4 text-center text-coral">{errorMessage}</Text>
+          <Text style={styles.error}>{errorMessage}</Text>
           {canUsePaymentSheet && canPay ? (
-            <Button
+            <TextButton
               title={COPY.checkoutRetryPay}
-              variant="ghost"
               onPress={() => {
                 setErrorMessage(null);
               }}
@@ -222,20 +242,10 @@ export default function CheckoutScreen() {
         </>
       ) : null}
 
-      <Text className="mt-4 text-center text-sm text-charcoal">
-        {COPY.checkoutDay5Note}
-      </Text>
+      <Text style={styles.note}>{COPY.checkoutDay5Note}</Text>
 
-      <Button
-        title={COPY.storeBackCart}
-        variant="ghost"
-        onPress={() => {
-          router.replace(routes.storeCart);
-        }}
-      />
-      <Button
+      <TextButton
         title={COPY.storeBackStore}
-        variant="ghost"
         onPress={() => {
           router.replace(routes.store);
         }}
@@ -243,3 +253,63 @@ export default function CheckoutScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  back: {
+    // Pulled into the gutter so the glyph, not its 44pt hit area, lines up
+    // with the headline under it.
+    marginLeft: -12,
+  },
+  lede: {
+    marginTop: spacing.mdSm,
+    ...typography.body,
+    color: colors.inkSoft,
+  },
+  note: {
+    marginTop: spacing.base,
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    lineHeight: 20,
+    color: colors.inkSoft,
+  },
+  line: {
+    marginTop: spacing.base,
+  },
+  lineName: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 16,
+    lineHeight: 22,
+    color: colors.ink,
+  },
+  lineMaths: {
+    marginTop: 3,
+    ...typography.label,
+    color: colors.inkSoft,
+  },
+  totalCard: {
+    marginTop: spacing.md,
+  },
+  eyebrow: {
+    ...typography.micro,
+    color: colors.inkMuted,
+  },
+  total: {
+    marginTop: spacing.micro,
+    ...TOTAL,
+    color: colors.ink,
+  },
+  totalNote: {
+    marginTop: spacing.sm,
+    ...typography.label,
+    color: colors.inkSoft,
+  },
+  error: {
+    marginTop: spacing.mdSm,
+    ...typography.label,
+    color: CLAY,
+  },
+});
