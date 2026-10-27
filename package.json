@@ -93,6 +93,7 @@
     "test:tokens": "npx --yes tsx --tsconfig tsconfig.json lib/design-tokens.test.ts",
     "test:initials": "npx --yes tsx --tsconfig tsconfig.json lib/initials.test.ts",
     "test:buddies": "npx --yes tsx --tsconfig tsconfig.json lib/buddies.test.ts",
+    "test:chat": "npx --yes tsx --tsconfig tsconfig.json lib/chat.test.ts",
     "test": "node scripts/run-tests.mjs",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
