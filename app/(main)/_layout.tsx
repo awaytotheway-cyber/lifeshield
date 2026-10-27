@@ -110,6 +110,9 @@ export default function MainLayout() {
   const onStore = pathname.includes("/(store)") || pathname.includes("/store");
   const onOrders = pathname.includes("/(orders)") || pathname.includes("/orders");
   const onTermPreview = pathname.includes("clinical-term-preview");
+  // The buddy thread, not the Buddies tab root: buddy-chat.html draws no bar,
+  // and the composer needs the bottom of the screen.
+  const onBuddyChat = pathname.includes("(buddies)/chat") || pathname.endsWith("/chat");
   const onSettingsDeep =
     pathname.includes("(settings)") &&
     !pathname.endsWith("(settings)") &&
@@ -170,6 +173,7 @@ export default function MainLayout() {
     onFollowup ||
     onOrders ||
     onTermPreview ||
+    onBuddyChat ||
     onSettingsDeep;
 
   return (
