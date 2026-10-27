@@ -20,12 +20,15 @@ import { useTriageStore } from "@/stores/triage-store";
 import { colors } from "@/lib/design-tokens";
 
 function TimelineRow({ step }: { step: OrderTimelineStep }) {
+  // The step you are on is ink, a finished step is moss, and one still ahead
+  // is the hairline — the same three states `SectionProgress` draws. The
+  // label and detail carry the words, so the dot is never the only signal.
   const dotClass = step.current
-    ? "bg-coral"
+    ? "bg-ink"
     : step.done
-      ? "bg-teal"
-      : "bg-sage";
-  const textClass = step.current ? "text-coral" : "text-charcoal";
+      ? "bg-mossDeep"
+      : "bg-hairline";
+  const textClass = step.current ? "text-ink" : "text-inkSoft";
 
   return (
     <View className="mt-4 flex-row">

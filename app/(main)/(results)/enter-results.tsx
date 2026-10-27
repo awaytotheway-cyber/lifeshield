@@ -27,6 +27,7 @@ import {
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { colors } from "@/lib/design-tokens";
 
 export default function EnterResultsScreen() {
   const router = useRouter();
@@ -352,7 +353,7 @@ export default function EnterResultsScreen() {
         </Text>
         <TextInput
           className="mt-3 min-h-[120px] rounded-[20px] bg-white px-4 py-3 text-ink"
-          placeholderTextColor="#2D343699"
+          placeholderTextColor={colors.inkMuted}
           multiline
           textAlignVertical="top"
           value={csvText}
