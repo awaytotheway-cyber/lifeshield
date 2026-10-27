@@ -1,22 +1,30 @@
 import * as WebBrowser from "expo-web-browser";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { StatusChip } from "@/components/results/StatusChip";
-import { Button } from "@/components/ui/Button";
+import { IconButton, TextButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
+import { colors, spacing, status, tapTarget } from "@/lib/design-tokens";
+import { getTerm, hasTerm } from "@/lib/plain-language";
 import { routes } from "@/lib/routes";
 import {
   loadOwnTestResultById,
   meaningForFlag,
-  statusChipFromFlag,
   type TestResultRow,
 } from "@/lib/test-results";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
+/** The label over the exact clinical term. This screen is where it lives. */
+const CLINICAL_LABEL = "Clinical name";
 
 export default function ResultDetailScreen() {
   const router = useRouter();
@@ -79,28 +87,40 @@ export default function ResultDetailScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
-  const chip = statusChipFromFlag(row?.flag);
-  const valueBits = [
-    row?.result_value?.trim(),
-    row?.result_unit?.trim(),
-  ].filter((part) => Boolean(part));
+  const term = row ? getTerm(row.test_name) : null;
+  const fromDictionary = Boolean(row && hasTerm(row.test_name));
+  const plainName =
+    row?.plain_name?.trim() ||
+    (fromDictionary ? term?.plainName : undefined) ||
+    row?.test_name ||
+    COPY.labResultDetailTitle;
+  const value = row?.result_value?.trim();
+  const unit = row?.result_unit?.trim();
+  const range = row?.reference_range?.trim();
 
   return (
-    <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
-        {COPY.labResultDetailTitle}
-      </Text>
+    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+      <View style={styles.topRow}>
+        <IconButton
+          icon="arrow-left"
+          accessibilityLabel={COPY.labResultBack}
+          onPress={() => router.replace(routes.labResults)}
+          // Pulled out to the gutter so the glyph, not its 44pt hit area,
+          // lines up with the headline under it.
+          style={styles.back}
+        />
+        <Text style={styles.eyebrow}>{COPY.labResultDetailTitle}</Text>
+      </View>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <ActivityIndicator style={styles.spinner} color={colors.ink} />
       ) : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
-          <Button
+          <Text style={styles.error}>{message}</Text>
+          <TextButton
             title={COPY.labResultsRetry}
-            variant="ghost"
             onPress={() => {
               void refresh();
             }}
@@ -110,67 +130,187 @@ export default function ResultDetailScreen() {
 
       {!loading && !message && row ? (
         <>
-          <View className="mt-4 px-1">
-            <StatusChip chip={chip} />
-          </View>
-          <ClinicalTerm
-            termKey={row.test_name}
-            plainName={row.plain_name ?? undefined}
-          />
-
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
-            <Text className="text-sm text-teal">{COPY.labResultValueLabel}</Text>
-            <Text className="mt-1 text-charcoal">
-              {valueBits.length > 0
-                ? valueBits.join(" ")
-                : COPY.labResultNoValue}
-            </Text>
-            <Text className="mt-4 text-sm text-teal">
-              {COPY.labResultRangeLabel}
-            </Text>
-            <Text className="mt-1 text-charcoal">
-              {row.reference_range?.trim()
-                ? row.reference_range
-                : COPY.labResultNoRange}
-            </Text>
+          <Text style={styles.name} accessibilityRole="header">
+            {plainName}
+          </Text>
+          <View style={styles.chipRow}>
+            <StatusChip flag={row.flag} />
           </View>
 
-          <Text className="mt-4 text-center text-charcoal">
-            {meaningForFlag(row.flag)}
-          </Text>
-          <Text className="mt-3 text-center text-sm text-teal">
-            {COPY.labResultNotDiagnosis}
-          </Text>
+          {/* The lab's own numbers. The plain words came first, on the list. */}
+          <Surface style={styles.numbers}>
+            <Text style={styles.label}>{COPY.labResultValueLabel}</Text>
+            {value ? (
+              <View style={styles.valueRow}>
+                <Text style={styles.value}>{value}</Text>
+                {unit ? <Text style={styles.unit}>{unit}</Text> : null}
+              </View>
+            ) : (
+              <Text style={styles.plainValue}>{COPY.labResultNoValue}</Text>
+            )}
+
+            <Text style={styles.labelSpaced}>{COPY.labResultRangeLabel}</Text>
+            <Text style={styles.plainValue}>
+              {range ? range : COPY.labResultNoRange}
+            </Text>
+          </Surface>
+
+          <Text style={styles.meaning}>{meaningForFlag(row.flag)}</Text>
+
+          {/*
+            The clinical term, which the list deliberately leaves out: this is
+            the screen the UI kit says it waits on, where there is room for the
+            everyday sentence and the exact wording underneath it.
+          */}
+          <Surface style={styles.clinical}>
+            {fromDictionary && term ? (
+              <Text style={styles.explain}>{term.plainExplanation}</Text>
+            ) : null}
+            <Text
+              style={[
+                styles.label,
+                fromDictionary && term ? styles.labelSpaced : null,
+              ]}
+            >
+              {CLINICAL_LABEL}
+            </Text>
+            <Text style={styles.medical}>
+              {term?.medicalName ?? row.test_name}
+            </Text>
+          </Surface>
+
+          <Text style={styles.note}>{COPY.labResultNotDiagnosis}</Text>
 
           {row.lab_report_url ? (
-            <Button
-              title={COPY.labResultPdf}
-              variant="ghost"
+            <Pressable
+              accessibilityRole="link"
+              accessibilityLabel={COPY.labResultPdf}
               onPress={() => {
                 void (async () => {
                   try {
                     setPdfMessage(null);
-                    await WebBrowser.openBrowserAsync(row.lab_report_url as string);
+                    await WebBrowser.openBrowserAsync(
+                      row.lab_report_url as string,
+                    );
                   } catch {
                     setPdfMessage(COPY.labResultPdfFailed);
                   }
                 })();
               }}
-            />
+              style={styles.linkHit}
+            >
+              <Text style={styles.linkText}>{COPY.labResultPdf}</Text>
+            </Pressable>
           ) : null}
 
           {pdfMessage ? (
-            <Text className="mt-2 text-center text-coral">{pdfMessage}</Text>
+            <Text style={styles.error}>{pdfMessage}</Text>
           ) : null}
         </>
       ) : null}
-
-      <Button
-        title={COPY.labResultBack}
-        onPress={() => {
-          router.replace(routes.labResults);
-        }}
-      />
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  back: {
+    marginLeft: -12,
+  },
+  eyebrow: {
+    ...typography.micro,
+    color: colors.inkMuted,
+  },
+  spinner: {
+    marginTop: 24,
+  },
+  // The result's own name, as the one headline. It is data rather than copy,
+  // so it is not split two-tone — there is no grammar word to grey out.
+  name: {
+    marginTop: 8,
+    ...typography.displayL,
+    color: colors.ink,
+  },
+  chipRow: {
+    marginTop: 14,
+  },
+  numbers: {
+    marginTop: 18,
+  },
+  clinical: {
+    marginTop: 14,
+  },
+  label: {
+    ...typography.micro,
+    color: colors.inkMuted,
+  },
+  labelSpaced: {
+    marginTop: 18,
+  },
+  valueRow: {
+    marginTop: 8,
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 10,
+  },
+  value: {
+    ...typography.displayL,
+    color: colors.ink,
+  },
+  unit: {
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.inkSoft,
+  },
+  plainValue: {
+    marginTop: 6,
+    ...typography.body,
+    color: colors.ink,
+  },
+  meaning: {
+    marginTop: 18,
+    ...typography.body,
+    lineHeight: 24,
+    color: colors.ink,
+  },
+  explain: {
+    ...typography.body,
+    color: colors.inkSoft,
+  },
+  medical: {
+    marginTop: 4,
+    fontFamily: fontFamily.medical,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.inkSoft,
+  },
+  note: {
+    marginTop: 16,
+    fontFamily: fontFamily.body,
+    fontSize: 13,
+    lineHeight: 20,
+    color: colors.inkSoft,
+  },
+  linkHit: {
+    marginTop: 10,
+    minHeight: tapTarget,
+    justifyContent: "center",
+    alignSelf: "flex-start",
+  },
+  linkText: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: 15,
+    color: colors.ink,
+    textDecorationLine: "underline",
+  },
+  error: {
+    marginTop: 12,
+    ...typography.label,
+    color: CLAY,
+  },
+});
