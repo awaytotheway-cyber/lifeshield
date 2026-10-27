@@ -317,7 +317,7 @@ export default function ActivityScreen() {
 
       {state === "error" && errorMessage ? (
         <Surface style={styles.errorCard}>
-          <Text style={styles.errorHeading}>Couldn&rsquo;t load activity</Text>
+          <Text style={styles.errorHeading}>Couldn't load activity</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
         </Surface>
       ) : null}
