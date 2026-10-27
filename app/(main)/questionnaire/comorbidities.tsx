@@ -137,7 +137,7 @@ export default function ComorbiditiesScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-worthDiscussing">{loadMessage}</Text>
       ) : null}
 
       <ClinicalTerm termKey="gilbert" />
@@ -183,7 +183,7 @@ export default function ComorbiditiesScreen() {
         )}
       />
       {showObesityHint ? (
-        <Text className="mt-2 text-teal">{COPY.obesityBmiHint}</Text>
+        <Text className="mt-2 text-mossDeep">{COPY.obesityBmiHint}</Text>
       ) : null}
 
       <Controller

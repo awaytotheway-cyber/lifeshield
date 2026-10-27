@@ -136,7 +136,7 @@ export default function PersonalHistoryScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-worthDiscussing">{loadMessage}</Text>
       ) : null}
 
       <Controller
@@ -181,10 +181,10 @@ export default function PersonalHistoryScreen() {
               />
             )}
           />
-          <Text className="mt-3 text-teal">
+          <Text className="mt-3 text-mossDeep">
             {COPY.packYearsLabel}: {packYears ?? "—"}
           </Text>
-          <Text className="mt-1 text-charcoal">{COPY.packYearsHint}</Text>
+          <Text className="mt-1 text-ink">{COPY.packYearsHint}</Text>
         </>
       ) : null}
 

@@ -21,6 +21,7 @@ import { formatPaymentTotalForDisplay } from "@/lib/payment-intent-format";
 import { orderDetailHref, routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { colors } from "@/lib/design-tokens";
 
 function OrderListCard({
   order,
@@ -32,13 +33,13 @@ function OrderListCard({
   return (
     <Pressable
       onPress={onPress}
-      className="mt-3 rounded-xl bg-white px-4 py-4 active:opacity-80"
+      className="mt-3 rounded-[20px] bg-white px-4 py-4 active:opacity-80"
     >
-      <Text className="text-charcoal">
+      <Text className="text-ink">
         {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
       </Text>
-      <Text className="mt-1 text-teal">{formatOrderStatus(order)}</Text>
-      <Text className="mt-1 text-xs text-charcoal">
+      <Text className="mt-1 text-mossDeep">{formatOrderStatus(order)}</Text>
+      <Text className="mt-1 text-xs text-ink">
         {order.created_at
           ? new Date(order.created_at).toLocaleDateString()
           : ""}
@@ -142,31 +143,31 @@ export default function OrdersScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-ink">
         {placed ? COPY.checkoutSuccessTitle : COPY.ordersTitle}
       </Text>
 
       {placed ? (
-        <Text className="mt-4 text-center text-teal">{COPY.ordersPlacedBanner}</Text>
+        <Text className="mt-4 text-center text-mossDeep">{COPY.ordersPlacedBanner}</Text>
       ) : (
-        <Text className="mt-4 text-center text-charcoal">{COPY.ordersBody}</Text>
+        <Text className="mt-4 text-center text-ink">{COPY.ordersBody}</Text>
       )}
 
       {placed ? (
-        <Text className="mt-2 text-center text-sm text-charcoal">
+        <Text className="mt-2 text-center text-sm text-ink">
           {COPY.checkoutSuccessBody}
         </Text>
       ) : (
-        <Text className="mt-2 text-center text-xs text-charcoal">
+        <Text className="mt-2 text-center text-xs text-ink">
           {COPY.ordersWebhookNote}
         </Text>
       )}
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <ActivityIndicator className="mt-6" color={colors.ink} /> : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-worthDiscussing">{message}</Text>
           <Button title={COPY.storeRetry} variant="ghost" onPress={refresh} />
         </>
       ) : null}
@@ -176,27 +177,27 @@ export default function OrdersScreen() {
           onPress={() => {
             openOrder(showHighlight.id);
           }}
-          className="mt-6 rounded-xl border border-teal bg-white px-4 py-4 active:opacity-80"
+          className="mt-6 rounded-[20px] border border-ink bg-white px-4 py-4 active:opacity-80"
         >
-          <Text className="text-center text-lg text-charcoal">
+          <Text className="text-center text-lg text-ink">
             {formatPaymentTotalForDisplay(
               showHighlight.total_amount,
               showHighlight.currency,
             )}
           </Text>
-          <Text className="mt-2 text-center text-teal">
+          <Text className="mt-2 text-center text-mossDeep">
             {formatOrderStatus(showHighlight, highlightItems)}
           </Text>
 
           {highlightItems.length > 0 ? (
             <View className="mt-4">
-              <Text className="text-center text-sm text-charcoal">
+              <Text className="text-center text-sm text-ink">
                 {COPY.orderItemsLabel}
               </Text>
               {highlightItems.map((item) => (
                 <Text
                   key={item.id}
-                  className="mt-2 text-center text-sm text-charcoal"
+                  className="mt-2 text-center text-sm text-ink"
                 >
                   {item.product_name} × {item.quantity} — ₹
                   {(item.unit_price * item.quantity).toLocaleString("en-IN")}
@@ -205,18 +206,18 @@ export default function OrdersScreen() {
             </View>
           ) : null}
 
-          <Text className="mt-4 text-center text-sm text-coral">
+          <Text className="mt-4 text-center text-sm text-worthDiscussing">
             {COPY.checkoutViewOrder}
           </Text>
         </Pressable>
       ) : null}
 
       {!loading && !message && !placed && orders.length === 0 ? (
-        <Text className="mt-6 text-center text-charcoal">{COPY.ordersEmpty}</Text>
+        <Text className="mt-6 text-center text-ink">{COPY.ordersEmpty}</Text>
       ) : null}
 
       {!loading && !message && orders.length > 0 && !placed ? (
-        <Text className="mt-6 text-center text-sm text-charcoal">
+        <Text className="mt-6 text-center text-sm text-ink">
           {COPY.ordersTapForDetail}
         </Text>
       ) : null}

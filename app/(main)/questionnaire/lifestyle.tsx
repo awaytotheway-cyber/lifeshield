@@ -143,7 +143,7 @@ export default function LifestyleScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-worthDiscussing">{loadMessage}</Text>
       ) : null}
 
       <Controller

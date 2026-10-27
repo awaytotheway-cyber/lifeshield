@@ -102,20 +102,20 @@ export function SequentialConsentScreen({
 
   return (
     <Screen scroll>
-      <Text className="text-coral text-3xl">{COPY.appName}</Text>
-      <Text className="mt-4 text-2xl text-charcoal">{COPY.consentTitle}</Text>
-      <Text className="mt-3 text-charcoal">{COPY.consentIntro}</Text>
+      <Text className="text-worthDiscussing text-3xl">{COPY.appName}</Text>
+      <Text className="mt-4 text-2xl text-ink">{COPY.consentTitle}</Text>
+      <Text className="mt-3 text-ink">{COPY.consentIntro}</Text>
       <ClinicalTerm termKey={consentType} />
-      <Text className="mt-4 text-charcoal">{extraBody}</Text>
+      <Text className="mt-4 text-ink">{extraBody}</Text>
       <SetupBanners />
 
       {message ? (
-        <Text className="mt-4 text-center text-coral">{message}</Text>
+        <Text className="mt-4 text-center text-worthDiscussing">{message}</Text>
       ) : null}
 
       {declined ? (
         <>
-          <Text className="mt-3 text-center text-charcoal">
+          <Text className="mt-3 text-center text-ink">
             {COPY.consentDeclinedHint}
           </Text>
           <Button

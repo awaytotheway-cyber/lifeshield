@@ -135,7 +135,7 @@ export default function DemographicsScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-worthDiscussing">{loadMessage}</Text>
       ) : null}
 
       <Controller
@@ -152,7 +152,7 @@ export default function DemographicsScreen() {
           />
         )}
       />
-      <Text className="mt-2 text-teal">
+      <Text className="mt-2 text-mossDeep">
         {COPY.ageLabel}: {age === null ? "—" : `${age} years`}
       </Text>
 
@@ -196,10 +196,10 @@ export default function DemographicsScreen() {
           />
         )}
       />
-      <Text className="mt-3 text-teal">
+      <Text className="mt-3 text-mossDeep">
         {COPY.bmiLabel}: {bmi === null ? "—" : String(bmi)}
       </Text>
-      <Text className="mt-1 text-charcoal">{COPY.bmiHint}</Text>
+      <Text className="mt-1 text-ink">{COPY.bmiHint}</Text>
 
       <QuestionCard title="Waist (cm)" hint={WAIST_MEASURE_HINT}>
         <Controller
@@ -232,7 +232,7 @@ export default function DemographicsScreen() {
           )}
         />
       </QuestionCard>
-      <Text className="mt-3 text-teal">
+      <Text className="mt-3 text-mossDeep">
         {COPY.whrLabel}: {whr === null ? "—" : String(whr)}
       </Text>
 

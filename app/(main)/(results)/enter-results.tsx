@@ -74,10 +74,10 @@ export default function EnterResultsScreen() {
   if (!isAdmin) {
     return (
       <Screen scroll>
-        <Text className="text-center text-2xl text-charcoal">
+        <Text className="text-center text-2xl text-ink">
           {COPY.enterResultsTitle}
         </Text>
-        <Text className="mt-4 text-center text-charcoal">
+        <Text className="mt-4 text-center text-ink">
           {COPY.enterResultsDenied}
         </Text>
         <Button
@@ -190,13 +190,13 @@ export default function EnterResultsScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-ink">
         {COPY.enterResultsTitle}
       </Text>
-      <Text className="mt-3 text-center text-charcoal">
+      <Text className="mt-3 text-center text-ink">
         {COPY.enterResultsBody}
       </Text>
-      <Text className="mt-3 text-center text-sm text-teal">
+      <Text className="mt-3 text-center text-sm text-mossDeep">
         Signed in as {session.user.email}. For founder testing, leave the user
         id as your own so a row appears for you.
       </Text>
@@ -329,7 +329,7 @@ export default function EnterResultsScreen() {
 
       {formMessage ? (
         <Text
-          className={`mt-4 text-center ${formOk ? "text-teal" : "text-coral"}`}
+          className={`mt-4 text-center ${formOk ?"text-mossDeep" :"text-worthDiscussing"}`}
         >
           {formMessage}
         </Text>
@@ -344,14 +344,14 @@ export default function EnterResultsScreen() {
       />
 
       <View className="mt-8">
-        <Text className="text-center text-xl text-charcoal">
+        <Text className="text-center text-xl text-ink">
           {COPY.enterResultsCsvTitle}
         </Text>
-        <Text className="mt-2 text-center text-sm text-teal">
+        <Text className="mt-2 text-center text-sm text-mossDeep">
           {COPY.enterResultsCsvHint}
         </Text>
         <TextInput
-          className="mt-3 min-h-[120px] rounded-xl border border-sage bg-white px-4 py-3 text-charcoal"
+          className="mt-3 min-h-[120px] rounded-[20px] bg-white px-4 py-3 text-ink"
           placeholderTextColor="#2D343699"
           multiline
           textAlignVertical="top"

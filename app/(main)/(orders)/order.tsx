@@ -17,6 +17,7 @@ import { formatPaymentTotalForDisplay } from "@/lib/payment-intent-format";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { colors } from "@/lib/design-tokens";
 
 function TimelineRow({ step }: { step: OrderTimelineStep }) {
   const dotClass = step.current
@@ -31,7 +32,7 @@ function TimelineRow({ step }: { step: OrderTimelineStep }) {
       <View className={`mt-1 h-3 w-3 rounded-full ${dotClass}`} />
       <View className="ml-3 flex-1">
         <Text className={`text-base ${textClass}`}>{step.label}</Text>
-        <Text className="mt-1 text-sm text-charcoal">{step.detail}</Text>
+        <Text className="mt-1 text-sm text-ink">{step.detail}</Text>
       </View>
     </View>
   );
@@ -107,50 +108,50 @@ export default function OrderDetailScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-ink">
         {COPY.orderDetailTitle}
       </Text>
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      {loading ? <ActivityIndicator className="mt-6" color={colors.ink} /> : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-worthDiscussing">{message}</Text>
           <Button title={COPY.storeRetry} variant="ghost" onPress={() => void refresh()} />
         </>
       ) : null}
 
       {!loading && !message && order ? (
         <>
-          <View className="mt-6 rounded-xl bg-white px-4 py-4">
-            <Text className="text-center text-xl text-charcoal">
+          <View className="mt-6 rounded-[20px] bg-white px-4 py-4">
+            <Text className="text-center text-xl text-ink">
               {formatPaymentTotalForDisplay(order.total_amount, order.currency)}
             </Text>
-            <Text className="mt-2 text-center text-teal">
+            <Text className="mt-2 text-center text-mossDeep">
               {formatOrderStatus(order, items)}
             </Text>
             {order.created_at ? (
-              <Text className="mt-2 text-center text-xs text-charcoal">
+              <Text className="mt-2 text-center text-xs text-ink">
                 {new Date(order.created_at).toLocaleString()}
               </Text>
             ) : null}
           </View>
 
-          <Text className="mt-6 text-center text-lg text-charcoal">
+          <Text className="mt-6 text-center text-lg text-ink">
             {COPY.orderItemsLabel}
           </Text>
           {items.length === 0 ? (
-            <Text className="mt-2 text-center text-charcoal">
+            <Text className="mt-2 text-center text-ink">
               {COPY.ordersEmpty}
             </Text>
           ) : (
             items.map((item) => (
               <View
                 key={item.id}
-                className="mt-3 rounded-xl border border-sage bg-white px-4 py-3"
+                className="mt-3 rounded-[20px] bg-white px-4 py-3"
               >
-                <Text className="text-charcoal">{item.product_name}</Text>
-                <Text className="mt-1 text-sm text-charcoal">
+                <Text className="text-ink">{item.product_name}</Text>
+                <Text className="mt-1 text-sm text-ink">
                   {item.quantity} × ₹
                   {item.unit_price.toLocaleString("en-IN")} = ₹
                   {(item.unit_price * item.quantity).toLocaleString("en-IN")}
@@ -159,24 +160,24 @@ export default function OrderDetailScreen() {
             ))
           )}
 
-          <Text className="mt-8 text-center text-lg text-charcoal">
+          <Text className="mt-8 text-center text-lg text-ink">
             {COPY.orderTimelineTitle}
           </Text>
-          <Text className="mt-1 text-center text-xs text-charcoal">
+          <Text className="mt-1 text-center text-xs text-ink">
             {COPY.ordersWebhookNote}
           </Text>
 
-          <View className="mt-2 rounded-xl bg-white px-4 py-2">
+          <View className="mt-2 rounded-[20px] bg-white px-4 py-2">
             {timeline.map((step) => (
               <TimelineRow key={step.label} step={step} />
             ))}
           </View>
 
-          <View className="mt-6 rounded-xl bg-cream px-4 py-3">
-            <Text className="text-sm text-charcoal">
+          <View className="mt-6 rounded-[20px] bg-paper px-4 py-3">
+            <Text className="text-sm text-ink">
               {COPY.orderPaymentLabel}: {order.payment_status}
             </Text>
-            <Text className="mt-1 text-sm text-charcoal">
+            <Text className="mt-1 text-sm text-ink">
               {COPY.orderFulfilmentLabel}: {order.fulfilment_status}
             </Text>
           </View>

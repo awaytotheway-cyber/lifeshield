@@ -1,4 +1,4 @@
-﻿/* NativeWind v5 + Tailwind CSS v4: import layers instead of @tailwind directives. */
+/* NativeWind v5 + Tailwind CSS v4: import layers instead of @tailwind directives. */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css";
@@ -8,31 +8,34 @@
 @config "./tailwind.config.js";
 
 /*
-  Brand colours (must match tailwind.config.js and lib/design-tokens.ts).
-  v5 reads these CSS variables to create classes like text-coral and bg-cream.
+  The Moss palette (must match tailwind.config.js and lib/design-tokens.ts).
+  v5 reads these CSS variables to create classes like text-ink and bg-paper.
+  Nothing here remaps an old blue-glass name to a new colour: those classes
+  are gone, so a stale one fails loudly rather than rendering the wrong hue.
 */
 @theme {
-  --color-primaryBlue: #2b5fe0;
-  --color-deepNavy: #0b1e4d;
-  --color-skyBlue: #6fa8f5;
-  --color-iceBlue: #eaf1ff;
-  --color-riskLow: #2fb8a6;
-  --color-riskModerate: #f5a623;
-  --color-riskHigh: #f26d6d;
-  --color-deepTeal: #2b5fe0;
-  --color-midTeal: #6fa8f5;
-  --color-lightTeal: #d6e4ff;
-  --color-sage: #2fb8a6;
-  --color-sageLight: #e6f8f5;
-  --color-coral: #f26d6d;
-  --color-coralLight: #fdecec;
-  --color-amber: #f5a623;
-  --color-amberLight: #fef4e3;
-  --color-cream: #eaf1ff;
+  --color-ink: #0c0c0a;
+  --color-inkSoft: #4f4f49;
+  --color-inkMuted: #6b6b65;
+  --color-inkFaint: #8a8a84;
+  --color-paper: #f1f1ef;
   --color-white: #ffffff;
-  --color-charcoal: #0b1e4d;
-  --color-slate: #4a5568;
-  --color-mist: #9aa5b4;
-  --color-border: #d4e0f5;
-  --color-teal: #2b5fe0;
+  --color-mossDeep: #5f6d17;
+  --color-mossMid: #7d9022;
+  --color-mossBright: #a3b82e;
+  --color-mossTint: #eff2e2;
+  --color-hairline: #e4e4e0;
+
+  /* The three clinical statuses — fill and text. Every chip carries its word. */
+  --color-withinRange: #4a5612;
+  --color-withinRangeFill: #eff2e2;
+  --color-worthWatching: #7a5610;
+  --color-worthWatchingFill: #f0e6d2;
+  --color-worthDiscussing: #9c3e16;
+  --color-worthDiscussingFill: #f3ded4;
+
+  /* The three radii, and no others. */
+  --radius-surface: 20px;
+  --radius-control: 4px;
+  --radius-pill: 999px;
 }

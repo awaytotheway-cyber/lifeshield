@@ -120,10 +120,10 @@ export default function StressScreen() {
       errorMessage={saveMessage}
     >
       {loadMessage ? (
-        <Text className="mt-3 text-center text-coral">{loadMessage}</Text>
+        <Text className="mt-3 text-center text-worthDiscussing">{loadMessage}</Text>
       ) : null}
 
-      <Text className="mt-4 text-center text-teal">{COPY.stressFramingNote}</Text>
+      <Text className="mt-4 text-center text-mossDeep">{COPY.stressFramingNote}</Text>
 
       <Controller
         control={control}

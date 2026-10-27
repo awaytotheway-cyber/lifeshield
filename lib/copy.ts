@@ -594,7 +594,6 @@ export const COPY = {
   settingsOpenPrivacy: "Data & privacy",
   settingsOpenHelp: "Help & support",
   settingsOpenAbout: "About",
-  settingsOpenMenu: "Open main menu",
   settingsGroupYourData: "Your data",
   settingsGroupReminders: "Reminders",
   settingsGroupBuddies: "Buddies",

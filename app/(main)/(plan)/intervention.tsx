@@ -49,6 +49,7 @@ import {
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { colors } from "@/lib/design-tokens";
 
 export default function PlanItemScreen() {
   const router = useRouter();
@@ -237,20 +238,20 @@ export default function PlanItemScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">
+      <Text className="text-center text-2xl text-ink">
         {COPY.planDetailTitle}
       </Text>
-      <View className="mt-4 rounded-xl border border-teal bg-white px-4 py-3">
-        <Text className="text-center text-charcoal">{bannerText}</Text>
+      <View className="mt-4 rounded-[20px] border border-ink bg-white px-4 py-3">
+        <Text className="text-center text-ink">{bannerText}</Text>
       </View>
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#1A535C" />
+        <ActivityIndicator className="mt-6" color={colors.ink} />
       ) : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
+          <Text className="mt-4 text-center text-worthDiscussing">{message}</Text>
           <Button
             title={COPY.planRetry}
             variant="ghost"
@@ -263,17 +264,17 @@ export default function PlanItemScreen() {
 
       {!loading && !message && row ? (
         <>
-          <Text className="mt-4 text-center text-xl text-charcoal">
+          <Text className="mt-4 text-center text-xl text-ink">
             {row.title}
           </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailWhat}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-mossDeep">{COPY.planDetailWhat}</Text>
+          <Text className="mt-1 text-ink">
             {row.description?.trim() ||
               row.plain_reason?.trim() ||
               COPY.planDetailNotInstruction}
           </Text>
-          <Text className="mt-4 text-sm text-teal">{COPY.planWhyLabel}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-mossDeep">{COPY.planWhyLabel}</Text>
+          <Text className="mt-1 text-ink">
             {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
           </Text>
 
@@ -282,7 +283,7 @@ export default function PlanItemScreen() {
               className="mt-3 self-start rounded-full px-3 py-1"
               style={{ backgroundColor: "#FDE68A" }}
             >
-              <Text className="text-sm text-charcoal">{COPY.planNeedsCheck}</Text>
+              <Text className="text-sm text-ink">{COPY.planNeedsCheck}</Text>
             </View>
           ) : null}
 
@@ -290,8 +291,8 @@ export default function PlanItemScreen() {
             <TemplateSection template={template} />
           ) : null}
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planDetailReview}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-mossDeep">{COPY.planDetailReview}</Text>
+          <Text className="mt-1 text-ink">
             {reviewStatusLabel(row.status)}
           </Text>
 
@@ -359,12 +360,12 @@ export default function PlanItemScreen() {
             />
           ) : null}
 
-          <Text className="mt-4 text-sm text-teal">{COPY.planClinicalBasis}</Text>
-          <Text className="mt-1 text-charcoal">
+          <Text className="mt-4 text-sm text-mossDeep">{COPY.planClinicalBasis}</Text>
+          <Text className="mt-1 text-ink">
             {row.clinical_basis?.trim() || row.trigger_finding}
           </Text>
 
-          <Text className="mt-6 text-center text-sm text-teal">
+          <Text className="mt-6 text-center text-sm text-mossDeep">
             {COPY.planDetailFinding}
           </Text>
           <ClinicalTerm
@@ -374,7 +375,7 @@ export default function PlanItemScreen() {
             medicalName={row.trigger_finding}
           />
 
-          <Text className="mt-4 text-center text-sm text-teal">
+          <Text className="mt-4 text-center text-sm text-mossDeep">
             {COPY.planDetailNotInstruction}
           </Text>
         </>
@@ -402,24 +403,24 @@ function TemplateSection({ template }: { template: InterventionTemplate }) {
     <View className="mt-4">
       {template.rationale_md ? (
         <>
-          <Text className="text-sm text-teal">Why this helps</Text>
-          <Text className="mt-1 text-charcoal">{template.rationale_md}</Text>
+          <Text className="text-sm text-mossDeep">Why this helps</Text>
+          <Text className="mt-1 text-ink">{template.rationale_md}</Text>
         </>
       ) : null}
 
       {steps.length > 0 ? (
         <>
-          <Text className="mt-4 text-sm text-teal">Action steps</Text>
+          <Text className="mt-4 text-sm text-mossDeep">Action steps</Text>
           {steps.map((step, index) => (
             <View key={index} className="mt-2">
-              <Text className="text-charcoal">• {step.text}</Text>
+              <Text className="text-ink">• {step.text}</Text>
               {step.dose || step.when ? (
-                <Text className="ml-3 text-sm text-teal">
+                <Text className="ml-3 text-sm text-mossDeep">
                   {[step.dose, step.when].filter(Boolean).join(" · ")}
                 </Text>
               ) : null}
               {step.why ? (
-                <Text className="ml-3 text-sm text-charcoal">{step.why}</Text>
+                <Text className="ml-3 text-sm text-ink">{step.why}</Text>
               ) : null}
             </View>
           ))}
@@ -428,7 +429,7 @@ function TemplateSection({ template }: { template: InterventionTemplate }) {
 
       {resources.length > 0 ? (
         <>
-          <Text className="mt-4 text-sm text-teal">Resources</Text>
+          <Text className="mt-4 text-sm text-mossDeep">Resources</Text>
           {resources.map((resource, index) => (
             <Pressable
               key={index}
@@ -440,8 +441,8 @@ function TemplateSection({ template }: { template: InterventionTemplate }) {
               }}
               className="mt-2"
             >
-              <Text className="text-charcoal underline">{resource.title}</Text>
-              <Text className="text-sm text-teal">{resource.kind}</Text>
+              <Text className="text-ink underline">{resource.title}</Text>
+              <Text className="text-sm text-mossDeep">{resource.kind}</Text>
             </Pressable>
           ))}
         </>
@@ -463,8 +464,8 @@ function ProgressSection({
   const recent = entries.slice(0, 5);
   return (
     <View className="mt-4">
-      <Text className="text-sm text-teal">Your progress</Text>
-      <Text className="mt-1 text-charcoal">
+      <Text className="text-sm text-mossDeep">Your progress</Text>
+      <Text className="mt-1 text-ink">
         {done7 === 0
           ? "No entries in the last 7 days."
           : `${done7} ${done7 === 1 ? "day" : "days"} logged in the last 7.`}
@@ -479,7 +480,7 @@ function ProgressSection({
       {recent.length > 0 ? (
         <View className="mt-3">
           {recent.map((entry) => (
-            <Text key={entry.id} className="text-sm text-charcoal">
+            <Text key={entry.id} className="text-sm text-ink">
               • {new Date(entry.recorded_at).toLocaleString()}
               {entry.note ? ` — ${entry.note}` : ""}
             </Text>
@@ -500,8 +501,8 @@ function RecipesForFindingSection({
   const shown = recipes.slice(0, 5);
   return (
     <View className="mt-4">
-      <Text className="text-sm text-teal">Recipes that support this</Text>
-      <Text className="mt-1 text-xs text-charcoal">
+      <Text className="text-sm text-mossDeep">Recipes that support this</Text>
+      <Text className="mt-1 text-xs text-ink">
         Admin-curated recipes linked to this finding.
       </Text>
       <View className="mt-2">
@@ -512,9 +513,9 @@ function RecipesForFindingSection({
             accessibilityRole="link"
             className="mt-2"
           >
-            <Text className="text-charcoal underline">{recipe.name}</Text>
+            <Text className="text-ink underline">{recipe.name}</Text>
             {recipe.description ? (
-              <Text className="text-xs text-teal" numberOfLines={2}>
+              <Text className="text-xs text-mossDeep" numberOfLines={2}>
                 {recipe.description}
               </Text>
             ) : null}
