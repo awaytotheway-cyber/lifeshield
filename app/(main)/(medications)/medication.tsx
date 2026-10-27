@@ -18,7 +18,7 @@ import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, spacing, status } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import {
   validateMedicationDraft,
   type MedicationDraft,
@@ -257,8 +257,6 @@ const styles = StyleSheet.create({
   spinner: { marginTop: spacing.md },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,

@@ -29,7 +29,7 @@ import {
 import { createMealPlan } from "@/lib/meal-plans-io";
 import { uniqueTags, type RecipeSummary } from "@/lib/recipes";
 import { loadRecipeSummaries } from "@/lib/recipes-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { mealPlanHref, routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -255,7 +255,6 @@ export default function NewMealPlanScreen() {
 
       {!recipesLoading && !recipesError && recipes.length === 0 ? (
         <EmptyState
-          icon="book-open"
           heading="Add recipes first"
           explanation="The recipe library is empty, so there's nothing to plan. Ask an admin to publish some."
         />
@@ -441,7 +440,7 @@ function PreviewList({ payload }: { payload: MealPlanPayload }) {
         <Text style={styles.helper}>No days generated.</Text>
       ) : null}
       {payload.days.map((day) => (
-        <Surface key={day.date} style={styles.previewCard}>
+        <Surface key={day.date}>
           <Text style={styles.previewDate}>{day.date}</Text>
           {day.meals.length === 0 ? (
             <Text style={styles.helper}>No meals planned.</Text>
@@ -463,8 +462,6 @@ const styles = StyleSheet.create({
   spinner: { marginTop: spacing.md },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -535,17 +532,12 @@ const styles = StyleSheet.create({
     color: colors.ink,
     marginBottom: spacing.sm,
   },
-  previewCard: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
-  },
   previewDate: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.sm,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   mealRow: {
     flexDirection: "row",

@@ -20,7 +20,7 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, spacing, status } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -36,7 +36,7 @@ import {
   type ShippingAddress,
 } from "@/lib/genetic-tests-io";
 import { loadOwnLocation } from "@/lib/labs-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
@@ -164,7 +164,6 @@ export default function GeneticTestingScreen() {
       <Screen scroll>
         <ScreenHeader title="Genetic testing" onBack={() => router.back()} />
         <EmptyState
-          icon="share-2"
           heading="Genetic testing is coming soon"
           explanation="This feature is behind a flag while we finalise a partner. Ask us to switch it on for your account."
         />
@@ -276,7 +275,6 @@ function PickTestSection({
   if (tests.length === 0) {
     return (
       <EmptyState
-        icon="share-2"
         heading="No panels available"
         explanation="The catalogue is empty. Ask us to add one, or check back once we've published our first panels."
       />
@@ -292,7 +290,7 @@ function PickTestSection({
           onPress={() => onSelect(test)}
           accessibilityRole="button"
         >
-          <Surface style={styles.card}>
+          <Surface>
             <Text style={styles.cardTitle}>{test.name}</Text>
             {test.description ? (
               <Text style={styles.subtle}>{test.description}</Text>
@@ -427,7 +425,7 @@ function ConfirmSection({
       <Text style={styles.stepLabel}>Step 3 of 3</Text>
       <Text style={styles.sectionHeading}>Confirm order</Text>
 
-      <Surface style={styles.card}>
+      <Surface>
         <Text style={styles.subHeading}>Panel</Text>
         <Text style={styles.body}>
           {test.name} · {humanSampleType(test.sample_type)}
@@ -442,7 +440,7 @@ function ConfirmSection({
         ) : null}
       </Surface>
 
-      <Surface style={styles.card}>
+      <Surface>
         <Text style={styles.subHeading}>Ship to</Text>
         <Text style={styles.body}>{address.name}</Text>
         <Text style={styles.body}>{address.line1}</Text>
@@ -456,7 +454,7 @@ function ConfirmSection({
       </Surface>
 
       {notes ? (
-        <Surface style={styles.card}>
+        <Surface>
           <Text style={styles.subHeading}>Notes</Text>
           <Text style={styles.body}>{notes}</Text>
         </Surface>
@@ -490,7 +488,7 @@ function BookedSection({
 }) {
   return (
     <View style={styles.section}>
-      <Surface style={styles.card}>
+      <Surface>
         <Text style={styles.subHeading}>Order raised</Text>
         <Text style={styles.body}>
           Your request for {test.name} is in the queue. We'll contact you to
@@ -519,7 +517,7 @@ function OrdersHistory({
       {orders.map((order) => {
         const test = testsById.get(order.genetic_test_id);
         return (
-          <Surface key={order.id} style={styles.card}>
+          <Surface key={order.id}>
             <Text style={styles.cardTitle}>
               {test?.name ?? "Panel"}
             </Text>
@@ -546,8 +544,6 @@ function OrdersHistory({
 const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -565,17 +561,18 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   stepLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginBottom: spacing.sm,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   subHeading: {
     fontFamily: fontFamily.bodySemi,
@@ -584,10 +581,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.micro,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-  },
-  card: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   cardTitle: {
     fontFamily: fontFamily.display,

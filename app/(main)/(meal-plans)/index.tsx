@@ -16,7 +16,7 @@ import {
 } from "@/lib/feature-flags";
 import { summarizePlan } from "@/lib/meal-planner";
 import { loadMealPlans, type MealPlanRow } from "@/lib/meal-plans-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { mealPlanHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
@@ -94,7 +94,6 @@ export default function MealPlansScreen() {
       <Screen scroll>
         <ScreenHeader title="Meal plans" onBack={() => router.back()} />
         <EmptyState
-          icon="grid"
           heading="Meal plans are coming soon"
           explanation="This feature is behind a flag while we test it. Ask us to switch it on for your account."
         />
@@ -126,7 +125,6 @@ export default function MealPlansScreen() {
 
       {state === "ready" && rows.length === 0 ? (
         <EmptyState
-          icon="grid"
           heading="No meal plans yet"
           explanation="Tap New meal plan to generate one from your recipe library."
         />
@@ -184,7 +182,7 @@ function PlanCard({
   const summary = summarizePlan(row.plan);
   return (
     <Surface
-      style={[styles.card, muted ? styles.cardMuted : null]}
+      style={muted ? styles.cardMuted : null}
     >
       <View style={styles.headerRow}>
         <Text style={styles.range}>
@@ -210,8 +208,6 @@ const styles = StyleSheet.create({
   skeletons: { gap: spacing.sm, marginTop: spacing.md },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -224,25 +220,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.inkSoft,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
-  },
-  card: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   cardMuted: { opacity: 0.75 },
   range: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.micro,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   headerRow: {
     flexDirection: "row",
@@ -259,7 +252,9 @@ const styles = StyleSheet.create({
   reviewedChipText: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 11,
-    color: colors.white,
+    // The chip's own text tone. White on the pale `withinRange`
+    // fill was invisible.
+    color: status.withinRange.text,
   },
   cardTitle: {
     fontFamily: fontFamily.display,

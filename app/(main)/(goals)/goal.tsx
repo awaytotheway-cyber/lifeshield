@@ -33,7 +33,7 @@ import {
   logGoalProgress,
   updateGoalStatus,
 } from "@/lib/goals-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -347,7 +347,7 @@ function EntryRow({
     ? entry.recorded_at
     : when.toLocaleString();
   return (
-    <Surface style={styles.entryCard}>
+    <Surface>
       <Text style={styles.entryValue}>
         {entry.value} {unit}
       </Text>
@@ -384,8 +384,6 @@ const styles = StyleSheet.create({
   },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -401,16 +399,13 @@ const styles = StyleSheet.create({
   },
   summary: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   cadence: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.micro,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   title: {
     fontFamily: fontFamily.display,
@@ -452,33 +447,32 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   reviewedChip: {
-    color: colors.white,
+    // The chip's own text tone. White on the pale `withinRange`
+    // fill was invisible.
+    color: status.withinRange.text,
     backgroundColor: status.withinRange.fill,
   },
   reviewCard: {
     marginTop: spacing.sm,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   reviewLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.micro,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   formCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   body: {
     fontFamily: fontFamily.body,
@@ -491,10 +485,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: spacing.sm,
     marginTop: spacing.md,
-  },
-  entryCard: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   entryValue: {
     fontFamily: fontFamily.displaySemi,

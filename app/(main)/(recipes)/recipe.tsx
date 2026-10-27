@@ -22,7 +22,7 @@ import {
   loadRecipeBySlug,
   toggleRecipeFavorite,
 } from "@/lib/recipes-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -281,8 +281,6 @@ const styles = StyleSheet.create({
   },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -304,8 +302,6 @@ const styles = StyleSheet.create({
   },
   headerCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   headerRow: {
     flexDirection: "row",
@@ -365,11 +361,13 @@ const styles = StyleSheet.create({
   section: {
     marginTop: spacing.md,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginBottom: spacing.sm,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   ingredient: {
     fontFamily: fontFamily.body,

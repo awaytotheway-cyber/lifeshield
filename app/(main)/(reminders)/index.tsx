@@ -8,7 +8,7 @@ import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
-import { colors, radius, spacing, status } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -16,7 +16,7 @@ import {
 } from "@/lib/feature-flags";
 import { scheduleLabel, type Reminder } from "@/lib/reminders";
 import { loadReminders } from "@/lib/reminders-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { reminderHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
@@ -85,7 +85,6 @@ export default function RemindersScreen() {
       <Screen scroll>
         <ScreenHeader title="Reminders" onBack={() => router.back()} />
         <EmptyState
-          icon="clock"
           heading="Reminders are coming soon"
           explanation="This feature is behind a flag while we test it with a small group. Ask us to switch it on for your account."
         />
@@ -126,7 +125,6 @@ export default function RemindersScreen() {
 
       {state === "ready" && rows.length === 0 ? (
         <EmptyState
-          icon="clock"
           heading="No reminders yet"
           explanation="Set a reminder for anything you want to remember — a supplement, a walk, a follow-up call. Reminders fire as local notifications on this device."
         />
@@ -186,7 +184,7 @@ function ReminderCard({
       ? new Date(reminder.next_fire_at).toLocaleString()
       : null;
   return (
-    <Surface style={[styles.card, muted ? styles.cardMuted : null]}>
+    <Surface style={muted ? styles.cardMuted : null}>
       <Text style={styles.cadence}>{scheduleLabel(reminder)}</Text>
       <Text style={styles.cardTitle}>{reminder.title}</Text>
       {reminder.body ? (
@@ -207,8 +205,6 @@ const styles = StyleSheet.create({
   },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -221,27 +217,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.inkSoft,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
-  },
-  card: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   cardMuted: {
     opacity: 0.75,
   },
   cadence: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.micro,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   cardTitle: {
     fontFamily: fontFamily.display,

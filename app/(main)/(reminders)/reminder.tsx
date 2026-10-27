@@ -10,7 +10,7 @@ import {
 import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { colors, radius, spacing, status } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import {
   nextOccurrence,
   scheduleLabel,
@@ -27,7 +27,7 @@ import {
   cancelReminder,
   scheduleReminder,
 } from "@/lib/reminders-notifications";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -246,8 +246,6 @@ const styles = StyleSheet.create({
   },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -263,16 +261,13 @@ const styles = StyleSheet.create({
   },
   summary: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   cadence: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.micro,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   title: {
     fontFamily: fontFamily.display,

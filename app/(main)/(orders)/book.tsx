@@ -17,7 +17,7 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, spacing, status } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -38,7 +38,7 @@ import {
   saveOwnLocation,
   type TestOrderSummary,
 } from "@/lib/labs-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
@@ -148,7 +148,6 @@ export default function BookTestScreen() {
       <Screen scroll>
         <ScreenHeader title="Book a test" onBack={() => router.back()} />
         <EmptyState
-          icon="clipboard"
           heading="Test booking is coming soon"
           explanation="This feature is behind a flag while we test it with a small group. Ask us to switch it on for your account."
         />
@@ -290,7 +289,6 @@ function PickTestSection({
   if (tests.length === 0) {
     return (
       <EmptyState
-        icon="clipboard"
         heading="No tests to book"
         explanation="Your plan doesn't have any recommended tests waiting. Once new tests are recommended they'll appear here."
       />
@@ -307,7 +305,7 @@ function PickTestSection({
           accessibilityRole="button"
           style={styles.pickerRow}
         >
-          <Surface style={styles.card}>
+          <Surface>
             <Text style={styles.cardTitle}>{test.test_name}</Text>
             <Text style={styles.meta}>Tier {test.test_tier}</Text>
             {test.trigger_reason ? (
@@ -393,7 +391,6 @@ function PickLabSection({
 
       {ranked.length === 0 ? (
         <EmptyState
-          icon="map-pin"
           heading="No labs available"
           explanation="No labs in the library match your location yet. Ask us to add one."
         />
@@ -405,7 +402,7 @@ function PickLabSection({
             accessibilityRole="button"
             style={styles.pickerRow}
           >
-            <Surface style={styles.card}>
+            <Surface>
               <View style={styles.headerRow}>
                 <Text style={styles.cardTitle}>{entry.lab.name}</Text>
                 {entry.score >= 4 ? (
@@ -461,14 +458,14 @@ function ConfirmSection({
       <Text style={styles.stepLabel}>Step 3 of 3</Text>
       <Text style={styles.sectionHeading}>Confirm booking</Text>
 
-      <Surface style={styles.card}>
+      <Surface>
         <Text style={styles.subHeading}>Test</Text>
         <Text style={styles.body}>
           {test.test_name} · tier {test.test_tier}
         </Text>
       </Surface>
 
-      <Surface style={styles.card}>
+      <Surface>
         <Text style={styles.subHeading}>Lab</Text>
         <Text style={styles.body}>{lab.lab.name}</Text>
         {lab.lab.postcode || lab.lab.country ? (
@@ -514,7 +511,7 @@ function BookedSection({
 }) {
   return (
     <View style={styles.section}>
-      <Surface style={styles.card}>
+      <Surface>
         <Text style={styles.subHeading}>Booked</Text>
         <Text style={styles.body}>
           {lab.lab.name} has been sent your request. We'll confirm the slot
@@ -533,8 +530,6 @@ function BookedSection({
 const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -552,17 +547,18 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   stepLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginBottom: spacing.sm,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   subHeading: {
     fontFamily: fontFamily.bodySemi,
@@ -573,10 +569,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   pickerRow: {},
-  card: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
-  },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -606,8 +598,6 @@ const styles = StyleSheet.create({
     color: colors.ink,
   },
   locationCard: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
     marginBottom: spacing.sm,
   },
   row: {

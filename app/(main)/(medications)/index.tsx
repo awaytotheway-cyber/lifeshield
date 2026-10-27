@@ -18,7 +18,7 @@ import {
   loadOwnMedications,
   type MedicationRow,
 } from "@/lib/supplements-io";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { medicationHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
@@ -96,7 +96,6 @@ export default function MedicationsScreen() {
       <Screen scroll>
         <ScreenHeader title="Medications" onBack={() => router.back()} />
         <EmptyState
-          icon="thermometer"
           heading="Medications are coming soon"
           explanation="This feature is behind a flag while we test it. Ask us to switch it on for your account."
         />
@@ -133,7 +132,6 @@ export default function MedicationsScreen() {
 
       {state === "ready" && rows.length === 0 ? (
         <EmptyState
-          icon="thermometer"
           heading="No medications on file"
           explanation="Add anything you're taking (prescription or supplement) so we can flag interactions."
         />
@@ -195,7 +193,7 @@ function MedicationCard({
       : `since ${row.start_date}`
     : null;
   return (
-    <Surface style={[styles.card, muted ? styles.cardMuted : null]}>
+    <Surface style={muted ? styles.cardMuted : null}>
       <Text style={styles.cardTitle}>{row.name}</Text>
       {meta ? <Text style={styles.meta}>{meta}</Text> : null}
       {dateRange ? <Text style={styles.meta}>{dateRange}</Text> : null}
@@ -223,8 +221,6 @@ const styles = StyleSheet.create({
   skeletons: { gap: spacing.sm, marginTop: spacing.md },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -237,16 +233,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.inkSoft,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
-  },
-  card: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   cardMuted: { opacity: 0.75 },
   cardTitle: {

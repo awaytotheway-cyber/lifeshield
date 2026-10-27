@@ -234,7 +234,6 @@ export default function PlanScreen() {
 
       {!loading && !message && rows.length === 0 ? (
         <EmptyState
-          icon="list"
           heading={COPY.planEmptyHeading}
           explanation={COPY.planEmpty}
         />

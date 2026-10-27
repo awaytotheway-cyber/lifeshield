@@ -17,7 +17,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { colors, radius, spacing, status } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import { loadMealPlanById, type MealPlanRow } from "@/lib/meal-plans-io";
 import { loadRecipesByIds } from "@/lib/recipes-io";
 import {
@@ -32,7 +32,7 @@ import {
   type UnmatchedItem,
 } from "@/lib/shopping-list";
 import { addToCart, loadActiveProducts } from "@/lib/store";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -228,7 +228,6 @@ function ShoppingBody({
   if (totalIngredients === 0) {
     return (
       <EmptyState
-        icon="shopping-cart"
         heading="No ingredients to list"
         explanation="The recipes in this plan don't have ingredient rows yet. Ask an admin to fill them in."
       />
@@ -316,7 +315,7 @@ function MatchedRow({
     summariseAmounts(item.ingredient.amounts),
   );
   return (
-    <Surface style={styles.card}>
+    <Surface>
       <Text style={styles.ingredient}>{item.ingredient.display_name}</Text>
       {amountLine ? (
         <Text style={styles.quantity}>Need: {amountLine}</Text>
@@ -343,7 +342,7 @@ function UnmatchedRow({ item }: { item: UnmatchedItem }) {
     summariseAmounts(item.ingredient.amounts),
   );
   return (
-    <Surface style={styles.card}>
+    <Surface>
       <Text style={styles.ingredient}>{item.ingredient.display_name}</Text>
       {amountLine ? (
         <Text style={styles.quantity}>Need: {amountLine}</Text>
@@ -378,8 +377,6 @@ const styles = StyleSheet.create({
   spinner: { marginTop: spacing.md },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -395,8 +392,6 @@ const styles = StyleSheet.create({
   },
   summary: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   summaryTitle: {
     fontFamily: fontFamily.display,
@@ -416,20 +411,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: spacing.sm,
   },
+  // A section header is an 11px micro-caps label, not an 18px bold title:
+  // a column of those is what made short section names read as one block.
+  // `inkMuted`, not `inkFaint` — at 11px only inkMuted clears AA.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 13,
     color: colors.inkSoft,
     marginBottom: spacing.sm,
-  },
-  card: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   ingredient: {
     fontFamily: fontFamily.displaySemi,

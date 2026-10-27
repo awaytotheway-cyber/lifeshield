@@ -215,7 +215,6 @@ export default function FollowUpHubScreen() {
       {showEmpty ? (
         <>
           <EmptyState
-            icon="check-circle"
             heading={COPY.followUpEmptyHeading}
             explanation={COPY.followUpEmpty}
           />

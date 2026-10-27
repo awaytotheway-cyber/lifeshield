@@ -41,7 +41,7 @@ import {
 } from "@/lib/meal-plans-io";
 import { loadRecipeSummaries } from "@/lib/recipes-io";
 import type { RecipeSummary } from "@/lib/recipes";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import {
   mealPlanShoppingListHref,
   recipeHref,
@@ -486,8 +486,6 @@ const styles = StyleSheet.create({
   spinner: { marginTop: spacing.md },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -503,16 +501,13 @@ const styles = StyleSheet.create({
   },
   summary: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   range: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.micro,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   title: {
     fontFamily: fontFamily.display,
@@ -537,20 +532,19 @@ const styles = StyleSheet.create({
   reviewedChipText: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 11,
-    color: colors.white,
+    // The chip's own text tone. White on the pale `withinRange`
+    // fill was invisible.
+    color: status.withinRange.text,
   },
   reviewCard: {
     marginTop: spacing.sm,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   reviewLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.mossDeep,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: spacing.micro,
+    // The system's eyebrow: 11px micro-caps in `inkMuted`. A 12px
+    // uppercase moss line was a fourth label style and read as a link.
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   reviewBody: {
     fontFamily: fontFamily.body,
@@ -565,8 +559,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   dayCard: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
     marginBottom: spacing.sm,
   },
   dayDate: {

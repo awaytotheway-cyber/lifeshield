@@ -115,7 +115,6 @@ export default function RecipesScreen() {
       <Screen scroll>
         <ScreenHeader title="Recipes" onBack={() => router.back()} />
         <EmptyState
-          icon="book-open"
           heading="Recipes are coming soon"
           explanation="This feature is behind a flag while we test it with a small group. Ask us to switch it on for your account."
         />
@@ -204,7 +203,6 @@ export default function RecipesScreen() {
 
       {state === "ready" && rows.length === 0 ? (
         <EmptyState
-          icon="book-open"
           heading="No recipes yet"
           explanation="The library is empty. Ask an admin to add some — or check back once we've published the first set."
         />
@@ -212,7 +210,6 @@ export default function RecipesScreen() {
 
       {state === "ready" && rows.length > 0 && filtered.length === 0 ? (
         <EmptyState
-          icon="search"
           heading="No matches"
           explanation="Try clearing the search or turning off a tag filter."
         />
@@ -249,7 +246,7 @@ function RecipeCard({
   const minutes = totalMinutes(recipe);
   return (
     <Pressable onPress={onOpen} accessibilityRole="button">
-      <Surface style={styles.card}>
+      <Surface>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>{recipe.name}</Text>
           {favorited ? (
@@ -334,8 +331,6 @@ const styles = StyleSheet.create({
   },
   errorCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
@@ -347,10 +342,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 14,
     color: colors.inkSoft,
-  },
-  card: {
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
   cardHeader: {
     flexDirection: "row",
