@@ -333,6 +333,11 @@ const styles = StyleSheet.create({
    * White, flat, and nothing else: no backdrop, no top border, no shadow and
    * no elevation. The bar reads as chrome because the screen ground is paper
    * and the bar is white, the same way a card does.
+   *
+   * The `elevation` and `shadowOpacity` zeroes below are the one deliberate
+   * exception to the sweep's "no shadow properties anywhere" rule: React
+   * Navigation gives the tab bar a platform shadow of its own, and zeroing
+   * both is the only way to take it away. They add nothing — they remove.
    */
   bar: {
     backgroundColor: colors.white,

@@ -269,11 +269,11 @@ const styles = StyleSheet.create({
     ...typography.micro,
     color: colors.inkMuted,
   },
+  // The card title, on the scale: 20, not a one-off 22.
   title: {
-    fontFamily: fontFamily.display,
-    fontSize: 22,
-    color: colors.ink,
     marginBottom: spacing.micro,
+    ...typography.title,
+    color: colors.ink,
   },
   body: {
     fontFamily: fontFamily.body,

@@ -10,7 +10,7 @@ import { TRIAGE_QUESTIONS, type TriageAnswerKey } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { colors, spacing, status } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -159,39 +159,34 @@ export default function SymptomCheckScreen() {
 }
 
 const styles = StyleSheet.create({
+  // The one headline on this screen, on the display scale rather than a
+  // one-off 26. Ink, not moss: moss is a fill and a link colour.
   h1: {
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.mossDeep,
+    ...typography.displayL,
+    color: colors.ink,
   },
   sub: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    marginTop: spacing.mdSm,
+    ...typography.body,
     color: colors.inkSoft,
   },
+  // Load-bearing awareness framing — this screen is the symptom gate.
   note: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
+    marginTop: spacing.mdSm,
+    ...typography.label,
     color: colors.inkSoft,
   },
   questions: {
-    marginTop: 24,
-    gap: 8,
+    marginTop: spacing.md,
+    gap: spacing.sm,
   },
   error: {
-    marginTop: 16,
+    marginTop: spacing.base,
     textAlign: "center",
-    fontFamily: fontFamily.body,
-    fontSize: 13,
+    ...typography.label,
     color: CLAY,
   },
   cta: {
-    marginTop: 40,
+    marginTop: spacing.xl,
   },
 });
