@@ -258,18 +258,27 @@ export async function discoverBuddies(
 
 /**
  * Every connection I am part of, in either direction and at any status.
- * RLS already restricts the table to rows I am on, and filters out blocked
- * pairs; the caller sorts the rows into incoming, outgoing and active with
+ * The caller sorts the rows into incoming, outgoing and active with
  * `connectionStatusFor`.
+ *
+ * The user filter is explicit on purpose. RLS does restrict the table to
+ * rows I am on — but there is also a `conn_admin_read` policy, so for an
+ * admin-staff account an unfiltered select would return every connection in
+ * the product onto their own Buddies screen. "My buddies" has to mean mine
+ * for everyone.
  */
 export async function loadMyConnections(): Promise<LoadConnectionsOutcome> {
   const { isSupabaseConfigured, supabase } = await loadSupabase();
   if (!isSupabaseConfigured) return { ok: true, rows: [] };
 
+  const meId = await currentUserId();
+  if (!meId) return { ok: true, rows: [] };
+
   try {
     const { data, error } = await supabase
       .from("connections")
       .select(CONNECTION_COLUMNS)
+      .or(`requester_id.eq.${meId},addressee_id.eq.${meId}`)
       .order("created_at", { ascending: false });
     if (error) {
       return {
