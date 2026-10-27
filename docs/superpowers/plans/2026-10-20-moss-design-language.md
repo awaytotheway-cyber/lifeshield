@@ -792,7 +792,13 @@ grep -rn "shadowOpacity\|elevation:\|BlurView\|expo-blur" app components
 ```
 Expected: no output outside a deliberate, commented exception.
 
-- [ ] **Step 6: Catch the files the compiler and the greps above both miss**
+- [ ] **Step 6: Lift the 15px inactive tab labels off the AA floor**
+
+The boards paint inactive tabs `#8A8A84` (`inkFaint`) at 15px, in eight places. That is **3.47:1 against AA's 4.5:1 requirement for normal text** — the same defect class that `inkMuted` was created for at 11px. Here the board is the source of the defect rather than the fix, and accessibility wins over fidelity: a tab label a low-vision user cannot read is not a successful design.
+
+Change inactive tab labels to `inkMuted` (#6B6B65, 5.36:1) in `app/(main)/(store)/index.tsx` and `app/(main)/(results)/index.tsx`. Active tabs stay `ink` at weight 600. The two files must change together — they are the same control.
+
+- [ ] **Step 7: Catch the files the compiler and the greps above both miss**
 
 Step 1's worklist and step 4's greps only find files that referenced a *deleted token*. A file that hardcoded its colours, or styled itself with NativeWind utility classes, compiles cleanly and matches none of those patterns — it would stay pre-Moss forever, silently. Two sweeps close that:
 
@@ -806,7 +812,7 @@ grep -rloP 'className="[^"]*(text|bg|border)-(charcoal|teal|sage|coral|cream|mis
 
 At the time this step was written the counts were **9 files** and **23 files** respectively. Both must reach zero. Renaming the class is not enough on its own — `text-charcoal` is a pre-Moss *concept*, so the file needs the Moss token, not a remapped alias.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add -A app components lib global.css tailwind.config.js
