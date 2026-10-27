@@ -4,16 +4,22 @@ import { IodineHardStop } from "@/components/ui/IodineHardStop";
 import { InteractionFlag } from "@/components/ui/InteractionFlag";
 import { ProductCard as CatalogCard } from "@/components/ui/ProductCard";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { formatProductPrice, type ProductRow } from "@/lib/store";
 import type { PurchaseGateResult } from "@/lib/purchase-gates";
 import { fontFamily } from "@/lib/typography";
+
+/**
+ * Sand, borrowed from `worthWatching`. Moss has no amber and no alert red: a
+ * caution carries the middle of the three clinical statuses.
+ */
+const SAND = status.worthWatching;
 
 type PurchaseStatusProps = {
   gate: PurchaseGateResult;
 };
 
-/** Safety as information (amber), not an error. */
+/** Safety as information (sand), not an error. */
 export function PurchaseStatus({ gate }: PurchaseStatusProps) {
   if (gate.allowed) {
     return null;
@@ -50,7 +56,8 @@ type ProductCardProps = {
   onOpen: () => void;
   onAdd: () => void;
   adding?: boolean;
-  layout?: "row" | "grid";
+  /** Micro eyebrow, set only on a row the user's own plan matched. */
+  tag?: string;
 };
 
 export function ProductCard({
@@ -59,7 +66,7 @@ export function ProductCard({
   onOpen,
   onAdd,
   adding = false,
-  layout = "row",
+  tag,
 }: ProductCardProps) {
   return (
     <CatalogCard
@@ -68,12 +75,15 @@ export function ProductCard({
       description={
         product.plain_description?.trim() || "Browse details before ordering."
       }
+      tag={tag}
       blocked={!gate.allowed && !gate.needsCheck}
+      // The gate's own sentence, not the generic line: the reason a purchase
+      // is blocked is the safety information, so the row carries it in full.
+      blockedReason={gate.blockReason ?? COPY.storeBlockedGeneric}
       needsCheck={Boolean(gate.needsCheck)}
       checkReason={gate.blockReason}
       onAdd={onAdd}
       adding={adding}
-      layout={layout}
       onOpen={onOpen}
     />
   );
@@ -81,18 +91,18 @@ export function ProductCard({
 
 const styles = StyleSheet.create({
   flagWrap: {
-    marginTop: spacing.sm,
+    marginTop: spacing.mdSm,
   },
   infoBadge: {
-    marginTop: spacing.sm,
-    backgroundColor: colors.amberLight,
-    borderRadius: radius.alert,
-    padding: spacing.mdSm,
+    marginTop: spacing.mdSm,
+    backgroundColor: SAND.fill,
+    borderRadius: radius.surface,
+    padding: spacing.base,
   },
   infoText: {
     fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.charcoal,
+    fontSize: 15,
+    lineHeight: 24,
+    color: colors.ink,
   },
 });
