@@ -3,18 +3,21 @@ import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text } from "react-native";
 
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type ConsentRow = {
   consent_type: string;
@@ -90,9 +93,8 @@ export default function ConsentsSettingsScreen() {
         />
       ) : null}
       {rows.map((row, index) => (
-        <GlassCard
+        <Surface
           key={`${row.consent_type}-${index}`}
-          intensity="card"
           style={styles.card}
         >
           <Text style={styles.type}>{row.consent_type}</Text>
@@ -100,7 +102,7 @@ export default function ConsentsSettingsScreen() {
             {row.consented ? "Agreed" : "Not agreed"}
             {row.consented_at ? ` · ${row.consented_at.slice(0, 10)}` : ""}
           </Text>
-        </GlassCard>
+        </Surface>
       ))}
     </Screen>
   );
@@ -111,11 +113,11 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   error: {
     marginTop: 12,
-    color: colors.coral,
+    color: CLAY,
     fontFamily: fontFamily.body,
   },
   card: {
@@ -125,12 +127,12 @@ const styles = StyleSheet.create({
   type: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 16,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   status: {
     marginTop: 4,
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
 });

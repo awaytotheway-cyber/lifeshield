@@ -3,18 +3,21 @@ import { useState } from "react";
 import { Linking, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, DangerButton, TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextField } from "@/components/ui/TextField";
 import { COPY } from "@/lib/copy";
 import { requestAccountDeletion } from "@/lib/data-export";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 export default function DeleteAccountScreen() {
   const router = useRouter();
@@ -66,7 +69,7 @@ export default function DeleteAccountScreen() {
       <Text style={styles.warning}>{COPY.privacyDeleteWarning}</Text>
 
       {done ? (
-        <GlassCard intensity="card" style={styles.card}>
+        <Surface style={styles.card}>
           <Text style={styles.done}>{COPY.privacyDeleteSubmitted}</Text>
           <PrimaryButton
             title={COPY.signOut}
@@ -74,9 +77,9 @@ export default function DeleteAccountScreen() {
               void signOut();
             }}
           />
-        </GlassCard>
+        </Surface>
       ) : (
-        <GlassCard intensity="card" style={styles.card}>
+        <Surface style={styles.card}>
           <TextField
             label={COPY.privacyDeleteReason}
             value={reason}
@@ -108,7 +111,7 @@ export default function DeleteAccountScreen() {
               }}
             />
           </View>
-        </GlassCard>
+        </Surface>
       )}
     </Screen>
   );
@@ -119,14 +122,14 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   warning: {
     marginTop: 12,
     fontFamily: fontFamily.bodyMedium,
     fontSize: 14,
     lineHeight: 22,
-    color: colors.coral,
+    color: CLAY,
   },
   card: {
     marginTop: spacing.md,
@@ -140,13 +143,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: CLAY,
   },
   done: {
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: colors.ink,
     marginBottom: spacing.md,
   },
 });

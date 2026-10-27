@@ -8,11 +8,14 @@ import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TRIAGE_QUESTIONS, type TriageAnswerKey } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type Answers = Record<TriageAnswerKey, boolean | null>;
 
@@ -161,21 +164,21 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 31,
     letterSpacing: -0.5,
-    color: colors.deepTeal,
+    color: colors.mossDeep,
   },
   sub: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   note: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   questions: {
     marginTop: 24,
@@ -186,7 +189,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: CLAY,
   },
   cta: {
     marginTop: 40,

@@ -14,12 +14,12 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   computeDailyStreak,
   computeProgress,
@@ -36,6 +36,9 @@ import {
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -138,15 +141,15 @@ export default function GoalDetailScreen() {
       />
 
       {state === "loading" ? (
-        <ActivityIndicator color={colors.primaryBlue} style={styles.spinner} />
+        <ActivityIndicator color={colors.mossDeep} style={styles.spinner} />
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't open this goal</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
           <SecondaryButton title="Try again" onPress={() => void refresh()} />
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && goal ? (
@@ -205,7 +208,7 @@ function GoalBody({
 
   return (
     <>
-      <GlassCard intensity="card" style={styles.summary}>
+      <Surface style={styles.summary}>
         <Text style={styles.cadence}>{cadenceLabel(goal.target.cadence)}</Text>
         <Text style={styles.title}>{goal.title}</Text>
         <Text style={styles.subtitle}>
@@ -234,19 +237,19 @@ function GoalBody({
             <Text style={[styles.statusChip, styles.reviewedChip]}>Reviewed</Text>
           ) : null}
         </View>
-      </GlassCard>
+      </Surface>
 
       {goal.clinician_reviewed && goal.reviewer_note ? (
-        <GlassCard intensity="card" style={styles.reviewCard}>
+        <Surface style={styles.reviewCard}>
           <Text style={styles.reviewLabel}>
             Reviewer note{goal.reviewed_by ? ` · ${goal.reviewed_by}` : ""}
           </Text>
           <Text style={styles.body}>{goal.reviewer_note}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {goal.status === "active" ? (
-        <GlassCard intensity="card" style={styles.formCard}>
+        <Surface style={styles.formCard}>
           <Text style={styles.sectionHeading}>Log progress</Text>
           <TextInput
             label={`Amount (${goal.target.unit})`}
@@ -263,9 +266,9 @@ function GoalBody({
             onChangeText={setLogNote}
           />
           <PrimaryButton title="Log entry" loading={logging} onPress={onLog} />
-        </GlassCard>
+        </Surface>
       ) : (
-        <GlassCard intensity="card" style={styles.formCard}>
+        <Surface style={styles.formCard}>
           <Text style={styles.sectionHeading}>Paused</Text>
           <Text style={styles.body}>
             Resume this goal to start logging progress again.
@@ -275,7 +278,7 @@ function GoalBody({
             loading={statusBusy}
             onPress={() => onSetStatus("active")}
           />
-        </GlassCard>
+        </Surface>
       )}
 
       <View style={styles.actionRow}>
@@ -344,13 +347,13 @@ function EntryRow({
     ? entry.recorded_at
     : when.toLocaleString();
   return (
-    <GlassCard intensity="card" style={styles.entryCard}>
+    <Surface style={styles.entryCard}>
       <Text style={styles.entryValue}>
         {entry.value} {unit}
       </Text>
       <Text style={styles.entryWhen}>{label}</Text>
       {entry.note ? <Text style={styles.entryNote}>{entry.note}</Text> : null}
-    </GlassCard>
+    </Surface>
   );
 }
 
@@ -382,31 +385,29 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   summary: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   cadence: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
@@ -414,13 +415,13 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fontFamily.display,
     fontSize: 22,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.micro,
   },
   subtitle: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   metaRow: {
@@ -432,7 +433,7 @@ const styles = StyleSheet.create({
   metaText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   statusRow: {
     flexDirection: "row",
@@ -443,27 +444,26 @@ const styles = StyleSheet.create({
   statusChip: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.deepNavy,
-    backgroundColor: colors.glassChrome,
+    color: colors.ink,
+    backgroundColor: colors.white,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.micro,
-    borderRadius: radius.chip,
+    borderRadius: radius.pill,
     overflow: "hidden",
   },
   reviewedChip: {
     color: colors.white,
-    backgroundColor: colors.riskLow,
+    backgroundColor: status.withinRange.fill,
   },
   reviewCard: {
     marginTop: spacing.sm,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   reviewLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
@@ -471,20 +471,19 @@ const styles = StyleSheet.create({
   formCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   body: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   actionRow: {
@@ -495,24 +494,23 @@ const styles = StyleSheet.create({
   },
   entryCard: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   entryValue: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   entryWhen: {
     fontFamily: fontFamily.body,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   entryNote: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.charcoal,
+    color: colors.ink,
     marginTop: spacing.sm,
   },
 });

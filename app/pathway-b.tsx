@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   notice: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.charcoal,
+    color: colors.ink,
   },
 });

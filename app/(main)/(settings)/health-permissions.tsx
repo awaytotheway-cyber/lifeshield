@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import {
@@ -11,7 +11,7 @@ import {
   syncFromNativeSources,
   type SyncOutcome,
 } from "@/lib/activity-source";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -115,18 +115,18 @@ export default function HealthPermissionsScreen() {
       />
 
       {!enabled ? (
-        <GlassCard intensity="card" style={styles.card}>
+        <Surface style={styles.card}>
           <Text style={styles.heading}>Activity tracking is off</Text>
           <Text style={styles.body}>
             Ask us to switch on the "activity" feature for your account, or come
             back here after the beta flag lands.
           </Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       <Text style={styles.sectionHeading}>Available sources</Text>
       {Object.entries(availability).map(([source, info]) => (
-        <GlassCard key={source} intensity="card" style={styles.card}>
+        <Surface key={source} style={styles.card}>
           <Text style={styles.heading}>{info.label}</Text>
           <Text style={styles.body}>
             {source === "manual"
@@ -135,7 +135,7 @@ export default function HealthPermissionsScreen() {
                 ? "Connected. Tap sync below to pull the last 7 days."
                 : "Not connected on this device. When the native bridge lands, you'll be prompted to grant permission."}
           </Text>
-        </GlassCard>
+        </Surface>
       ))}
 
       <PrimaryButton
@@ -153,9 +153,8 @@ export default function HealthPermissionsScreen() {
             </Text>
           ) : (
             outcomes.map((outcome) => (
-              <GlassCard
+              <Surface
                 key={outcome.source}
-                intensity="card"
                 style={styles.card}
               >
                 <Text style={styles.heading}>{outcome.source}</Text>
@@ -164,7 +163,7 @@ export default function HealthPermissionsScreen() {
                     ? `Synced ${outcome.inserted} reading${outcome.inserted === 1 ? "" : "s"}.`
                     : (outcome.message ?? "Not connected.")}
                 </Text>
-              </GlassCard>
+              </Surface>
             ))
           )}
         </View>
@@ -177,25 +176,24 @@ const styles = StyleSheet.create({
   card: {
     marginTop: spacing.sm,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   heading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.micro,
   },
   body: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
 });

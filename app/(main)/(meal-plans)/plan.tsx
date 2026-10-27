@@ -18,10 +18,10 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   appendDay,
   removeLastDay,
@@ -48,6 +48,9 @@ import {
   routes,
 } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -214,15 +217,15 @@ export default function MealPlanDetailScreen() {
       />
 
       {state === "loading" ? (
-        <ActivityIndicator color={colors.primaryBlue} style={styles.spinner} />
+        <ActivityIndicator color={colors.mossDeep} style={styles.spinner} />
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't open this plan</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
           <SecondaryButton title="Try again" onPress={() => void refresh()} />
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && row ? (
@@ -348,7 +351,7 @@ function PlanBody({
   const summary = summarizePlan(row.plan);
   return (
     <>
-      <GlassCard intensity="card" style={styles.summary}>
+      <Surface style={styles.summary}>
         <Text style={styles.range}>
           {row.start_date} → {row.end_date}
         </Text>
@@ -363,15 +366,15 @@ function PlanBody({
             <Text style={styles.reviewedChipText}>Reviewed</Text>
           </View>
         ) : null}
-      </GlassCard>
+      </Surface>
 
       {row.clinician_reviewed && row.reviewer_note ? (
-        <GlassCard intensity="card" style={styles.reviewCard}>
+        <Surface style={styles.reviewCard}>
           <Text style={styles.reviewLabel}>
             Reviewer note{row.reviewed_by ? ` · ${row.reviewed_by}` : ""}
           </Text>
           <Text style={styles.reviewBody}>{row.reviewer_note}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       <View style={styles.actionRow}>
@@ -404,7 +407,7 @@ function PlanBody({
       </View>
 
       {row.plan.days.map((day) => (
-        <GlassCard key={day.date} intensity="card" style={styles.dayCard}>
+        <Surface key={day.date} style={styles.dayCard}>
           <Text style={styles.dayDate}>{day.date}</Text>
           {day.meals.length === 0 ? (
             <Text style={styles.empty}>No meals planned for this day.</Text>
@@ -431,7 +434,7 @@ function PlanBody({
                   <Feather
                     name="refresh-cw"
                     size={16}
-                    color={colors.primaryBlue}
+                    color={colors.mossDeep}
                   />
                 </Pressable>
                 <Pressable
@@ -440,12 +443,12 @@ function PlanBody({
                   disabled={busy}
                   style={styles.iconHit}
                 >
-                  <Feather name="x" size={16} color={colors.riskHigh} />
+                  <Feather name="x" size={16} color={CLAY} />
                 </Pressable>
               </View>
             ))
           )}
-        </GlassCard>
+        </Surface>
       ))}
 
       <View style={styles.dayActions}>
@@ -484,31 +487,29 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   summary: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   range: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
@@ -516,19 +517,19 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fontFamily.display,
     fontSize: 22,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.micro,
   },
   meta: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   reviewedChip: {
     alignSelf: "flex-start",
-    backgroundColor: colors.riskLow,
-    borderRadius: radius.chip,
+    backgroundColor: status.withinRange.fill,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     marginTop: spacing.sm,
@@ -541,13 +542,12 @@ const styles = StyleSheet.create({
   reviewCard: {
     marginTop: spacing.sm,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   reviewLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
   reviewBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   actionRow: {
     flexDirection: "row",
@@ -566,20 +566,19 @@ const styles = StyleSheet.create({
   },
   dayCard: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
     marginBottom: spacing.sm,
   },
   dayDate: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 14,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     marginBottom: spacing.sm,
   },
   empty: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   mealRow: {
     flexDirection: "row",
@@ -590,7 +589,7 @@ const styles = StyleSheet.create({
   mealSlot: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
     minWidth: 80,
   },
   mealNameWrap: {
@@ -599,7 +598,7 @@ const styles = StyleSheet.create({
   mealName: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.deepNavy,
+    color: colors.ink,
     textDecorationLine: "underline",
   },
   iconHit: {
@@ -614,7 +613,7 @@ const styles = StyleSheet.create({
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   modalBackdrop: {
@@ -629,7 +628,7 @@ const styles = StyleSheet.create({
     maxWidth: 480,
     maxHeight: "80%",
     backgroundColor: colors.white,
-    borderRadius: radius.card,
+    borderRadius: radius.surface,
     padding: spacing.base,
   },
   modalHeader: {
@@ -641,7 +640,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.deepNavy,
+    color: colors.ink,
     flex: 1,
   },
   modalScroll: {
@@ -649,18 +648,18 @@ const styles = StyleSheet.create({
   },
   candidateRow: {
     paddingVertical: spacing.sm,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.hairline,
     borderBottomWidth: 1,
   },
   candidateName: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 14,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   candidateTags: {
     fontFamily: fontFamily.body,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: 2,
   },
 });

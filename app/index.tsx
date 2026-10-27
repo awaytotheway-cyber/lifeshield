@@ -4,7 +4,7 @@ import { Animated, Easing, StyleSheet, Text } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
 
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import { colors } from "@/lib/design-tokens";
 import { fontFamily, typography } from "@/lib/typography";
@@ -43,10 +43,10 @@ export default function SplashScreen() {
   if (!minTimeDone) {
     return (
       <Animated.View style={[styles.wrap, { opacity }]}>
-        <GlassSurface intensity="card" style={styles.panel}>
+        <Surface style={styles.panel}>
           <Text style={styles.brand}>{COPY.appName}</Text>
           <Text style={styles.tagline}>{COPY.splashSubtitle}</Text>
-        </GlassSurface>
+        </Surface>
       </Animated.View>
     );
   }
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.cream,
+    backgroundColor: colors.paper,
     paddingHorizontal: 20,
   },
   panel: {
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     ...typography.display,
     fontSize: 36,
     lineHeight: 42,
-    color: colors.deepTeal,
+    color: colors.mossDeep,
     textAlign: "center",
   },
   tagline: {
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
     textAlign: "center",
   },
 });

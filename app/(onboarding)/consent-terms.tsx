@@ -5,11 +5,14 @@ import { StyleSheet, Text } from "react-native";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { PrimaryButton } from "@/components/ui/Button";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
+import { colors, status } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 /**
  * Last welcome step after the legal gate. Privacy consent is already saved;
@@ -66,6 +69,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.coral,
+    color: CLAY,
   },
 });

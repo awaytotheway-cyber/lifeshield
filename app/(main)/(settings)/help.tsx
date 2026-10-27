@@ -2,7 +2,7 @@ import { Redirect, useRouter } from "expo-router";
 import { Linking, StyleSheet, Text, View } from "react-native";
 
 import { TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
@@ -37,18 +37,18 @@ export default function HelpSettingsScreen() {
       <Text style={styles.body}>{COPY.helpBody}</Text>
 
       {PROFILE_FAQ.map((item) => (
-        <GlassCard key={item.id} intensity="card" style={styles.card}>
+        <Surface key={item.id} style={styles.card}>
           <Text style={styles.q}>{item.question}</Text>
           <Text style={styles.a}>{item.answer}</Text>
-        </GlassCard>
+        </Surface>
       ))}
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.q}>{COPY.helpTutorials}</Text>
         <Text style={styles.a}>{COPY.helpTutorialsBody}</Text>
-      </GlassCard>
+      </Surface>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.q}>{COPY.helpContact}</Text>
         <Text style={styles.a}>{COPY.helpContactBody}</Text>
         <TextButton
@@ -57,9 +57,9 @@ export default function HelpSettingsScreen() {
             void Linking.openURL("mailto:support@prescope.app");
           }}
         />
-      </GlassCard>
+      </Surface>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.q}>{COPY.helpFeedback}</Text>
         <Text style={styles.a}>{COPY.helpFeedbackBody}</Text>
         <View>
@@ -70,7 +70,7 @@ export default function HelpSettingsScreen() {
             }}
           />
         </View>
-      </GlassCard>
+      </Surface>
     </Screen>
   );
 }
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   card: {
     marginTop: spacing.mdSm,
@@ -90,13 +90,13 @@ const styles = StyleSheet.create({
   q: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 17,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   a: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 14,
     lineHeight: 22,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
 });

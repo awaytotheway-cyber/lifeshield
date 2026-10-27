@@ -4,7 +4,7 @@ import { Redirect, useRouter } from "expo-router";
 import { StyleSheet, Text } from "react-native";
 
 import { TextButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { COPY } from "@/lib/copy";
@@ -45,7 +45,7 @@ export default function AboutSettingsScreen() {
       </Text>
       <Text style={styles.body}>{COPY.aboutBody}</Text>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.label}>{COPY.aboutVersion}</Text>
         <Text style={styles.value}>{version}</Text>
         <Text style={[styles.label, styles.gap]}>{COPY.aboutCompany}</Text>
@@ -66,7 +66,7 @@ export default function AboutSettingsScreen() {
             void WebBrowser.openBrowserAsync(legalPageUrl("terms"));
           }}
         />
-      </GlassCard>
+      </Surface>
     </Screen>
   );
 }
@@ -76,14 +76,14 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.display,
     fontSize: 40,
     letterSpacing: -0.8,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
   },
   body: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   card: {
     marginTop: spacing.md,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   gap: {
     marginTop: 16,
@@ -102,6 +102,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.charcoal,
+    color: colors.ink,
   },
 });

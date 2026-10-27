@@ -12,12 +12,12 @@ import { Feather } from "@expo/vector-icons";
 
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -42,6 +42,9 @@ import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 type Step = "pick_test" | "pick_lab" | "confirm" | "booked";
@@ -215,10 +218,10 @@ export default function BookTestScreen() {
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't start booking</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && step === "pick_test" ? (
@@ -304,13 +307,13 @@ function PickTestSection({
           accessibilityRole="button"
           style={styles.pickerRow}
         >
-          <GlassCard intensity="card" style={styles.card}>
+          <Surface style={styles.card}>
             <Text style={styles.cardTitle}>{test.test_name}</Text>
             <Text style={styles.meta}>Tier {test.test_tier}</Text>
             {test.trigger_reason ? (
               <Text style={styles.subtle}>{test.trigger_reason}</Text>
             ) : null}
-          </GlassCard>
+          </Surface>
         </Pressable>
       ))}
     </View>
@@ -348,7 +351,7 @@ function PickLabSection({
       <Text style={styles.stepLabel}>Step 2 of 3</Text>
       <Text style={styles.sectionHeading}>Pick a lab for “{test.test_name}”</Text>
 
-      <GlassCard intensity="card" style={styles.locationCard}>
+      <Surface style={styles.locationCard}>
         <Text style={styles.subHeading}>Where are you?</Text>
         <Text style={styles.subtle}>
           Country + postcode help us rank nearby labs first. You can leave the
@@ -379,7 +382,7 @@ function PickLabSection({
           loading={saving}
           onPress={onSaveLocation}
         />
-      </GlassCard>
+      </Surface>
 
       {!locationOk ? (
         <Text style={styles.helper}>
@@ -402,14 +405,14 @@ function PickLabSection({
             accessibilityRole="button"
             style={styles.pickerRow}
           >
-            <GlassCard intensity="card" style={styles.card}>
+            <Surface style={styles.card}>
               <View style={styles.headerRow}>
                 <Text style={styles.cardTitle}>{entry.lab.name}</Text>
                 {entry.score >= 4 ? (
                   <Feather
                     name="star"
                     size={16}
-                    color={colors.primaryBlue}
+                    color={colors.mossDeep}
                   />
                 ) : null}
               </View>
@@ -426,7 +429,7 @@ function PickLabSection({
                   from {entry.lab.currency} {entry.lab.price}
                 </Text>
               ) : null}
-            </GlassCard>
+            </Surface>
           </Pressable>
         ))
       )}
@@ -458,14 +461,14 @@ function ConfirmSection({
       <Text style={styles.stepLabel}>Step 3 of 3</Text>
       <Text style={styles.sectionHeading}>Confirm booking</Text>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.subHeading}>Test</Text>
         <Text style={styles.body}>
           {test.test_name} · tier {test.test_tier}
         </Text>
-      </GlassCard>
+      </Surface>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.subHeading}>Lab</Text>
         <Text style={styles.body}>{lab.lab.name}</Text>
         {lab.lab.postcode || lab.lab.country ? (
@@ -478,7 +481,7 @@ function ConfirmSection({
             from {lab.lab.currency} {lab.lab.price}
           </Text>
         ) : null}
-      </GlassCard>
+      </Surface>
 
       <TextInput
         label="Preferred slot (optional)"
@@ -511,7 +514,7 @@ function BookedSection({
 }) {
   return (
     <View style={styles.section}>
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.subHeading}>Booked</Text>
         <Text style={styles.body}>
           {lab.lab.name} has been sent your request. We'll confirm the slot
@@ -520,7 +523,7 @@ function BookedSection({
         {labOrderId ? (
           <Text style={styles.subtle}>Reference: {labOrderId}</Text>
         ) : null}
-      </GlassCard>
+      </Surface>
       <PrimaryButton title="See my orders" onPress={onOpenOrders} />
       <SecondaryButton title="Book another test" onPress={onBookAnother} />
     </View>
@@ -531,19 +534,18 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   section: {
     marginTop: spacing.md,
@@ -552,20 +554,20 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.sm,
   },
   subHeading: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.micro,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -573,8 +575,7 @@ const styles = StyleSheet.create({
   pickerRow: {},
   card: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   headerRow: {
     flexDirection: "row",
@@ -584,30 +585,29 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontFamily: fontFamily.display,
     fontSize: 17,
-    color: colors.deepNavy,
+    color: colors.ink,
     flex: 1,
   },
   meta: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     marginTop: spacing.micro,
   },
   subtle: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   body: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   locationCard: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
     marginBottom: spacing.sm,
   },
   row: {
@@ -617,7 +617,7 @@ const styles = StyleSheet.create({
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
 });

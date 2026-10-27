@@ -4,7 +4,7 @@ import { BackHandler, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { TextButton } from "@/components/ui/Button";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
 import { colors, radius, spacing } from "@/lib/design-tokens";
@@ -52,14 +52,14 @@ export default function EscalationScreen() {
 
   return (
     <Screen scroll contentPadding={spacing.screenX}>
-      <GlassSurface intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <View style={styles.iconWell}>
-          <Feather name="user-plus" size={28} color={colors.primaryBlue} />
+          <Feather name="user-plus" size={28} color={colors.mossDeep} />
         </View>
         <Text style={styles.title}>{COPY.ctcStopTitle}</Text>
         <Text style={styles.body}>{COPY.ctcStopBody}</Text>
         <Text style={styles.reassure}>{COPY.ctcStopNotADiagnosis}</Text>
-      </GlassSurface>
+      </Surface>
 
       <Text style={styles.paused}>{COPY.ctcStopPausedNote}</Text>
 
@@ -86,14 +86,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.hairline,
     marginBottom: spacing.base,
   },
   title: {
     fontFamily: fontFamily.display,
     fontSize: 22,
     lineHeight: 28,
-    color: colors.deepNavy,
+    color: colors.ink,
     textAlign: "center",
   },
   body: {
@@ -101,18 +101,18 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
     textAlign: "center",
   },
   reassure: {
     marginTop: spacing.base,
     padding: spacing.mdSm,
-    borderRadius: radius.alert,
-    backgroundColor: colors.iceBlue,
+    borderRadius: radius.surface,
+    backgroundColor: colors.mossTint,
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 19,
-    color: colors.deepNavy,
+    color: colors.ink,
     textAlign: "center",
   },
   paused: {
@@ -120,6 +120,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
 });

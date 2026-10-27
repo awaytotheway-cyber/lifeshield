@@ -35,14 +35,14 @@ function BrandSplash({ message }: { message: string }) {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.iceBlue,
+        backgroundColor: colors.mossTint,
       }}
     >
-      <ActivityIndicator color={colors.primaryBlue} />
+      <ActivityIndicator color={colors.mossDeep} />
       <Text
         style={{
           marginTop: 16,
-          color: colors.charcoal,
+          color: colors.ink,
           fontFamily: fontFamily.body,
           fontSize: 15,
         }}

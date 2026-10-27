@@ -17,7 +17,7 @@ export default function NotFoundScreen() {
       <Screen centered>
         <View style={styles.content}>
           <View style={styles.iconWell}>
-            <Feather name="compass" size={44} color={colors.primaryBlue} />
+            <Feather name="compass" size={44} color={colors.mossDeep} />
           </View>
 
           <Text style={styles.title}>Page not found</Text>
@@ -54,17 +54,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.hairline,
     marginBottom: spacing.md,
   },
   title: {
     ...typography.h1,
-    color: colors.deepNavy,
+    color: colors.ink,
     textAlign: "center",
   },
   body: {
     ...typography.body,
-    color: colors.slate,
+    color: colors.inkSoft,
     textAlign: "center",
     marginTop: spacing.mdSm,
     maxWidth: 320,

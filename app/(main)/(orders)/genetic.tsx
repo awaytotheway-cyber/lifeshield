@@ -15,12 +15,12 @@ import {
   TextButton,
 } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -40,6 +40,9 @@ import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 type Step = "pick_test" | "shipping" | "confirm" | "booked";
@@ -210,10 +213,10 @@ export default function GeneticTestingScreen() {
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't load genetic tests</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && step === "pick_test" ? (
@@ -289,7 +292,7 @@ function PickTestSection({
           onPress={() => onSelect(test)}
           accessibilityRole="button"
         >
-          <GlassCard intensity="card" style={styles.card}>
+          <Surface style={styles.card}>
             <Text style={styles.cardTitle}>{test.name}</Text>
             {test.description ? (
               <Text style={styles.subtle}>{test.description}</Text>
@@ -305,7 +308,7 @@ function PickTestSection({
                 {test.currency} {test.price}
               </Text>
             ) : null}
-          </GlassCard>
+          </Surface>
         </Pressable>
       ))}
     </View>
@@ -424,7 +427,7 @@ function ConfirmSection({
       <Text style={styles.stepLabel}>Step 3 of 3</Text>
       <Text style={styles.sectionHeading}>Confirm order</Text>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.subHeading}>Panel</Text>
         <Text style={styles.body}>
           {test.name} · {humanSampleType(test.sample_type)}
@@ -437,9 +440,9 @@ function ConfirmSection({
               : ""}
           </Text>
         ) : null}
-      </GlassCard>
+      </Surface>
 
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.subHeading}>Ship to</Text>
         <Text style={styles.body}>{address.name}</Text>
         <Text style={styles.body}>{address.line1}</Text>
@@ -450,13 +453,13 @@ function ConfirmSection({
         <Text style={styles.body}>
           {address.postcode} · {address.country.toUpperCase()}
         </Text>
-      </GlassCard>
+      </Surface>
 
       {notes ? (
-        <GlassCard intensity="card" style={styles.card}>
+        <Surface style={styles.card}>
           <Text style={styles.subHeading}>Notes</Text>
           <Text style={styles.body}>{notes}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       <Text style={styles.helper}>
@@ -487,7 +490,7 @@ function BookedSection({
 }) {
   return (
     <View style={styles.section}>
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <Text style={styles.subHeading}>Order raised</Text>
         <Text style={styles.body}>
           Your request for {test.name} is in the queue. We'll contact you to
@@ -496,7 +499,7 @@ function BookedSection({
         {labOrderId ? (
           <Text style={styles.subtle}>Reference: {labOrderId}</Text>
         ) : null}
-      </GlassCard>
+      </Surface>
       <SecondaryButton title="Order another panel" onPress={onBookAnother} />
     </View>
   );
@@ -516,7 +519,7 @@ function OrdersHistory({
       {orders.map((order) => {
         const test = testsById.get(order.genetic_test_id);
         return (
-          <GlassCard key={order.id} intensity="card" style={styles.card}>
+          <Surface key={order.id} style={styles.card}>
             <Text style={styles.cardTitle}>
               {test?.name ?? "Panel"}
             </Text>
@@ -527,7 +530,7 @@ function OrdersHistory({
             {order.tracking ? (
               <Text style={styles.subtle}>Tracking: {order.tracking}</Text>
             ) : null}
-          </GlassCard>
+          </Surface>
         );
       })}
       <TextButton
@@ -544,19 +547,18 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   section: {
     marginTop: spacing.md,
@@ -565,57 +567,56 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.sm,
   },
   subHeading: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.micro,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   card: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   cardTitle: {
     fontFamily: fontFamily.display,
     fontSize: 17,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   meta: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     marginTop: spacing.micro,
   },
   subtle: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   body: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   row: { flexDirection: "row", gap: spacing.sm },
   actions: { gap: spacing.sm, marginTop: spacing.md },
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.sm,
   },
 });

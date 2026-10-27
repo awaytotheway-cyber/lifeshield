@@ -7,10 +7,10 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   nextOccurrence,
   scheduleLabel,
@@ -30,6 +30,9 @@ import {
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -135,15 +138,15 @@ export default function ReminderDetailScreen() {
       />
 
       {state === "loading" ? (
-        <ActivityIndicator color={colors.primaryBlue} style={styles.spinner} />
+        <ActivityIndicator color={colors.mossDeep} style={styles.spinner} />
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't open this reminder</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
           <SecondaryButton title="Try again" onPress={() => void refresh()} />
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && reminder ? (
@@ -175,7 +178,7 @@ function ReminderBody({
       : null;
   return (
     <>
-      <GlassCard intensity="card" style={styles.summary}>
+      <Surface style={styles.summary}>
         <Text style={styles.cadence}>{scheduleLabel(reminder)}</Text>
         <Text style={styles.title}>{reminder.title}</Text>
         {reminder.body ? (
@@ -195,7 +198,7 @@ function ReminderBody({
             Last fired: {new Date(reminder.last_fired_at).toLocaleString()}
           </Text>
         ) : null}
-      </GlassCard>
+      </Surface>
 
       <View style={styles.actionRow}>
         {reminder.status === "active" ? (
@@ -244,31 +247,29 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   summary: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   cadence: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
@@ -276,19 +277,19 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fontFamily.display,
     fontSize: 22,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.micro,
   },
   body: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   meta: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   actionRow: {

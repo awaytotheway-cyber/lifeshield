@@ -11,11 +11,11 @@ import {
 
 import { PrimaryButton, SecondaryButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import type { Goal } from "@/lib/goals";
 import { loadGoals } from "@/lib/goals-io";
 import {
@@ -32,6 +32,9 @@ import { loadRecipeSummaries } from "@/lib/recipes-io";
 import { fontFamily } from "@/lib/typography";
 import { mealPlanHref, routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 const SLOT_LABELS: Record<MealSlot, string> = {
   breakfast: "Breakfast",
@@ -240,14 +243,14 @@ export default function NewMealPlanScreen() {
       <ScreenHeader title="New meal plan" onBack={() => router.back()} />
 
       {recipesLoading ? (
-        <ActivityIndicator color={colors.primaryBlue} style={styles.spinner} />
+        <ActivityIndicator color={colors.mossDeep} style={styles.spinner} />
       ) : null}
 
       {!recipesLoading && recipesError ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't load recipes</Text>
           <Text style={styles.errorBody}>{recipesError}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {!recipesLoading && !recipesError && recipes.length === 0 ? (
@@ -438,7 +441,7 @@ function PreviewList({ payload }: { payload: MealPlanPayload }) {
         <Text style={styles.helper}>No days generated.</Text>
       ) : null}
       {payload.days.map((day) => (
-        <GlassCard key={day.date} intensity="card" style={styles.previewCard}>
+        <Surface key={day.date} style={styles.previewCard}>
           <Text style={styles.previewDate}>{day.date}</Text>
           {day.meals.length === 0 ? (
             <Text style={styles.helper}>No meals planned.</Text>
@@ -450,7 +453,7 @@ function PreviewList({ payload }: { payload: MealPlanPayload }) {
               </View>
             ))
           )}
-        </GlassCard>
+        </Surface>
       ))}
     </View>
   );
@@ -461,32 +464,31 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   row: { flexDirection: "row", gap: spacing.sm },
   label: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 14,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   chipRow: {
@@ -495,29 +497,29 @@ const styles = StyleSheet.create({
     gap: spacing.micro,
   },
   chip: {
-    borderRadius: radius.chip,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.mdSm,
     paddingVertical: spacing.micro,
-    backgroundColor: colors.glassChrome,
+    backgroundColor: colors.white,
   },
-  chipActive: { backgroundColor: colors.primaryBlue },
-  chipAvoidActive: { backgroundColor: colors.riskHigh },
-  chipPreferActive: { backgroundColor: colors.riskLow },
+  chipActive: { backgroundColor: colors.mossDeep },
+  chipAvoidActive: { backgroundColor: status.worthDiscussing.fill },
+  chipPreferActive: { backgroundColor: status.withinRange.fill },
   chipGoal: {
-    backgroundColor: colors.glassChrome,
+    backgroundColor: colors.white,
     borderWidth: 1,
-    borderColor: colors.primaryBlue,
+    borderColor: colors.mossDeep,
   },
   chipLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   chipLabelActive: { color: colors.white },
   error: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.riskHigh,
+    color: CLAY,
     marginTop: spacing.sm,
   },
   actions: {
@@ -530,18 +532,17 @@ const styles = StyleSheet.create({
   previewHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.sm,
   },
   previewCard: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   previewDate: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.sm,
@@ -555,13 +556,13 @@ const styles = StyleSheet.create({
   mealSlot: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
     minWidth: 80,
   },
   mealName: {
     flex: 1,
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.charcoal,
+    color: colors.ink,
   },
 });

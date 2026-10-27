@@ -16,15 +16,24 @@ import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
+import {
+  colors,
+  radius,
+  spacing,
+  status,
+  tapTarget,
+} from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
 import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type CheckCardProps = {
   label: string;
@@ -44,7 +53,7 @@ function CheckCard({ label, checked, onToggle }: CheckCardProps) {
     >
       <Text style={styles.checkLabel}>{label}</Text>
       {checked ? (
-        <Feather name="check" size={20} color={colors.midTeal} />
+        <Feather name="check" size={20} color={colors.mossDeep} />
       ) : (
         <View style={styles.checkEmpty} />
       )}
@@ -152,7 +161,7 @@ export default function ConsentPrivacyScreen() {
       </View>
       <Text style={styles.title}>{COPY.consentGateTitle}</Text>
 
-      <GlassSurface intensity="card" style={styles.summaryCard}>
+      <Surface style={styles.summaryCard}>
         <ScrollView
           style={styles.summaryScroll}
           contentContainerStyle={styles.summaryInner}
@@ -176,7 +185,7 @@ export default function ConsentPrivacyScreen() {
             onPress={() => void openLegal("terms")}
           />
         </ScrollView>
-      </GlassSurface>
+      </Surface>
 
       <CheckCard
         label={COPY.consentGateCheckPolicy}
@@ -203,7 +212,7 @@ export default function ConsentPrivacyScreen() {
       >
         <Pressable style={styles.backdrop} onPress={() => setDeclineOpen(false)}>
           <Pressable onPress={() => undefined}>
-            <GlassSurface intensity="sheet" style={styles.sheet}>
+            <Surface style={styles.sheet}>
               <SafeAreaView edges={["bottom"]}>
                 <Text style={styles.sheetTitle}>{COPY.consentGateDeclineTitle}</Text>
                 <Text style={styles.sheetBody}>{COPY.consentGateDeclineBody}</Text>
@@ -226,7 +235,7 @@ export default function ConsentPrivacyScreen() {
                   </Pressable>
                 </View>
               </SafeAreaView>
-            </GlassSurface>
+            </Surface>
           </Pressable>
         </Pressable>
       </Modal>
@@ -245,7 +254,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h1,
-    color: colors.deepTeal,
+    color: colors.mossDeep,
     textAlign: "center",
     marginBottom: spacing.base,
   },
@@ -264,7 +273,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
     lineHeight: 22,
-    color: colors.deepTeal,
+    color: colors.mossDeep,
     marginBottom: spacing.sm,
   },
   block: {
@@ -273,19 +282,19 @@ const styles = StyleSheet.create({
   blockTitle: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.ink,
     marginBottom: 4,
   },
   blockBody: {
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   checkCard: {
     marginTop: spacing.sm,
     minHeight: 56,
-    borderRadius: radius.radioCard,
+    borderRadius: radius.surface,
     paddingHorizontal: 16,
     paddingVertical: 12,
     flexDirection: "row",
@@ -295,12 +304,12 @@ const styles = StyleSheet.create({
   checkOff: {
     backgroundColor: colors.white,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.hairline,
   },
   checkOn: {
-    backgroundColor: colors.lightTeal,
+    backgroundColor: colors.mossTint,
     borderWidth: 2,
-    borderColor: colors.midTeal,
+    borderColor: colors.mossDeep,
   },
   checkLabel: {
     flex: 1,
@@ -308,7 +317,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
     lineHeight: 22,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   checkEmpty: {
     width: 20,
@@ -319,7 +328,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.coral,
+    color: CLAY,
   },
   backdrop: {
     flex: 1,
@@ -332,14 +341,14 @@ const styles = StyleSheet.create({
   sheetTitle: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.deepTeal,
+    color: colors.mossDeep,
   },
   sheetBody: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   sheetRow: {
     marginTop: 8,
@@ -354,11 +363,11 @@ const styles = StyleSheet.create({
   sheetClose: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.coral,
+    color: CLAY,
   },
   sheetBack: {
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.mossDeep,
   },
 });

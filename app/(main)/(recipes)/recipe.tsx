@@ -12,10 +12,10 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import { SecondaryButton } from "@/components/ui/Button";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { totalMinutes, type Recipe } from "@/lib/recipes";
 import {
   loadFavoriteRecipeIds,
@@ -25,6 +25,9 @@ import {
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -95,15 +98,15 @@ export default function RecipeDetailScreen() {
       />
 
       {state === "loading" ? (
-        <ActivityIndicator color={colors.primaryBlue} style={styles.spinner} />
+        <ActivityIndicator color={colors.mossDeep} style={styles.spinner} />
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't open this recipe</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
           <SecondaryButton title="Try again" onPress={() => void refresh()} />
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && recipe ? (
@@ -140,7 +143,7 @@ function RecipeBody({
         />
       ) : null}
 
-      <GlassCard intensity="card" style={styles.headerCard}>
+      <Surface style={styles.headerCard}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>{recipe.name}</Text>
           <Pressable
@@ -153,7 +156,7 @@ function RecipeBody({
             <Feather
               name="heart"
               size={24}
-              color={favorited ? colors.riskHigh : colors.slate}
+              color={favorited ? CLAY : colors.inkSoft}
             />
           </Pressable>
         </View>
@@ -183,7 +186,7 @@ function RecipeBody({
             ))}
           </View>
         ) : null}
-      </GlassCard>
+      </Surface>
 
       {recipe.ingredients.length > 0 ? (
         <View style={styles.section}>
@@ -279,32 +282,30 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   image: {
     width: "100%",
     height: 200,
-    borderRadius: radius.card,
+    borderRadius: radius.surface,
     marginTop: spacing.md,
   },
   headerCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   headerRow: {
     flexDirection: "row",
@@ -315,7 +316,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: fontFamily.display,
     fontSize: 22,
-    color: colors.deepNavy,
+    color: colors.ink,
     flex: 1,
   },
   favoriteButton: {
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
   description: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.sm,
   },
   metaRow: {
@@ -338,11 +339,11 @@ const styles = StyleSheet.create({
   metaChip: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.deepNavy,
-    backgroundColor: colors.glassChrome,
+    color: colors.ink,
+    backgroundColor: colors.white,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.micro,
-    borderRadius: radius.chip,
+    borderRadius: radius.pill,
     overflow: "hidden",
   },
   tagRow: {
@@ -354,11 +355,11 @@ const styles = StyleSheet.create({
   tag: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 11,
-    color: colors.primaryBlue,
-    backgroundColor: colors.glassChrome,
+    color: colors.mossDeep,
+    backgroundColor: colors.white,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: radius.chip,
+    borderRadius: radius.pill,
     overflow: "hidden",
   },
   section: {
@@ -367,13 +368,13 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.sm,
   },
   ingredient: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.charcoal,
+    color: colors.ink,
     marginBottom: spacing.micro,
   },
   step: {
@@ -383,14 +384,14 @@ const styles = StyleSheet.create({
   stepNumber: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 14,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     minWidth: 24,
   },
   stepText: {
     flex: 1,
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   nutritionRow: {
     flexDirection: "row",
@@ -400,18 +401,18 @@ const styles = StyleSheet.create({
   nutritionCell: {
     minWidth: 80,
     padding: spacing.sm,
-    borderRadius: radius.card,
-    backgroundColor: colors.glassChrome,
+    borderRadius: radius.surface,
+    backgroundColor: colors.white,
   },
   nutritionValue: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   nutritionLabel: {
     fontFamily: fontFamily.body,
     fontSize: 11,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: 2,
     textTransform: "uppercase",
     letterSpacing: 0.5,

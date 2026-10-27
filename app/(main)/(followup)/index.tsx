@@ -8,7 +8,7 @@ import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   reminderNoteFor,
   requestFollowUpReminderPermission,
@@ -33,6 +33,9 @@ import { followUpSymptomHref, routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type HubLoadState = "idle" | "loading" | "ready" | "error";
 
@@ -292,21 +295,21 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
     textAlign: "center",
   },
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: CLAY,
     textAlign: "center",
   },
   ok: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.sage,
+    color: colors.mossDeep,
     textAlign: "center",
   },
   note: {
@@ -314,14 +317,14 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 13,
     lineHeight: 20,
-    color: colors.slate,
+    color: colors.inkSoft,
     textAlign: "center",
   },
   hint: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.mossDeep,
   },
   list: {
     paddingBottom: 16,
@@ -329,25 +332,24 @@ const styles = StyleSheet.create({
   card: {
     marginTop: 12,
     backgroundColor: colors.white,
-    borderRadius: radius.card,
+    borderRadius: radius.surface,
     padding: spacing.base,
-    ...shadows.card,
   },
   type: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   cardTitle: {
     marginTop: 4,
     fontFamily: fontFamily.bodySemi,
     fontSize: 16,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   due: {
     marginTop: 8,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.charcoal,
+    color: colors.ink,
   },
 });

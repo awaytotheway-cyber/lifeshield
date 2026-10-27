@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.md,
   },
   row: {

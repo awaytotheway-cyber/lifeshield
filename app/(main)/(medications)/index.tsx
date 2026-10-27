@@ -4,11 +4,11 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -22,6 +22,9 @@ import { fontFamily } from "@/lib/typography";
 import { medicationHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -122,10 +125,10 @@ export default function MedicationsScreen() {
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't load medications</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && rows.length === 0 ? (
@@ -192,7 +195,7 @@ function MedicationCard({
       : `since ${row.start_date}`
     : null;
   return (
-    <GlassCard intensity="card" style={[styles.card, muted ? styles.cardMuted : null]}>
+    <Surface style={[styles.card, muted ? styles.cardMuted : null]}>
       <Text style={styles.cardTitle}>{row.name}</Text>
       {meta ? <Text style={styles.meta}>{meta}</Text> : null}
       {dateRange ? <Text style={styles.meta}>{dateRange}</Text> : null}
@@ -206,7 +209,7 @@ function MedicationCard({
         </View>
       ) : null}
       <TextButton title="Open" onPress={onOpen} />
-    </GlassCard>
+    </Surface>
   );
 }
 
@@ -214,50 +217,48 @@ const styles = StyleSheet.create({
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.sm,
   },
   skeletons: { gap: spacing.sm, marginTop: spacing.md },
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   card: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   cardMuted: { opacity: 0.75 },
   cardTitle: {
     fontFamily: fontFamily.display,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.micro,
   },
   meta: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   tagRow: {
@@ -269,11 +270,11 @@ const styles = StyleSheet.create({
   tag: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 11,
-    color: colors.primaryBlue,
-    backgroundColor: colors.glassChrome,
+    color: colors.mossDeep,
+    backgroundColor: colors.white,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: radius.chip,
+    borderRadius: radius.pill,
     overflow: "hidden",
   },
   other: { marginTop: spacing.md },

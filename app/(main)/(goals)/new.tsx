@@ -7,7 +7,7 @@ import { ChoiceToggle } from "@/components/ui/ChoiceToggle";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import {
   todayYmd,
   validateGoalDraft,
@@ -19,6 +19,9 @@ import { createGoal } from "@/lib/goals-io";
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 const CADENCE_OPTIONS: { value: GoalCadence; label: string }[] = [
   { value: "daily", label: "Daily" },
@@ -227,7 +230,7 @@ const styles = StyleSheet.create({
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.md,
   },
   row: {
@@ -237,7 +240,7 @@ const styles = StyleSheet.create({
   error: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.riskHigh,
+    color: CLAY,
     marginTop: spacing.sm,
   },
 });

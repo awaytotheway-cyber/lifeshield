@@ -4,12 +4,12 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -21,6 +21,9 @@ import { fontFamily } from "@/lib/typography";
 import { goalHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -122,10 +125,10 @@ export default function GoalsScreen() {
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't load your goals</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && rows.length === 0 ? (
@@ -186,7 +189,7 @@ function GoalCard({
   const progress = computeProgress(goal, [], new Date());
   const streak = computeDailyStreak(goal, [], new Date());
   return (
-    <GlassCard intensity="card" style={[styles.card, muted ? styles.cardMuted : null]}>
+    <Surface style={[styles.card, muted ? styles.cardMuted : null]}>
       <View style={styles.headerRow}>
         <Text style={styles.cadence}>{cadenceLabel(goal.target.cadence)}</Text>
         {goal.clinician_reviewed ? (
@@ -207,7 +210,7 @@ function GoalCard({
         ) : null}
       </View>
       <TextButton title="Open" onPress={onOpen} />
-    </GlassCard>
+    </Surface>
   );
 }
 
@@ -225,31 +228,29 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
   },
   card: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   cardMuted: {
     opacity: 0.75,
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
   cadence: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: spacing.micro,
@@ -268,8 +269,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   reviewedChip: {
-    backgroundColor: colors.riskLow,
-    borderRadius: radius.chip,
+    backgroundColor: status.withinRange.fill,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     marginBottom: spacing.micro,
@@ -282,13 +283,13 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontFamily: fontFamily.display,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     marginBottom: spacing.micro,
   },
   target: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   metaRow: {
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
   metaText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   other: {
     marginTop: spacing.md,

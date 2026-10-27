@@ -8,9 +8,14 @@ import { InterventionCard } from "@/components/ui/InterventionCard";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
-import type { StatusChipKind } from "@/components/ui/StatusChip";
 import { COPY } from "@/lib/copy";
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import {
+  colors,
+  radius,
+  spacing,
+  status,
+  type StatusKind,
+} from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -33,20 +38,27 @@ import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
 type ListRow =
   | { kind: "heading"; id: string; title: string }
   | { kind: "item"; id: string; row: InterventionRow };
 
-function planChip(
-  row: InterventionRow,
-): { status: Extract<StatusChipKind, "approved" | "draft" | "critical">; label: string } {
+/**
+ * The plan item's chip. The three old chip kinds map straight onto the three
+ * clinical statuses — needs-a-check is the clay `worthDiscussing`, reviewed is
+ * the moss `withinRange`, and still-a-draft is the sand `worthWatching`. The
+ * wording is unchanged; only the tone comes from the token file now.
+ */
+function planChip(row: InterventionRow): { status: StatusKind; label: string } {
   if (row.clinician_interaction_check) {
-    return { status: "critical", label: COPY.planNeedsCheck };
+    return { status: "worthDiscussing", label: COPY.planNeedsCheck };
   }
   if (row.status === "clinician_approved" || row.status === "active") {
-    return { status: "approved", label: COPY.planStatusReviewed };
+    return { status: "withinRange", label: COPY.planStatusReviewed };
   }
-  return { status: "draft", label: "Pending review" };
+  return { status: "worthWatching", label: "Pending review" };
 }
 
 function categoryIcon(
@@ -301,15 +313,15 @@ export default function PlanScreen() {
 const styles = StyleSheet.create({
   banner: {
     marginTop: 8,
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.alert,
+    backgroundColor: colors.mossTint,
+    borderRadius: radius.surface,
     padding: spacing.base,
   },
   bannerText: {
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: colors.ink,
     textAlign: "center",
   },
   body: {
@@ -317,14 +329,14 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.slate,
+    color: colors.inkSoft,
     textAlign: "center",
   },
   error: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.coral,
+    color: CLAY,
     textAlign: "center",
   },
   list: {
@@ -335,7 +347,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     fontFamily: fontFamily.bodySemi,
     fontSize: 20,
-    color: colors.deepTeal,
+    color: colors.mossDeep,
   },
   cardGap: {
     marginBottom: 12,

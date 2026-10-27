@@ -14,10 +14,10 @@ import {
   SecondaryButton,
 } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { loadMealPlanById, type MealPlanRow } from "@/lib/meal-plans-io";
 import { loadRecipesByIds } from "@/lib/recipes-io";
 import {
@@ -35,6 +35,9 @@ import { addToCart, loadActiveProducts } from "@/lib/store";
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -173,15 +176,15 @@ export default function ShoppingListScreen() {
       />
 
       {state === "loading" ? (
-        <ActivityIndicator color={colors.primaryBlue} style={styles.spinner} />
+        <ActivityIndicator color={colors.mossDeep} style={styles.spinner} />
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't build the list</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
           <SecondaryButton title="Try again" onPress={() => void refresh()} />
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && plan && shoppingList ? (
@@ -234,13 +237,13 @@ function ShoppingBody({
 
   return (
     <>
-      <GlassCard intensity="card" style={styles.summary}>
+      <Surface style={styles.summary}>
         <Text style={styles.summaryTitle}>{plan.title}</Text>
         <Text style={styles.summaryMeta}>
           {shoppingList.matched.length} in store · {shoppingList.unmatched.length}{" "}
           to source elsewhere
         </Text>
-      </GlassCard>
+      </Surface>
 
       {shoppingList.matched.length > 0 ? (
         <View style={styles.section}>
@@ -313,7 +316,7 @@ function MatchedRow({
     summariseAmounts(item.ingredient.amounts),
   );
   return (
-    <GlassCard intensity="card" style={styles.card}>
+    <Surface style={styles.card}>
       <Text style={styles.ingredient}>{item.ingredient.display_name}</Text>
       {amountLine ? (
         <Text style={styles.quantity}>Need: {amountLine}</Text>
@@ -331,7 +334,7 @@ function MatchedRow({
       ) : (
         <SecondaryButton title="Add" onPress={onAdd} />
       )}
-    </GlassCard>
+    </Surface>
   );
 }
 
@@ -340,7 +343,7 @@ function UnmatchedRow({ item }: { item: UnmatchedItem }) {
     summariseAmounts(item.ingredient.amounts),
   );
   return (
-    <GlassCard intensity="card" style={styles.card}>
+    <Surface style={styles.card}>
       <Text style={styles.ingredient}>{item.ingredient.display_name}</Text>
       {amountLine ? (
         <Text style={styles.quantity}>Need: {amountLine}</Text>
@@ -348,7 +351,7 @@ function UnmatchedRow({ item }: { item: UnmatchedItem }) {
       <Text style={styles.meta}>
         used in {formatRecipeList(item.ingredient.used_in_recipes)}
       </Text>
-    </GlassCard>
+    </Surface>
   );
 }
 
@@ -376,36 +379,34 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   summary: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   summaryTitle: {
     fontFamily: fontFamily.display,
     fontSize: 20,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   summaryMeta: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   section: { marginTop: spacing.md },
@@ -418,46 +419,45 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.sm,
   },
   card: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   ingredient: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 15,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   productLine: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.charcoal,
+    color: colors.ink,
     marginTop: spacing.micro,
   },
   quantity: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 13,
-    color: colors.primaryBlue,
+    color: colors.mossDeep,
     marginTop: spacing.micro,
   },
   meta: {
     fontFamily: fontFamily.body,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   addedLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 13,
-    color: colors.riskLow,
+    color: status.withinRange.text,
     marginTop: spacing.sm,
   },
 });

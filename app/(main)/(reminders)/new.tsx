@@ -7,7 +7,7 @@ import { ChoiceToggle } from "@/components/ui/ChoiceToggle";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import {
   validateReminderDraft,
   type ReminderCadence,
@@ -19,6 +19,9 @@ import { scheduleReminder } from "@/lib/reminders-notifications";
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 const CADENCE_OPTIONS: { value: ReminderCadence; label: string }[] = [
   { value: "once", label: "Once" },
@@ -209,13 +212,13 @@ const styles = StyleSheet.create({
   helper: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginBottom: spacing.md,
   },
   error: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.riskHigh,
+    color: CLAY,
     marginTop: spacing.sm,
   },
   spacer: {

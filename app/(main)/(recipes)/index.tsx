@@ -11,11 +11,11 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import { EmptyState } from "@/components/ui/EmptyState";
-import { GlassCard } from "@/components/ui/GlassCard";
+import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -36,6 +36,9 @@ import { fontFamily } from "@/lib/typography";
 import { recipeHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 
@@ -135,12 +138,12 @@ export default function RecipesScreen() {
       <ScreenHeader title="Recipes" onBack={() => router.back()} />
 
       <View style={styles.searchWrap}>
-        <Feather name="search" size={16} color={colors.slate} />
+        <Feather name="search" size={16} color={colors.inkSoft} />
         <RNTextInput
           value={query}
           onChangeText={setQuery}
           placeholder="Search recipes"
-          placeholderTextColor={colors.mist}
+          placeholderTextColor={colors.inkMuted}
           style={styles.searchInput}
           autoCorrect={false}
           autoCapitalize="none"
@@ -150,7 +153,7 @@ export default function RecipesScreen() {
             onPress={() => setQuery("")}
             accessibilityLabel="Clear search"
           >
-            <Feather name="x-circle" size={16} color={colors.slate} />
+            <Feather name="x-circle" size={16} color={colors.inkSoft} />
           </Pressable>
         ) : null}
       </View>
@@ -193,10 +196,10 @@ export default function RecipesScreen() {
       ) : null}
 
       {state === "error" && errorMessage ? (
-        <GlassCard intensity="card" style={styles.errorCard}>
+        <Surface style={styles.errorCard}>
           <Text style={styles.errorHeading}>Couldn't load recipes</Text>
           <Text style={styles.errorBody}>{errorMessage}</Text>
-        </GlassCard>
+        </Surface>
       ) : null}
 
       {state === "ready" && rows.length === 0 ? (
@@ -246,11 +249,11 @@ function RecipeCard({
   const minutes = totalMinutes(recipe);
   return (
     <Pressable onPress={onOpen} accessibilityRole="button">
-      <GlassCard intensity="card" style={styles.card}>
+      <Surface style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>{recipe.name}</Text>
           {favorited ? (
-            <Feather name="heart" size={18} color={colors.riskHigh} />
+            <Feather name="heart" size={18} color={CLAY} />
           ) : null}
         </View>
         {recipe.description ? (
@@ -277,7 +280,7 @@ function RecipeCard({
             ))}
           </View>
         ) : null}
-      </GlassCard>
+      </Surface>
     </Pressable>
   );
 }
@@ -289,9 +292,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: spacing.sm,
     backgroundColor: colors.white,
-    borderColor: colors.border,
+    borderColor: colors.hairline,
     borderWidth: 1,
-    borderRadius: radius.input,
+    borderRadius: radius.control,
     paddingHorizontal: spacing.base,
     height: 44,
   },
@@ -299,7 +302,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.body,
     fontSize: 15,
-    color: colors.deepNavy,
+    color: colors.ink,
     padding: 0,
   },
   tagRow: {
@@ -309,18 +312,18 @@ const styles = StyleSheet.create({
     gap: spacing.micro,
   },
   tagChip: {
-    borderRadius: radius.chip,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.mdSm,
     paddingVertical: spacing.micro,
-    backgroundColor: colors.glassChrome,
+    backgroundColor: colors.white,
   },
   tagChipActive: {
-    backgroundColor: colors.primaryBlue,
+    backgroundColor: colors.mossDeep,
   },
   tagChipLabel: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 12,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   tagChipLabelActive: {
     color: colors.white,
@@ -332,24 +335,22 @@ const styles = StyleSheet.create({
   errorCard: {
     marginTop: spacing.md,
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   errorHeading: {
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
-    color: colors.riskHigh,
+    color: CLAY,
     marginBottom: spacing.micro,
   },
   errorBody: {
     fontFamily: fontFamily.body,
     fontSize: 14,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   card: {
     padding: spacing.base,
-    borderRadius: radius.card,
-    ...shadows.card,
+    borderRadius: radius.surface,
   },
   cardHeader: {
     flexDirection: "row",
@@ -360,13 +361,13 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontFamily: fontFamily.display,
     fontSize: 18,
-    color: colors.deepNavy,
+    color: colors.ink,
     flex: 1,
   },
   cardDescription: {
     fontFamily: fontFamily.body,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
     marginTop: spacing.micro,
   },
   metaRow: {
@@ -377,7 +378,7 @@ const styles = StyleSheet.create({
   metaText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 12,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   cardTags: {
     flexDirection: "row",
@@ -388,11 +389,11 @@ const styles = StyleSheet.create({
   cardTag: {
     fontFamily: fontFamily.bodySemi,
     fontSize: 11,
-    color: colors.primaryBlue,
-    backgroundColor: colors.glassChrome,
+    color: colors.mossDeep,
+    backgroundColor: colors.white,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: radius.chip,
+    borderRadius: radius.pill,
     overflow: "hidden",
   },
 });
