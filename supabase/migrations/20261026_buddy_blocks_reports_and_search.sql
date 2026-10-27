@@ -213,13 +213,18 @@ begin
   end if;
 end $$;
 
--- ----------------------------------------------------------------- NOTE -----
--- profiles.is_buddy_discoverable DEFAULTS TO FALSE and every existing row is
--- false. The product decision was "everyone discoverable by first name and
--- city". Changing the default for NEW users is one statement:
+-- ------------------------------------------- discoverable: new users only ----
+-- The product decision is that members are discoverable by first name and city,
+-- so new accounts start discoverable.
+alter table public.profiles
+  alter column is_buddy_discoverable set default true;
+
+-- EXISTING ROWS ARE DELIBERATELY NOT BACKFILLED.
 --
---   alter table public.profiles alter column is_buddy_discoverable set default true;
+-- Every account that predates this migration stays is_buddy_discoverable =
+-- false until its owner turns discovery on themselves, via the "Let others
+-- find me" switch in Settings. Those people signed up under an opt-in default;
+-- flipping them here would make real users findable by strangers without ever
+-- asking them, which is not a schema decision to take on their behalf.
 --
--- Backfilling the EXISTING rows is deliberately NOT done here. That would make
--- real people discoverable without asking them, and it is a separate decision
--- from the product default. It is left to an explicit, consented action.
+-- Do not "tidy this up" with an UPDATE. The asymmetry is the point.
