@@ -595,6 +595,18 @@ export const COPY = {
   settingsOpenHelp: "Help & support",
   settingsOpenAbout: "About",
   settingsOpenMenu: "Open main menu",
+  settingsGroupYourData: "Your data",
+  settingsGroupReminders: "Reminders",
+  settingsGroupBuddies: "Buddies",
+  settingsOpenConsents: "Consents",
+  /** Rendered after the count: "3 given". */
+  settingsConsentsGivenSuffix: "given",
+  settingsLogOut: "Log out",
+  settingsDiscoverable: "Let others find me",
+  settingsDiscoverableHint:
+    "Other members can find you by your first name and city.",
+  settingsDiscoverableSaveFailed:
+    "We couldn’t save that. Your discovery setting is unchanged — try again.",
   settingsNotifyTitle: "Notifications",
   settingsNotifyBody:
     "Choose what PRESCOPE may remind you about. Remote push needs a development or store build; on-phone reminders still work when permission is on.",

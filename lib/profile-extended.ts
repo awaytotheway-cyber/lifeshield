@@ -41,6 +41,12 @@ export type ExtendedProfileRow = {
   preferred_notify_time: string | null;
   location_postcode: string | null;
   location_country: string | null;
+  /**
+   * Buddy discovery. `null` means the column did not come back (pre-migration
+   * schema, or a legacy select) — callers must read that as "not discoverable"
+   * rather than guessing a default. See `discoverableFromProfile`.
+   */
+  is_buddy_discoverable: boolean | null;
 };
 
 export type ExtendedProfileDraft = {
@@ -70,7 +76,7 @@ export type NotificationPrefsDraft = {
 };
 
 const PROFILE_SELECT =
-  "full_name, date_of_birth, sex, height_cm, weight_kg, bmi, phone, blood_type, emergency_contact_name, emergency_contact_phone, emergency_contact_relationship, conditions, allergies, avatar_url, notify_reminders, notify_results, notify_plan, notify_marketing, preferred_notify_time, location_postcode, location_country";
+  "full_name, date_of_birth, sex, height_cm, weight_kg, bmi, phone, blood_type, emergency_contact_name, emergency_contact_phone, emergency_contact_relationship, conditions, allergies, avatar_url, notify_reminders, notify_results, notify_plan, notify_marketing, preferred_notify_time, location_postcode, location_country, is_buddy_discoverable";
 
 export const profileFormSchema = z.object({
   fullName: z
@@ -264,7 +270,31 @@ function normalizeRow(data: Record<string, unknown> | null): ExtendedProfileRow 
       typeof data.preferred_notify_time === "string"
         ? data.preferred_notify_time
         : null,
+    // Only a real boolean counts. A missing column, a null, or anything the
+    // jsonb-ish client hands back as a string stays `null`, which the reader
+    // below turns into "off".
+    is_buddy_discoverable:
+      typeof data.is_buddy_discoverable === "boolean"
+        ? data.is_buddy_discoverable
+        : null,
   };
+}
+
+/**
+ * The stored discovery value, read as a switch position.
+ *
+ * Fails closed on purpose. Only an explicit `true` from the column shows the
+ * switch as on: a load that failed, a row that is missing, a pre-migration
+ * schema without the column, and every account created before the column's
+ * default changed all read as off. Showing "on" while the column says false
+ * would tell someone strangers can find them when they cannot — and showing
+ * "on" for an unknown value would tell them the opposite, which is the
+ * dangerous direction for a privacy control.
+ */
+export function discoverableFromProfile(
+  row: ExtendedProfileRow | null,
+): boolean {
+  return row?.is_buddy_discoverable === true;
 }
 
 /** Columns that exist only after the migration — if missing, we fall back. */
@@ -478,6 +508,58 @@ export async function saveNotificationPrefs(
     return {
       ok: false,
       message: messageFromUnknown(error, COPY.settingsNotifySaveFailed),
+    };
+  }
+}
+
+/**
+ * Writes `profiles.is_buddy_discoverable`.
+ *
+ * Its own update rather than a field on `saveExtendedProfile`, for the same
+ * reason notification prefs have their own: it is flipped on its own, and
+ * folding it into the profile form's draft would let saving an unrelated
+ * field change who can find the user.
+ *
+ * There is deliberately no local fallback here, unlike notification prefs. A
+ * switch that reads "on" from a value cached on this device while the column
+ * still says false would tell someone they are findable when they are not —
+ * or, flipped, hide that they are. If the write does not land, this reports
+ * the failure and the caller puts the switch back where the server has it.
+ */
+export async function saveBuddyDiscoverable(
+  userId: string,
+  discoverable: boolean,
+): Promise<{ ok: boolean; message?: string; needsMigration?: boolean }> {
+  if (!isSupabaseConfigured) {
+    return { ok: false, message: COPY.missingKeys };
+  }
+
+  try {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ is_buddy_discoverable: discoverable })
+      .eq("id", userId);
+
+    if (error) {
+      const text = error.message?.toLowerCase() ?? "";
+      if (
+        text.includes("column") ||
+        text.includes("does not exist") ||
+        text.includes("schema cache")
+      ) {
+        return {
+          ok: false,
+          needsMigration: true,
+          message: COPY.profileNeedsMigration,
+        };
+      }
+      throw error;
+    }
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      message: messageFromUnknown(error, COPY.settingsDiscoverableSaveFailed),
     };
   }
 }
