@@ -4,13 +4,13 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { QuestionnaireStepper } from "@/components/questionnaire/QuestionnaireStepper";
 import { SectionCompleteCard } from "@/components/questionnaire/SectionCompleteCard";
-import { IconButton, PrimaryButton } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
+import { colors, spacing, status } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -31,9 +31,22 @@ type SectionScaffoldProps = {
   errorMessage?: string | null;
 };
 
+/** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
+/**
+ * What the one button says while it cannot be pressed. A disabled button that
+ * still says "Save & continue" reads as broken; this one says what is missing.
+ */
+const ANSWER_TO_CONTINUE = "Answer to continue";
+
 /**
  * Shared chrome for questionnaire sections. Locked users never stay here.
- * Stepper stays at the top; Save & continue stays at the bottom.
+ *
+ * The stepper and the section's name stay pinned at the top, the one ink
+ * button stays at the bottom, and everything between them scrolls. There is
+ * no second button down there: the way back is the arrow in the stepper, so
+ * the screen keeps exactly one black button.
  */
 export function SectionScaffold({
   title,
@@ -93,27 +106,33 @@ export function SectionScaffold({
     .replace("{current}", String(step))
     .replace("{total}", String(total));
 
+  // Only the stepper is pinned. The section's name scrolls with the questions
+  // it belongs to, so a three-line title does not eat a third of the screen
+  // for the whole section.
   const header = (
-    <View>
-      {hideBack ? null : (
-        <IconButton
-          icon="arrow-left"
-          accessibilityLabel={COPY.hubBack}
-          onPress={() => {
-            router.replace(routes.questionnaire);
-          }}
-        />
-      )}
-      <QuestionnaireStepper current={step} total={total} />
-      <Text style={styles.title} accessibilityRole="header">
-        {title}
-      </Text>
-    </View>
+    <QuestionnaireStepper
+      current={step}
+      total={total}
+      onBack={
+        hideBack
+          ? undefined
+          : () => {
+              router.replace(routes.questionnaire);
+            }
+      }
+    />
+  );
+
+  const heading = (
+    <Text style={styles.title} accessibilityRole="header">
+      {title}
+    </Text>
   );
 
   if (loading) {
     return (
       <Screen contentPadding={spacing.screenX} header={header}>
+        {heading}
         <StaticSkeleton rows={5} />
       </Screen>
     );
@@ -136,11 +155,17 @@ export function SectionScaffold({
     <View>
       {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
       <PrimaryButton
-        title={footerTitle}
+        // Disabled and not mid-save: say what is missing. While it is saving
+        // the button shows its spinner, so the title is not read then.
+        title={
+          footerDisabled && !footerLoading ? ANSWER_TO_CONTINUE : footerTitle
+        }
         onPress={onFooterPress}
         loading={footerLoading}
         disabled={footerDisabled}
-        accessibilityLabel={footerTitle}
+        accessibilityLabel={
+          footerDisabled && !footerLoading ? ANSWER_TO_CONTINUE : footerTitle
+        }
       />
     </View>
   ) : errorMessage ? (
@@ -149,6 +174,7 @@ export function SectionScaffold({
 
   return (
     <Screen scroll contentPadding={spacing.screenX} header={header} footer={footer}>
+      {heading}
       {children}
     </Screen>
   );
@@ -156,21 +182,15 @@ export function SectionScaffold({
 
 const styles = StyleSheet.create({
   title: {
-    marginTop: 8,
     marginBottom: 8,
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 31,
-    letterSpacing: -0.5,
-    color: colors.deepTeal,
+    ...typography.displayL,
+    color: colors.ink,
   },
   error: {
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.coral,
-    textAlign: "center",
     marginBottom: 4,
+    ...typography.label,
+    color: CLAY,
+    textAlign: "center",
   },
   completeWrap: {
     flex: 1,

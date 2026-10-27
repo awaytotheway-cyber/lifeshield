@@ -1,10 +1,11 @@
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { Surface } from "@/components/ui/Surface";
 import { WhyAskButton } from "@/components/ui/WhyAskSheet";
 import { COPY } from "@/lib/copy";
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { colors } from "@/lib/design-tokens";
+import { typography } from "@/lib/typography";
 
 type QuestionCardProps = {
   title: string;
@@ -13,6 +14,14 @@ type QuestionCardProps = {
   children: ReactNode;
 };
 
+/**
+ * A question that needs its own card: the question, the optional "why we ask"
+ * icon beside it, and the control underneath.
+ *
+ * A white `Surface` and nothing else — no border, no shadow, no tint. The
+ * explanation behind the icon is the clinical wording in full; the icon only
+ * decides when it is on screen.
+ */
 export function QuestionCard({
   title,
   hint,
@@ -20,7 +29,7 @@ export function QuestionCard({
   children,
 }: QuestionCardProps) {
   return (
-    <View style={styles.card}>
+    <Surface style={styles.card}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
         {hint ? (
@@ -31,17 +40,13 @@ export function QuestionCard({
         ) : null}
       </View>
       {children}
-    </View>
+    </Surface>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
     marginTop: 16,
-    backgroundColor: colors.white,
-    borderRadius: radius.card,
-    padding: spacing.base,
-    ...shadows.card,
   },
   header: {
     flexDirection: "row",
@@ -49,8 +54,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    color: colors.charcoal,
+    ...typography.title,
+    color: colors.ink,
   },
 });

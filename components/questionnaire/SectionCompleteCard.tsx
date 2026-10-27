@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -9,7 +9,7 @@ import Animated, {
 
 import { MossPattern } from "@/components/ui/MossPattern";
 import { colors, radius, spacing } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 
 type SectionCompleteCardProps = {
   title?: string;
@@ -19,6 +19,11 @@ type SectionCompleteCardProps = {
 
 /**
  * Short “well done” moment after a section saves. Auto-hides after 1.5 seconds.
+ *
+ * A band of the motif rather than a drawn tick: the card already says
+ * "Section complete", so a picture of completion would only say it twice. The
+ * band runs to the card's edges, where the surface radius clips it — the same
+ * band-then-copy shape as `EmptyState`.
  */
 export function SectionCompleteCard({
   title = "Section complete",
@@ -50,18 +55,11 @@ export function SectionCompleteCard({
     transform: [{ scale: reduceMotion ? 1 : 0.95 + appear.value * 0.05 }],
   }));
 
+  // Not a `Surface`: the card is animated, so it needs an `Animated.View` of
+  // its own. The fill and the radius are the surface's, to the point.
   return (
     <Animated.View style={[styles.card, motionStyle]}>
-      {/*
-        A band of the motif rather than a drawn tick: the card already says
-        "Section complete", so a picture of completion would only say it
-        twice. Negative margins pull it out of the card's padding so it runs
-        to the edges, where the card's radius clips it — the same band-then-
-        copy shape as `EmptyState`.
-      */}
-      <View style={styles.band}>
-        <MossPattern height={72} />
-      </View>
+      <MossPattern height={96} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
     </Animated.View>
@@ -70,30 +68,24 @@ export function SectionCompleteCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.card,
-    padding: spacing.md,
-    alignItems: "center",
+    backgroundColor: colors.white,
+    borderRadius: radius.surface,
+    // The band runs edge to edge, so the copy carries the inset instead.
+    paddingBottom: spacing.md,
     overflow: "hidden",
   },
-  band: {
-    alignSelf: "stretch",
-    marginTop: -spacing.md,
-    marginHorizontal: -spacing.md,
-  },
   title: {
-    marginTop: 12,
-    fontFamily: fontFamily.display,
-    fontSize: 20,
-    color: colors.sage,
+    marginTop: spacing.base,
+    marginHorizontal: 20,
+    ...typography.title,
+    color: colors.ink,
     textAlign: "center",
   },
   subtitle: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
+    marginTop: spacing.sm,
+    marginHorizontal: 20,
+    ...typography.body,
+    color: colors.inkSoft,
     textAlign: "center",
   },
 });
