@@ -1,6 +1,5 @@
 import { StyleSheet, View, type DimensionValue } from "react-native";
 
-import { Surface } from "@/components/ui/Surface";
 import { colors, radius, spacing } from "@/lib/design-tokens";
 
 type BlockProps = {
@@ -29,58 +28,45 @@ function Block({ width = "100%", height = 12, round }: BlockProps) {
 }
 
 /**
- * Ghost of the home screen — greeting, stat cards and timeline — shown while
- * the session and questionnaire progress resolve. Shapes track the real
- * layout so content does not jump when it arrives.
+ * Ghost of the home screen — date, greeting, the next-step card and the two
+ * stat cards — shown while the session and questionnaire progress resolve.
+ * Shapes track the real layout so content does not jump when it arrives.
+ *
+ * The next-step card is a flat `hairline` rectangle, not a gradient: a
+ * skeleton paints no colour it has not loaded yet.
  */
 export function HomeSkeleton() {
   return (
     <View accessibilityLabel="Loading your overview">
-      <Block width={90} height={14} />
-      <View style={styles.gapLg}>
-        <Block width="62%" height={26} />
+      {/* Micro-caps date. */}
+      <Block width={140} height={11} />
+
+      {/* Two-tone greeting — 46pt, so two tall lines. */}
+      <View style={styles.gapGreeting}>
+        <Block width="78%" height={34} />
       </View>
       <View style={styles.gapSm}>
-        <Block width="45%" height={14} />
+        <Block width="46%" height={34} />
       </View>
 
-      <View style={styles.gapLg}>
-        <Surface padded={false} style={styles.primaryCard}>
-          <Block width={72} height={72} round={radius.pill} />
-          <View style={styles.primaryText}>
-            <Block width="55%" height={20} />
-            <View style={styles.gapSm}>
-              <Block width="75%" height={12} />
-            </View>
-          </View>
-        </Surface>
+      {/* The next-step card. */}
+      <View style={styles.gapCard}>
+        <Block height={186} round={radius.surface} />
       </View>
 
+      {/* The two stat cards, side by side. */}
       <View style={styles.row}>
         {[0, 1].map((key) => (
-          <Surface key={key} padded={false} style={styles.smallCard}>
-            <Block width={36} height={36} round={radius.pill} />
-            <View style={styles.gapSm}>
-              <Block width="70%" height={14} />
-            </View>
-            <View style={styles.gapXs}>
-              <Block width="50%" height={11} />
-            </View>
-          </Surface>
-        ))}
-      </View>
-
-      <View style={styles.gapLg}>
-        <Surface padded={false} style={styles.timelineCard}>
-          {[0, 1, 2, 3].map((key) => (
-            <View key={key} style={styles.timelineRow}>
-              <Block width={32} height={32} round={radius.pill} />
-              <View style={styles.timelineText}>
-                <Block width="50%" height={14} />
+          <View key={key} style={styles.statCard}>
+            <Block width="62%" height={11} />
+            <View style={styles.statValue}>
+              <Block width="54%" height={28} />
+              <View style={styles.gapXs}>
+                <Block width="82%" height={11} />
               </View>
             </View>
-          ))}
-        </Surface>
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -91,45 +77,34 @@ const styles = StyleSheet.create({
     backgroundColor: colors.hairline,
   },
   gapXs: {
-    marginTop: 4,
+    marginTop: 5,
   },
   gapSm: {
     marginTop: spacing.sm,
   },
-  gapLg: {
-    marginTop: spacing.md,
+  gapGreeting: {
+    marginTop: spacing.base,
+  },
+  gapCard: {
+    marginTop: 22,
   },
   row: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: spacing.mdSm,
-    marginTop: spacing.mdSm,
+    marginTop: 14,
   },
-  primaryCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.base,
-    padding: spacing.base,
-  },
-  primaryText: {
+  // Matches the real stat card: white, one radius, no border and no shadow.
+  statCard: {
     flex: 1,
+    backgroundColor: colors.white,
+    borderRadius: radius.surface,
+    paddingTop: 18,
+    paddingHorizontal: 18,
+    paddingBottom: 20,
+    minHeight: 118,
+    justifyContent: "space-between",
   },
-  smallCard: {
-    flexGrow: 1,
-    flexBasis: "46%",
-    minWidth: "46%",
-    padding: spacing.base,
-  },
-  timelineCard: {
-    padding: spacing.base,
-    gap: spacing.base,
-  },
-  timelineRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.mdSm,
-  },
-  timelineText: {
-    flex: 1,
+  statValue: {
+    width: "100%",
   },
 });

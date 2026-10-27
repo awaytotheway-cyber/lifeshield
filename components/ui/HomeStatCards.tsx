@@ -1,11 +1,7 @@
-import { Feather } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { PressScale } from "@/components/ui/PressScale";
-import { ProgressRing } from "@/components/ui/ProgressRing";
-import { Surface } from "@/components/ui/Surface";
 import { colors, radius, spacing } from "@/lib/design-tokens";
-import { typography } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 
 type HomeStatCardsProps = {
   questionnaireCount: number;
@@ -16,9 +12,74 @@ type HomeStatCardsProps = {
   onPressQuestionnaire: () => void;
 };
 
+type StatCardProps = {
+  label: string;
+  /** The big number. Carries the meaning, so it is the only bold thing here. */
+  value: string;
+  /** The grey word after the number — "of 10", "signed". Grammar, not meaning. */
+  unit: string;
+  /** One line of grey detail under the number. */
+  detail: string;
+  onPress?: () => void;
+  accessibilityLabel?: string;
+};
+
 /**
- * Home progress summary: questionnaire ring on top, consents and test-plan
- * status side by side beneath. Replaces the flat three-number strip.
+ * One white stat card: a micro-caps label up top, then a big number with a
+ * small grey unit and a line of grey detail pushed to the bottom.
+ *
+ * No border, no shadow, no icon badge — white on the paper ground is the
+ * whole separation, and the number is the whole picture.
+ */
+function StatCard({
+  label,
+  value,
+  unit,
+  detail,
+  onPress,
+  accessibilityLabel,
+}: StatCardProps) {
+  const body = (
+    <>
+      <Text style={styles.label}>{label}</Text>
+      <View>
+        <Text style={styles.value}>
+          {value}
+          <Text style={styles.unit}>{unit}</Text>
+        </Text>
+        <Text style={styles.detail}>{detail}</Text>
+      </View>
+    </>
+  );
+
+  if (!onPress) {
+    return (
+      <View style={styles.card} accessibilityRole="summary">
+        {body}
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? `${label}, ${value}${unit}`}
+      onPress={onPress}
+      // Moss does not bounce: a press on a white card fills it with the paper
+      // ground rather than scaling or shadowing it.
+      style={({ pressed }) => [styles.card, pressed ? styles.cardPressed : null]}
+    >
+      {body}
+    </Pressable>
+  );
+}
+
+/**
+ * The two home stat cards, side by side: questionnaire progress and consents.
+ *
+ * `testPlanReady` is the questionnaire card's detail line rather than a third
+ * card — the test plan is a consequence of finishing the questionnaire, not an
+ * independent number, and the board gives this row exactly two cards.
  */
 export function HomeStatCards({
   questionnaireCount,
@@ -29,134 +90,71 @@ export function HomeStatCards({
   onPressQuestionnaire,
 }: HomeStatCardsProps) {
   const consentsDone = consentCount >= consentTotal;
-  const percent = Math.round(
-    (questionnaireCount / (questionnaireTotal || 1)) * 100,
-  );
 
   return (
-    <View style={styles.wrap}>
-      <PressScale
-        accessibilityRole="button"
-        accessibilityLabel={`Questionnaire, ${questionnaireCount} of ${questionnaireTotal} sections complete`}
+    <View style={styles.row}>
+      <StatCard
+        label="Questionnaire"
+        value={String(questionnaireCount)}
+        unit={` of ${questionnaireTotal}`}
+        detail={testPlanReady ? "Test plan ready" : "Test plan after this"}
         onPress={onPressQuestionnaire}
-      >
-        <Surface padded={false} style={styles.primaryCard}>
-          <ProgressRing
-            current={questionnaireCount}
-            total={questionnaireTotal}
-            size={72}
-            thickness={7}
-          >
-            <Text style={styles.ringPercent}>{percent}%</Text>
-          </ProgressRing>
-          <View style={styles.primaryText}>
-            <Text style={styles.primaryValue}>
-              {questionnaireCount} of {questionnaireTotal}
-            </Text>
-            <Text style={styles.primaryLabel}>Sections complete</Text>
-          </View>
-          <Feather name="chevron-right" size={20} color={colors.inkFaint} />
-        </Surface>
-      </PressScale>
-
-      <View style={styles.row}>
-        <Surface padded={false} style={styles.smallCard}>
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: colors.mossTint },
-            ]}
-          >
-            <Feather
-              name={consentsDone ? "check" : "file-text"}
-              size={18}
-              color={consentsDone ? colors.mossDeep : colors.ink}
-            />
-          </View>
-          <Text style={styles.smallValue}>
-            {consentsDone ? "All signed" : `${consentCount} of ${consentTotal}`}
-          </Text>
-          <Text style={styles.smallLabel}>Consents</Text>
-        </Surface>
-
-        <Surface padded={false} style={styles.smallCard}>
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: colors.mossTint },
-            ]}
-          >
-            <Feather
-              name={testPlanReady ? "check-circle" : "lock"}
-              size={18}
-              color={testPlanReady ? colors.mossDeep : colors.inkFaint}
-            />
-          </View>
-          <Text style={[styles.smallValue, !testPlanReady && styles.smallValueMuted]}>
-            {testPlanReady ? "Ready" : "Locked"}
-          </Text>
-          <Text style={styles.smallLabel}>
-            {testPlanReady ? "Test plan" : "After questionnaire"}
-          </Text>
-        </Surface>
-      </View>
+        accessibilityLabel={`Questionnaire, ${questionnaireCount} of ${questionnaireTotal} sections complete`}
+      />
+      <StatCard
+        label="Consents"
+        value={String(consentCount)}
+        unit={` of ${consentTotal}`}
+        detail={consentsDone ? "All signed" : "Agree on each to go on"}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    gap: spacing.mdSm,
-  },
-  primaryCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.base,
-    padding: spacing.base,
-  },
-  primaryText: {
-    flex: 1,
-  },
-  ringPercent: {
-    ...typography.body,
-    color: colors.ink,
-  },
-  primaryValue: {
-    ...typography.title,
-    color: colors.ink,
-  },
-  primaryLabel: {
-    marginTop: 2,
-    ...typography.label,
-    color: colors.inkSoft,
-  },
   row: {
     flexDirection: "row",
     gap: spacing.mdSm,
   },
-  smallCard: {
+  card: {
     flex: 1,
-    padding: spacing.base,
-    alignItems: "flex-start",
+    backgroundColor: colors.white,
+    borderRadius: radius.surface,
+    // 18 / 18 / 20 — the board's card inset, tighter than the 20 Surface uses
+    // because two of these sit in one 390pt row.
+    paddingTop: 18,
+    paddingHorizontal: 18,
+    paddingBottom: 20,
+    minHeight: 118,
+    justifyContent: "space-between",
   },
-  badge: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.pill,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: spacing.sm,
+  cardPressed: {
+    backgroundColor: colors.paper,
   },
-  smallValue: {
-    ...typography.body,
+  label: {
+    ...typography.micro,
+    color: colors.inkMuted,
+  },
+  value: {
+    ...typography.displayL,
     color: colors.ink,
   },
-  smallValueMuted: {
-    color: colors.inkSoft,
+  /**
+   * 17 / 500 / `inkFaint`, per the Home board. It is below the 24px floor the
+   * token file sets for `inkFaint`, and deliberately so: the unit is part of
+   * the display number's run, not a line of body copy, and the number beside
+   * it carries the meaning on its own.
+   */
+  unit: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: 17,
+    color: colors.inkFaint,
   },
-  smallLabel: {
-    marginTop: 2,
+  detail: {
+    marginTop: 5,
     ...typography.label,
+    // 13px, so `inkSoft` — `inkFaint` would fail AA at this size.
     color: colors.inkSoft,
+    fontFamily: fontFamily.body,
   },
 });
