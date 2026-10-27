@@ -3,7 +3,6 @@ import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { ExploreGrid, type ExploreItem } from "@/components/ui/ExploreGrid";
 import { BrcaReferralBanner } from "@/components/ui/BrcaReferralBanner";
@@ -377,7 +376,6 @@ export default function HomeScreen() {
   return (
     <Screen scroll contentPadding={spacing.screenX}>
       <View style={styles.menuRow}>
-        <MenuButton />
         <Text style={styles.brand}>{COPY.appName}</Text>
       </View>
 

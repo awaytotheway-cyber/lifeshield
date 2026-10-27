@@ -2,7 +2,6 @@ import { Redirect, useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { MenuButton } from "@/components/navigation/MenuButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Screen } from "@/components/ui/Screen";
 import { TrustBanner } from "@/components/ui/TrustBanner";
@@ -67,7 +66,6 @@ export default function SettingsIndex() {
   return (
     <Screen scroll contentPadding={spacing.screenX}>
       <View style={styles.top}>
-        <MenuButton accessibilityLabel={COPY.settingsOpenMenu} />
         <Text style={styles.title} accessibilityRole="header">
           {COPY.settingsTitle}
         </Text>

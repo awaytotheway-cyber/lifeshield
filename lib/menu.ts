@@ -1,6 +1,8 @@
 /**
- * Side-drawer menu items. Routes map to real screens or honest empty shells.
- * Optional reorder: persist ordered ids in AsyncStorage (see AppDrawer).
+ * The menu items, and the routes they map to — real screens or honest empty
+ * shells. The side drawer that used to render these is gone; the five-tab bar
+ * is the only navigation model now, and the More tab is where the long list
+ * belongs. Kept as the single list of destinations.
  */
 import type { Href } from "expo-router";
 import type { Feather } from "@expo/vector-icons";

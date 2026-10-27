@@ -7,7 +7,6 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { MenuButton } from "@/components/navigation/MenuButton";
 import { PrimaryButton, TextButton } from "@/components/ui/Button";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { DatePicker } from "@/components/ui/DatePicker";
@@ -174,16 +173,11 @@ export default function ProfileScreen() {
 
   return (
     <Screen scroll contentPadding={spacing.screenX}>
-      <View style={styles.topRow}>
-        <MenuButton />
-        <View style={styles.headerFlex}>
-          <ScreenHeader
-            title={COPY.profileTitle}
-            onBack={() => router.replace(routes.settings)}
-            backLabel="Back to settings"
-          />
-        </View>
-      </View>
+      <ScreenHeader
+        title={COPY.profileTitle}
+        onBack={() => router.replace(routes.settings)}
+        backLabel="Back to settings"
+      />
       <Text style={styles.body}>{COPY.profileBody}</Text>
 
       {loading ? <StaticSkeleton rows={4} /> : null}
@@ -488,13 +482,6 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  topRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  headerFlex: {
-    flex: 1,
-  },
   body: {
     marginTop: 4,
     fontFamily: fontFamily.body,
