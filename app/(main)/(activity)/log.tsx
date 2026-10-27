@@ -2,10 +2,10 @@ import { Redirect, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, SecondaryButton } from "@/components/ui/Button";
+import { IconButton, PrimaryButton, TextButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
-import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { TextInput } from "@/components/ui/TextInput";
+import { TwoTone, type TwoTonePart } from "@/components/ui/TwoTone";
 import {
   ALL_KINDS,
   CANONICAL_UNIT,
@@ -14,10 +14,20 @@ import {
   type ActivityKind,
 } from "@/lib/activity";
 import { upsertSnapshot } from "@/lib/activity-io";
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+
+/** The one headline on the screen. */
+const HEADLINE: TwoTonePart[] = [
+  { text: "Log", tone: "bold" },
+  { text: " a ", tone: "grey" },
+  { text: "reading", tone: "bold" },
+];
+
+/** Where the form came from, as the micro eyebrow beside the way back. */
+const EYEBROW = "Activity";
 
 function todayYmd(now: Date = new Date()): string {
   const y = now.getFullYear();
@@ -92,21 +102,49 @@ export default function LogActivityScreen() {
   }
 
   return (
-    <Screen scroll>
-      <ScreenHeader title="Log a reading" onBack={() => router.back()} />
+    <Screen scroll contentPadding={spacing.screenX} centered={false}>
+      <View style={styles.topRow}>
+        <IconButton
+          icon="arrow-left"
+          accessibilityLabel="Go back"
+          onPress={() => router.back()}
+          // Pulled out to the gutter so the glyph, not its 44pt hit area,
+          // lines up with the headline under it.
+          style={styles.back}
+        />
+        <Text style={styles.eyebrow}>{EYEBROW}</Text>
+      </View>
+
+      <View accessibilityRole="header" style={styles.headline}>
+        <TwoTone size="l" parts={HEADLINE} />
+      </View>
 
       <Text style={styles.label}>What are you logging?</Text>
+      {/*
+        Built to the same rule as the other choice controls: each option is a
+        target at `radius.control`, and the chosen one is filled with
+        `mossTint` and carries weight as well as colour. White is the
+        unselected fill because these sit on the paper ground, where a bare
+        chip would have no edge at all.
+      */}
       <View style={styles.chipRow}>
         {ALL_KINDS.map((option) => {
           const active = option === kind;
           return (
             <Pressable
               key={option}
+              accessibilityRole="button"
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={KIND_LABELS[option]}
               onPress={() => {
                 setKind(option);
                 setFieldError(null);
               }}
-              style={[styles.chip, active ? styles.chipActive : null]}
+              style={({ pressed }) => [
+                styles.chip,
+                pressed && !active ? styles.chipPressed : null,
+                active ? styles.chipActive : null,
+              ]}
             >
               <Text
                 style={[
@@ -127,9 +165,9 @@ export default function LogActivityScreen() {
         keyboardType="numeric"
         value={value}
         onChangeText={setValue}
+        hint={helperText}
         error={fieldError?.field === "value" ? fieldError.message : undefined}
       />
-      <Text style={styles.helper}>{helperText}</Text>
 
       <TextInput
         label="Date"
@@ -141,50 +179,67 @@ export default function LogActivityScreen() {
         }
       />
 
-      <View style={styles.actions}>
-        <SecondaryButton title="Cancel" onPress={() => router.back()} />
-        <PrimaryButton title="Save" loading={saving} onPress={onSave} />
-      </View>
+      {/*
+        Stacked, not side by side: both buttons are full width by design, so a
+        row of two overflowed the gutter. Save is the screen's one ink button
+        and Cancel is the underlined link under it.
+      */}
+      <PrimaryButton title="Save" loading={saving} onPress={onSave} />
+      <TextButton title="Cancel" onPress={() => router.back()} />
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  label: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 14,
-    color: colors.deepNavy,
-    marginTop: spacing.md,
-    marginBottom: spacing.sm,
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  helper: {
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.slate,
-    marginTop: -spacing.micro,
-    marginBottom: spacing.sm,
+  back: {
+    marginLeft: -12,
+  },
+  eyebrow: {
+    ...typography.micro,
+    color: colors.inkMuted,
+  },
+  headline: {
+    marginTop: 8,
+  },
+  label: {
+    marginTop: 24,
+    ...typography.label,
+    color: colors.inkSoft,
   },
   chipRow: {
+    marginTop: 6,
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: spacing.micro,
+    gap: 4,
   },
+  // The 52pt of the full-width choice rows would run a wrapped row of five
+  // to three deep, so these keep to the 44pt floor instead.
   chip: {
-    borderRadius: radius.chip,
-    paddingHorizontal: spacing.mdSm,
-    paddingVertical: spacing.micro,
-    backgroundColor: colors.glassChrome,
+    minHeight: tapTarget,
+    justifyContent: "center",
+    paddingHorizontal: 14,
+    borderRadius: radius.control,
+    backgroundColor: colors.white,
   },
-  chipActive: { backgroundColor: colors.primaryBlue },
+  chipPressed: {
+    backgroundColor: colors.paper,
+  },
+  chipActive: {
+    backgroundColor: colors.mossTint,
+  },
   chipLabel: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 12,
-    color: colors.deepNavy,
+    ...typography.body,
+    color: colors.inkSoft,
   },
-  chipLabelActive: { color: colors.white },
-  actions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    marginTop: spacing.md,
+  // The chosen chip carries weight as well as fill, so the answer is not told
+  // by colour alone.
+  chipLabelActive: {
+    fontFamily: fontFamily.bodySemi,
+    color: colors.ink,
   },
 });
