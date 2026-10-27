@@ -6,10 +6,13 @@ import { SymptomInterruptCard } from "@/components/questionnaire/SymptomInterrup
 import { DangerButton, PrimaryButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { COPY } from "@/lib/copy";
-import { colors } from "@/lib/design-tokens";
+import { colors, status } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 import { routes } from "@/lib/routes";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type SymptomInterruptProps = {
   saving?: boolean;
@@ -62,7 +65,7 @@ export function SymptomInterrupt({
         style={{
           fontFamily: fontFamily.display,
           fontSize: 26,
-          color: colors.deepTeal,
+          color: colors.ink,
         }}
       >
         {COPY.interruptTitle}
@@ -73,7 +76,7 @@ export function SymptomInterrupt({
           fontFamily: fontFamily.body,
           fontSize: 15,
           lineHeight: 24,
-          color: colors.slate,
+          color: colors.inkSoft,
         }}
       >
         {COPY.interruptBody}
@@ -92,7 +95,7 @@ export function SymptomInterrupt({
           style={{
             marginTop: 12,
             textAlign: "center",
-            color: colors.coral,
+            color: CLAY,
             fontFamily: fontFamily.body,
             fontSize: 13,
           }}

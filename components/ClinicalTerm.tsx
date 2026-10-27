@@ -3,9 +3,9 @@ import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors, radius, shadows, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing } from "@/lib/design-tokens";
 import { getTerm, hasTerm } from "@/lib/plain-language";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 
 type ClinicalTermProps = {
   termKey?: string;
@@ -61,7 +61,7 @@ export function ClinicalTerm({
           onPress={() => setSheetOpen(true)}
           style={styles.infoHit}
         >
-          <Feather name="info" size={16} color={colors.midTeal} />
+          <Feather name="info" size={16} color={colors.mossDeep} />
         </Pressable>
       </View>
       <Text style={styles.explain}>{explanation || "plain explanation coming soon"}</Text>
@@ -100,9 +100,8 @@ const styles = StyleSheet.create({
   card: {
     marginTop: spacing.base,
     backgroundColor: colors.white,
-    borderRadius: radius.radioCard,
+    borderRadius: radius.surface,
     padding: spacing.base,
-    ...shadows.card,
   },
   row1: {
     flexDirection: "row",
@@ -115,7 +114,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
     lineHeight: 22,
-    color: colors.charcoal,
+    color: colors.ink,
   },
   infoHit: {
     minWidth: 44,
@@ -128,35 +127,33 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 14,
     lineHeight: 22,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   divider: {
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: colors.hairline,
     marginVertical: 12,
   },
   clinicalLabel: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 11,
-    color: colors.mist,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   medical: {
     marginTop: 4,
     fontFamily: fontFamily.medical,
     fontSize: 13,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
   backdrop: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: "rgba(13,74,92,0.28)",
+    backgroundColor: "rgba(12,12,10,0.28)",
   },
   sheet: {
     backgroundColor: colors.white,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: radius.surface,
+    borderTopRightRadius: radius.surface,
     padding: 20,
-    ...shadows.modal,
   },
   closeHit: {
     minHeight: 44,
@@ -165,8 +162,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeText: {
-    fontFamily: fontFamily.body,
+    fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
-    color: colors.midTeal,
+    color: colors.ink,
+    textDecorationLine: "underline",
   },
 });

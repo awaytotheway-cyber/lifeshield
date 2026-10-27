@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.displaySemi,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.deepNavy,
+    color: colors.ink,
   },
   field: {
     gap: 4,
@@ -170,6 +170,6 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.body,
     fontSize: 12,
     lineHeight: 16,
-    color: colors.slate,
+    color: colors.inkSoft,
   },
 });

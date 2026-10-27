@@ -2,8 +2,11 @@ import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { RadioGroup } from "@/components/ui/RadioGroup";
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, radius, spacing, status } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
+
+/** Failure and warning text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
 
 type SymptomInterruptCardProps = {
   question: string;
@@ -13,7 +16,8 @@ type SymptomInterruptCardProps = {
 };
 
 /**
- * Mid-questionnaire safety gate look: coral callout, not a red panic screen.
+ * Mid-questionnaire safety gate look: a clay callout, not a red panic screen.
+ * The clay fill carries the weight — Moss puts no border on a card.
  */
 export function SymptomInterruptCard({
   question,
@@ -24,7 +28,7 @@ export function SymptomInterruptCard({
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Feather name="alert-triangle" size={20} color={colors.coral} />
+        <Feather name="alert-triangle" size={20} color={CLAY} />
         <Text style={styles.title}>One important question</Text>
       </View>
       <Text style={styles.body}>{question}</Text>
@@ -46,10 +50,8 @@ export function SymptomInterruptCard({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.coralLight,
-    borderRadius: radius.alert,
-    borderLeftWidth: 2,
-    borderLeftColor: colors.coral,
+    backgroundColor: status.worthDiscussing.fill,
+    borderRadius: radius.surface,
     padding: spacing.base,
   },
   header: {
@@ -61,13 +63,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.coral,
+    color: CLAY,
   },
   body: {
     marginTop: 12,
     fontFamily: fontFamily.body,
     fontSize: 15,
     lineHeight: 24,
-    color: colors.charcoal,
+    color: colors.ink,
   },
 });

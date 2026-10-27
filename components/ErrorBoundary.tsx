@@ -1,8 +1,11 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
+import { PrimaryButton } from "@/components/ui/Button";
+import { Surface } from "@/components/ui/Surface";
+import { colors, spacing } from "@/lib/design-tokens";
 import { classifyError } from "@/lib/friendly-errors";
+import { typography } from "@/lib/typography";
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -25,24 +28,22 @@ type FallbackProps = {
  */
 function ErrorFallback({ onRetry, hint }: FallbackProps) {
   return (
-    <View className="flex-1 items-center justify-center bg-cream px-6">
-      <GlassSurface intensity="card" style={{ padding: 24, width: "100%" }}>
-        <Text className="text-center text-xl text-charcoal">
+    <View style={styles.root}>
+      <Surface style={styles.card}>
+        <Text style={styles.title} accessibilityRole="header">
           Something went wrong
         </Text>
-        <Text className="mt-2 text-center text-charcoal">
+        <Text style={styles.body}>
           {hint ??
             "Tap to retry. Your answers are saved — this is just a display hiccup."}
         </Text>
-        <Pressable
-          onPress={onRetry}
-          className="mt-6 min-h-[44px] items-center justify-center rounded-2xl bg-teal px-6 py-3"
-          accessibilityRole="button"
+        {/* The one ink button on this screen. */}
+        <PrimaryButton
+          title="Tap to retry"
           accessibilityLabel="Retry"
-        >
-          <Text className="text-cream">Tap to retry</Text>
-        </Pressable>
-      </GlassSurface>
+          onPress={onRetry}
+        />
+      </Surface>
     </View>
   );
 }
@@ -90,3 +91,28 @@ export function ExpoRouterErrorBoundary({
 }) {
   return <ErrorFallback onRetry={retry} hint={classifyError(error).message} />;
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.paper,
+    paddingHorizontal: spacing.md,
+  },
+  card: {
+    width: "100%",
+    padding: spacing.md,
+  },
+  title: {
+    ...typography.title,
+    textAlign: "center",
+    color: colors.ink,
+  },
+  body: {
+    marginTop: spacing.sm,
+    ...typography.body,
+    textAlign: "center",
+    color: colors.inkSoft,
+  },
+});
