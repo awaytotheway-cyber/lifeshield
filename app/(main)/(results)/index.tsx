@@ -217,7 +217,7 @@ export default function ResultsScreen() {
         <Text style={styles.eyebrow}>{EYEBROW}</Text>
       </View>
 
-      <View accessibilityRole="header">
+      <View accessibilityRole="header" style={styles.headline}>
         <TwoTone size={HEADLINE_SIZE} parts={HEADLINE} />
       </View>
 
@@ -372,6 +372,9 @@ const styles = StyleSheet.create({
   },
   back: {
     marginLeft: -12,
+  },
+  headline: {
+    marginTop: 8,
   },
   eyebrow: {
     ...typography.micro,

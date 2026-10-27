@@ -51,6 +51,14 @@ const OPEN_FULL = "Open the full report";
 /** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
 const CLAY = status.worthDiscussing.text;
 
+/**
+ * How the board words a range inline, under a number. The labelled field on
+ * the detail screen keeps `COPY.labResultRangeLabel`'s "Reference range";
+ * mid-sentence, beside the reading, "usual range" is the plainer half of the
+ * same thing.
+ */
+const USUAL_RANGE = "usual range";
+
 /** The eyebrow date on the lead report: "14 October". */
 function reportDate(createdAt: string): string {
   const date = new Date(createdAt);
@@ -147,7 +155,7 @@ export default function LabResultsScreen() {
         />
       </View>
 
-      <View accessibilityRole="header">
+      <View accessibilityRole="header" style={styles.headline}>
         <TwoTone size="xl" parts={HEADLINE} />
       </View>
       <Text style={styles.lede}>{LEDE}</Text>
@@ -182,7 +190,11 @@ export default function LabResultsScreen() {
               <ResultCard
                 key={row.id}
                 plainName={row.plain_name?.trim() || term.plainName}
-                meaning={meaningForFlag(row.flag)}
+                // The date, not the meaning paragraph: the chip beside it
+                // already says where the reading sits, and the paragraph is
+                // three sentences long — it reads in full on the lead card
+                // and on the detail screen, not squeezed into a grey line.
+                meaning={reportDate(row.created_at)}
                 status={mossStatusFromFlag(row.flag)}
                 statusLabel={chip.label}
                 onPress={() => {
@@ -231,7 +243,7 @@ function LeadReport({ row }: { row: TestResultRow }) {
   const unit = row.result_unit?.trim();
   const range = row.reference_range?.trim();
 
-  const meta = [unit, range ? `${COPY.labResultRangeLabel} ${range}` : null]
+  const meta = [unit, range ? `${USUAL_RANGE} ${range}` : null]
     .filter((part): part is string => Boolean(part))
     .join(" · ");
 
@@ -290,6 +302,9 @@ const styles = StyleSheet.create({
   },
   back: {
     marginLeft: -12,
+  },
+  headline: {
+    marginTop: 8,
   },
   lede: {
     marginTop: 12,
