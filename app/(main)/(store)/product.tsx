@@ -1,13 +1,28 @@
+import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Linking, Pressable, Text, View } from "react-native";
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
-import { Button } from "@/components/ui/Button";
+import {
+  IconButton,
+  PrimaryButton,
+  SecondaryButton,
+  TextButton,
+} from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
+import { Surface } from "@/components/ui/Surface";
+import { TwoTone } from "@/components/ui/TwoTone";
 import { COPY } from "@/lib/copy";
 import { hrefForConsent } from "@/lib/consent-flow";
+import {
+  colors,
+  heroGradient,
+  radius,
+  spacing,
+  status,
+} from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -37,8 +52,37 @@ import {
 } from "@/lib/supplements-io";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { loadUserContext } from "@/lib/user-context";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
+/**
+ * Sand, borrowed from `worthWatching`. A medication interaction is a caution,
+ * not a crash: Moss has no alert red, here least of all.
+ */
+const SAND = status.worthWatching;
+
+/** 155deg on the unit box — the same band home, onboarding and auth use. */
+const GRADIENT_START = { x: 0.29, y: 0.05 };
+const GRADIENT_END = { x: 0.71, y: 0.95 };
+
+/** The product name, at the board's 36 on the display scale. */
+const NAME_SIZE = 36;
+
+/**
+ * The total, at the board's 28 with tracking at -3% of the size. It is a price
+ * rather than a headline, so it is plain `Text` and not `TwoTone`.
+ */
+const TOTAL = {
+  fontFamily: fontFamily.display,
+  fontSize: 28,
+  lineHeight: 28,
+  // 28 x -0.03
+  letterSpacing: -0.8,
+} as const;
 
 /**
  * Product detail — checkpoint 1 of 3 for canPurchase() (add-to-cart).
@@ -53,6 +97,7 @@ export default function ProductDetailScreen() {
   const [message, setMessage] = useState<string | null>(null);
   const [product, setProduct] = useState<ProductRow | null>(null);
   const [userContext, setUserContext] = useState<UserContext | null>(null);
+  const [triggerFindings, setTriggerFindings] = useState<string[]>([]);
   const [adding, setAdding] = useState(false);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [profile, setProfile] = useState<FeatureFlagProfile | null>(null);
@@ -83,11 +128,13 @@ export default function ProductDetailScreen() {
       }
       if (!contextResult.ok) {
         setUserContext(null);
+        setTriggerFindings([]);
         if (catalog.ok) {
           setMessage(contextResult.message);
         }
       } else {
         setUserContext(contextResult.context);
+        setTriggerFindings(contextResult.triggerFindings);
       }
     } catch {
       setMessage(COPY.storeLoadFailed);
@@ -165,6 +212,15 @@ export default function ProductDetailScreen() {
     product && userContext ? canPurchase(product, userContext) : null;
   const canAdd = gate?.allowed && !gate?.needsCheck;
 
+  /**
+   * The board's badge on the hero. It is only drawn when this product really
+   * is linked to a finding on the user's own plan — an assessment claim the
+   * data cannot back is worse than no badge.
+   */
+  const matchesPlan = Boolean(
+    product?.linked_finding && triggerFindings.includes(product.linked_finding),
+  );
+
   const handleAdd = async () => {
     if (!session?.user.id || !product || !gate || !canAdd) {
       return;
@@ -210,8 +266,8 @@ export default function ProductDetailScreen() {
   if (!productId) {
     return (
       <Screen>
-        <Text className="text-center text-coral">{COPY.storeProductMissing}</Text>
-        <Button
+        <Text style={styles.errorCentred}>{COPY.storeProductMissing}</Text>
+        <PrimaryButton
           title={COPY.storeBackStore}
           onPress={() => {
             router.replace(routes.store);
@@ -222,150 +278,352 @@ export default function ProductDetailScreen() {
   }
 
   return (
-    <Screen scroll>
-      {loading ? <ActivityIndicator color="#1A535C" /> : null}
-
-      {message ? (
-        <>
-          <Text className="text-center text-coral">{message}</Text>
-          <Button
-            title={COPY.storeRetry}
-            variant="ghost"
+    <Screen scroll contentPadding={0}>
+      {/*
+        The one gradient on this screen. Nothing but the way back and the
+        plan badge sits on it — no body copy, no price, no control.
+      */}
+      <LinearGradient
+        colors={heroGradient.colors}
+        locations={heroGradient.locations}
+        start={GRADIENT_START}
+        end={GRADIENT_END}
+        style={styles.hero}
+      >
+        <View style={styles.heroRow}>
+          <IconButton
+            icon="arrow-left"
+            accessibilityLabel={COPY.storeBackStore}
             onPress={() => {
-              void load();
+              router.back();
             }}
+            style={styles.heroBack}
           />
-        </>
-      ) : null}
-
-      {!loading && product ? (
-        <>
-          <ClinicalTerm
-            plainName={product.plain_name}
-            plainExplanation={
-              product.plain_description?.trim() ||
-              "Information to discuss with a practitioner — not a diagnosis."
-            }
-            medicalName={product.clinical_name}
-          />
-
-          <View className="mt-4 rounded-xl bg-white px-4 py-4">
-            <Text className="text-sm text-teal">{COPY.productClinicalBasis}</Text>
-            <Text className="mt-2 text-charcoal">
-              {product.linked_finding?.trim() ||
-                product.clinical_name ||
-                COPY.productNoBasis}
-            </Text>
-          </View>
-
-          {supplementsEnabled && warnings.length > 0 ? (
-            <View
-              className="mt-4 rounded-xl px-4 py-4"
-              style={{ backgroundColor: "#FDECEC" }}
-            >
-              <Text
-                className="text-sm"
-                style={{ color: "#C0392B", fontWeight: "600" }}
-              >
-                Practitioner check recommended
-              </Text>
-              {warnings.map((warning) => (
-                <Text key={warning.code} className="mt-2 text-charcoal">
-                  • Interacts with{" "}
-                  <Text style={{ fontWeight: "600" }}>{warning.code}</Text> —
-                  you're on {warning.medication_names.join(", ")}.
-                </Text>
-              ))}
-              <Text className="mt-2 text-xs text-charcoal">
-                Talk to your practitioner before starting this.
-              </Text>
+          {matchesPlan ? (
+            <View style={styles.matchChip}>
+              <Text style={styles.matchChipText}>Matches your assessment</Text>
             </View>
           ) : null}
+        </View>
+      </LinearGradient>
 
-          {supplementsEnabled && isSubscribable(subscription) ? (
-            <View className="mt-4 rounded-xl bg-white px-4 py-4">
-              <Text className="text-sm text-teal">Subscribe &amp; save</Text>
-              <Text className="mt-2 text-charcoal">
-                Available intervals: {subscription.intervals.join(", ")}
-                {subscription.discount_percent !== null
-                  ? ` · ${subscription.discount_percent}% off`
-                  : ""}
-              </Text>
-              <Text className="mt-1 text-xs text-charcoal">
-                Subscription checkout is coming soon — add to cart as a
-                one-off for now.
-              </Text>
-            </View>
-          ) : null}
+      {/* The white sheet rides 24 up over the band. Fill, not shadow, lifts it. */}
+      <View style={styles.sheet}>
+        {loading ? <StaticSkeleton rows={4} /> : null}
 
-          {supplementsEnabled && studies.length > 0 ? (
-            <View className="mt-4 rounded-xl bg-white px-4 py-4">
-              <Text className="text-sm text-teal">Supporting studies</Text>
-              {studies.map((study, index) => (
-                <Pressable
-                  key={index}
-                  accessibilityRole="link"
-                  className="mt-2"
-                  onPress={() => {
-                    void Linking.openURL(study.url).catch(() => {
-                      // Silent — the store still works if the URL can't open.
-                    });
-                  }}
-                >
-                  <Text className="text-charcoal underline">{study.title}</Text>
-                  {study.source || study.year ? (
-                    <Text className="text-xs text-teal">
-                      {[study.source, study.year].filter(Boolean).join(" · ")}
-                    </Text>
-                  ) : null}
-                </Pressable>
-              ))}
-            </View>
-          ) : null}
-
-          <Text className="mt-4 text-center text-2xl text-teal">
-            {formatProductPrice(product)}
-          </Text>
-
-          {gate ? <PurchaseStatus gate={gate} /> : null}
-
-          {actionMessage ? (
-            <Text className="mt-4 text-center text-teal">{actionMessage}</Text>
-          ) : null}
-
-          <Button
-            title={COPY.productAddToCart}
-            disabled={!canAdd}
-            loading={adding}
-            onPress={() => {
-              void handleAdd();
-            }}
-          />
-
-          {gate && !gate.allowed && product.requires_consent && consentTypeForProduct(product) ? (
-            <Button
-              title={COPY.storeGoConsent}
-              variant="ghost"
-              onPress={goConsent}
+        {message ? (
+          <>
+            <Text style={styles.error}>{message}</Text>
+            <TextButton
+              title={COPY.storeRetry}
+              onPress={() => {
+                void load();
+              }}
             />
-          ) : null}
-        </>
-      ) : null}
+          </>
+        ) : null}
 
-      <Button
-        title={COPY.storeViewCart}
-        variant="ghost"
-        onPress={() => {
-          router.push(routes.storeCart);
-        }}
-      />
-      <Button
-        title={COPY.storeBackStore}
-        variant="ghost"
-        onPress={() => {
-          router.back();
-        }}
-      />
+        {!loading && product ? (
+          <>
+            <View accessibilityRole="header">
+              <TwoTone
+                size={NAME_SIZE}
+                parts={[{ text: product.plain_name, tone: "bold" }]}
+              />
+            </View>
+
+            <Text style={styles.body}>
+              {product.plain_description?.trim() ||
+                "Information to discuss with a practitioner — not a diagnosis."}
+            </Text>
+
+            {/* The exact clinical name, kept on the detail screen where the
+                design language says it belongs — never on a list row. */}
+            {product.clinical_name.trim() ? (
+              <View style={styles.clinicalBlock}>
+                <Text style={styles.eyebrow}>Clinical name</Text>
+                <Text style={styles.clinicalName}>{product.clinical_name}</Text>
+              </View>
+            ) : null}
+
+            <View style={styles.why}>
+              <Text style={styles.whyEyebrow}>{COPY.productClinicalBasis}</Text>
+              <Text style={styles.whyBody}>
+                {product.linked_finding?.trim() ||
+                  product.clinical_name ||
+                  COPY.productNoBasis}
+              </Text>
+            </View>
+
+            {/*
+              The interaction warnings, in full and never collapsed. This is
+              the surface that tells someone a supplement meets a medicine
+              they are already on, so it is open on arrival.
+            */}
+            {supplementsEnabled && warnings.length > 0 ? (
+              <View style={styles.caution}>
+                <Text style={styles.cautionTitle}>
+                  Practitioner check recommended
+                </Text>
+                {warnings.map((warning) => (
+                  <Text key={warning.code} style={styles.cautionLine}>
+                    • Interacts with{" "}
+                    <Text style={styles.cautionStrong}>{warning.code}</Text> —
+                    you&apos;re on {warning.medication_names.join(", ")}.
+                  </Text>
+                ))}
+                <Text style={styles.cautionLine}>
+                  Talk to your practitioner before starting this.
+                </Text>
+              </View>
+            ) : null}
+
+            {supplementsEnabled && isSubscribable(subscription) ? (
+              <Surface style={styles.block}>
+                <Text style={styles.eyebrow}>Subscribe &amp; save</Text>
+                <Text style={styles.blockBody}>
+                  Available intervals: {subscription.intervals.join(", ")}
+                  {subscription.discount_percent !== null
+                    ? ` · ${subscription.discount_percent}% off`
+                    : ""}
+                </Text>
+                <Text style={styles.blockNote}>
+                  Subscription checkout is coming soon — add to cart as a
+                  one-off for now.
+                </Text>
+              </Surface>
+            ) : null}
+
+            {supplementsEnabled && studies.length > 0 ? (
+              <Surface style={styles.block}>
+                <Text style={styles.eyebrow}>Supporting studies</Text>
+                {studies.map((study, index) => (
+                  <Pressable
+                    key={index}
+                    accessibilityRole="link"
+                    accessibilityLabel={study.title}
+                    style={styles.studyRow}
+                    onPress={() => {
+                      void Linking.openURL(study.url).catch(() => {
+                        // Silent — the store still works if the URL can't open.
+                      });
+                    }}
+                  >
+                    <Text style={styles.studyTitle}>{study.title}</Text>
+                    {study.source || study.year ? (
+                      <Text style={styles.studyMeta}>
+                        {[study.source, study.year].filter(Boolean).join(" · ")}
+                      </Text>
+                    ) : null}
+                  </Pressable>
+                ))}
+              </Surface>
+            ) : null}
+
+            {gate ? <PurchaseStatus gate={gate} /> : null}
+
+            {actionMessage ? (
+              <Text style={styles.ok}>{actionMessage}</Text>
+            ) : null}
+
+            <View style={styles.payRow}>
+              <View style={styles.totalBlock}>
+                <Text style={styles.eyebrow}>Total</Text>
+                <Text style={styles.total}>{formatProductPrice(product)}</Text>
+              </View>
+              {/* The one black button on this screen. */}
+              <PrimaryButton
+                title={COPY.productAddToCart}
+                disabled={!canAdd}
+                loading={adding}
+                style={styles.payButton}
+                onPress={() => {
+                  void handleAdd();
+                }}
+              />
+            </View>
+
+            {gate &&
+            !gate.allowed &&
+            product.requires_consent &&
+            consentTypeForProduct(product) ? (
+              <SecondaryButton
+                title={COPY.storeGoConsent}
+                onPress={goConsent}
+              />
+            ) : null}
+          </>
+        ) : null}
+
+        <TextButton
+          title={COPY.storeViewCart}
+          onPress={() => {
+            router.push(routes.storeCart);
+          }}
+        />
+      </View>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  hero: {
+    height: 232,
+    // Cancels the Screen's own 16pt scroll lead so the band meets the safe
+    // area instead of leaving a strip of paper above it.
+    marginTop: -16,
+    paddingTop: 12,
+    paddingHorizontal: spacing.screenX,
+  },
+  heroRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  heroBack: {
+    marginLeft: -12,
+  },
+  matchChip: {
+    backgroundColor: colors.white,
+    borderRadius: radius.pill,
+    paddingHorizontal: 13,
+    paddingVertical: 7,
+  },
+  matchChipText: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 12,
+    lineHeight: 16,
+    color: status.withinRange.text,
+  },
+  sheet: {
+    marginTop: -24,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: radius.surface,
+    borderTopRightRadius: radius.surface,
+    paddingHorizontal: spacing.screenX,
+    paddingTop: 28,
+    paddingBottom: 28,
+  },
+  body: {
+    marginTop: spacing.base,
+    ...typography.body,
+    lineHeight: 24,
+    color: colors.inkSoft,
+  },
+  clinicalBlock: {
+    marginTop: spacing.base,
+  },
+  clinicalName: {
+    marginTop: spacing.micro,
+    fontFamily: fontFamily.medical,
+    fontSize: 15,
+    lineHeight: 22,
+    color: colors.inkSoft,
+  },
+  eyebrow: {
+    ...typography.micro,
+    color: colors.inkMuted,
+  },
+  why: {
+    marginTop: spacing.md,
+    backgroundColor: colors.mossTint,
+    borderRadius: radius.surface,
+    padding: 18,
+  },
+  whyEyebrow: {
+    ...typography.micro,
+    color: status.withinRange.text,
+  },
+  whyBody: {
+    marginTop: spacing.sm,
+    fontFamily: fontFamily.body,
+    fontSize: 14,
+    lineHeight: 22,
+    color: colors.ink,
+  },
+  caution: {
+    marginTop: spacing.base,
+    backgroundColor: SAND.fill,
+    borderRadius: radius.surface,
+    padding: 18,
+  },
+  cautionTitle: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 15,
+    lineHeight: 22,
+    color: SAND.text,
+  },
+  cautionLine: {
+    marginTop: spacing.sm,
+    fontFamily: fontFamily.body,
+    fontSize: 14,
+    lineHeight: 22,
+    color: colors.ink,
+  },
+  cautionStrong: {
+    fontFamily: fontFamily.bodySemi,
+  },
+  // White on paper does the separating everywhere else; inside this white
+  // sheet it is the other way round, so a block takes the paper fill.
+  block: {
+    marginTop: spacing.base,
+    backgroundColor: colors.paper,
+  },
+  blockBody: {
+    marginTop: spacing.sm,
+    ...typography.body,
+    color: colors.ink,
+  },
+  blockNote: {
+    marginTop: spacing.micro,
+    ...typography.label,
+    color: colors.inkSoft,
+  },
+  studyRow: {
+    marginTop: spacing.mdSm,
+  },
+  studyTitle: {
+    ...typography.body,
+    color: colors.ink,
+    textDecorationLine: "underline",
+  },
+  studyMeta: {
+    marginTop: 2,
+    ...typography.label,
+    color: colors.inkMuted,
+  },
+  payRow: {
+    marginTop: spacing.md,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  totalBlock: {
+    flexShrink: 0,
+  },
+  total: {
+    marginTop: 2,
+    ...TOTAL,
+    color: colors.ink,
+  },
+  payButton: {
+    flex: 1,
+    width: "auto",
+    marginTop: 0,
+  },
+  ok: {
+    marginTop: spacing.mdSm,
+    ...typography.label,
+    color: colors.mossDeep,
+  },
+  error: {
+    marginTop: spacing.mdSm,
+    ...typography.label,
+    color: CLAY,
+  },
+  errorCentred: {
+    ...typography.body,
+    textAlign: "center",
+    color: CLAY,
+  },
+});
