@@ -1,12 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { GlassSurface } from "@/components/ui/GlassSurface";
-import { PressScale } from "@/components/ui/PressScale";
-import { COPY } from "@/lib/copy";
+import { Surface } from "@/components/ui/Surface";
 import { QUESTIONNAIRE_HUB_SECTIONS, type HubSectionKey } from "@/lib/constants";
-import { colors, spacing, tapTarget } from "@/lib/design-tokens";
-import { fontFamily } from "@/lib/typography";
+import { COPY } from "@/lib/copy";
+import { colors, radius, status } from "@/lib/design-tokens";
+import { fontFamily, typography } from "@/lib/typography";
 
 type SectionProgressProps = {
   progress: Record<string, boolean>;
@@ -15,161 +14,180 @@ type SectionProgressProps = {
 
 /**
  * Section titles in constants are already numbered ("1. Demographics…").
- * The row shows the number in its own circle, so strip the prefix rather
- * than printing it twice. Falls back to the full title if it ever changes.
+ * The list reads its order from its own order, so the printed number is one
+ * more thing to read and nothing more — strip it. Falls back to the full
+ * title if the prefix ever changes.
  */
 function stripOrdinal(title: string): string {
   return title.replace(/^\s*\d+\.\s*/, "");
 }
 
-const SECTION_ICONS: Record<HubSectionKey, keyof typeof Feather.glyphMap> = {
-  demographics: "user",
-  reproductive_menstrual: "activity",
-  radiation_occupational: "alert-triangle",
-  comorbidities: "thermometer",
-  family_history: "users",
-  personal_history: "clipboard",
-  lifestyle: "sun",
-  stress: "wind",
-  diet_environment: "coffee",
-  prior_screening: "search",
-};
+/** A finished row, the row you are on, or one still ahead. */
+type RowState = "done" | "current" | "upcoming";
+
+/** A plain row. Comfortably past the 44pt floor. */
+const ROW_HEIGHT = 60;
+
+/** The row you are on is taller, so the eye lands on it first. */
+const CURRENT_ROW_HEIGHT = 76;
+
+/** The state dot. */
+const DOT = 22;
 
 /**
- * Hub list. Tap a row to open that section. Each row carries its ordinal,
- * a topic glyph and a completion chip so ten rows don't read as one block.
+ * How far the tinted row bleeds past the card's text inset, so its fill looks
+ * like part of the sheet rather than a chip dropped on top of it.
+ */
+const BLEED = 10;
+
+/** Text on `mossTint` — the same pairing the `withinRange` chip uses. */
+const ON_TINT = status.withinRange.text;
+
+/**
+ * The hub list: ten rows in one white sheet.
+ *
+ * A row carries its state in a dot — filled moss for done, a moss ring for
+ * the one you are on, a grey ring for one still ahead — and the row you are
+ * on is also filled with `mossTint` and a point past the others in height.
+ * Nothing is told by colour alone: finished rows print "Done", and every row
+ * reads its state aloud through its accessibility label.
+ *
+ * There is no topic glyph and no ordinal disc. Ten rows of chrome is what
+ * made ten short section names read as one grey block.
  */
 export function SectionProgress({
   progress,
   onPressSection,
 }: SectionProgressProps) {
+  // The row you are on is the first one still unanswered. Presentation only:
+  // which sections may be opened, and in what order, is the hub's gate.
+  const currentIndex = QUESTIONNAIRE_HUB_SECTIONS.findIndex(
+    (section) => !progress[section.key],
+  );
+
   return (
-    <View style={styles.list}>
+    <Surface padded={false} style={styles.sheet}>
       {QUESTIONNAIRE_HUB_SECTIONS.map((section, index) => {
         const done = Boolean(progress[section.key]);
+        const state: RowState = done
+          ? "done"
+          : index === currentIndex
+            ? "current"
+            : "upcoming";
+        const current = state === "current";
+        const last = index === QUESTIONNAIRE_HUB_SECTIONS.length - 1;
+
         return (
-          <PressScale
+          <Pressable
             key={section.key}
             accessibilityRole="button"
             accessibilityLabel={`${section.title}. ${done ? COPY.hubStatusDone : COPY.hubStatusNotStarted}`}
             onPress={() => onPressSection(section.key)}
+            style={({ pressed }) => [
+              styles.row,
+              current ? styles.rowCurrent : null,
+              // The divider sits under every row but the last, and never
+              // under the tinted one — its fill is the separation already.
+              !current && !last ? styles.rowDivided : null,
+              pressed && !current ? styles.rowPressed : null,
+            ]}
           >
-            <GlassSurface intensity="card" style={styles.row}>
-              <View
-                style={[styles.ordinal, done ? styles.ordinalDone : null]}
-              >
-                <Text
-                  style={[
-                    styles.ordinalText,
-                    done ? styles.ordinalTextDone : null,
-                  ]}
-                >
-                  {index + 1}
-                </Text>
-              </View>
+            <View
+              style={[
+                styles.dot,
+                done ? styles.dotDone : null,
+                current ? styles.dotCurrent : null,
+                state === "upcoming" ? styles.dotUpcoming : null,
+              ]}
+            >
+              {done ? (
+                <Feather name="check" size={12} color={colors.white} />
+              ) : null}
+            </View>
 
-              <View style={styles.text}>
-                <View style={styles.titleRow}>
-                  <Feather
-                    name={SECTION_ICONS[section.key]}
-                    size={13}
-                    color={done ? colors.sage : colors.primaryBlue}
-                  />
-                  <Text style={styles.title} numberOfLines={2}>
-                    {stripOrdinal(section.title)}
-                  </Text>
-                </View>
+            <Text
+              style={[
+                styles.title,
+                state === "upcoming" ? styles.titleUpcoming : null,
+              ]}
+              numberOfLines={2}
+            >
+              {stripOrdinal(section.title)}
+            </Text>
 
-                {done ? (
-                  <View style={styles.chip}>
-                    <Feather name="check" size={11} color={colors.sage} />
-                    <Text style={styles.chipText}>{COPY.hubStatusDone}</Text>
-                  </View>
-                ) : (
-                  <Text style={styles.wait}>{COPY.hubStatusNotStarted}</Text>
-                )}
-              </View>
-
-              <Feather name="chevron-right" size={20} color={colors.mist} />
-            </GlassSurface>
-          </PressScale>
+            {done ? <Text style={styles.done}>{COPY.hubStatusDone}</Text> : null}
+            {current ? (
+              <Feather name="chevron-right" size={18} color={ON_TINT} />
+            ) : null}
+          </Pressable>
         );
       })}
-    </View>
+    </Surface>
   );
 }
 
 const styles = StyleSheet.create({
-  list: {
-    marginTop: 16,
-    gap: 10,
+  sheet: {
+    marginTop: 20,
+    // The card's own 20pt inset, split so the tinted row can bleed into it.
+    paddingHorizontal: 20 - BLEED,
+    paddingVertical: 8,
   },
   row: {
-    minHeight: tapTarget,
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.mdSm,
+    minHeight: ROW_HEIGHT,
+    paddingHorizontal: BLEED,
     flexDirection: "row",
     alignItems: "center",
-    gap: spacing.mdSm,
+    gap: 14,
   },
-  ordinal: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+  rowDivided: {
+    borderBottomWidth: 1,
+    // Paper, not `hairline`: inside a white sheet the heavier line reads as a
+    // rule between cards rather than a seam between rows.
+    borderBottomColor: colors.paper,
+  },
+  rowCurrent: {
+    minHeight: CURRENT_ROW_HEIGHT,
+    marginVertical: 6,
+    borderRadius: radius.control,
+    backgroundColor: colors.mossTint,
+  },
+  rowPressed: {
+    backgroundColor: colors.paper,
+  },
+  dot: {
+    width: DOT,
+    height: DOT,
+    borderRadius: radius.pill,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.iceBlue,
   },
-  ordinalDone: {
-    backgroundColor: colors.sageLight,
+  dotDone: {
+    backgroundColor: colors.mossDeep,
   },
-  ordinalText: {
-    fontFamily: fontFamily.medical,
-    fontSize: 13,
-    color: colors.primaryBlue,
+  dotCurrent: {
+    borderWidth: 1.5,
+    borderColor: colors.mossDeep,
   },
-  // deepNavy, not sage: sage on sageLight is ~2.4:1 and fails WCAG AA.
-  // The tinted circle and green check carry the "done" meaning instead.
-  ordinalTextDone: {
-    color: colors.deepNavy,
-  },
-  text: {
-    flex: 1,
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+  dotUpcoming: {
+    borderWidth: 1.5,
+    borderColor: colors.hairline,
   },
   title: {
     flex: 1,
+    // 16 — the list-row size the board sets, one step over body copy so ten
+    // of them in a column still read as things to tap.
     fontFamily: fontFamily.bodySemi,
-    fontSize: 15,
-    lineHeight: 20,
-    color: colors.deepNavy,
+    fontSize: 16,
+    lineHeight: 21,
+    color: colors.ink,
   },
-  chip: {
-    marginTop: 6,
-    alignSelf: "flex-start",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 999,
-    backgroundColor: colors.sageLight,
+  titleUpcoming: {
+    fontFamily: fontFamily.bodyMedium,
+    color: colors.inkSoft,
   },
-  chipText: {
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 11,
-    lineHeight: 16,
-    color: colors.deepNavy,
-  },
-  wait: {
-    marginTop: 6,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    lineHeight: 16,
-    color: colors.mist,
+  done: {
+    ...typography.label,
+    color: colors.inkMuted,
   },
 });
