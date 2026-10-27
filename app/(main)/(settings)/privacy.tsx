@@ -85,11 +85,10 @@ export default function PrivacySettingsScreen() {
 
       {/*
         Exactly what the transport and the row-level rules do, and what the
-        app does not claim. This is the screen the sentence exists for, so it
-        stays verbatim and in full.
+        app does not claim. Verbatim and in full — this is the screen the
+        sentence exists for. It was previously rendered twice, as a lede and
+        again inside this banner; one copy of it says the same thing.
       */}
-      <Text style={styles.lede}>{COPY.privacyBody}</Text>
-
       <View style={styles.banner}>
         <TrustBanner title={COPY.privacyTitle} body={COPY.privacyBody} />
       </View>
@@ -141,13 +140,8 @@ const styles = StyleSheet.create({
     // with the headline under it.
     marginLeft: -12,
   },
-  lede: {
-    marginTop: spacing.mdSm,
-    ...typography.body,
-    color: colors.inkSoft,
-  },
   banner: {
-    marginTop: spacing.base,
+    marginTop: spacing.md,
   },
   groupLabel: {
     marginTop: 22,

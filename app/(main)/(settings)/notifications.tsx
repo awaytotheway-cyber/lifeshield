@@ -57,6 +57,10 @@ function SwitchRow({ label, value, onChange, divided = true }: SwitchRowProps) {
         trackColor={{ false: colors.hairline, true: colors.ink }}
         thumbColor={colors.white}
         ios_backgroundColor={colors.hairline}
+        // A platform switch is about 31pt tall, under the 44pt floor. The row
+        // is 56, so the slop costs nothing and nothing else is near enough to
+        // steal.
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       />
     </View>
   );
@@ -265,6 +269,7 @@ const styles = StyleSheet.create({
   },
   block: {
     paddingHorizontal: 20,
+    paddingVertical: 4,
   },
   row: {
     flexDirection: "row",

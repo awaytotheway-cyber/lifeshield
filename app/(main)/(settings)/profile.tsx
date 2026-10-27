@@ -7,22 +7,26 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import {
+  IconButton,
+  PrimaryButton,
+  TextButton,
+} from "@/components/ui/Button";
 import { CheckboxGroup } from "@/components/ui/CheckboxGroup";
 import { DatePicker } from "@/components/ui/DatePicker";
-import { GlassCard } from "@/components/ui/GlassCard";
 import { NumberInput } from "@/components/ui/NumberInput";
 import { RadioGroup } from "@/components/ui/RadioGroup";
 import { Screen } from "@/components/ui/Screen";
-import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
+import { Surface } from "@/components/ui/Surface";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
+import { TwoTone } from "@/components/ui/TwoTone";
 import { isAdminEmail, SEX_OPTIONS } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { dateFromYmd, todayLocalDate } from "@/lib/datetime";
-import { colors, radius, spacing, tapTarget } from "@/lib/design-tokens";
+import { colors, radius, spacing, status, tapTarget } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import {
   ALLERGY_OPTIONS,
@@ -44,9 +48,15 @@ import {
   type ProfileFormParsed,
 } from "@/lib/profile-extended";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
+/** The migration note is a caution, not a failure — the amber of the scale. */
+const AMBER = status.worthWatching.text;
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -172,12 +182,24 @@ export default function ProfileScreen() {
   };
 
   return (
-    <Screen scroll contentPadding={spacing.screenX}>
-      <ScreenHeader
-        title={COPY.profileTitle}
-        onBack={() => router.replace(routes.settings)}
-        backLabel="Back to settings"
-      />
+    <Screen scroll>
+      <View style={styles.topRow}>
+        <IconButton
+          icon="arrow-left"
+          accessibilityLabel="Back to settings"
+          onPress={() => router.replace(routes.settings)}
+          style={styles.back}
+        />
+      </View>
+
+      <View accessibilityRole="header">
+        <TwoTone
+          size="xl"
+          parts={[{ text: COPY.profileTitle, tone: "bold" }]}
+        />
+      </View>
+
+      {/* What is required, what is optional, and what PRESCOPE is not. */}
       <Text style={styles.body}>{COPY.profileBody}</Text>
 
       {loading ? <StaticSkeleton rows={4} /> : null}
@@ -186,7 +208,7 @@ export default function ProfileScreen() {
 
       {!loading ? (
         <>
-          <GlassCard intensity="card" style={styles.photoCard}>
+          <Surface style={styles.photoCard}>
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={
@@ -203,7 +225,7 @@ export default function ProfileScreen() {
                 />
               ) : (
                 <View style={styles.avatarPlaceholder}>
-                  <Feather name="camera" size={28} color={colors.primaryBlue} />
+                  <Feather name="camera" size={28} color={colors.ink} />
                 </View>
               )}
             </Pressable>
@@ -214,9 +236,9 @@ export default function ProfileScreen() {
             {avatarUri ? (
               <TextButton title={COPY.profilePhotoRemove} onPress={() => void removePhoto()} />
             ) : null}
-          </GlassCard>
+          </Surface>
 
-          <GlassCard intensity="card" style={styles.formCard}>
+          <Surface style={styles.formCard}>
             <Controller
               control={control}
               name="fullName"
@@ -434,7 +456,7 @@ export default function ProfileScreen() {
                 />
               )}
             />
-          </GlassCard>
+          </Surface>
 
           {saveMessage ? <Text style={styles.error}>{saveMessage}</Text> : null}
 
@@ -482,30 +504,33 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  back: {
+    // Pulled into the gutter so the glyph, not its 44pt hit area, lines up
+    // with the headline under it.
+    marginLeft: -12,
+  },
   body: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.slate,
+    marginTop: spacing.mdSm,
+    ...typography.body,
+    color: colors.inkSoft,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
+    marginTop: spacing.mdSm,
+    ...typography.label,
+    color: CLAY,
   },
   note: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 20,
-    color: colors.amber,
+    marginTop: spacing.mdSm,
+    ...typography.label,
+    color: AMBER,
   },
   photoCard: {
     marginTop: spacing.md,
     alignItems: "center",
-    padding: spacing.base,
   },
   avatarHit: {
     minWidth: tapTarget,
@@ -514,63 +539,62 @@ const styles = StyleSheet.create({
   avatar: {
     width: 96,
     height: 96,
-    borderRadius: 48,
+    borderRadius: radius.pill,
   },
+  // The stand-in for a photo is the same moss tint an InitialDisc sits on, so
+  // an empty avatar reads as part of the system rather than as a hole.
   avatarPlaceholder: {
     width: 96,
     height: 96,
-    borderRadius: 48,
-    backgroundColor: colors.lightTeal,
+    borderRadius: radius.pill,
+    backgroundColor: colors.mossTint,
     alignItems: "center",
     justifyContent: "center",
   },
   formCard: {
     marginTop: spacing.md,
-    padding: spacing.base,
     marginBottom: spacing.md,
   },
   label: {
-    marginTop: 16,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    letterSpacing: 0.2,
-    color: colors.slate,
+    marginTop: spacing.base,
+    ...typography.label,
+    color: colors.inkSoft,
   },
   value: {
-    marginTop: 4,
+    marginTop: spacing.micro,
     fontFamily: fontFamily.bodySemi,
     fontSize: 17,
-    color: colors.charcoal,
+    lineHeight: 23,
+    color: colors.ink,
   },
   hint: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 12,
-    color: colors.mist,
+    marginTop: spacing.micro,
+    ...typography.label,
+    // Not `inkFaint`: that only clears its contrast on headline words 24px
+    // and up, and this is a 13px line of body copy.
+    color: colors.inkSoft,
   },
   computed: {
-    marginTop: 8,
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
-    color: colors.primaryBlue,
+    marginTop: spacing.sm,
+    ...typography.label,
+    // The one text-safe green — a derived value, not an editable field.
+    color: colors.mossDeep,
   },
   section: {
-    marginTop: 24,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.deepNavy,
+    marginTop: spacing.md,
+    ...typography.title,
+    color: colors.ink,
   },
   badge: {
-    marginTop: 12,
+    marginTop: spacing.mdSm,
     alignSelf: "flex-start",
-    backgroundColor: colors.sageLight,
-    borderRadius: radius.chip,
+    backgroundColor: colors.mossTint,
+    borderRadius: radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 4,
   },
   badgeText: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.sage,
+    ...typography.label,
+    color: status.withinRange.text,
   },
 });
