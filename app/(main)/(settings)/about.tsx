@@ -4,14 +4,14 @@ import { Redirect, useRouter } from "expo-router";
 import { StyleSheet, Text } from "react-native";
 
 import { TextButton } from "@/components/ui/Button";
-import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { legalPageUrl } from "@/lib/legal";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -40,16 +40,11 @@ export default function AboutSettingsScreen() {
         title={COPY.aboutTitle}
         onBack={() => router.replace(routes.settings)}
       />
-      <Text style={styles.brand} accessibilityRole="header">
-        PRESCOPE
-      </Text>
       <Text style={styles.body}>{COPY.aboutBody}</Text>
 
       <Surface style={styles.card}>
         <Text style={styles.label}>{COPY.aboutVersion}</Text>
         <Text style={styles.value}>{version}</Text>
-        <Text style={[styles.label, styles.gap]}>{COPY.aboutCompany}</Text>
-        <Text style={styles.value}>{COPY.aboutCompany}</Text>
         <Text style={[styles.label, styles.gap]}>{COPY.aboutWhatsNew}</Text>
         <Text style={styles.value}>{COPY.aboutWhatsNewBody}</Text>
         <Text style={[styles.label, styles.gap]}>{COPY.aboutOss}</Text>
@@ -72,36 +67,27 @@ export default function AboutSettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  brand: {
-    fontFamily: fontFamily.display,
-    fontSize: 40,
-    letterSpacing: -0.8,
-    color: colors.mossDeep,
-  },
+  // Load-bearing: "does not diagnose, detect, or treat". Stays in full.
   body: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    marginTop: spacing.sm,
+    ...typography.body,
     color: colors.inkSoft,
   },
   card: {
     marginTop: spacing.md,
     padding: spacing.base,
   },
+  // 11px micro caps, in inkMuted — inkFaint is for headline words only.
   label: {
-    fontFamily: fontFamily.bodyMedium,
-    fontSize: 12,
-    color: colors.inkSoft,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   gap: {
     marginTop: 16,
   },
   value: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 22,
+    marginTop: spacing.micro,
+    ...typography.body,
     color: colors.ink,
   },
 });

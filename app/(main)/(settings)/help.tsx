@@ -1,15 +1,15 @@
 import { Redirect, useRouter } from "expo-router";
-import { Linking, StyleSheet, Text, View } from "react-native";
+import { Linking, StyleSheet, Text } from "react-native";
 
 import { TextButton } from "@/components/ui/Button";
-import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import { colors, spacing } from "@/lib/design-tokens";
 import { PROFILE_FAQ } from "@/lib/profile-constants";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -62,14 +62,12 @@ export default function HelpSettingsScreen() {
       <Surface style={styles.card}>
         <Text style={styles.q}>{COPY.helpFeedback}</Text>
         <Text style={styles.a}>{COPY.helpFeedbackBody}</Text>
-        <View>
-          <TextButton
-            title="Email feedback@prescope.app"
-            onPress={() => {
-              void Linking.openURL("mailto:feedback@prescope.app");
-            }}
-          />
-        </View>
+        <TextButton
+          title="Email feedback@prescope.app"
+          onPress={() => {
+            void Linking.openURL("mailto:feedback@prescope.app");
+          }}
+        />
       </Surface>
     </Screen>
   );
@@ -78,9 +76,7 @@ export default function HelpSettingsScreen() {
 const styles = StyleSheet.create({
   body: {
     marginBottom: spacing.sm,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    ...typography.body,
     color: colors.inkSoft,
   },
   card: {
@@ -88,15 +84,12 @@ const styles = StyleSheet.create({
     padding: spacing.base,
   },
   q: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 17,
+    ...typography.title,
     color: colors.ink,
   },
   a: {
-    marginTop: 8,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 22,
+    marginTop: spacing.sm,
+    ...typography.body,
     color: colors.inkSoft,
   },
 });

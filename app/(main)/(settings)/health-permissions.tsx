@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 
 import { PrimaryButton } from "@/components/ui/Button";
-import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { Surface } from "@/components/ui/Surface";
 import {
   listActivitySources,
   syncFromNativeSources,
   type SyncOutcome,
 } from "@/lib/activity-source";
-import { colors, radius, spacing } from "@/lib/design-tokens";
+import { colors, spacing } from "@/lib/design-tokens";
 import {
   FEATURE_FLAG_DEFAULTS,
   isFeatureEnabled,
@@ -19,7 +19,7 @@ import {
 } from "@/lib/feature-flags";
 import { routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 
 /**
@@ -145,7 +145,7 @@ export default function HealthPermissionsScreen() {
       />
 
       {outcomes ? (
-        <View style={{ marginTop: spacing.md }}>
+        <View style={styles.lastSync}>
           <Text style={styles.sectionHeading}>Last sync</Text>
           {outcomes.length === 0 ? (
             <Text style={styles.body}>
@@ -175,25 +175,25 @@ export default function HealthPermissionsScreen() {
 const styles = StyleSheet.create({
   card: {
     marginTop: spacing.sm,
-    padding: spacing.base,
-    borderRadius: radius.surface,
   },
+  lastSync: {
+    marginTop: spacing.md,
+  },
+  // A section header is an 11px micro-caps label, not an 18px boxed title.
   sectionHeading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 18,
-    color: colors.ink,
     marginTop: spacing.md,
     marginBottom: spacing.sm,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   heading: {
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 16,
-    color: colors.ink,
     marginBottom: spacing.micro,
+    ...typography.body,
+    fontFamily: fontFamily.bodySemi,
+    color: colors.ink,
   },
   body: {
-    fontFamily: fontFamily.body,
-    fontSize: 14,
+    ...typography.body,
     color: colors.inkSoft,
   },
 });

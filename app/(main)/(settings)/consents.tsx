@@ -1,18 +1,19 @@
 import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Surface } from "@/components/ui/Surface";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
+import { StatusChip } from "@/components/ui/StatusChip";
+import { Surface } from "@/components/ui/Surface";
 import { COPY } from "@/lib/copy";
 import { colors, spacing, status } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -87,21 +88,24 @@ export default function ConsentsSettingsScreen() {
       {message ? <Text style={styles.error}>{message}</Text> : null}
       {!loading && !message && rows.length === 0 ? (
         <EmptyState
-          icon="check-circle"
           heading={COPY.consentsSettingsEmpty}
-          explanation={COPY.consentsSettingsBody}
+          explanation={COPY.consentsSettingsEmptyBody}
         />
       ) : null}
       {rows.map((row, index) => (
-        <Surface
-          key={`${row.consent_type}-${index}`}
-          style={styles.card}
-        >
-          <Text style={styles.type}>{row.consent_type}</Text>
-          <Text style={styles.status}>
-            {row.consented ? "Agreed" : "Not agreed"}
-            {row.consented_at ? ` · ${row.consented_at.slice(0, 10)}` : ""}
-          </Text>
+        <Surface key={`${row.consent_type}-${index}`} style={styles.card}>
+          <View style={styles.rowTextCol}>
+            <Text style={styles.type}>{row.consent_type}</Text>
+            {row.consented_at ? (
+              <Text style={styles.given}>
+                {`Given ${row.consented_at.slice(0, 10)}`}
+              </Text>
+            ) : null}
+          </View>
+          <StatusChip
+            kind={row.consented ? "withinRange" : "worthWatching"}
+            label={row.consented ? "Agreed" : "Not agreed"}
+          />
         </Surface>
       ))}
     </Screen>
@@ -110,29 +114,33 @@ export default function ConsentsSettingsScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    ...typography.body,
     color: colors.inkSoft,
   },
   error: {
-    marginTop: 12,
+    marginTop: spacing.mdSm,
+    ...typography.label,
     color: CLAY,
-    fontFamily: fontFamily.body,
   },
+  // A row, not a stack: the name reads left, the status reads right.
   card: {
     marginTop: spacing.mdSm,
-    padding: spacing.base,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.mdSm,
+  },
+  rowTextCol: {
+    flex: 1,
+    minWidth: 0,
   },
   type: {
+    ...typography.body,
     fontFamily: fontFamily.bodySemi,
-    fontSize: 16,
     color: colors.ink,
   },
-  status: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    color: colors.inkSoft,
+  given: {
+    marginTop: 2,
+    ...typography.label,
+    color: colors.inkMuted,
   },
 });

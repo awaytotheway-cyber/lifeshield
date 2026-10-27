@@ -662,8 +662,7 @@ export const COPY = {
   aboutVersion: "Version",
   aboutWhatsNew: "What’s new",
   aboutWhatsNewBody:
-    "Profile & settings hub, side menu, data export, and clearer privacy wording. Blue glass design system.",
-  aboutCompany: "Prescope",
+    "Profile & settings hub, data export, and clearer privacy wording. The Moss design language throughout.",
   aboutOss: "Open-source notices",
   aboutOssBody:
     "Built with Expo, React Native, NativeWind, Supabase JS, and other open-source libraries. Full license texts ship with each package in node_modules.",
@@ -682,7 +681,9 @@ export const COPY = {
   consentsSettingsTitle: "Your consents",
   consentsSettingsBody:
     "These are the consent ticks stored for your account. You can re-read the wording from onboarding and the sequential consent screens.",
-  consentsSettingsEmpty: "No consent rows yet. Finish onboarding to record them.",
+  consentsSettingsEmpty: "No consents recorded yet",
+  consentsSettingsEmptyBody:
+    "Finish onboarding and every consent tick you give is listed here with its date.",
   consentsSettingsLoadFailed: "We couldn’t load consents. Please try again.",
   hubOpenResults: "View suggested tests",
 

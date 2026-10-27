@@ -2,17 +2,17 @@ import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { Linking, StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, DangerButton, TextButton } from "@/components/ui/Button";
-import { Surface } from "@/components/ui/Surface";
+import { DangerButton, PrimaryButton, TextButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
+import { Surface } from "@/components/ui/Surface";
 import { TextField } from "@/components/ui/TextField";
 import { COPY } from "@/lib/copy";
 import { requestAccountDeletion } from "@/lib/data-export";
 import { colors, spacing, status } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import { routes } from "@/lib/routes";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -119,37 +119,31 @@ export default function DeleteAccountScreen() {
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
+    ...typography.body,
     color: colors.inkSoft,
   },
+  // Load-bearing: this is what deletion actually does. Clay, and in full.
   warning: {
-    marginTop: 12,
+    marginTop: spacing.mdSm,
+    ...typography.body,
     fontFamily: fontFamily.bodyMedium,
-    fontSize: 14,
-    lineHeight: 22,
     color: CLAY,
   },
   card: {
     marginTop: spacing.md,
-    padding: spacing.base,
   },
   actions: {
     marginTop: spacing.md,
-    gap: 8,
+    gap: spacing.sm,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
+    marginTop: spacing.mdSm,
+    ...typography.label,
     color: CLAY,
   },
   done: {
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.ink,
     marginBottom: spacing.md,
+    ...typography.body,
+    color: colors.ink,
   },
 });
