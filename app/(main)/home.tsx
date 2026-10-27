@@ -1,18 +1,19 @@
 import { Feather } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { PrimaryButton, TextButton } from "@/components/ui/Button";
+import { IconButton, TextButton } from "@/components/ui/Button";
 import { ExploreGrid, type ExploreItem } from "@/components/ui/ExploreGrid";
 import { BrcaReferralBanner } from "@/components/ui/BrcaReferralBanner";
 import { HomeSkeleton } from "@/components/ui/HomeSkeleton";
 import { HomeStatCards } from "@/components/ui/HomeStatCards";
-import { TrustBadgeGrid } from "@/components/ui/TrustBadgeGrid";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { JourneyProgressCard, type JourneyStepItem } from "@/components/ui/JourneyProgressCard";
 import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
+import { TwoTone, type TwoTonePart } from "@/components/ui/TwoTone";
 import {
   allConsentsAgreed,
   firstIncompleteConsent,
@@ -20,8 +21,15 @@ import {
 } from "@/lib/consent-flow";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
-import { colors, spacing } from "@/lib/design-tokens";
-import { greetingFor } from "@/lib/greeting";
+import {
+  colors,
+  heroGradient,
+  radius,
+  spacing,
+  status,
+  tapTarget,
+} from "@/lib/design-tokens";
+import { firstNameFrom, greetingFor } from "@/lib/greeting";
 import {
   currentJourneyStep,
   isJourneyStepComplete,
@@ -35,7 +43,7 @@ import { hasOwnInterventions } from "@/lib/plan";
 import { hasOwnStoreOrders } from "@/lib/orders";
 import { routes } from "@/lib/routes";
 import { hasOwnTestResults } from "@/lib/test-results";
-import { fontFamily } from "@/lib/typography";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
 import {
@@ -43,6 +51,13 @@ import {
   useQuestionnaireStore,
 } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Destructive and failure text borrows the clay of `worthDiscussing`. */
+const CLAY = status.worthDiscussing.text;
+
+/** 155deg on the unit box — the same band onboarding and auth use. */
+const GRADIENT_START = { x: 0.29, y: 0.05 };
+const GRADIENT_END = { x: 0.71, y: 0.95 };
 
 const LOOP_LABELS: {
   id: JourneyStepId;
@@ -57,40 +72,45 @@ const LOOP_LABELS: {
   { id: "followup", label: COPY.homeStepFollowUp, icon: "calendar" },
 ];
 
-const TRUST_BADGES = [
-  {
-    id: "science",
-    label: "Science-backed",
-    description: "Rules from published guidance",
-    icon: "cpu" as const,
-    color: colors.primaryBlue,
-    tint: colors.iceBlue,
-  },
-  {
-    id: "private",
-    label: "Private by default",
-    description: "Row-level security on every row",
-    icon: "lock" as const,
-    color: colors.sage,
-    tint: colors.sageLight,
-  },
-  {
-    id: "calm",
-    label: "Calm, clear steps",
-    description: "One next action at a time",
-    icon: "heart" as const,
-    color: colors.coral,
-    tint: colors.coralLight,
-  },
-  {
-    id: "track",
-    label: "Track your journey",
-    description: "See progress as you go",
-    icon: "trending-up" as const,
-    color: colors.amber,
-    tint: colors.amberLight,
-  },
-];
+/**
+ * The next-step card's headline, one step per journey step, split two-tone:
+ * the bold words name the thing waiting, the grey words carry the grammar.
+ * Read only the bold words and the card still says what is next.
+ *
+ * These are short on purpose — they are display type, not instructions. The
+ * full wording for each step, disclaimers and all, is `headlineFor` below and
+ * prints in full as body copy underneath the card, never on the gradient.
+ */
+const NEXT_STEP_HEADLINE: Record<JourneyStepId, TwoTonePart[]> = {
+  consents: [
+    { text: "Three consents", tone: "bold" },
+    { text: " are waiting to be read", tone: "grey" },
+  ],
+  questionnaire: [
+    { text: "Ten sections", tone: "bold" },
+    { text: " are waiting for your answers", tone: "grey" },
+  ],
+  tests: [
+    { text: "Suggested tests", tone: "bold" },
+    { text: " are waiting to be talked through", tone: "grey" },
+  ],
+  results: [
+    { text: "Your results", tone: "bold" },
+    { text: " are waiting in plain language", tone: "grey" },
+  ],
+  plan: [
+    { text: "A draft plan", tone: "bold" },
+    { text: " is waiting to be talked through", tone: "grey" },
+  ],
+  store: [
+    { text: "Your plan", tone: "bold" },
+    { text: " is ready to order from", tone: "grey" },
+  ],
+  followup: [
+    { text: "Follow-up", tone: "bold" },
+    { text: " is waiting when you are", tone: "grey" },
+  ],
+};
 
 function journeyState(
   state: JourneyRowState,
@@ -123,6 +143,34 @@ function headlineFor(step: JourneyStepId): string {
     case "followup":
       return COPY.homeNextFollowUp;
   }
+}
+
+/** "Monday, 19 October" — micro-caps turns it upper at render time. */
+function dateLabel(date: Date = new Date()): string {
+  return date.toLocaleDateString(undefined, {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
+/**
+ * The greeting, split two-tone: the time of day in bold ink, the name in grey.
+ *
+ * `greetingFor` stays the single source of the words — called with no name it
+ * returns the bare slot ("Good morning"), which is exactly the bold run, so
+ * the sentence a screen reader hears is the one it always was.
+ */
+function greetingParts(fullName: unknown): TwoTonePart[] {
+  const slot = greetingFor(null);
+  const name = firstNameFrom(fullName);
+  if (!name) {
+    return [{ text: slot, tone: "bold" }];
+  }
+  return [
+    { text: `${slot}, `, tone: "bold" },
+    { text: name, tone: "grey" },
+  ];
 }
 
 export default function HomeScreen() {
@@ -242,6 +290,7 @@ export default function HomeScreen() {
   };
   const current = currentJourneyStep(journey);
   const primary = primaryJourneyAction(journey);
+  const primaryTitle = COPY[primary.titleKey];
 
   const goPrimary = () => {
     switch (primary.href) {
@@ -375,24 +424,62 @@ export default function HomeScreen() {
 
   return (
     <Screen scroll contentPadding={spacing.screenX}>
-      <View style={styles.menuRow}>
-        <Text style={styles.brand}>{COPY.appName}</Text>
+      <View style={styles.topRow}>
+        <Text style={styles.date}>{dateLabel()}</Text>
+        <IconButton
+          icon="settings"
+          accessibilityLabel="Settings"
+          onPress={() => {
+            router.push(routes.settings);
+          }}
+          // Pulls the 22pt glyph's 44pt hit area back onto the screen gutter
+          // so the icon aligns with the content edge, not the tap target's.
+          style={styles.settingsBtn}
+        />
       </View>
 
-      <Text style={styles.greeting}>
-        {greetingFor(session.user.user_metadata?.full_name)}
-      </Text>
-      <Text style={styles.greetingSub}>{COPY.homeGreetingSub}</Text>
-      <Text style={styles.tagline}>{COPY.tagline}</Text>
-      <Text style={styles.headline}>{headlineFor(current)}</Text>
-
-      <View style={styles.trust}>
-        <BrcaReferralBanner />
+      <View style={styles.greeting} accessibilityRole="header">
+        <TwoTone size="xl" parts={greetingParts(session.user.user_metadata?.full_name)} />
       </View>
 
-      <View style={styles.trust}>
-        <TrustBanner />
-      </View>
+      {/*
+        The one gradient on this screen. It carries the eyebrow, the two-tone
+        headline and the affordance — and no body copy, which is why the full
+        next-step wording sits underneath on paper.
+      */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Your next step. ${NEXT_STEP_HEADLINE[current]
+          .map((part) => part.text)
+          .join("")}. ${primaryTitle}`}
+        onPress={goPrimary}
+        // A gradient has no flat fill to darken, so the press reads as a
+        // slight settle. Not a scale, not a shadow — Moss has neither.
+        style={({ pressed }) => [
+          styles.nextCardWrap,
+          pressed ? styles.nextCardPressed : null,
+        ]}
+      >
+        <LinearGradient
+          colors={heroGradient.colors}
+          locations={heroGradient.locations}
+          start={GRADIENT_START}
+          end={GRADIENT_END}
+          style={styles.nextCard}
+        >
+          <Text style={styles.eyebrow}>Your next step</Text>
+          <View style={styles.nextHeadline}>
+            <TwoTone size="l" onMoss parts={NEXT_STEP_HEADLINE[current]} />
+          </View>
+          <View style={styles.affordance}>
+            <Text style={styles.affordanceLabel}>{primaryTitle}</Text>
+            <Feather name="arrow-right" size={16} color={colors.white} />
+          </View>
+        </LinearGradient>
+      </Pressable>
+
+      {/* The step's full wording, disclaimers included. Never on the moss. */}
+      <Text style={styles.nextBody}>{headlineFor(current)}</Text>
 
       <View style={styles.stats}>
         <HomeStatCards
@@ -407,34 +494,36 @@ export default function HomeScreen() {
         />
       </View>
 
-      <View style={styles.features}>
-        <TrustBadgeGrid badges={TRUST_BADGES} />
+      {/*
+        One gap-ed column rather than a margin per block: the failure line and
+        the BRCA banner each render nothing when they do not apply, and a child
+        that renders nothing is not a flex item, so it leaves no hole behind.
+      */}
+      <View style={styles.lower}>
+        {labCheckMessage ? (
+          <Text style={styles.error}>{labCheckMessage}</Text>
+        ) : null}
+
+        <BrcaReferralBanner />
+
+        <View>
+          <Text style={styles.sectionLabel}>{COPY.homeJourneyTitle}</Text>
+          <JourneyProgressCard steps={timeline} onContinue={goPrimary} />
+        </View>
+
+        {consentsDone && exploreItems.length > 0 ? (
+          <View>
+            <Text style={styles.sectionLabel}>{COPY.homeAlsoAvailable}</Text>
+            <ExploreGrid items={exploreItems} />
+          </View>
+        ) : null}
+
+        <TrustBanner />
+
+        <SetupBanners />
+
+        <Text style={styles.tagline}>{COPY.tagline}</Text>
       </View>
-
-      <Text style={styles.section}>{COPY.homeJourneyTitle}</Text>
-      <View style={styles.timeline}>
-        <JourneyProgressCard steps={timeline} onContinue={goPrimary} />
-      </View>
-
-      {labCheckMessage ? (
-        <Text style={styles.error}>{labCheckMessage}</Text>
-      ) : null}
-
-      <SetupBanners />
-
-      <Text style={styles.ctaHeading}>{COPY.homePrimaryHint}</Text>
-      <PrimaryButton
-        title={COPY[primary.titleKey]}
-        iconTrailing="arrow-right"
-        onPress={goPrimary}
-      />
-
-      {consentsDone && exploreItems.length > 0 ? (
-        <>
-          <Text style={styles.also}>{COPY.homeAlsoAvailable}</Text>
-          <ExploreGrid items={exploreItems} />
-        </>
-      ) : null}
 
       {isAdminEmail(session.user.email) ? (
         <>
@@ -464,99 +553,82 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  menuRow: {
+  topRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    justifyContent: "space-between",
+    minHeight: tapTarget,
   },
-  brand: {
-    flex: 1,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 15,
-    lineHeight: 20,
-    letterSpacing: 0.6,
-    color: colors.primaryBlue,
-    textAlign: "left",
+  date: {
+    ...typography.micro,
+    // 11px micro, so `inkMuted` — `inkFaint` is a headline colour from 24px.
+    color: colors.inkMuted,
+  },
+  settingsBtn: {
+    marginRight: -12,
   },
   greeting: {
-    marginTop: 20,
-    fontFamily: fontFamily.display,
-    fontSize: 26,
-    lineHeight: 32,
-    letterSpacing: -0.5,
-    color: colors.deepNavy,
-    textAlign: "left",
+    marginTop: 6,
   },
-  greetingSub: {
-    marginTop: 4,
-    fontFamily: fontFamily.body,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
-    textAlign: "left",
+  nextCardWrap: {
+    marginTop: 22,
+    borderRadius: radius.surface,
+    // The gradient paints to the radius, so the wrapper must clip to it.
+    overflow: "hidden",
   },
-  trust: {
-    marginTop: 20,
+  nextCardPressed: {
+    opacity: 0.92,
+  },
+  nextCard: {
+    paddingTop: 22,
+    paddingHorizontal: 22,
+    paddingBottom: 20,
+  },
+  eyebrow: {
+    ...typography.micro,
+    color: colors.mossTint,
+  },
+  nextHeadline: {
+    marginTop: 12,
+  },
+  affordance: {
+    marginTop: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    // The whole card is the hit area; this row only needs to clear the floor
+    // on its own in case the card ever stops being pressable.
+    minHeight: 24,
+  },
+  affordanceLabel: {
+    ...typography.body,
+    fontFamily: fontFamily.bodySemi,
+    color: colors.white,
+  },
+  nextBody: {
+    marginTop: 14,
+    ...typography.body,
+    color: colors.inkSoft,
   },
   stats: {
-    marginTop: 16,
+    marginTop: 14,
   },
-  features: {
-    marginTop: 16,
+  lower: {
+    marginTop: spacing.lg,
+    gap: spacing.md,
   },
-  tagline: {
-    marginTop: 10,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    lineHeight: 18,
-    // Regulatory disclaimer — keep at slate or darker so it stays
-    // WCAG AA legible. colors.mist fails contrast on the iceBlue screen.
-    color: colors.slate,
-    textAlign: "left",
-  },
-  headline: {
-    marginTop: 16,
-    fontFamily: fontFamily.body,
-    fontSize: 15,
-    lineHeight: 24,
-    color: colors.charcoal,
-    textAlign: "left",
-  },
-  section: {
-    marginTop: 24,
-    marginBottom: 12,
-    fontFamily: fontFamily.bodySemi,
-    fontSize: 20,
-    color: colors.primaryBlue,
-    textAlign: "left",
-  },
-  timeline: {
-    marginBottom: 8,
+  sectionLabel: {
+    marginBottom: spacing.mdSm,
+    ...typography.micro,
+    color: colors.inkMuted,
   },
   error: {
-    marginTop: 12,
-    fontFamily: fontFamily.body,
-    fontSize: 13,
-    color: colors.coral,
-    textAlign: "left",
+    ...typography.label,
+    color: CLAY,
   },
-  ctaHeading: {
-    marginTop: 24,
-    marginBottom: 12,
-    fontFamily: fontFamily.display,
-    fontSize: 16,
-    lineHeight: 22,
-    color: colors.deepNavy,
-    textAlign: "left",
-  },
-  also: {
-    marginTop: 24,
-    marginBottom: 12,
-    fontFamily: fontFamily.displaySemi,
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors.slate,
-    textAlign: "left",
+  tagline: {
+    ...typography.label,
+    // 13px regulatory disclaimer — `inkMuted` keeps it AA-legible on paper.
+    color: colors.inkMuted,
   },
 });
-
