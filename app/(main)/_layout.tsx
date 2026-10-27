@@ -152,14 +152,22 @@ export default function MainLayout() {
     }
   }
 
+  // Cosmetic bar visibility, and nothing else — every clinical gate is a
+  // redirect above this line. What stays here is the set of full-screen
+  // flows the boards draw without a bar: the symptom check, a consent, an
+  // assessment section, plan, follow-up, orders, the term preview and the
+  // settings sub-screens.
+  //
+  // Tests and Shop are deliberately absent. They are tab destinations now,
+  // and suggested-tests.html, test-reports.html and wellness-shop.html each
+  // draw the five-tab bar, so hiding it there would strand the user on two
+  // of the bar's own five tabs.
   const hideTabBar =
     onSymptomCheck ||
     Boolean(consentScreen) ||
     onQuestionnaireSection ||
-    onResults ||
     onPlan ||
     onFollowup ||
-    onStore ||
     onOrders ||
     onTermPreview ||
     onSettingsDeep;
@@ -348,6 +356,9 @@ const styles = StyleSheet.create({
   },
   labelOff: {
     fontFamily: fontFamily.bodyMedium,
-    color: colors.inkFaint,
+    // inkMuted, not inkFaint: at 10px this is text, and inkFaint is 3.47:1
+    // against AA's 4.5:1. The icons stay on inkFaint — as non-text UI they
+    // only owe 3:1, and the boards draw them that way.
+    color: colors.inkMuted,
   },
 });
