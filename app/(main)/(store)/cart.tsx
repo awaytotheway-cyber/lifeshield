@@ -1,14 +1,22 @@
 import { Redirect, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
-import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { PurchaseStatus } from "@/components/store/ProductCard";
-import { Button } from "@/components/ui/Button";
+import { IconButton, PrimaryButton, TextButton } from "@/components/ui/Button";
 import { MossPattern } from "@/components/ui/MossPattern";
 import { Screen } from "@/components/ui/Screen";
+import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
+import { Surface } from "@/components/ui/Surface";
+import { TwoTone, type TwoTonePart } from "@/components/ui/TwoTone";
 import { COPY } from "@/lib/copy";
-import { radius } from "@/lib/design-tokens";
+import {
+  colors,
+  radius,
+  spacing,
+  status,
+  tapTarget,
+} from "@/lib/design-tokens";
 import { canPurchase, type PurchaseGateResult } from "@/lib/purchase-gates";
 import { routes } from "@/lib/routes";
 import {
@@ -20,8 +28,30 @@ import {
   type CartLineRow,
 } from "@/lib/store";
 import { loadUserContext } from "@/lib/user-context";
+import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+
+/** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
+const CLAY = status.worthDiscussing.text;
+
+/** The one headline on the screen. Read the bold word and it still says it. */
+const HEADLINE: TwoTonePart[] = [
+  { text: "Your ", tone: "grey" },
+  { text: "cart", tone: "bold" },
+];
+
+/**
+ * The running total, at the detail board's 28 with tracking at -3% of the
+ * size. A price rather than a headline, so plain `Text` and not `TwoTone`.
+ */
+const TOTAL = {
+  fontFamily: fontFamily.display,
+  fontSize: 28,
+  lineHeight: 28,
+  // 28 x -0.03
+  letterSpacing: -0.8,
+} as const;
 
 type CheckedLine = {
   line: CartLineRow;
@@ -183,17 +213,30 @@ export default function CartScreen() {
 
   return (
     <Screen scroll>
-      <Text className="text-center text-2xl text-charcoal">{COPY.cartTitle}</Text>
-      <Text className="mt-3 text-center text-charcoal">{COPY.cartBody}</Text>
+      <View style={styles.topRow}>
+        <IconButton
+          icon="arrow-left"
+          accessibilityLabel={COPY.storeBackStore}
+          onPress={() => {
+            router.replace(routes.store);
+          }}
+          style={styles.back}
+        />
+      </View>
 
-      {loading ? <ActivityIndicator className="mt-6" color="#1A535C" /> : null}
+      <View accessibilityRole="header">
+        <TwoTone size="xl" parts={HEADLINE} />
+      </View>
+
+      <Text style={styles.lede}>{COPY.cartBody}</Text>
+
+      {loading ? <StaticSkeleton rows={3} /> : null}
 
       {message ? (
         <>
-          <Text className="mt-4 text-center text-coral">{message}</Text>
-          <Button
+          <Text style={styles.error}>{message}</Text>
+          <TextButton
             title={COPY.storeRetry}
-            variant="ghost"
             onPress={() => {
               refresh();
             }}
@@ -201,27 +244,18 @@ export default function CartScreen() {
         </>
       ) : null}
 
-      {actionMessage ? (
-        <Text className="mt-4 text-center text-teal">{actionMessage}</Text>
-      ) : null}
+      {actionMessage ? <Text style={styles.ok}>{actionMessage}</Text> : null}
 
       {!loading && !message && lines.length === 0 ? (
-        <View className="mt-6 items-center">
-          {/*
-            The one empty state in the app that does not go through
-            `EmptyState`: it carries a single line rather than a heading and an
-            explanation. Same treatment though — a clipped band of the motif,
-            self-stretched because MossPattern fills its parent's width and
-            this column centres its children.
-          */}
-          <View
-            className="self-stretch overflow-hidden"
-            style={{ borderRadius: radius.surface }}
-          >
-            <MossPattern height={80} />
-          </View>
-          <Text className="mt-4 text-center text-charcoal">{COPY.cartEmpty}</Text>
-        </View>
+        /*
+          The one empty state in the app that does not go through
+          `EmptyState`: it carries a single line rather than a heading and an
+          explanation. Same treatment though — a clipped band of the motif.
+        */
+        <Surface padded={false} style={styles.empty}>
+          <MossPattern height={96} />
+          <Text style={styles.emptyText}>{COPY.cartEmpty}</Text>
+        </Surface>
       ) : null}
 
       {!loading && !message
@@ -229,88 +263,219 @@ export default function CartScreen() {
             const busy = updatingId === line.id;
             const lineTotal = line.product.price * line.quantity;
             return (
-              <View key={line.id} className="mt-4 rounded-xl bg-white px-4 py-4">
-                <ClinicalTerm
-                  plainName={line.product.plain_name}
-                  plainExplanation={
-                    line.product.plain_description?.trim() ||
-                    "Saved in your cart."
-                  }
-                  medicalName={line.product.clinical_name}
-                />
-                <Text className="mt-2 text-teal">
+              <Surface key={line.id} style={styles.line}>
+                <Text style={styles.lineName}>{line.product.plain_name}</Text>
+                <Text style={styles.lineMaths}>
                   {formatProductPrice(line.product)} × {line.quantity} = ₹
                   {lineTotal.toLocaleString("en-IN")}
                 </Text>
+
                 <PurchaseStatus gate={gate} />
 
-                <View className="mt-3 flex-row items-center justify-center">
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={COPY.cartDecrease}
-                    disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
-                    onPress={() => {
-                      void changeQuantity(line, -1);
-                    }}
-                  >
-                    <Text className="text-xl text-charcoal">−</Text>
-                  </Pressable>
-                  <Text className="mx-4 text-charcoal">
-                    {COPY.cartQuantity}: {line.quantity}
-                  </Text>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={COPY.cartIncrease}
-                    disabled={busy}
-                    className="rounded-lg bg-cream px-4 py-2"
-                    onPress={() => {
-                      void changeQuantity(line, 1);
-                    }}
-                  >
-                    <Text className="text-xl text-charcoal">+</Text>
-                  </Pressable>
-                </View>
+                <View style={styles.lineControls}>
+                  {/* 44pt round steps, the one place the pill radius is a
+                      control rather than a chip. */}
+                  <View style={styles.stepper}>
+                    <StepButton
+                      glyph="−"
+                      label={COPY.cartDecrease}
+                      disabled={busy}
+                      onPress={() => {
+                        void changeQuantity(line, -1);
+                      }}
+                    />
+                    <Text
+                      style={styles.quantity}
+                      accessibilityLabel={`${COPY.cartQuantity}: ${line.quantity}`}
+                    >
+                      {line.quantity}
+                    </Text>
+                    <StepButton
+                      glyph="+"
+                      label={COPY.cartIncrease}
+                      disabled={busy}
+                      onPress={() => {
+                        void changeQuantity(line, 1);
+                      }}
+                    />
+                  </View>
 
-                <Button
-                  title={COPY.cartRemove}
-                  variant="ghost"
-                  disabled={busy}
-                  onPress={() => {
-                    void removeLine(line);
-                  }}
-                />
-              </View>
+                  <TextButton
+                    title={COPY.cartRemove}
+                    disabled={busy}
+                    style={styles.remove}
+                    onPress={() => {
+                      void removeLine(line);
+                    }}
+                  />
+                </View>
+              </Surface>
             );
           })
         : null}
 
       {!loading && !message && lines.length > 0 ? (
-        <View className="mt-6 rounded-xl border border-teal bg-white px-4 py-4">
-          <Text className="text-center text-charcoal">{COPY.cartTotal}</Text>
-          <Text className="mt-2 text-center text-2xl text-teal">
-            ₹{total.toLocaleString("en-IN")}
-          </Text>
-          <Text className="mt-2 text-center text-sm text-charcoal">
-            {COPY.cartTotalNote}
-          </Text>
-        </View>
+        <Surface style={styles.totalCard}>
+          <Text style={styles.eyebrow}>{COPY.cartTotal}</Text>
+          <Text style={styles.total}>₹{total.toLocaleString("en-IN")}</Text>
+          <Text style={styles.totalNote}>{COPY.cartTotalNote}</Text>
+        </Surface>
       ) : null}
 
-      <Button
+      {/* The one black button on this screen. */}
+      <PrimaryButton
         title={COPY.cartCheckout}
         disabled={!canCheckout}
         onPress={() => {
           router.push(routes.storeCheckout);
         }}
       />
-      <Button
-        title={COPY.storeBackStore}
-        variant="ghost"
-        onPress={() => {
-          router.replace(routes.store);
-        }}
-      />
     </Screen>
   );
 }
+
+/** One round step. 44 in both dimensions, paper fill, no border. */
+function StepButton({
+  glyph,
+  label,
+  disabled,
+  onPress,
+}: {
+  glyph: string;
+  label: string;
+  disabled: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.step,
+        pressed && !disabled ? styles.stepPressed : null,
+      ]}
+    >
+      <Text style={[styles.stepGlyph, disabled ? styles.stepOff : null]}>
+        {glyph}
+      </Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  back: {
+    // Pulled into the gutter so the glyph, not its 44pt hit area, lines up
+    // with the headline under it.
+    marginLeft: -12,
+  },
+  lede: {
+    marginTop: spacing.mdSm,
+    ...typography.body,
+    color: colors.inkSoft,
+  },
+  empty: {
+    marginTop: spacing.md,
+    overflow: "hidden",
+  },
+  emptyText: {
+    paddingHorizontal: 20,
+    paddingVertical: spacing.md,
+    ...typography.body,
+    color: colors.inkSoft,
+    textAlign: "center",
+  },
+  line: {
+    marginTop: spacing.base,
+  },
+  lineName: {
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 16,
+    lineHeight: 22,
+    color: colors.ink,
+  },
+  lineMaths: {
+    marginTop: 3,
+    ...typography.label,
+    color: colors.inkSoft,
+  },
+  lineControls: {
+    marginTop: spacing.base,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.mdSm,
+  },
+  stepper: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+  },
+  step: {
+    width: tapTarget,
+    height: tapTarget,
+    borderRadius: radius.pill,
+    backgroundColor: colors.paper,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  stepPressed: {
+    backgroundColor: colors.hairline,
+  },
+  stepGlyph: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: 20,
+    lineHeight: 24,
+    color: colors.ink,
+  },
+  // Disabled is `hairline` on `inkMuted`; the fill is already paper, so only
+  // the glyph steps back.
+  stepOff: {
+    color: colors.inkMuted,
+  },
+  quantity: {
+    minWidth: 20,
+    textAlign: "center",
+    fontFamily: fontFamily.bodySemi,
+    fontSize: 17,
+    lineHeight: 22,
+    color: colors.ink,
+  },
+  remove: {
+    marginTop: 0,
+    flexShrink: 1,
+  },
+  totalCard: {
+    marginTop: spacing.md,
+  },
+  eyebrow: {
+    ...typography.micro,
+    color: colors.inkMuted,
+  },
+  total: {
+    marginTop: spacing.micro,
+    ...TOTAL,
+    color: colors.ink,
+  },
+  totalNote: {
+    marginTop: spacing.sm,
+    ...typography.label,
+    color: colors.inkSoft,
+  },
+  error: {
+    marginTop: spacing.mdSm,
+    ...typography.label,
+    color: CLAY,
+  },
+  ok: {
+    marginTop: spacing.sm,
+    ...typography.label,
+    color: colors.mossDeep,
+  },
+});
