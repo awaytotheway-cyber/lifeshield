@@ -14,6 +14,9 @@ export const COPY = {
 
   splashSubtitle: "Lifestyle awareness, made simple.",
 
+  /** The hero promise on the auth screens. Positioning, not a claim. */
+  heroPromise: "Look before, not after.",
+
   loginTitle: "Welcome back",
   loginSubtitle: "Sign in to continue your PRESCOPE journey.",
   loginButton: "Log in",
@@ -41,6 +44,13 @@ export const COPY = {
     "That password does not meet the project rules. Use at least 8 characters. If it still fails, check Authentication → Providers → Email (password requirements) in Supabase.",
 
   onboardingSkip: "Skip",
+
+  /**
+   * The standing positioning line under every onboarding step. Legally
+   * load-bearing — never shorten it, never drop a clause.
+   */
+  onboardingDisclaimer:
+    "Prescope is a lifestyle awareness tool. It does not diagnose, detect or treat any condition.",
 
   welcomeTitle: "Understand your lifestyle picture",
   welcomeBody:
