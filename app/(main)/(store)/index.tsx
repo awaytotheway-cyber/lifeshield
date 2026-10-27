@@ -551,11 +551,14 @@ const styles = StyleSheet.create({
     minHeight: tapTarget,
     justifyContent: "center",
   },
+  // An inactive tab is a 15px label, so it reads `inkMuted` (5.36:1) rather
+  // than `inkFaint` (3.47:1) — inkFaint only clears its contrast at 24px and
+  // up, where it is a headline colour.
   tabText: {
     fontFamily: fontFamily.bodyMedium,
     fontSize: 15,
     lineHeight: 20,
-    color: colors.inkFaint,
+    color: colors.inkMuted,
   },
   tabActive: {
     fontFamily: fontFamily.bodySemi,

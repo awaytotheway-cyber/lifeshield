@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Text } from "react-native";
 import { useStripe } from "@stripe/stripe-react-native";
 
 import { Button } from "@/components/ui/Button";
@@ -114,20 +113,18 @@ export function StripePayButton({
         ? COPY.checkoutSavingOrder
         : COPY.checkoutPay;
 
+  // Just the button. The display-only total note belongs to the checkout
+  // screen, which already prints it in full above the total — printing it
+  // here too put the same sentence on the screen twice.
   return (
-    <>
-      <Text className="mt-2 text-center text-sm text-ink">
-        {COPY.cartTotalNote}
-      </Text>
-      <Button
-        title={title}
-        loading={busy}
-        disabled={disabled || busy}
-        onPress={() => {
-          void pay();
-        }}
-      />
-    </>
+    <Button
+      title={title}
+      loading={busy}
+      disabled={disabled || busy}
+      onPress={() => {
+        void pay();
+      }}
+    />
   );
 }
 

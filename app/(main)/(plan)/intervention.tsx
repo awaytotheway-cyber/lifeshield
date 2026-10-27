@@ -49,7 +49,16 @@ import {
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
+import { StatusChip } from "@/components/ui/StatusChip";
 import { colors } from "@/lib/design-tokens";
+
+/**
+ * The Moss section label: 11px, uppercase, tracked, and `inkMuted` — which
+ * clears AA at that size where `inkFaint` (3.47:1) does not. This screen
+ * styles through NativeWind, so the scale is spelled out here rather than
+ * spread from `typography.micro`.
+ */
+const EYEBROW = "text-[11px] uppercase tracking-[1.5px] text-inkMuted";
 
 export default function PlanItemScreen() {
   const router = useRouter();
@@ -267,23 +276,25 @@ export default function PlanItemScreen() {
           <Text className="mt-4 text-center text-xl text-ink">
             {row.title}
           </Text>
-          <Text className="mt-4 text-sm text-mossDeep">{COPY.planDetailWhat}</Text>
+          <Text className={`mt-4 ${EYEBROW}`}>{COPY.planDetailWhat}</Text>
           <Text className="mt-1 text-ink">
             {row.description?.trim() ||
               row.plain_reason?.trim() ||
               COPY.planDetailNotInstruction}
           </Text>
-          <Text className="mt-4 text-sm text-mossDeep">{COPY.planWhyLabel}</Text>
+          <Text className={`mt-4 ${EYEBROW}`}>{COPY.planWhyLabel}</Text>
           <Text className="mt-1 text-ink">
             {row.plain_reason?.trim() || COPY.planDetailNotInstruction}
           </Text>
 
           {row.clinician_interaction_check ? (
-            <View
-              className="mt-3 self-start rounded-full px-3 py-1"
-              style={{ backgroundColor: "#FDE68A" }}
-            >
-              <Text className="text-sm text-ink">{COPY.planNeedsCheck}</Text>
+            <View className="mt-3 self-start">
+              {/*
+                The same status the plan list gives this row, taken from the
+                token file instead of a hand-mixed amber — and it carries
+                its word, so colour is never the only signal.
+              */}
+              <StatusChip kind="worthDiscussing" label={COPY.planNeedsCheck} />
             </View>
           ) : null}
 
@@ -291,7 +302,7 @@ export default function PlanItemScreen() {
             <TemplateSection template={template} />
           ) : null}
 
-          <Text className="mt-4 text-sm text-mossDeep">{COPY.planDetailReview}</Text>
+          <Text className={`mt-4 ${EYEBROW}`}>{COPY.planDetailReview}</Text>
           <Text className="mt-1 text-ink">
             {reviewStatusLabel(row.status)}
           </Text>
@@ -360,12 +371,12 @@ export default function PlanItemScreen() {
             />
           ) : null}
 
-          <Text className="mt-4 text-sm text-mossDeep">{COPY.planClinicalBasis}</Text>
+          <Text className={`mt-4 ${EYEBROW}`}>{COPY.planClinicalBasis}</Text>
           <Text className="mt-1 text-ink">
             {row.clinical_basis?.trim() || row.trigger_finding}
           </Text>
 
-          <Text className="mt-6 text-center text-sm text-mossDeep">
+          <Text className={`mt-6 text-center ${EYEBROW}`}>
             {COPY.planDetailFinding}
           </Text>
           <ClinicalTerm
@@ -375,7 +386,8 @@ export default function PlanItemScreen() {
             medicalName={row.trigger_finding}
           />
 
-          <Text className="mt-4 text-center text-sm text-mossDeep">
+          {/* Load-bearing: the plan is not an instruction. Stays verbatim. */}
+          <Text className="mt-4 text-center text-sm text-inkSoft">
             {COPY.planDetailNotInstruction}
           </Text>
         </>
@@ -403,19 +415,19 @@ function TemplateSection({ template }: { template: InterventionTemplate }) {
     <View className="mt-4">
       {template.rationale_md ? (
         <>
-          <Text className="text-sm text-mossDeep">Why this helps</Text>
+          <Text className={EYEBROW}>Why this helps</Text>
           <Text className="mt-1 text-ink">{template.rationale_md}</Text>
         </>
       ) : null}
 
       {steps.length > 0 ? (
         <>
-          <Text className="mt-4 text-sm text-mossDeep">Action steps</Text>
+          <Text className={`mt-4 ${EYEBROW}`}>Action steps</Text>
           {steps.map((step, index) => (
             <View key={index} className="mt-2">
               <Text className="text-ink">• {step.text}</Text>
               {step.dose || step.when ? (
-                <Text className="ml-3 text-sm text-mossDeep">
+                <Text className="ml-3 text-sm text-inkMuted">
                   {[step.dose, step.when].filter(Boolean).join(" · ")}
                 </Text>
               ) : null}
@@ -429,7 +441,7 @@ function TemplateSection({ template }: { template: InterventionTemplate }) {
 
       {resources.length > 0 ? (
         <>
-          <Text className="mt-4 text-sm text-mossDeep">Resources</Text>
+          <Text className={`mt-4 ${EYEBROW}`}>Resources</Text>
           {resources.map((resource, index) => (
             <Pressable
               key={index}
@@ -442,7 +454,7 @@ function TemplateSection({ template }: { template: InterventionTemplate }) {
               className="mt-2"
             >
               <Text className="text-ink underline">{resource.title}</Text>
-              <Text className="text-sm text-mossDeep">{resource.kind}</Text>
+              <Text className="text-sm text-inkMuted">{resource.kind}</Text>
             </Pressable>
           ))}
         </>
@@ -464,7 +476,7 @@ function ProgressSection({
   const recent = entries.slice(0, 5);
   return (
     <View className="mt-4">
-      <Text className="text-sm text-mossDeep">Your progress</Text>
+      <Text className={EYEBROW}>Your progress</Text>
       <Text className="mt-1 text-ink">
         {done7 === 0
           ? "No entries in the last 7 days."
@@ -501,7 +513,7 @@ function RecipesForFindingSection({
   const shown = recipes.slice(0, 5);
   return (
     <View className="mt-4">
-      <Text className="text-sm text-mossDeep">Recipes that support this</Text>
+      <Text className={EYEBROW}>Recipes that support this</Text>
       <Text className="mt-1 text-xs text-ink">
         Admin-curated recipes linked to this finding.
       </Text>
@@ -515,7 +527,7 @@ function RecipesForFindingSection({
           >
             <Text className="text-ink underline">{recipe.name}</Text>
             {recipe.description ? (
-              <Text className="text-xs text-mossDeep" numberOfLines={2}>
+              <Text className="text-xs text-inkMuted" numberOfLines={2}>
                 {recipe.description}
               </Text>
             ) : null}
