@@ -1,23 +1,50 @@
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import type { ResultStatusChip } from "@/lib/result-status";
+import { StatusChip as MossStatusChip } from "@/components/ui/StatusChip";
+import { colors } from "@/lib/design-tokens";
+import { mossStatusFromFlag, statusChipFromFlag } from "@/lib/result-status";
+import { fontFamily } from "@/lib/typography";
+
+type StatusChipProps = {
+  /** The lab's own flag, straight off the row. */
+  flag: string | null | undefined;
+};
 
 /**
- * Colour-coded status. Leads the row so the raw number is never the headline.
+ * A lab flag as its Moss status: one pill, one fill, and always the word.
+ *
+ * Both halves come from the flag through the same pair of functions, so the
+ * word and the colour can never disagree about one result. The three fills
+ * differ in lightness rather than hue — moss, sand, clay, never green to red
+ * — so they stay distinct in greyscale and for colour-blind readers.
+ *
+ * A flag the app does not recognise gets no fill at all. "Saved — no flag
+ * yet" is the absence of a clinical status, and the within-range moss would
+ * read as a verdict nobody has given.
  */
-export function StatusChip({ chip }: { chip: ResultStatusChip }) {
-  const toneClass =
-    chip.tone === "needs_attention"
-      ? "bg-coral"
-      : chip.tone === "worth_watching"
-        ? "bg-charcoal"
-        : "bg-sage";
-  const textClass =
-    chip.tone === "within_range" ? "text-teal" : "text-cream";
+export function StatusChip({ flag }: StatusChipProps) {
+  const chip = statusChipFromFlag(flag);
+  const kind = mossStatusFromFlag(flag);
 
-  return (
-    <View className={`self-start rounded-full px-3 py-1 ${toneClass}`}>
-      <Text className={`text-sm ${textClass}`}>{chip.label}</Text>
-    </View>
-  );
+  if (!kind) {
+    return (
+      <View style={styles.plain}>
+        <Text style={styles.plainText}>{chip.label}</Text>
+      </View>
+    );
+  }
+
+  return <MossStatusChip kind={kind} label={chip.label} />;
 }
+
+const styles = StyleSheet.create({
+  plain: {
+    alignSelf: "flex-start",
+  },
+  plainText: {
+    fontFamily: fontFamily.bodyMedium,
+    fontSize: 12,
+    lineHeight: 16,
+    color: colors.inkMuted,
+  },
+});

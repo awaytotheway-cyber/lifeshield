@@ -9,6 +9,7 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export {
   meaningForFlag,
+  mossStatusFromFlag,
   statusChipFromFlag,
   type ResultStatusChip,
   type ResultStatusTone,
