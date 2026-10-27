@@ -392,37 +392,46 @@ export function subscribeToThread(
   void (async () => {
     if (id.length === 0) return;
 
-    const { isSupabaseConfigured, supabase } = await loadSupabase();
-    if (cancelled || !isSupabaseConfigured) return;
+    try {
+      const { isSupabaseConfigured, supabase } = await loadSupabase();
+      if (cancelled || !isSupabaseConfigured) return;
 
-    const channel = supabase
-      .channel(`chat_messages:${id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "chat_messages",
-          filter: `connection_id=eq.${id}`,
-        },
-        (payload) => {
-          if (cancelled) return;
-          const raw = payload.new as Record<string, unknown> | null;
-          if (raw == null) return;
-          const message = normaliseMessage(raw);
-          if (message.connection_id !== id) return;
-          onMessage(message);
-        },
-      )
-      .subscribe();
+      const channel = supabase
+        .channel(`chat_messages:${id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "chat_messages",
+            filter: `connection_id=eq.${id}`,
+          },
+          (payload) => {
+            if (cancelled) return;
+            const raw = payload.new as Record<string, unknown> | null;
+            if (raw == null) return;
+            const message = normaliseMessage(raw);
+            if (message.connection_id !== id) return;
+            onMessage(message);
+          },
+        )
+        .subscribe();
 
-    teardown = () => {
-      void supabase.removeChannel(channel);
-    };
+      teardown = () => {
+        void supabase.removeChannel(channel);
+      };
 
-    // The caller may have unsubscribed while the channel was opening.
-    if (cancelled) {
-      teardown();
+      // The caller may have unsubscribed while the channel was opening.
+      if (cancelled) {
+        teardown();
+        teardown = null;
+      }
+    } catch {
+      // Opening the channel failed — offline, or realtime disabled on the
+      // project. Swallowed deliberately: the signature has no error channel,
+      // and the thread is still readable because `loadThread` fetched it.
+      // The cost is that new messages need a manual refresh, not a crash and
+      // not an unhandled rejection from this fire-and-forget setup.
       teardown = null;
     }
   })();
