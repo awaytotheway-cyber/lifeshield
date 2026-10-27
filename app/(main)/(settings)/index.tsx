@@ -1,6 +1,6 @@
 import Constants from "expo-constants";
 import { Redirect, useFocusEffect, useRouter, type Href } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
@@ -19,6 +19,11 @@ import {
   status,
   tapTarget,
 } from "@/lib/design-tokens";
+import {
+  FEATURE_FLAG_DEFAULTS,
+  isFeatureEnabled,
+  type FeatureFlagProfile,
+} from "@/lib/feature-flags";
 import { messageFromUnknown } from "@/lib/friendly-errors";
 import {
   discoverableFromProfile,
@@ -26,6 +31,7 @@ import {
   saveBuddyDiscoverable,
 } from "@/lib/profile-extended";
 import { routes } from "@/lib/routes";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
@@ -140,6 +146,12 @@ export default function SettingsIndex() {
   const agreed = useConsentStore((state) => state.agreed);
 
   const [fullName, setFullName] = useState("");
+  // Without keys there is nothing to read, so start on an empty override map
+  // rather than setting it from inside the effect below. Null means "not read
+  // yet"; the gate falls back to the shipped default while it holds.
+  const [flagProfile, setFlagProfile] = useState<FeatureFlagProfile | null>(
+    isSupabaseConfigured ? null : { feature_flags: {} },
+  );
   const [discoverable, setDiscoverable] = useState(false);
   const [savingDiscoverable, setSavingDiscoverable] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -178,6 +190,41 @@ export default function SettingsIndex() {
 
   useFocusEffect(load);
 
+  /**
+   * Feature flags live on `profiles.feature_flags`, which the PROFILE_SELECT
+   * behind `loadExtendedProfile` does not fetch — so this is its own
+   * one-column read, as on the sibling Health permissions screen.
+   *
+   * A read that fails leaves `flagProfile` null and the gate falls back to
+   * the shipped default. For social_v1 that default is false: a flag we could
+   * not read is a flag that is not on.
+   */
+  useEffect(() => {
+    if (!userId || !isSupabaseConfigured) {
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      try {
+        const { data } = await supabase
+          .from("profiles")
+          .select("feature_flags")
+          .eq("id", userId)
+          .maybeSingle();
+        if (!cancelled) {
+          setFlagProfile((data ?? { feature_flags: {} }) as FeatureFlagProfile);
+        }
+      } catch {
+        if (!cancelled) {
+          setFlagProfile({ feature_flags: {} });
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
   if (!session) {
     return <Redirect href={routes.login} />;
   }
@@ -193,6 +240,13 @@ export default function SettingsIndex() {
   const consentsGiven = Object.values(agreed).filter(Boolean).length;
   const appVersion =
     Constants.expoConfig?.version ?? Constants.nativeAppVersion ?? null;
+  // The Buddies group was built before the flag existed and rendered
+  // unconditionally. It is the social surface's one control on this screen,
+  // so it is gated with the surface itself.
+  const socialEnabled =
+    flagProfile === null
+      ? FEATURE_FLAG_DEFAULTS.social_v1
+      : isFeatureEnabled(flagProfile, "social_v1");
 
   /**
    * Writes on toggle. The switch moves first so the control does not feel
@@ -288,17 +342,21 @@ export default function SettingsIndex() {
         />
       </Surface>
 
-      <GroupLabel text={COPY.settingsGroupBuddies} />
-      <Surface padded={false} style={styles.block}>
-        <SwitchRow
-          title={COPY.settingsDiscoverable}
-          subtitle={COPY.settingsDiscoverableHint}
-          value={discoverable}
-          disabled={savingDiscoverable}
-          onChange={onToggleDiscoverable}
-          divided={false}
-        />
-      </Surface>
+      {socialEnabled ? (
+        <>
+          <GroupLabel text={COPY.settingsGroupBuddies} />
+          <Surface padded={false} style={styles.block}>
+            <SwitchRow
+              title={COPY.settingsDiscoverable}
+              subtitle={COPY.settingsDiscoverableHint}
+              value={discoverable}
+              disabled={savingDiscoverable}
+              onChange={onToggleDiscoverable}
+              divided={false}
+            />
+          </Surface>
+        </>
+      ) : null}
 
       {message ? <Text style={styles.error}>{message}</Text> : null}
 

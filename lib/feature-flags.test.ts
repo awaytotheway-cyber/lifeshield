@@ -19,6 +19,7 @@ assert.equal(FEATURE_FLAG_DEFAULTS.meal_planner_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.test_booking_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.supplements_v2, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.genetic_testing_v1, false);
+assert.equal(FEATURE_FLAG_DEFAULTS.social_v1, false);
 assert.equal(isFeatureEnabled(null, "goals_v1"), false);
 assert.equal(isFeatureEnabled(undefined, "goals_v1"), false);
 assert.equal(isFeatureEnabled({}, "goals_v1"), false);
@@ -29,6 +30,9 @@ assert.equal(isFeatureEnabled(null, "meal_planner_v1"), false);
 assert.equal(isFeatureEnabled(null, "test_booking_v1"), false);
 assert.equal(isFeatureEnabled(null, "supplements_v2"), false);
 assert.equal(isFeatureEnabled(null, "genetic_testing_v1"), false);
+assert.equal(isFeatureEnabled(null, "social_v1"), false);
+assert.equal(isFeatureEnabled(undefined, "social_v1"), false);
+assert.equal(isFeatureEnabled({}, "social_v1"), false);
 
 // A per-user boolean override wins over the default.
 assert.equal(
@@ -38,6 +42,28 @@ assert.equal(
 assert.equal(
   isFeatureEnabled({ feature_flags: { goals_v1: false } }, "goals_v1"),
   false,
+);
+
+// social_v1 ships off, so the beta path — a per-user override to true — is
+// the only way it lights up. That path is the one worth asserting.
+assert.equal(
+  isFeatureEnabled({ feature_flags: { social_v1: true } }, "social_v1"),
+  true,
+);
+assert.equal(
+  isFeatureEnabled({ feature_flags: { social_v1: false } }, "social_v1"),
+  false,
+);
+assert.equal(
+  isFeatureEnabled(
+    { feature_flags: { social_v1: "true" as unknown as boolean } },
+    "social_v1",
+  ),
+  false,
+);
+assert.equal(
+  resolveFeatureFlags({ feature_flags: { social_v1: true } }).social_v1,
+  true,
 );
 
 // Non-boolean overrides are ignored (accidental strings / numbers must not
@@ -74,6 +100,7 @@ assert.deepEqual(fromUnknown, {
   test_booking_v1: false,
   supplements_v2: false,
   genetic_testing_v1: false,
+  social_v1: false,
 });
 
 // eslint-disable-next-line no-console

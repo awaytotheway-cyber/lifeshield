@@ -58,7 +58,16 @@ export type FeatureFlagName =
    * minutes / heart-rate resting manually today; HealthKit and Google Fit
    * bridges plug into lib/activity-source when the native modules land.
    */
-  | "activity_v1";
+  | "activity_v1"
+  /**
+   * Phase J social: buddy discovery and chat. Default off per the rollout
+   * rule. Gates the whole social surface — discovery, connections, threads
+   * and the "Let others find me" switch in Settings — because discovery is
+   * the only route by which one member learns another exists, and that is
+   * not something to light up for everyone before the moderation queue has
+   * been watched in production.
+   */
+  | "social_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
@@ -71,6 +80,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     supplements_v2: false,
     genetic_testing_v1: false,
     activity_v1: false,
+    social_v1: false,
   });
 
 /**
