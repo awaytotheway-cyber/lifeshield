@@ -405,6 +405,7 @@ const styles = StyleSheet.create({
   rows: {
     marginTop: 14,
     paddingHorizontal: 20,
+    overflow: "hidden",
   },
   // The tab row carries 12pt of slack under its words to make a 44pt target,
   // so the card closes up by that much rather than sitting 14 below the slack.

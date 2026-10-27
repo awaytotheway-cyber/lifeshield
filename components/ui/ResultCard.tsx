@@ -4,6 +4,12 @@ import { StatusChip } from "@/components/ui/StatusChip";
 import { colors, type StatusKind } from "@/lib/design-tokens";
 import { fontFamily } from "@/lib/typography";
 
+/**
+ * The row's own height. Well past the 44pt floor, which is what lets the
+ * whole row — not just the name — be the target.
+ */
+const ROW_HEIGHT = 80;
+
 type ResultCardProps = {
   /** The everyday name. The clinical term belongs on the detail screen. */
   plainName: string;
@@ -93,19 +99,14 @@ export function ResultCard({
   );
 }
 
-/**
- * The row's own height. Well past the 44pt floor, which is what lets the
- * whole row — not just the name — be the target.
- */
-const ROW_HEIGHT = 80;
-
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
     minHeight: ROW_HEIGHT,
-    // The card's own 20pt inset; the row runs the full width inside it.
+    // Breathing room for a reason that wraps, which grows the row past its
+    // minimum rather than crowding the two lines together.
     paddingVertical: 12,
   },
   divided: {

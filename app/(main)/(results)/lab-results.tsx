@@ -376,6 +376,9 @@ const styles = StyleSheet.create({
   rows: {
     marginTop: 14,
     paddingHorizontal: 20,
+    // A pressed row fills with the paper ground, so the card has to clip it
+    // to its own radius or the fill squares off the corners.
+    overflow: "hidden",
   },
   footnote: {
     marginTop: 16,
