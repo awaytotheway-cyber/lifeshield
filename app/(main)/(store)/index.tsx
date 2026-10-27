@@ -342,6 +342,10 @@ export default function StoreScreen() {
         <FlatList
           data={visibleCatalog}
           keyExtractor={(item) => item.id}
+          // The list owns the height the header row, headline and tabs leave,
+          // so a long catalogue scrolls inside the screen rather than running
+          // off the bottom of it.
+          style={styles.list}
           ListHeaderComponent={
             <View>
               {featured && featuredGate ? (
@@ -453,7 +457,7 @@ export default function StoreScreen() {
               />
             </View>
           )}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={styles.listContent}
         />
       ) : null}
     </Screen>
@@ -596,6 +600,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.mdSm,
   },
   list: {
+    flex: 1,
+  },
+  listContent: {
     paddingTop: spacing.base,
     paddingBottom: spacing.lg,
   },
