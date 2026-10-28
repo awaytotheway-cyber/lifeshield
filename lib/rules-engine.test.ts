@@ -128,10 +128,13 @@ check("iodine is hard-blocked when thyroid antibodies are yes", () => {
   assert.match(order.reason, /Blocked/i);
 });
 
-check("iodine can fire when antibodies are not positive", () => {
+check("iodine fires with measured low urinary iodine and measured-negative antibodies", () => {
+  // Source row: "Low urinary iodine, with thyroid antibodies negative". Both are
+  // measured states. This test used to feed a diet answer and urinaryIodineLow:
+  // null, which let a questionnaire stand in for the urine test.
   const rows = mapResultsToInterventions(
     facts({ dietaryIodineLow: true }),
-    labs({ thyroidAntibodiesPositive: false, urinaryIodineLow: null }),
+    labs({ thyroidAntibodiesPositive: false, urinaryIodineLow: true }),
   );
   const iodine = findByTrigger(
     rows,
@@ -144,6 +147,29 @@ check("iodine can fire when antibodies are not positive", () => {
     "Iodine supplementation (blocked if antibodies positive)",
   );
   assert.ok(iodine.plain_reason.length > 0);
+});
+
+check("iodine does not fire when antibodies were never measured", () => {
+  // null is "unknown", and unknown is not the same as negative.
+  const rows = mapResultsToInterventions(
+    facts({ dietaryIodineLow: true }),
+    labs({ urinaryIodineLow: true, thyroidAntibodiesPositive: null }),
+  );
+  assert.equal(
+    findByTrigger(rows, "Low urinary iodine (antibodies NEGATIVE)"),
+    undefined,
+  );
+});
+
+check("iodine does not fire from a diet answer without a urine result", () => {
+  const rows = mapResultsToInterventions(
+    facts({ dietaryIodineLow: true }),
+    labs({ thyroidAntibodiesPositive: false, urinaryIodineLow: null }),
+  );
+  assert.equal(
+    findByTrigger(rows, "Low urinary iodine (antibodies NEGATIVE)"),
+    undefined,
+  );
 });
 
 check("medium self-rated stress fires coping support", () => {
@@ -209,6 +235,9 @@ check("every mapped row is draft and has both reason fields", () => {
       snpMthfr: true,
       inflammatoryOxidativeBurden: true,
       oestrogenDetoxImpaired: true,
+      // Iodine needs a measured low urine result AND measured-negative
+      // antibodies; a diet answer alone no longer fires it.
+      urinaryIodineLow: true,
       thyroidAntibodiesPositive: false,
     }),
   );

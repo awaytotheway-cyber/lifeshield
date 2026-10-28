@@ -1,6 +1,10 @@
 /**
  * Phase 2 Day 5 — map saved test_results into LabInputs.
  * Run: npm run test:plan
+ *
+ * Covers the rule that matters most in this mapper: free text is display-only.
+ * A row that merely NAMES a marker ("Zonulin negative") must never set an
+ * abnormal finding. Findings come from structured result keys read via flag.
  */
 import assert from "node:assert/strict";
 
@@ -9,6 +13,8 @@ import { labsFromTestResults } from "./labs-from-results";
 import { mapResultsToInterventions } from "./rules-engine";
 import { EMPTY_RULES_FACTS } from "./rules-facts";
 import type { TestResultRow } from "./test-results";
+
+type LabsShape = ReturnType<typeof labsFromTestResults>;
 
 function row(partial: Partial<TestResultRow>): TestResultRow {
   return {
@@ -36,6 +42,10 @@ function check(name: string, fn: () => void) {
   console.log(`ok  ${name}`);
 }
 
+// ---------------------------------------------------------------------------
+// Existing behaviour that must keep working
+// ---------------------------------------------------------------------------
+
 check("raised fasting insulin value maps to a number", () => {
   const labs = labsFromTestResults([
     row({ test_name: "fastingInsulin", result_value: "10.4" }),
@@ -60,7 +70,16 @@ check("low urinary iodine maps, and antibodies block iodine", () => {
     row({ test_name: "urinaryIodine", flag: "low" }),
   ]);
   assert.equal(low.urinaryIodineLow, true);
-  const withIodine = mapResultsToInterventions(EMPTY_RULES_FACTS, low);
+
+  // Iodine needs a MEASURED low urinary iodine AND measured-negative
+  // antibodies. Low iodine alone, with antibodies unknown, is not enough.
+  const withIodine = mapResultsToInterventions(
+    EMPTY_RULES_FACTS,
+    labsFromTestResults([
+      row({ test_name: "urinaryIodine", flag: "low" }),
+      row({ test_name: "thyroidAntibodies", flag: "negative" }),
+    ]),
+  );
   assert.ok(
     withIodine.some((item) =>
       item.trigger_finding.includes("Low urinary iodine"),
@@ -83,16 +102,148 @@ check("low urinary iodine maps, and antibodies block iodine", () => {
   );
 });
 
-check("stool keywords map without treating every stool row as every finding", () => {
+// ---------------------------------------------------------------------------
+// Free text is display-only. This replaces a test that asserted the opposite:
+// that a stool row reading "dysbiosis; zonulin positive" with no flag set both
+// findings. The same code set them for "No dysbiosis detected".
+// ---------------------------------------------------------------------------
+
+check("free text naming a marker never sets an abnormal finding", () => {
+  const cases: [string, Partial<TestResultRow>, keyof LabsShape][] = [
+    ["stool", { result_value: "Beta-glucuronidase within range", flag: "normal" }, "stoolBetaGlucuronidaseRaised"],
+    ["stool", { result_value: "Zonulin negative", flag: "negative" }, "zonulinPositive"],
+    ["stool", { result_value: "No dysbiosis detected", flag: "normal" }, "stoolDysbiosis"],
+    ["stool", { result_value: "No undigested protein or fat", flag: "normal" }, "undigestedProteinOrFat"],
+    ["snp", { result_value: "MTHFR wildtype / normal", flag: "negative" }, "snpMthfr"],
+    ["snp", { result_value: "COMT normal", flag: "negative" }, "snpComtImpaired"],
+    ["routineBloods", { result_value: "Oxidative stress markers normal", flag: "normal" }, "inflammatoryOxidativeBurden"],
+    ["routineBloods", { result_value: "Liver detox and gut barrier normal", flag: "normal" }, "liverDetoxOrBarrierImpaired"],
+    ["dutch", { result_value: "No impaired oestrogen detox", flag: "normal" }, "oestrogenDetoxImpaired"],
+  ];
+  for (const [testName, partial, key] of cases) {
+    const labs = labsFromTestResults([row({ test_name: testName, ...partial })]);
+    assert.notEqual(labs[key], true, `${key} was set by: ${partial.result_value}`);
+  }
+});
+
+check("a stool row with free text and no flag sets nothing", () => {
   const labs = labsFromTestResults([
-    row({
-      test_name: "stool",
-      result_value: "dysbiosis; zonulin positive",
-    }),
+    row({ test_name: "stool", result_value: "dysbiosis; zonulin positive" }),
   ]);
-  assert.equal(labs.stoolDysbiosis, true);
-  assert.equal(labs.zonulinPositive, true);
+  assert.equal(labs.stoolDysbiosis, null);
+  assert.equal(labs.zonulinPositive, null);
   assert.equal(labs.stoolBetaGlucuronidaseRaised, null);
+});
+
+// ---------------------------------------------------------------------------
+// Structured findings: one result key per finding, read from the flag.
+// ---------------------------------------------------------------------------
+
+const BINARY_FINDINGS: [string, keyof LabsShape][] = [
+  ["stoolDysbiosis", "stoolDysbiosis"],
+  ["stoolBetaGlucuronidase", "stoolBetaGlucuronidaseRaised"],
+  ["stoolZonulin", "zonulinPositive"],
+  ["stoolUndigested", "undigestedProteinOrFat"],
+  ["liverDetoxBarrier", "liverDetoxOrBarrierImpaired"],
+  ["inflammatoryOxidative", "inflammatoryOxidativeBurden"],
+  ["oestrogenDetox", "oestrogenDetoxImpaired"],
+];
+
+check("each finding key: positive sets it, negative or normal clears it, no flag leaves it unknown", () => {
+  for (const [key, field] of BINARY_FINDINGS) {
+    assert.equal(labsFromTestResults([row({ test_name: key, flag: "positive" })])[field], true, `${key} positive`);
+    assert.equal(labsFromTestResults([row({ test_name: key, flag: "negative" })])[field], false, `${key} negative`);
+    assert.equal(labsFromTestResults([row({ test_name: key, flag: "normal" })])[field], false, `${key} normal`);
+    assert.equal(labsFromTestResults([row({ test_name: key, flag: null })])[field], null, `${key} no flag`);
+  }
+});
+
+check("a quantitative finding reads high as present; a presence/absence one does not", () => {
+  assert.equal(
+    labsFromTestResults([row({ test_name: "stoolBetaGlucuronidase", flag: "high" })])
+      .stoolBetaGlucuronidaseRaised,
+    true,
+  );
+  // 'high' has no meaning for a presence/absence finding.
+  assert.equal(
+    labsFromTestResults([row({ test_name: "stoolDysbiosis", flag: "high" })]).stoolDysbiosis,
+    null,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// Newest result wins. loadOwnTestResults returns rows newest-first, and the
+// mapper used to let later rows overwrite earlier ones, so the OLDEST won.
+// ---------------------------------------------------------------------------
+
+check("a retest replaces the earlier value regardless of row order", () => {
+  const older = row({ test_name: "fastingInsulin", result_value: "12", created_at: "2026-01-01T00:00:00Z" });
+  const newer = row({ test_name: "fastingInsulin", result_value: "6", created_at: "2026-03-01T00:00:00Z" });
+  assert.equal(labsFromTestResults([newer, older]).fastingInsulin, 6);
+  assert.equal(labsFromTestResults([older, newer]).fastingInsulin, 6);
+});
+
+check("a newer negative finding clears an older positive one", () => {
+  const labs = labsFromTestResults([
+    row({ test_name: "stoolDysbiosis", flag: "negative", created_at: "2026-03-01T00:00:00Z" }),
+    row({ test_name: "stoolDysbiosis", flag: "positive", created_at: "2026-01-01T00:00:00Z" }),
+  ]);
+  assert.equal(labs.stoolDysbiosis, false);
+});
+
+// ---------------------------------------------------------------------------
+// Thyroid antibodies are tri-state: positive / measured-negative / unmeasured.
+// ---------------------------------------------------------------------------
+
+check("antibodies: positive, measured-negative and never-measured are three different states", () => {
+  assert.equal(labsFromTestResults([row({ test_name: "thyroidAntibodies", flag: "positive" })]).thyroidAntibodiesPositive, true);
+  assert.equal(labsFromTestResults([row({ test_name: "thyroidAntibodies", flag: "negative" })]).thyroidAntibodiesPositive, false);
+  assert.equal(labsFromTestResults([]).thyroidAntibodiesPositive, null);
+});
+
+check("a positive antibody result is never cleared by a later negative", () => {
+  // Safety direction: the iodine block must not be lifted by one clean retest.
+  const labs = labsFromTestResults([
+    row({ test_name: "thyroidAntibodies", flag: "negative", created_at: "2026-03-01T00:00:00Z" }),
+    row({ test_name: "thyroidAntibodies", flag: "positive", created_at: "2026-01-01T00:00:00Z" }),
+  ]);
+  assert.equal(labs.thyroidAntibodiesPositive, true);
+});
+
+// ---------------------------------------------------------------------------
+// Iodine supplementation. The protocol says "only if thyroid antibodies
+// negative" — a KNOWN state — and the row reads "low URINARY iodine", so a
+// diet answer is not a substitute for the measurement.
+// ---------------------------------------------------------------------------
+
+function drafted(facts: typeof EMPTY_RULES_FACTS, rows: TestResultRow[]): boolean {
+  return mapResultsToInterventions(facts, labsFromTestResults(rows)).some((item) =>
+    item.trigger_finding.includes("Low urinary iodine"),
+  );
+}
+const lowUrine = () => row({ test_name: "urinaryIodine", flag: "low" });
+const antibodiesNegative = () => row({ test_name: "thyroidAntibodies", flag: "negative" });
+const antibodiesPositive = () => row({ test_name: "thyroidAntibodies", flag: "positive" });
+
+check("iodine is drafted only with measured low iodine AND measured-negative antibodies", () => {
+  assert.equal(drafted(EMPTY_RULES_FACTS, [lowUrine(), antibodiesNegative()]), true);
+});
+
+check("iodine is NOT drafted when antibodies were never measured", () => {
+  assert.equal(drafted(EMPTY_RULES_FACTS, [lowUrine()]), false);
+});
+
+check("iodine is NOT drafted from a diet answer alone", () => {
+  const dietOnly = { ...EMPTY_RULES_FACTS, dietaryIodineLow: true };
+  assert.equal(drafted(dietOnly, []), false);
+  // Antibodies known, still no urine result: still not drafted.
+  assert.equal(drafted(dietOnly, [antibodiesNegative()]), false);
+});
+
+check("iodine stays hard-blocked by positive antibodies or an autoimmune thyroid diagnosis", () => {
+  assert.equal(drafted(EMPTY_RULES_FACTS, [lowUrine(), antibodiesPositive()]), false);
+  const autoimmune = { ...EMPTY_RULES_FACTS, autoimmuneThyroid: true };
+  assert.equal(drafted(autoimmune, [lowUrine(), antibodiesNegative()]), false);
 });
 
 console.log(`\n${passed} checks passed`);

@@ -751,17 +751,21 @@ function findingIsPresent(
       return labs.elevatedToxinExposure === true || fromAnswers;
     }
     case "iodine": {
+      // Source row: "Low urinary iodine, with thyroid antibodies negative —
+      // iodine supplementation (only if thyroid antibodies negative)".
+      //
+      // Both halves are MEASURED states:
+      //   - the iodine is low on a urine result (a diet answer is a reason to
+      //     offer the urine test, never a substitute for it), and
+      //   - the antibodies came back negative. `false` means measured
+      //     negative; `null` means never measured, and unknown is not safe.
       if (iodineHardBlocked(facts, labs)) {
         return false;
       }
-      if (labs.urinaryIodineLow === true) {
-        return true;
-      }
-      // Phase 1 / partial labs: dietary iodine answers stand in until a urine result exists.
-      if (labs.urinaryIodineLow === null && facts.dietaryIodineLow) {
-        return true;
-      }
-      return false;
+      return (
+        labs.urinaryIodineLow === true &&
+        labs.thyroidAntibodiesPositive === false
+      );
     }
     case "methylation":
       return labs.snpMthfr === true;

@@ -2,10 +2,22 @@
  * Turns saved test_results rows into LabInputs for the rules engine.
  * Parsing stays here so rules-engine.ts stays IF-THEN logic only.
  *
+ * Two rules govern everything below:
+ *
+ *  1. Free text is display-only. A finding is set from a structured result key
+ *     (see lib/result-findings.ts) read through its flag, never because a row's
+ *     text happens to contain a marker's name. "Zonulin negative" contains the
+ *     word zonulin.
+ *  2. The newest result wins. Rows arrive newest-first from
+ *     loadOwnTestResults, so they are re-ordered oldest-first here and later
+ *     assignments overwrite earlier ones. Without that, a retest was ignored
+ *     in favour of the original value.
+ *
  * This is information mapping, not a diagnosis.
  */
 import { THRESHOLDS } from "@/lib/clinical-thresholds";
 import { parseFiniteNumber } from "@/lib/questionnaire/numbers";
+import { applyFindingRow, findingState } from "@/lib/result-findings";
 import { PHASE1_LABS, type LabInputs } from "@/lib/rules-engine";
 import type { TestResultRow } from "@/lib/test-results";
 
@@ -33,6 +45,24 @@ function mentions(blob: string, ...needles: string[]): boolean {
   return needles.some((needle) => blob.includes(needle));
 }
 
+function timeOf(row: TestResultRow): number {
+  const parsed = Date.parse(row.created_at);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/**
+ * Genes read from an `snp` result row. A bare mention of a gene is not a
+ * finding — only the flag says whether a variant was found. Zygosity cannot be
+ * expressed through a flag, so the genetic-test pipeline
+ * (lib/labs-from-genetic.ts) remains the proper source for SNP interpretation.
+ */
+const SNP_GENES: { needle: string; field: keyof LabInputs }[] = [
+  { needle: "mthfr", field: "snpMthfr" },
+  { needle: "comt", field: "snpComtImpaired" },
+  { needle: "cyp1a1", field: "snpCyp1a1" },
+  { needle: "cyp1b1", field: "snpCyp1b1" },
+];
+
 /**
  * Read lab flags/values into the engine input bag.
  * Unknown rows are ignored — never crash.
@@ -40,7 +70,16 @@ function mentions(blob: string, ...needles: string[]): boolean {
 export function labsFromTestResults(rows: TestResultRow[]): LabInputs {
   const labs: LabInputs = { ...PHASE1_LABS };
 
-  for (const row of rows) {
+  // Oldest first, so the newest result is applied last and wins.
+  const ordered = [...rows].sort((a, b) => timeOf(a) - timeOf(b));
+
+  for (const row of ordered) {
+    // Structured findings first. They are skipped by the name-matching below:
+    // a thyroidAntibodies row contains "thyroid" and must not be read as TSH.
+    if (applyFindingRow(row, labs)) {
+      continue;
+    }
+
     const blob = blobOf(row);
     const numeric = parseFiniteNumber(row.result_value);
 
@@ -61,6 +100,9 @@ export function labsFromTestResults(rows: TestResultRow[]): LabInputs {
       }
     }
 
+    // Older combined thyroid rows ("TPO antibodies", flagged positive) still
+    // block iodine. Only a positive can be read this way; a measured NEGATIVE
+    // must come from the thyroidAntibodies key.
     if (
       mentions(blob, "antibod", "tpoab", "tgab", "tpo ", "anti-tpo") &&
       flagIs(row, "positive")
@@ -93,24 +135,6 @@ export function labsFromTestResults(rows: TestResultRow[]): LabInputs {
       }
     }
 
-    if (isTerm(row, "stool") || mentions(blob, "stool")) {
-      if (mentions(blob, "dysbiosis")) {
-        labs.stoolDysbiosis = true;
-      }
-      if (mentions(blob, "glucuronidase")) {
-        labs.stoolBetaGlucuronidaseRaised = true;
-      }
-      if (mentions(blob, "zonulin")) {
-        labs.zonulinPositive = true;
-      }
-      if (mentions(blob, "undigested")) {
-        labs.undigestedProteinOrFat = true;
-      }
-    }
-
-    if (mentions(blob, "barrier") && mentions(blob, "liver", "detox", "gut")) {
-      labs.liverDetoxOrBarrierImpaired = true;
-    }
     if (isTerm(row, "cyp450") && flagIs(row, "high", "critical", "positive")) {
       labs.liverDetoxOrBarrierImpaired = true;
     }
@@ -118,34 +142,20 @@ export function labsFromTestResults(rows: TestResultRow[]): LabInputs {
     if (isTerm(row, "heavyMetals") && flagIs(row, "high", "critical", "positive")) {
       labs.elevatedToxinExposure = true;
     }
-    if (mentions(blob, "elevated toxin")) {
-      labs.elevatedToxinExposure = true;
-    }
 
-    if (
-      (isTerm(row, "dutch") && flagIs(row, "high", "critical", "positive")) ||
-      mentions(blob, "oestrogen-detox", "estrogen-detox", "impaired oestrogen")
-    ) {
+    if (isTerm(row, "dutch") && flagIs(row, "high", "critical", "positive")) {
       labs.oestrogenDetoxImpaired = true;
     }
 
     if (isTerm(row, "snp") || mentions(blob, "snp")) {
-      if (mentions(blob, "mthfr")) {
-        labs.snpMthfr = true;
+      const state = findingState(row.flag, ["positive", "critical"]);
+      if (state !== "unknown") {
+        for (const gene of SNP_GENES) {
+          if (mentions(blob, gene.needle)) {
+            (labs[gene.field] as boolean | null) = state === "present";
+          }
+        }
       }
-      if (mentions(blob, "comt")) {
-        labs.snpComtImpaired = true;
-      }
-      if (mentions(blob, "cyp1a1")) {
-        labs.snpCyp1a1 = true;
-      }
-      if (mentions(blob, "cyp1b1")) {
-        labs.snpCyp1b1 = true;
-      }
-    }
-
-    if (mentions(blob, "inflammatory") || mentions(blob, "oxidative")) {
-      labs.inflammatoryOxidativeBurden = true;
     }
   }
 

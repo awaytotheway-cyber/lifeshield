@@ -145,6 +145,64 @@ export const TERMS = {
       "Times when monthly bleeding stops for a while, for any reason.",
     medicalName: "Amenorrhoea",
   },
+
+  // ---- Result findings ----
+  // One key per finding a clinician records on a test. The rules engine reads
+  // these through the flag (positive / negative), never from free text, so a
+  // row that merely mentions a marker cannot set an abnormal finding.
+  //
+  // medicalName must stay unique across this dictionary: lib/lab-provider.ts
+  // maps catalogue product names to keys by medicalName.
+  //
+  // Wording is a first draft for clinician review.
+  thyroidAntibodies: {
+    plainName: "Thyroid immune markers",
+    plainExplanation:
+      "Checks whether your immune system is reacting against your thyroid. This decides whether iodine is safe to suggest.",
+    medicalName: "Thyroid antibodies (TPOAb / TgAb)",
+  },
+  stoolDysbiosis: {
+    plainName: "Gut bacteria balance",
+    plainExplanation:
+      "Whether the mix of bacteria in your gut looks out of balance.",
+    medicalName: "Stool microbial dysbiosis finding",
+  },
+  stoolBetaGlucuronidase: {
+    plainName: "Gut enzyme level",
+    plainExplanation:
+      "A gut enzyme that can let the body take back oestrogen it was trying to clear.",
+    medicalName: "Stool beta-glucuronidase level",
+  },
+  stoolZonulin: {
+    plainName: "Gut lining marker",
+    plainExplanation:
+      "A marker of how tightly the lining of your gut holds together.",
+    medicalName: "Stool zonulin (gut-barrier marker)",
+  },
+  stoolUndigested: {
+    plainName: "Undigested food in stool",
+    plainExplanation:
+      "Whether protein or fat is passing through without being fully digested.",
+    medicalName: "Undigested protein or fat in stool",
+  },
+  liverDetoxBarrier: {
+    plainName: "Liver and gut-lining strain",
+    plainExplanation:
+      "Signs that the liver or the gut lining may need extra support.",
+    medicalName: "Liver detoxification / gut-barrier function finding",
+  },
+  inflammatoryOxidative: {
+    plainName: "Inflammation and wear-and-tear markers",
+    plainExplanation:
+      "Whether markers of inflammation or oxidative stress are higher than expected.",
+    medicalName: "Inflammatory / oxidative burden finding",
+  },
+  oestrogenDetox: {
+    plainName: "Oestrogen clearing",
+    plainExplanation:
+      "Whether your body looks to be clearing oestrogen more slowly than expected.",
+    medicalName: "Oestrogen-detoxification pathway finding",
+  },
 } as const satisfies Record<string, TermEntry>;
 
 export type TermKey = keyof typeof TERMS;

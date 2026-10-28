@@ -13,17 +13,22 @@ import { z } from "zod";
 import { isAdminEmail } from "@/lib/constants";
 import { COPY } from "@/lib/copy";
 import { messageFromUnknown, rawErrorText } from "@/lib/friendly-errors";
-import { TERMS, type TermKey } from "@/lib/plain-language";
+import { TERMS } from "@/lib/plain-language";
 import {
   looksLikeMissingRpc,
   looksLikeUnreachableFunction,
 } from "@/lib/result-entry-errors";
+import {
+  RESULT_ENTRY_TERM_KEYS,
+  type ResultEntryTermKey,
+} from "@/lib/result-entry-terms";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export {
   looksLikeMissingRpc,
   looksLikeUnreachableFunction,
 } from "@/lib/result-entry-errors";
+export { RESULT_ENTRY_TERM_KEYS, type ResultEntryTermKey };
 
 /** Must match public.test_results.flag CHECK. */
 export const RESULT_FLAGS = [
@@ -36,25 +41,6 @@ export const RESULT_FLAGS = [
 ] as const;
 
 export type ResultFlag = (typeof RESULT_FLAGS)[number];
-
-/** Tests an admin can pick. Dictionary keys so ClinicalTerm can render them. */
-export const RESULT_ENTRY_TERM_KEYS = [
-  "brca",
-  "ctc",
-  "snp",
-  "routineBloods",
-  "thyroid",
-  "fastingInsulin",
-  "salivaryCortisol",
-  "b12FolateFerritin",
-  "dutch",
-  "stool",
-  "urinaryIodine",
-  "heavyMetals",
-  "cyp450",
-] as const satisfies readonly TermKey[];
-
-export type ResultEntryTermKey = (typeof RESULT_ENTRY_TERM_KEYS)[number];
 
 export const RESULT_ENTRY_TEST_OPTIONS = RESULT_ENTRY_TERM_KEYS.map((key) => ({
   value: key,
