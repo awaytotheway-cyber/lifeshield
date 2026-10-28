@@ -5,8 +5,12 @@
 import { FOLLOW_UP_TIMING } from "@/lib/clinical-thresholds";
 import { COPY } from "@/lib/copy";
 import { messageFromUnknown, rawErrorText } from "@/lib/friendly-errors";
+import { addDaysToIsoDate, todayIsoDate } from "@/lib/iso-date";
 import { getTerm } from "@/lib/plain-language";
+import { planRetests, type ResultForRetest } from "@/lib/retest-schedule";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+
+export { addDaysToIsoDate, todayIsoDate };
 
 export type FollowUpType =
   | "retest"
@@ -114,23 +118,6 @@ function looksLikeRlsBlock(error: unknown): boolean {
     text.includes("permission denied") ||
     text.includes("violates row-level")
   );
-}
-
-export function todayIsoDate(now = new Date()): string {
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-export function addDaysToIsoDate(isoDate: string, days: number): string {
-  const [year, month, day] = isoDate.split("-").map((part) => Number(part));
-  if (!year || !month || !day) {
-    return isoDate;
-  }
-  const date = new Date(year, month - 1, day);
-  date.setDate(date.getDate() + days);
-  return todayIsoDate(date);
 }
 
 export function nextSymptomDueDays(hadAnySymptomRow: boolean): number {
@@ -276,29 +263,16 @@ async function insertFollowUp(
   }
 }
 
-async function loadRecommendedTestNames(userId: string): Promise<string[]> {
+async function loadResultsForRetest(userId: string): Promise<ResultForRetest[]> {
   const { data, error } = await supabase
-    .from("test_orders")
-    .select("test_name, test_tier, status")
+    .from("test_results")
+    .select("test_name, plain_name, flag, created_at")
     .eq("user_id", userId)
-    .order("test_tier", { ascending: true });
+    .order("created_at", { ascending: false });
   if (error) {
     throw error;
   }
-  const names: string[] = [];
-  for (const row of data ?? []) {
-    const name = String(
-      (row as { test_name?: unknown }).test_name ?? "",
-    ).trim();
-    if (!name || names.includes(name)) {
-      continue;
-    }
-    names.push(name);
-    if (names.length >= MAX_RETEST_SEEDS) {
-      break;
-    }
-  }
-  return names;
+  return (data as ResultForRetest[]) ?? [];
 }
 
 async function hasDraftPlan(userId: string): Promise<boolean> {
@@ -374,18 +348,22 @@ export async function seedFollowUpsIfNeeded(
   }
 
   try {
-    const testNames = await loadRecommendedTestNames(userId);
-    for (const testName of testNames) {
-      const title = retestTitleForTest(testName);
-      if (hasAnyWithTitle(rows, "retest", title)) {
-        continue;
-      }
+    // Re-check the markers that came back abnormal, not every recommended
+    // test. A retest a clinician already put in the list (same title) is left
+    // alone so the date they chose at review stands.
+    const plans = planRetests(await loadResultsForRetest(userId), {
+      defaultDays: FOLLOW_UP_TIMING.retestDueDays,
+      today,
+      existing: rows.filter((row) => row.type === "retest"),
+      max: MAX_RETEST_SEEDS,
+    });
+    for (const plan of plans) {
       const created = await insertFollowUp(
         userId,
         "retest",
-        title,
+        plan.title,
         COPY.followUpRetestNote,
-        addDaysToIsoDate(today, FOLLOW_UP_TIMING.retestDueDays),
+        plan.dueDate,
       );
       if (!created.ok) {
         return { ok: false, rows: [], message: created.message };
@@ -395,7 +373,7 @@ export async function seedFollowUpsIfNeeded(
     if (looksLikeMissingTable(error)) {
       return { ok: false, rows: [], message: COPY.followUpNeedSql };
     }
-    // Missing test_orders is not fatal — symptom/review rows can still show.
+    // Missing test_results is not fatal: symptom and review rows still show.
   }
 
   return loadOwnFollowUps(userId);
@@ -404,6 +382,8 @@ export async function seedFollowUpsIfNeeded(
 export async function completeFollowUp(
   userId: string,
   followUpId: string,
+  /** Replaces the row's note when given, e.g. the consent record at a review. */
+  plainNote?: string,
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   if (!isSupabaseConfigured) {
     return { ok: false, message: COPY.missingKeys };
@@ -412,7 +392,11 @@ export async function completeFollowUp(
     const direct = await withTimeout(
       supabase
         .from("follow_ups")
-        .update({ status: "completed" })
+        .update(
+          plainNote === undefined
+            ? { status: "completed" }
+            : { status: "completed", plain_note: plainNote },
+        )
         .eq("id", followUpId)
         .eq("user_id", userId),
       "Completing follow-up",

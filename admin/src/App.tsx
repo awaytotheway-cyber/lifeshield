@@ -92,6 +92,7 @@ import {
   RecipeList,
   RecipeShow,
 } from "./pages/recipes";
+import { FollowUpCreate, FollowUpEdit, FollowUpList } from "./pages/follow-ups";
 import { GoalEdit, GoalList } from "./pages/goals";
 import { MealPlanEdit, MealPlanList } from "./pages/meal-plans";
 import { ProfileList } from "./pages/profiles";
@@ -247,6 +248,13 @@ export default function App() {
                 meta: { label: "Patients", icon: <TeamOutlined /> },
               },
               {
+                name: "follow_ups",
+                list: "/follow-ups",
+                create: "/follow-ups/create",
+                edit: "/follow-ups/edit/:id",
+                meta: { label: "Follow-ups", icon: <AimOutlined /> },
+              },
+              {
                 name: "goals",
                 list: "/goals",
                 edit: "/goals/edit/:id",
@@ -382,6 +390,11 @@ export default function App() {
                 </Route>
                 <Route path="/profiles">
                   <Route index element={<ProfileList />} />
+                </Route>
+                <Route path="/follow-ups">
+                  <Route index element={<FollowUpList />} />
+                  <Route path="create" element={<FollowUpCreate />} />
+                  <Route path="edit/:id" element={<FollowUpEdit />} />
                 </Route>
                 <Route path="/goals">
                   <Route index element={<GoalList />} />

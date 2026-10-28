@@ -514,6 +514,15 @@ export const COPY = {
   followUpPushUnavailable:
     "Remote push is not available on this device. Your follow-up list still works.",
   followUpBackHome: "Back to Home",
+  // Consents are confirmed at every review. Wording is a draft for review.
+  followUpReviewConsentsTitle: "Are your choices still right?",
+  followUpReviewConsentsBody:
+    "Before we finish this review, here is what you told us about each test. You can change any of them now or later in More → Your consents.",
+  followUpReviewConsentsAgreed: "Agreed",
+  followUpReviewConsentsDeclined: "Declined",
+  followUpReviewConsentsNotAnswered: "Not answered yet",
+  followUpReviewConsentsConfirm: "These are still right",
+  followUpReviewConsentsChange: "Change an answer",
   enterResultsViewDashboard: "View my results",
   enterResultsSavedOtherUser:
     "Saved for another account. That person will see it after they sign in. You will only see rows saved against your own user id.",

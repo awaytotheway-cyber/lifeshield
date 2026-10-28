@@ -22,14 +22,13 @@ import {
   type PushRegistrationStatus,
 } from "@/lib/push-notifications";
 import {
-  completeFollowUp,
   firstPendingSymptom,
   seedFollowUpsIfNeeded,
   typeLabel,
   upcomingPending,
   type FollowUpRow,
 } from "@/lib/follow-ups";
-import { followUpSymptomHref, routes } from "@/lib/routes";
+import { followUpContactHref, followUpSymptomHref, routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
@@ -53,11 +52,9 @@ function dueLabel(dueDate: string): string {
 
 function FollowUpCard({
   row,
-  busyId,
   onComplete,
 }: {
   row: FollowUpRow;
-  busyId: string | null;
   onComplete: () => void;
 }) {
   const isSymptom = row.type === "symptom_check";
@@ -72,8 +69,6 @@ function FollowUpCard({
       ) : (
         <TextButton
           title={COPY.followUpMarkDone}
-          loading={busyId === row.id}
-          disabled={Boolean(busyId)}
           onPress={onComplete}
         />
       )}
@@ -86,7 +81,6 @@ export default function FollowUpHubScreen() {
   const session = useAuthStore((state) => state.session);
   const triageStatus = useTriageStore((state) => state.status);
   const [loadState, setLoadState] = useState<HubLoadState>("idle");
-  const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [rows, setRows] = useState<FollowUpRow[]>([]);
   const [reminderStatus, setReminderStatus] =
@@ -142,25 +136,10 @@ export default function FollowUpHubScreen() {
   const showList = loadState === "ready" && !message;
   const showEmpty = showList && pending.length === 0;
 
-  const markDone = async (id: string) => {
-    if (!session?.user.id) {
-      return;
-    }
-    setBusyId(id);
-    try {
-      const result = await completeFollowUp(session.user.id, id);
-      if (!result.ok) {
-        setMessage(result.message);
-        setLoadState("error");
-        return;
-      }
-      await loadList();
-    } catch {
-      setMessage(COPY.followUpSaveFailed);
-      setLoadState("error");
-    } finally {
-      setBusyId(null);
-    }
+  // Nothing is marked done in place: every contact starts with the symptom
+  // question (and a review goes on to confirm consents) before it completes.
+  const startContact = (id: string) => {
+    router.push(followUpContactHref(id));
   };
 
   const askReminders = async () => {
@@ -234,9 +213,8 @@ export default function FollowUpHubScreen() {
           renderItem={({ item }) => (
             <FollowUpCard
               row={item}
-              busyId={busyId}
               onComplete={() => {
-                void markDone(item.id);
+                startContact(item.id);
               }}
             />
           )}

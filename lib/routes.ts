@@ -107,6 +107,15 @@ export function followUpSymptomHref(id: string): Href {
   return `/(main)/(followup)/symptom-recheck?id=${encodeURIComponent(id)}` as Href;
 }
 
+/** The symptom question that opens every non-symptom follow-up contact. */
+export function followUpContactHref(forId: string): Href {
+  return `/(main)/(followup)/symptom-recheck?for=${encodeURIComponent(forId)}` as Href;
+}
+
+export function followUpReviewConsentsHref(id: string): Href {
+  return `/(main)/(followup)/review-consents?id=${encodeURIComponent(id)}` as Href;
+}
+
 export function productHref(id: string): Href {
   return `/(main)/(store)/product?id=${encodeURIComponent(id)}` as Href;
 }

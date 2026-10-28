@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 
 import { SymptomInterrupt } from "@/components/questionnaire/SymptomInterrupt";
 import { COPY } from "@/lib/copy";
+import { markSymptomChecked, nextContactStep } from "@/lib/follow-up-contact";
 import { syncLocalFollowUpReminders } from "@/lib/follow-up-reminders";
 import {
   completeFollowUp,
@@ -10,17 +11,25 @@ import {
   firstPendingSymptom,
   loadOwnFollowUps,
 } from "@/lib/follow-ups";
-import { routes } from "@/lib/routes";
+import { followUpReviewConsentsHref, routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTriageStore } from "@/stores/triage-store";
 
 /**
  * Recurring follow-up safety question.
  * Reuses Phase 1 SymptomInterrupt. Yes → Pathway B lock. Cannot return.
+ *
+ * Two ways in. `id` is the scheduled symptom re-check itself. `for` is any
+ * other follow-up (a retest, a review, a check-in): the protocol re-triages
+ * for symptoms at every contact, so completing one starts here, and only a
+ * "No" lets it carry on to its next step or finish.
  */
 export default function FollowUpSymptomRecheckScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const params = useLocalSearchParams<{
+    id?: string | string[];
+    for?: string | string[];
+  }>();
   const session = useAuthStore((state) => state.session);
   const triageStatus = useTriageStore((state) => state.status);
   const lockFromInterrupt = useTriageStore((state) => state.lockFromInterrupt);
@@ -34,6 +43,13 @@ export default function FollowUpSymptomRecheckScreen() {
     }
     return raw ?? "";
   }, [params.id]);
+  const contactId = useMemo(() => {
+    const raw = params.for;
+    if (Array.isArray(raw)) {
+      return raw[0] ?? "";
+    }
+    return raw ?? "";
+  }, [params.for]);
 
   if (!session) {
     return <Redirect href={routes.login} />;
@@ -56,7 +72,7 @@ export default function FollowUpSymptomRecheckScreen() {
         setErrorMessage(lock.message ?? COPY.interruptLockFailed);
         return;
       }
-      if (requestedId) {
+      if (requestedId && !contactId) {
         try {
           await completeFollowUp(session.user.id, requestedId);
         } catch {
@@ -75,6 +91,29 @@ export default function FollowUpSymptomRecheckScreen() {
     setSaving(true);
     setErrorMessage(null);
     try {
+      if (contactId) {
+        const loaded = await loadOwnFollowUps(session.user.id);
+        const row = loaded.ok
+          ? loaded.rows.find((item) => item.id === contactId)
+          : undefined;
+        if (!row) {
+          router.replace(routes.followUp);
+          return;
+        }
+        markSymptomChecked(contactId);
+        // The symptom question is done; a review still has its consent step.
+        if (nextContactStep(row.type, ["symptom"]) === "consents") {
+          router.replace(followUpReviewConsentsHref(contactId));
+          return;
+        }
+        const done = await completeFollowUp(session.user.id, contactId);
+        if (!done.ok) {
+          setErrorMessage(done.message);
+          return;
+        }
+        router.replace(routes.followUp);
+        return;
+      }
       let id = requestedId;
       if (!id) {
         const loaded = await loadOwnFollowUps(session.user.id);

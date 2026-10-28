@@ -97,6 +97,8 @@
     "test:findings": "npx --yes tsx --tsconfig tsconfig.json lib/result-findings.test.ts",
     "test:consent-flow": "npx --yes tsx --tsconfig tsconfig.json lib/consent-flow.test.ts",
     "test:eligibility": "npx --yes tsx --tsconfig tsconfig.json lib/eligibility.test.ts",
+    "test:follow-up-contact": "npx --yes tsx --tsconfig tsconfig.json lib/follow-up-contact.test.ts",
+    "test:retest-schedule": "npx --yes tsx --tsconfig tsconfig.json lib/retest-schedule.test.ts",
     "test:consent-evidence": "npx --yes tsx --tsconfig tsconfig.json lib/consent-evidence.test.ts",
     "test:test-order-sync": "npx --yes tsx --tsconfig tsconfig.json lib/test-order-sync.test.ts",
     "test:reproductive": "npx --yes tsx --tsconfig tsconfig.json lib/reproductive-recency.test.ts",
