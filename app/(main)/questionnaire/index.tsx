@@ -10,8 +10,8 @@ import { SetupBanners } from "@/components/ui/SetupBanners";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { TwoTone, type TwoTonePart } from "@/components/ui/TwoTone";
 import {
-  allConsentsAgreed,
-  firstIncompleteConsent,
+  allConsentsDecided,
+  firstUndecidedConsent,
   hrefForConsent,
 } from "@/lib/consent-flow";
 import {
@@ -79,7 +79,7 @@ export default function QuestionnaireHubScreen() {
   const triageStatus = useTriageStore((state) => state.status);
   const consentLoading = useConsentStore((state) => state.loading);
   const loaded = useConsentStore((state) => state.loaded);
-  const agreed = useConsentStore((state) => state.agreed);
+  const decided = useConsentStore((state) => state.decided);
   const progress = useQuestionnaireStore((state) => state.progress);
   const hubLoading = useQuestionnaireStore((state) => state.loading);
   const hubHydrated = useQuestionnaireStore((state) => state.hydrated);
@@ -128,8 +128,9 @@ export default function QuestionnaireHubScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
-  if (!consentLoading && loaded && !allConsentsAgreed(agreed)) {
-    const next = firstIncompleteConsent(agreed);
+  // Each consent has to be answered; "no" is an answer.
+  if (!consentLoading && loaded && !allConsentsDecided(decided)) {
+    const next = firstUndecidedConsent(decided);
     return <Redirect href={next ? hrefForConsent(next) : routes.consentBrca} />;
   }
 

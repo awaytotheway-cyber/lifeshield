@@ -15,8 +15,8 @@ import { Screen } from "@/components/ui/Screen";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import { TwoTone, type TwoTonePart } from "@/components/ui/TwoTone";
 import {
-  allConsentsAgreed,
-  firstIncompleteConsent,
+  allConsentsDecided,
+  firstUndecidedConsent,
   hrefForConsent,
 } from "@/lib/consent-flow";
 import { isAdminEmail } from "@/lib/constants";
@@ -180,7 +180,7 @@ export default function HomeScreen() {
   const termsPrivacyAccepted = useAuthStore((state) => state.termsPrivacyAccepted);
   const onboardingCompleted = useAuthStore((state) => state.onboardingCompleted);
   const triageStatus = useTriageStore((state) => state.status);
-  const agreed = useConsentStore((state) => state.agreed);
+  const decided = useConsentStore((state) => state.decided);
   const progress = useQuestionnaireStore((state) => state.progress);
   const hasRecommendations = useQuestionnaireStore(
     (state) => state.hasRecommendations,
@@ -276,8 +276,9 @@ export default function HomeScreen() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
-  const consentsDone = allConsentsAgreed(agreed);
-  const nextConsent = firstIncompleteConsent(agreed);
+  // The consents step is done when each has been answered, yes or no.
+  const consentsDone = allConsentsDecided(decided);
+  const nextConsent = firstUndecidedConsent(decided);
   const questionnaireCount = completedSectionCount(progress);
 
   const journey: JourneyProgress = {
@@ -337,7 +338,7 @@ export default function HomeScreen() {
       state: consentsDone ? "complete" : "current",
       icon: "file-text",
       subtitle: consentsDone
-        ? "All signed"
+        ? "All answered"
         : nextConsent
           ? `Next: ${nextConsent.toUpperCase()}`
           : undefined,
@@ -364,7 +365,10 @@ export default function HomeScreen() {
     }),
   ];
 
-  const consentCount = (agreed.brca ? 1 : 0) + (agreed.ctc ? 1 : 0) + (agreed.snp ? 1 : 0);
+  // Consents ANSWERED, not agreed: a "no" is an answer, and counting only the
+  // yeses would show someone who declined two as being 1 of 3 of the way there.
+  const consentCount =
+    (decided.brca ? 1 : 0) + (decided.ctc ? 1 : 0) + (decided.snp ? 1 : 0);
 
   // Secondary destinations, gated by the same rules the old text links used.
   const exploreItems: ExploreItem[] = [

@@ -105,7 +105,7 @@ export function HomeStatCards({
         label="Consents"
         value={String(consentCount)}
         unit={` of ${consentTotal}`}
-        detail={consentsDone ? "All signed" : "Agree on each to go on"}
+        detail={consentsDone ? "All answered" : "Answer each to go on"}
       />
     </View>
   );

@@ -111,7 +111,7 @@ export const COPY = {
   homeSignedIn:
     "You’re in. After the safety check, you’ll see three short consent screens, then the questionnaire.",
   homeNextConsents:
-    "Next step: three short consents (inherited risk gene check, early cell check, personal genetics panel). Agree on each to continue. This does not order a test.",
+    "Next step: three short consents (inherited risk gene check, early cell check, personal genetics panel). Each one is your choice: answer yes or no to continue. This does not order a test.",
   homeNextQuestionnaire:
     "Next step: the 10-part questionnaire. All sections are ready. Your answers save as you go.",
   homeNextResults:
@@ -201,15 +201,17 @@ export const COPY = {
     "Finish the three consent screens first. Then you’ll land here.",
 
   consentTitle: "A short consent before you continue",
+  // The first two sentences are the product's standing disclaimer: keep them
+  // verbatim. Wording below them is for clinician / governance review.
   consentIntro:
-    "PRESCOPE is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition. Agreeing here only means you are comfortable continuing. It does not book or run a test.",
+    "PRESCOPE is a lifestyle awareness tool. It does not diagnose, detect, or treat any condition. Your answer here records your choice about this one test. It does not book or run a test.",
   consentAgree: "I agree — continue",
-  consentDecline: "I don’t agree",
-  consentDeclined:
-    "That’s okay. Without this agreement, PRESCOPE cannot open the questionnaire.",
-  consentDeclinedHint:
-    "You can stay here, go to Home, or sign out from More. You can agree later if you change your mind.",
-  consentGoHome: "Go to Home",
+  consentDecline: "I don’t agree — continue",
+  // Said on every consent screen so that saying no is clearly an equal option
+  // and not a way to be locked out.
+  consentChoiceNote:
+    "You can say no to any of these and still carry on. You can change your answer at any time in More → Your consents.",
+  consentBackToConsents: "Back to your consents",
   consentSaveFailed:
     "We couldn’t save this consent. Please try again. Don’t continue until it saves.",
   consentBrcaBody:
@@ -680,10 +682,10 @@ export const COPY = {
     "Reminders and status updates will appear here when available. You can change preferences under Settings → Notifications.",
   consentsSettingsTitle: "Your consents",
   consentsSettingsBody:
-    "These are the consent ticks stored for your account. You can re-read the wording from onboarding and the sequential consent screens.",
-  consentsSettingsEmpty: "No consents recorded yet",
-  consentsSettingsEmptyBody:
-    "Finish onboarding and every consent tick you give is listed here with its date.",
+    "Each of these is your choice, and you can change any answer at any time. Saying no to one does not stop you using the rest of PRESCOPE.",
+  consentsSettingsNotAnswered: "Not answered yet",
+  consentsSettingsChange: "Change my answer",
+  consentsSettingsAnswer: "Answer now",
   consentsSettingsLoadFailed: "We couldn’t load consents. Please try again.",
   hubOpenResults: "View suggested tests",
 

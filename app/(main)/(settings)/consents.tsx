@@ -2,15 +2,17 @@ import { Redirect, useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import { EmptyState } from "@/components/ui/EmptyState";
+import { TextButton } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Surface } from "@/components/ui/Surface";
+import { hrefForConsent, SEQUENTIAL_CONSENTS } from "@/lib/consent-flow";
 import { COPY } from "@/lib/copy";
 import { colors, spacing, status } from "@/lib/design-tokens";
 import { messageFromUnknown } from "@/lib/friendly-errors";
+import { TERMS } from "@/lib/plain-language";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { routes } from "@/lib/routes";
 import { fontFamily, typography } from "@/lib/typography";
@@ -26,6 +28,12 @@ type ConsentRow = {
   consented_at: string | null;
 };
 
+/**
+ * The three consents in the order they are asked, each with its current answer
+ * and a way to change it. A consent is the patient's choice for as long as they
+ * hold it, so an answer given once, yes or no, must stay reversible: this
+ * screen is the route back for someone who declined and later reconsiders.
+ */
 export default function ConsentsSettingsScreen() {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
@@ -84,30 +92,39 @@ export default function ConsentsSettingsScreen() {
         onBack={() => router.replace(routes.settingsPrivacy)}
       />
       <Text style={styles.body}>{COPY.consentsSettingsBody}</Text>
-      {loading ? <StaticSkeleton rows={2} /> : null}
+      {loading ? <StaticSkeleton rows={3} /> : null}
       {message ? <Text style={styles.error}>{message}</Text> : null}
-      {!loading && !message && rows.length === 0 ? (
-        <EmptyState
-          heading={COPY.consentsSettingsEmpty}
-          explanation={COPY.consentsSettingsEmptyBody}
-        />
-      ) : null}
-      {rows.map((row, index) => (
-        <Surface key={`${row.consent_type}-${index}`} style={styles.card}>
-          <View style={styles.rowTextCol}>
-            <Text style={styles.type}>{row.consent_type}</Text>
-            {row.consented_at ? (
-              <Text style={styles.given}>
-                {`Given ${row.consented_at.slice(0, 10)}`}
-              </Text>
-            ) : null}
-          </View>
-          <StatusChip
-            kind={row.consented ? "withinRange" : "worthWatching"}
-            label={row.consented ? "Agreed" : "Not agreed"}
-          />
-        </Surface>
-      ))}
+      {!loading && !message
+        ? SEQUENTIAL_CONSENTS.map((kind) => {
+            // Rows are newest-first, so the first match is the current answer.
+            const row = rows.find((item) => item.consent_type === kind);
+            return (
+              <Surface key={kind} style={styles.card}>
+                <View style={styles.topRow}>
+                  <View style={styles.rowTextCol}>
+                    <Text style={styles.type}>{TERMS[kind].plainName}</Text>
+                    <Text style={styles.given}>
+                      {row?.consented_at
+                        ? `Answered ${row.consented_at.slice(0, 10)}`
+                        : COPY.consentsSettingsNotAnswered}
+                    </Text>
+                  </View>
+                  {row ? (
+                    <StatusChip
+                      kind={row.consented ? "withinRange" : "worthWatching"}
+                      label={row.consented ? "Agreed" : "Declined"}
+                    />
+                  ) : null}
+                </View>
+                <TextButton
+                  title={row ? COPY.consentsSettingsChange : COPY.consentsSettingsAnswer}
+                  onPress={() => router.push(hrefForConsent(kind))}
+                  style={styles.action}
+                />
+              </Surface>
+            );
+          })
+        : null}
     </Screen>
   );
 }
@@ -122,9 +139,11 @@ const styles = StyleSheet.create({
     ...typography.label,
     color: CLAY,
   },
-  // A row, not a stack: the name reads left, the status reads right.
   card: {
     marginTop: spacing.mdSm,
+  },
+  // The name reads left, the status reads right.
+  topRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.mdSm,
@@ -142,5 +161,10 @@ const styles = StyleSheet.create({
     marginTop: 2,
     ...typography.label,
     color: colors.inkMuted,
+  },
+  // TextButton carries its own top margin; inside a card it sits tight.
+  action: {
+    marginTop: spacing.sm,
+    alignSelf: "flex-start",
   },
 });

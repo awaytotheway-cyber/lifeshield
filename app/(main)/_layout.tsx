@@ -5,8 +5,8 @@ import { StyleSheet, Text } from "react-native";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
 import { TabIcon } from "@/components/navigation/TabIcon";
 import {
-  allConsentsAgreed,
-  firstIncompleteConsent,
+  allConsentsDecided,
+  firstUndecidedConsent,
   hrefForConsent,
   redirectIfConsentOutOfOrder,
   type SequentialConsent,
@@ -51,7 +51,7 @@ export default function MainLayout() {
   const triageLoading = useTriageStore((state) => state.loading);
   const triageStatus = useTriageStore((state) => state.status);
   const consentLoaded = useConsentStore((state) => state.loaded);
-  const agreed = useConsentStore((state) => state.agreed);
+  const decided = useConsentStore((state) => state.decided);
   const ctcPositive = useEscalationStore((state) => state.state.ctcPositive);
   const loadEscalation = useEscalationStore((state) => state.load);
   const pathname = usePathname();
@@ -123,33 +123,36 @@ export default function MainLayout() {
     pathname === "/questionnaire" || pathname.endsWith("/questionnaire");
   const onQuestionnaireSection = onQuestionnaire && !questionnaireHub;
   const consentScreen = consentScreenFromPath(pathname);
-  const consentsDone = allConsentsAgreed(agreed);
+  // Decided, not agreed: each test is the patient's choice, so saying no to
+  // one does not lock them out of the rest of the pathway.
+  const consentsDone = allConsentsDecided(decided);
 
   if (triageStatus === "pending" && !onSymptomCheck) {
     return <Redirect href={routes.symptomCheck} />;
   }
 
   if (triageStatus === "clear" && onSymptomCheck) {
-    const next = firstIncompleteConsent(agreed);
+    const next = firstUndecidedConsent(decided);
     return (
       <Redirect href={next ? hrefForConsent(next) : routes.home} />
     );
   }
 
-  // Questionnaire hub and results wait until BRCA, CTC, and SNP are all agreed.
+  // Questionnaire hub and results wait until BRCA, CTC, and SNP have each been
+  // answered, yes or no.
   if (
     triageStatus === "clear" &&
     (onQuestionnaire || onResults || onPlan || onFollowup || onStore || onOrders) &&
     !consentsDone
   ) {
-    const next = firstIncompleteConsent(agreed);
+    const next = firstUndecidedConsent(decided);
     return (
       <Redirect href={next ? hrefForConsent(next) : routes.consentBrca} />
     );
   }
 
   if (triageStatus === "clear" && consentScreen) {
-    const bounce = redirectIfConsentOutOfOrder(consentScreen, agreed);
+    const bounce = redirectIfConsentOutOfOrder(consentScreen, decided);
     if (bounce) {
       return <Redirect href={bounce} />;
     }

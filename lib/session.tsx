@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 
+import { allConsentsDecided } from "@/lib/consent-flow";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
@@ -20,7 +21,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const triageLoading = useTriageStore((state) => state.loading);
   const loadConsent = useConsentStore((state) => state.load);
   const resetConsent = useConsentStore((state) => state.reset);
-  const consentAgreed = useConsentStore((state) => state.agreed);
+  const consentsAnswered = useConsentStore((state) =>
+    allConsentsDecided(state.decided),
+  );
   const loadQuestionnaire = useQuestionnaireStore((state) => state.load);
   const resetQuestionnaire = useQuestionnaireStore((state) => state.reset);
 
@@ -81,21 +84,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (triageStatus !== "clear") {
       return;
     }
-    if (
-      consentAgreed.brca &&
-      consentAgreed.ctc &&
-      consentAgreed.snp
-    ) {
+    // Once every consent has been answered the questionnaire is reachable,
+    // whichever way they were answered. Gating this on "agreed" would leave a
+    // patient who declined a test with an empty questionnaire.
+    if (consentsAnswered) {
       void loadQuestionnaire(session.user.id);
     }
-  }, [
-    session?.user.id,
-    triageStatus,
-    consentAgreed.brca,
-    consentAgreed.ctc,
-    consentAgreed.snp,
-    loadQuestionnaire,
-  ]);
+  }, [session?.user.id, triageStatus, consentsAnswered, loadQuestionnaire]);
 
   return children;
 }

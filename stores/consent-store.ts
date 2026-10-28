@@ -1,11 +1,18 @@
 /**
- * BRCA / CTC / SNP consent rows. Agreed means consented = true in Supabase.
- * A decline is saved as consented = false and does not unlock the questionnaire.
+ * BRCA / CTC / SNP consent rows.
+ *
+ *   agreed  — consented = true. Used where the consent itself is needed.
+ *   decided — a row exists, yes or no. Used to gate the pathway: declining a
+ *             test is the patient's choice and does not block the questionnaire.
+ *
+ * The folding rules live in lib/consent-flow.ts so they can be unit tested
+ * without the Supabase client.
  */
 import { create } from "zustand";
 
 import {
   emptyConsentFlags,
+  foldConsentRows,
   type ConsentFlags,
   type SequentialConsent,
 } from "@/lib/consent-flow";
@@ -22,7 +29,10 @@ type ConsentState = {
   loading: boolean;
   /** False until the first fetch for this user finishes (success or error). */
   loaded: boolean;
+  /** Said yes. */
   agreed: ConsentFlags;
+  /** Answered, yes or no. */
+  decided: ConsentFlags;
   errorMessage: string | null;
   load: (userId: string) => Promise<void>;
   save: (
@@ -33,29 +43,11 @@ type ConsentState = {
   reset: () => void;
 };
 
-function foldConsentRows(
-  rows: { consent_type: string; consented: boolean }[] | null,
-): ConsentFlags {
-  const next = { ...emptyConsentFlags };
-  if (!rows) {
-    return next;
-  }
-  for (const row of rows) {
-    if (
-      row.consent_type === "brca" ||
-      row.consent_type === "ctc" ||
-      row.consent_type === "snp"
-    ) {
-      next[row.consent_type] = Boolean(row.consented);
-    }
-  }
-  return next;
-}
-
 export const useConsentStore = create<ConsentState>((set, get) => ({
   loading: false,
   loaded: false,
   agreed: { ...emptyConsentFlags },
+  decided: { ...emptyConsentFlags },
   errorMessage: null,
 
   reset: () => {
@@ -63,6 +55,7 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
       loading: false,
       loaded: false,
       agreed: { ...emptyConsentFlags },
+      decided: { ...emptyConsentFlags },
       errorMessage: null,
     });
   },
@@ -75,6 +68,7 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
         loading: false,
         loaded: true,
         agreed: { ...emptyConsentFlags },
+        decided: { ...emptyConsentFlags },
         errorMessage: COPY.missingKeys,
       });
       return;
@@ -92,17 +86,22 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
         throw error;
       }
 
+      const folded = foldConsentRows(data);
       set({
         loading: false,
         loaded: true,
-        agreed: foldConsentRows(data),
+        agreed: folded.agreed,
+        decided: folded.decided,
         errorMessage: null,
       });
     } catch (error) {
+      // Fail closed: nothing decided, so the patient is sent back to the
+      // consent screens rather than waved through on a failed load.
       set({
         loading: false,
         loaded: true,
         agreed: { ...emptyConsentFlags },
+        decided: { ...emptyConsentFlags },
         errorMessage: messageFromUnknown(error, COPY.consentSaveFailed),
       });
     }
@@ -155,6 +154,10 @@ export const useConsentStore = create<ConsentState>((set, get) => ({
         agreed: {
           ...get().agreed,
           [consentType]: consented,
+        },
+        decided: {
+          ...get().decided,
+          [consentType]: true,
         },
         errorMessage: null,
       });

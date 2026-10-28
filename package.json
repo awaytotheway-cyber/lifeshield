@@ -95,6 +95,7 @@
     "test:buddies": "npx --yes tsx --tsconfig tsconfig.json lib/buddies.test.ts",
     "test:chat": "npx --yes tsx --tsconfig tsconfig.json lib/chat.test.ts",
     "test:findings": "npx --yes tsx --tsconfig tsconfig.json lib/result-findings.test.ts",
+    "test:consent-flow": "npx --yes tsx --tsconfig tsconfig.json lib/consent-flow.test.ts",
     "test": "node scripts/run-tests.mjs",
     "build:apk": "npx eas-cli build --platform android --profile preview",
     "build:ios": "npx eas-cli build --platform ios --profile preview"
