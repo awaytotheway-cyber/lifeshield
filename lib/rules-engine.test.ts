@@ -610,4 +610,81 @@ check("TSH iodine rule respects a custom threshold override", () => {
   assert.equal(withDefault.recommended, false);
 });
 
+// ---------------------------------------------------------------------------
+// Tier 4 follows the document literally (the three earlier deviations are
+// closed). Each rule below is the document's IF-THEN, not a proxy for it.
+// ---------------------------------------------------------------------------
+
+check("urinary iodine: antibodies must be KNOWN negative before the test is ordered (Group A)", () => {
+  const f = facts({ dietaryIodineLow: true, highProcessedFoodIntake: true });
+  const unknown = shouldOrderUrinaryIodine(f, labs({ thyroidAntibodiesPositive: null }));
+  assert.equal(unknown.recommended, false);
+  assert.match(unknown.reason, /antibod/i);
+  const negative = shouldOrderUrinaryIodine(f, labs({ thyroidAntibodiesPositive: false }));
+  assert.equal(negative.recommended, true);
+});
+
+check("urinary iodine: low dietary iodine alone is not enough; it needs high processed-food intake (Group B)", () => {
+  const alone = shouldOrderUrinaryIodine(
+    facts({ dietaryIodineLow: true }),
+    labs({ thyroidAntibodiesPositive: false }),
+  );
+  assert.equal(alone.recommended, false);
+  const processedOnly = shouldOrderUrinaryIodine(
+    facts({ highProcessedFoodIntake: true }),
+    labs({ thyroidAntibodiesPositive: false }),
+  );
+  assert.equal(processedOnly.recommended, false);
+  const both = shouldOrderUrinaryIodine(
+    facts({ dietaryIodineLow: true, highProcessedFoodIntake: true }),
+    labs({ thyroidAntibodiesPositive: false }),
+  );
+  assert.equal(both.recommended, true);
+});
+
+check("urinary iodine: raised TSH orders it only with known-negative antibodies", () => {
+  assert.equal(
+    shouldOrderUrinaryIodine(facts({}), labs({ tsh: 6, thyroidAntibodiesPositive: null })).recommended,
+    false,
+  );
+  assert.equal(
+    shouldOrderUrinaryIodine(facts({}), labs({ tsh: 6, thyroidAntibodiesPositive: false })).recommended,
+    true,
+  );
+  // Autoimmune thyroid disease on the questionnaire is a Group A stop whatever else is true.
+  assert.equal(
+    shouldOrderUrinaryIodine(
+      facts({ autoimmuneThyroid: true }),
+      labs({ tsh: 6, thyroidAntibodiesPositive: false }),
+    ).recommended,
+    false,
+  );
+});
+
+check("stool analysis: hormone use no longer stands in for an impaired COMT result", () => {
+  for (const partial of [{ hormonalContraceptionRecent: true }, { hrtUse: true }]) {
+    assert.equal(shouldOrderStoolAnalysis(facts(partial), PHASE1_LABS).recommended, false);
+  }
+  // The document's own triggers still fire.
+  assert.equal(
+    shouldOrderStoolAnalysis(facts({ estrogenDominantCondition: true }), PHASE1_LABS).recommended,
+    true,
+  );
+  assert.equal(
+    shouldOrderStoolAnalysis(facts({}), labs({ snpComtImpaired: true })).recommended,
+    true,
+  );
+});
+
+check("DUTCH Rule B needs a measured abnormal cortisol; stress alone no longer orders it", () => {
+  const stressed = facts({ stressMediumOrHigh: true });
+  const unmeasured = shouldOrderDUTCH(stressed, PHASE1_LABS);
+  assert.equal(unmeasured.recommended, false);
+  assert.match(unmeasured.reason, /cortisol/i);
+  assert.equal(shouldOrderDUTCH(stressed, labs({ cortisolAbnormal: false })).recommended, false);
+  assert.equal(shouldOrderDUTCH(stressed, labs({ cortisolAbnormal: true })).recommended, true);
+  // Abnormal cortisol without stress is not Rule B.
+  assert.equal(shouldOrderDUTCH(facts({}), labs({ cortisolAbnormal: true })).recommended, false);
+});
+
 console.log(`\n${passed} checks passed.`);

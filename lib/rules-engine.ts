@@ -173,18 +173,13 @@ export function shouldOrderDUTCH(
     return { recommended: true, reason: ruleA };
   }
 
-  // Cortisol is null in Phase 1, so this branch leans on the stress answer.
+  // Rule B — an abnormal salivary cortisol rhythm AND medium or high
+  // self-rated stress. Both limbs are required: stress alone does not order
+  // the test, and it waits for the Tier 3 cortisol result rather than guessing.
   if (labs.cortisolAbnormal === true && facts.stressMediumOrHigh) {
     return {
       recommended: true,
       reason: "Abnormal cortisol with medium or high self-rated stress.",
-    };
-  }
-  if (labs.cortisolAbnormal === null && facts.stressMediumOrHigh) {
-    return {
-      recommended: true,
-      reason:
-        "Medium or high self-rated stress (salivary cortisol not measured yet — protocol leans on the stress answer in Phase 1).",
     };
   }
 
@@ -212,9 +207,16 @@ export function shouldOrderDUTCH(
     };
   }
 
+  if (facts.stressMediumOrHigh && labs.cortisolAbnormal === null) {
+    return {
+      recommended: false,
+      reason: `${DEFERRED_LABS} (salivary cortisol not yet measured; Rule B needs an abnormal rhythm as well as stress).`,
+    };
+  }
+
   return {
     recommended: false,
-    reason: "No DUTCH trigger from the questionnaire in Phase 1.",
+    reason: "No DUTCH trigger from the questionnaire or baseline results.",
   };
 }
 
@@ -232,16 +234,6 @@ export function shouldOrderStoolAnalysis(
     };
   }
 
-  // Estrogen-related history in Phase 1 = current or recent hormonal
-  // contraception / HRT (COMT SNP is null). This proxy is a documented
-  // deviation from the stool rules; it is not in the source document.
-  if (facts.hormonalContraceptionRecent || facts.hrtUse) {
-    return {
-      recommended: true,
-      reason:
-        "Hormone-related history (current or recent contraception / HRT). Impaired COMT SNP is not available in Phase 1.",
-    };
-  }
   if (labs.snpComtImpaired === true) {
     return {
       recommended: true,
@@ -306,7 +298,9 @@ export function shouldOrderUrinaryIodine(
   labs: LabInputs = PHASE1_LABS,
   thresholds: ClinicalThresholdValues = THRESHOLDS,
 ): RuleResult {
-  // SAFETY HARD-STOP — never recommend iodine testing in these cases.
+  // Group A — mandatory safety checks. ALL must hold: thyroid autoantibodies
+  // are NEGATIVE and there is no diagnosis of autoimmune thyroid disease.
+  // Unknown antibodies are not negative, so the test waits for the result.
   if (labs.thyroidAntibodiesPositive === true || facts.autoimmuneThyroid) {
     return {
       recommended: false,
@@ -314,27 +308,24 @@ export function shouldOrderUrinaryIodine(
         "Blocked: active autoimmune thyroid condition (or thyroid antibodies positive). Urinary iodine is not suggested.",
     };
   }
-
-  // DELIBERATE DEVIATION from the source rule, agreed with the product
-  // owner. The doc's Group B reads "low dietary iodine/seaweed intake
-  // combined with high intake of processed foods"; this fires on low iodine
-  // alone. Requiring the processed-food limb would stop offering the test to
-  // low-iodine users who eat well, and the safer error here is to suggest a
-  // cheap urinary test more often, not less. The processed-food answers are
-  // captured (diet_environment.packaged_food / takeaway) if this is ever
-  // narrowed to match the doc exactly.
-  if (facts.dietaryIodineLow) {
+  if (labs.thyroidAntibodiesPositive === null) {
     return {
-      recommended: true,
-      reason:
-        "Low dietary iodine sources reported (none of: iodised salt, seafood, seaweed, dairy).",
+      recommended: false,
+      reason: `${DEFERRED_LABS} (thyroid antibodies not yet measured; the iodine test is only offered once they are known to be negative).`,
     };
   }
 
-  if (
-    labs.tsh !== null &&
-    labs.tsh > thresholds.tsh_subclinicalHypo
-  ) {
+  // Group B — ANY of: subclinical hypothyroidism on the baseline thyroid
+  // function, or low dietary iodine combined with a high processed-food intake.
+  if (facts.dietaryIodineLow && facts.highProcessedFoodIntake) {
+    return {
+      recommended: true,
+      reason:
+        "Low dietary iodine sources (none of: iodised salt, seafood, seaweed, dairy) together with a high intake of processed food.",
+    };
+  }
+
+  if (labs.tsh !== null && labs.tsh > thresholds.tsh_subclinicalHypo) {
     return {
       recommended: true,
       reason: `TSH above ${thresholds.tsh_subclinicalHypo} (subclinical hypo threshold).`,

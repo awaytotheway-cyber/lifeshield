@@ -105,8 +105,8 @@ assert.equal(
 );
 assert.equal(
   shouldOrderStoolAnalysis(hrtOnly).recommended,
-  true,
-  "HRT alone now triggers stool analysis",
+  false,
+  "HRT alone does not trigger stool analysis: the document has no such rule",
 );
 
 // Same user, HRT reported only via their medication list.
@@ -213,5 +213,25 @@ assert.equal(
   assert.equal(f.hrtUse, false);
   assert.equal(f.bloodThinners, false);
 }
+
+// ---------- highProcessedFoodIntake ----------
+// "High intake of processed foods" is the second half of the urinary-iodine
+// Group B trigger. Packaged / processed food daily or weekly counts as high,
+// the same line the protocol draws for predatory fish.
+for (const frequency of ["daily", "weekly"]) {
+  assert.equal(
+    facts({ diet_environment: { packaged_food: frequency } }).highProcessedFoodIntake,
+    true,
+    frequency,
+  );
+}
+for (const frequency of ["monthly", "rarely", "never", undefined]) {
+  assert.equal(
+    facts({ diet_environment: { packaged_food: frequency } }).highProcessedFoodIntake,
+    false,
+    String(frequency),
+  );
+}
+assert.equal(facts({}).highProcessedFoodIntake, false, "no diet section");
 
 console.log("rules-facts.test.ts passed");

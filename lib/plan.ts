@@ -18,6 +18,7 @@ import {
 import { labsFromTestResults } from "@/lib/labs-from-results";
 import { factsFromSavedAnswers } from "@/lib/rules-facts";
 import {
+  collectRecommendations,
   mapResultsToInterventions,
   type DraftIntervention,
   type InterventionCategory,
@@ -293,6 +294,90 @@ async function replaceDraftsInDatabase(
   }
 }
 
+type EngineInputs = {
+  facts: ReturnType<typeof factsFromSavedAnswers>;
+  labs: ReturnType<typeof labsFromTestResults>;
+  thresholds: Awaited<ReturnType<typeof loadClinicalThresholds>>;
+};
+
+/**
+ * Everything the rules engine reads, loaded and merged the one way: saved
+ * answers and medications into facts, test results and the latest genetic
+ * panels into labs. Shared by the plan refresh and the Tier 4 refresh so the
+ * two can never disagree about what the engine saw.
+ */
+async function loadEngineInputs(
+  userId: string,
+): Promise<({ ok: true } & EngineInputs) | { ok: false; message: string }> {
+  const [engine, results, genetics, medications] = await Promise.all([
+    useQuestionnaireStore.getState().loadForEngine(userId),
+    loadOwnTestResults(userId),
+    loadLatestGeneticResults(userId),
+    loadOwnMedications(userId),
+  ]);
+  if (!engine.ok) {
+    return { ok: false, message: engine.message ?? COPY.planGenerateFailed };
+  }
+  if (!results.ok) {
+    return { ok: false, message: results.message };
+  }
+
+  const facts = factsFromSavedAnswers({
+    bmi: engine.bmi,
+    sections: engine.sections,
+    // Drives the hormone-therapy and anticoagulant facts behind the
+    // DIM/I3C and omega-3 practitioner check. A failed load yields no
+    // rows, which is the same as having none.
+    medications: medications.rows,
+  });
+  const labs = labsFromTestResults(results.rows);
+  // Merge SNP flags from the caller's most recent genetic panel(s) on
+  // top of biochemistry-derived labs. Genetic results are returned
+  // newest-first; first non-undefined status per gene wins so the
+  // freshest genotype call takes precedence, and a gene's zygosity comes
+  // from the same panel as its call (see applyGeneticLabs). A missing
+  // genetic_test_results table is a soft "no rows", not an error.
+  if (genetics.ok) {
+    for (const row of genetics.rows) {
+      applyGeneticLabs(labs, labsFromGeneticStructured(row.structured));
+    }
+  }
+  const thresholds = await loadClinicalThresholds();
+
+  return { ok: true, facts, labs, thresholds };
+}
+
+/**
+ * Tier 4 is "directed by questionnaire responses AND Tier 3 results". At the
+ * end of the questionnaire there are no results yet, so the rules that read
+ * results (raised TSH, fasting insulin, cortisol, liver enzymes, thyroid
+ * antibodies) could not fire then. This re-runs the same rules once results
+ * exist. Rows the patient has already bought are never touched, and stale
+ * recommendations are only dropped once the whole questionnaire is done, so a
+ * half-finished one cannot make recommendations disappear.
+ */
+export async function refreshTier4Orders(userId: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    return;
+  }
+  try {
+    const inputs = await loadEngineInputs(userId);
+    if (!inputs.ok) {
+      return;
+    }
+    const store = useQuestionnaireStore.getState();
+    const questionnaireDone =
+      store.hydrated && Object.values(store.progress).every(Boolean);
+    await store.syncTestOrders(
+      userId,
+      collectRecommendations(inputs.facts, inputs.labs, inputs.thresholds),
+      { removeStale: questionnaireDone },
+    );
+  } catch {
+    // A failed refresh leaves the existing recommendations as they were.
+  }
+}
+
 /**
  * Load questionnaire + labs, run the mapper (safety checks included),
  * delete this user's draft rows, insert the new drafts.
@@ -305,44 +390,11 @@ export async function regenerateDraftPlan(
     return { ok: false, rows: [], message: COPY.missingKeys };
   }
   try {
-    const [engine, results, genetics, medications] = await Promise.all([
-      useQuestionnaireStore.getState().loadForEngine(userId),
-      loadOwnTestResults(userId),
-      loadLatestGeneticResults(userId),
-      loadOwnMedications(userId),
-    ]);
-    if (!engine.ok) {
-      return {
-        ok: false,
-        rows: [],
-        message: engine.message ?? COPY.planGenerateFailed,
-      };
+    const inputs = await loadEngineInputs(userId);
+    if (!inputs.ok) {
+      return { ok: false, rows: [], message: inputs.message };
     }
-    if (!results.ok) {
-      return { ok: false, rows: [], message: results.message };
-    }
-
-    const facts = factsFromSavedAnswers({
-      bmi: engine.bmi,
-      sections: engine.sections,
-      // Drives the hormone-therapy and anticoagulant facts behind the
-      // DIM/I3C and omega-3 practitioner check. A failed load yields no
-      // rows, which is the same as having none.
-      medications: medications.rows,
-    });
-    const labs = labsFromTestResults(results.rows);
-    // Merge SNP flags from the caller's most recent genetic panel(s) on
-    // top of biochemistry-derived labs. Genetic results are returned
-    // newest-first; first non-undefined status per gene wins so the
-    // freshest genotype call takes precedence, and a gene's zygosity comes
-    // from the same panel as its call (see applyGeneticLabs). A missing
-    // genetic_test_results table is a soft "no rows", not an error.
-    if (genetics.ok) {
-      for (const row of genetics.rows) {
-        applyGeneticLabs(labs, labsFromGeneticStructured(row.structured));
-      }
-    }
-    const thresholds = await loadClinicalThresholds();
+    const { facts, labs, thresholds } = inputs;
 
     // Phase B: read intervention text from the intervention_templates table
     // when available so admin edits (rationale wording, category, interaction

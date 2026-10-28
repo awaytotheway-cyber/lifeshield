@@ -125,10 +125,11 @@ const both = shouldOrderHeavyMetals(
 assert.match(both.reason, /predatory fish/);
 assert.match(both.reason, /well water/);
 
-// ---------- the iodine deviation stays deliberate ----------
-// Agreed to keep this broader than the doc: low iodine alone is enough,
-// without requiring the processed-food limb.
-import { shouldOrderUrinaryIodine } from "./rules-engine";
+// ---------- urinary iodine follows the document ----------
+// Group B: low dietary iodine COMBINED with high processed-food intake, and
+// only once thyroid antibodies are known to be negative (Group A).
+import { PHASE1_LABS, shouldOrderUrinaryIodine } from "./rules-engine";
+const antibodiesNegative = { ...PHASE1_LABS, thyroidAntibodiesPositive: false };
 const lowIodineGoodDiet = facts({
   diet_environment: {
     iodine_sources: ["none"],
@@ -137,9 +138,21 @@ const lowIodineGoodDiet = facts({
   },
 });
 assert.equal(
-  shouldOrderUrinaryIodine(lowIodineGoodDiet).recommended,
+  shouldOrderUrinaryIodine(lowIodineGoodDiet, antibodiesNegative).recommended,
+  false,
+  "low iodine alone is not enough: the processed-food limb is required",
+);
+const lowIodineProcessed = facts({
+  diet_environment: { iodine_sources: ["none"], packaged_food: "daily" },
+});
+assert.equal(
+  shouldOrderUrinaryIodine(lowIodineProcessed, antibodiesNegative).recommended,
   true,
-  "low iodine alone still recommends the test, processed food not required",
+);
+assert.equal(
+  shouldOrderUrinaryIodine(lowIodineProcessed).recommended,
+  false,
+  "unknown antibodies are not negative: the test waits for the result",
 );
 
 console.log("tier4-inputs.test.ts passed");

@@ -60,6 +60,13 @@ export type RulesFacts = {
   bmi: number | null;
   autoimmuneThyroid: boolean;
   dietaryIodineLow: boolean;
+  /**
+   * High intake of packaged / processed food: daily or weekly. The second half
+   * of the urinary-iodine Group B trigger ("low dietary iodine combined with
+   * high intake of processed foods"). Daily-or-weekly is the same line drawn
+   * for predatory fish.
+   */
+  highProcessedFoodIntake: boolean;
   occupation: string;
   pollutantExposure: boolean;
   vehicleExhaust: boolean;
@@ -82,6 +89,7 @@ export const EMPTY_RULES_FACTS: RulesFacts = {
   bmi: null,
   autoimmuneThyroid: false,
   dietaryIodineLow: false,
+  highProcessedFoodIntake: false,
   occupation: "",
   pollutantExposure: false,
   vehicleExhaust: false,
@@ -227,6 +235,8 @@ export function factsFromSavedAnswers(input: {
     bmi: parseFiniteNumber(input.bmi),
     autoimmuneThyroid: isYes(comorbidities?.autoimmune_thyroid),
     dietaryIodineLow: diet == null ? false : !hasRealIodine,
+    highProcessedFoodIntake:
+      diet?.packaged_food === "daily" || diet?.packaged_food === "weekly",
     occupation: String(radiation?.occupation ?? ""),
     pollutantExposure: lifestyle?.pollutant_exposure === "yes",
     vehicleExhaust: isYes(lifestyle?.vehicle_exhaust),

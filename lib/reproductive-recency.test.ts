@@ -165,10 +165,12 @@ check("DUTCH Rule C fires on recent hormonal contraception and not on old use", 
   );
 });
 
-check("the stool-analysis proxy follows the same recency", () => {
+check("hormonal contraception no longer orders stool analysis at all", () => {
+  // It used to stand in for an impaired COMT result. The document's stool
+  // rule has no such trigger, so recency does not matter here any more.
   assert.equal(
     shouldOrderStoolAnalysis({ ...EMPTY_RULES_FACTS, hormonalContraceptionRecent: true }).recommended,
-    true,
+    false,
   );
   assert.equal(
     shouldOrderStoolAnalysis({ ...EMPTY_RULES_FACTS, hormonalContraceptionRecent: false }).recommended,

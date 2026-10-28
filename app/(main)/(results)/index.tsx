@@ -21,6 +21,7 @@ import {
 import { getTerm } from "@/lib/plain-language";
 import { routes } from "@/lib/routes";
 import { fontFamily, typography } from "@/lib/typography";
+import { refreshTier4Orders } from "@/lib/plan";
 import { useAuthStore } from "@/stores/auth-store";
 import {
   useQuestionnaireStore,
@@ -144,6 +145,9 @@ export default function ResultsScreen() {
     }
     setLoading(true);
     try {
+      // Tier 4 is directed by Tier 3 results, which arrive after the
+      // questionnaire: re-run the rules so newly indicated tests appear here.
+      await refreshTier4Orders(session.user.id);
       const result = await loadTestOrders(session.user.id);
       if (!result.ok) {
         setMessage(result.message ?? COPY.resultsLoadFailed);
