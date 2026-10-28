@@ -6,6 +6,7 @@ import { ClinicalTerm } from "@/components/ClinicalTerm";
 import { GateLoading } from "@/components/journey/PostAuthRedirect";
 import { Button } from "@/components/ui/Button";
 import { Screen } from "@/components/ui/Screen";
+import { Card } from "@/components/ui/Card";
 import { SetupBanners } from "@/components/ui/SetupBanners";
 import {
   allConsentsDecided,
@@ -13,6 +14,9 @@ import {
   redirectIfConsentOutOfOrder,
   type SequentialConsent,
 } from "@/lib/consent-flow";
+import { resolveCopy } from "@/lib/app-content";
+import { consentEvidenceFor } from "@/lib/consent-evidence";
+import { useAppContent } from "@/lib/content-context";
 import { COPY } from "@/lib/copy";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/stores/auth-store";
@@ -38,6 +42,7 @@ export function SequentialConsentScreen({
   extraBody,
 }: ConsentScreenProps) {
   const router = useRouter();
+  const content = useAppContent();
   const session = useAuthStore((state) => state.session);
   const triageStatus = useTriageStore((state) => state.status);
   const decided = useConsentStore((state) => state.decided);
@@ -69,6 +74,11 @@ export function SequentialConsentScreen({
     return <Redirect href={bounce} />;
   }
 
+  // Draft wording, editable from the admin app-copy table (lib/consent-evidence.ts).
+  const evidence = consentEvidenceFor(consentType, (key, fallback) =>
+    resolveCopy(content, key, fallback),
+  );
+
   // Read at render, before this answer is saved, so the last consent in the
   // first-time sequence still hands on to the questionnaire.
   const revisiting = allConsentsDecided(decided);
@@ -99,6 +109,11 @@ export function SequentialConsentScreen({
       <Text className="mt-3 text-ink">{COPY.consentIntro}</Text>
       <ClinicalTerm termKey={consentType} />
       <Text className="mt-4 text-ink">{extraBody}</Text>
+      <Card>
+        <Text className="text-ink">{evidence.label}</Text>
+        <Text className="mt-2 text-ink">{evidence.body}</Text>
+        <Text className="mt-2 text-ink">{evidence.footnote}</Text>
+      </Card>
       <SetupBanners />
 
       {message ? (
