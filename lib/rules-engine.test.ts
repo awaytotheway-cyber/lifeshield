@@ -174,6 +174,69 @@ check("iodine does not fire from a diet answer without a urine result", () => {
 });
 
 // ---------------------------------------------------------------------------
+// DUTCH Rule A (genetic expression): the Tier 2 SNP panel shows a HOMOZYGOUS
+// variant, or a DOUBLE HETEROZYGOUS combination, in CYP1A1, CYP1B1, COMT or
+// MTHFR. One heterozygous copy is not enough, and neither is a variant whose
+// zygosity was not reported. Only those four genes count.
+// ---------------------------------------------------------------------------
+
+const dutchA = (partial: Partial<LabInputs>) => shouldOrderDUTCH(facts({}), labs(partial));
+
+check("DUTCH Rule A: one homozygous variant orders it", () => {
+  for (const gene of ["cyp1a1", "cyp1b1", "comt", "mthfr"] as const) {
+    assert.equal(dutchA({ snpZygosity: { [gene]: "hom" } }).recommended, true, gene);
+  }
+});
+
+check("DUTCH Rule A: two heterozygous genes (a double heterozygous combination) order it", () => {
+  assert.equal(
+    dutchA({ snpZygosity: { comt: "het", mthfr: "het" } }).recommended,
+    true,
+  );
+  assert.equal(
+    dutchA({ snpZygosity: { cyp1a1: "het", cyp1b1: "het", comt: "het" } }).recommended,
+    true,
+  );
+});
+
+check("DUTCH Rule A: a single heterozygous gene does not order it", () => {
+  const result = dutchA({ snpMthfr: true, snpZygosity: { mthfr: "het" } });
+  assert.equal(result.recommended, false);
+  // Say why, so a clinician reading it knows a variant was seen.
+  assert.match(result.reason, /heterozygous|zygosity/i);
+});
+
+check("DUTCH Rule A: a variant with unreported zygosity does not order it", () => {
+  // The legacy shape: "variant present" with nothing about copies. It cannot
+  // show homozygous or double heterozygous, so it cannot satisfy the rule.
+  const result = dutchA({ snpComtImpaired: true });
+  assert.equal(result.recommended, false);
+  assert.match(result.reason, /zygosity/i);
+});
+
+check("DUTCH Rule A: wildtype and unknown calls order nothing", () => {
+  assert.equal(dutchA({ snpMthfr: false, snpComtImpaired: false }).recommended, false);
+  assert.equal(dutchA({}).recommended, false);
+});
+
+check("DUTCH Rule A: only the four oestrogen genes count", () => {
+  // CYP2D6 homozygous is a drug-clearance finding (the CYP450 rule), not an
+  // oestrogen-metabolism one.
+  assert.equal(dutchA({ snpCyp2d6: true }).recommended, false);
+});
+
+check("DUTCH Rules B and C still work alongside Rule A", () => {
+  assert.equal(
+    shouldOrderDUTCH(facts({ stressMediumOrHigh: true }), labs({ cortisolAbnormal: true })).recommended,
+    true,
+  );
+  assert.equal(
+    shouldOrderDUTCH(facts({ hrtUse: true }), labs({ snpMthfr: true, snpZygosity: { mthfr: "het" } })).recommended,
+    true,
+  );
+});
+
+// ---------------------------------------------------------------------------
 // Heavy-metal panel, per the document's rules matrix:
 //   Rule A: occupational / dietary / water exposure — industrial work,
 //           welding, dentistry, frequent large predatory fish, or well water.

@@ -19,7 +19,8 @@ export type FindingState = "present" | "absent" | "unknown";
 
 /** Lab-input fields that a finding can set. All are boolean | null. */
 type FindingField = {
-  [K in keyof LabInputs]: LabInputs[K] extends boolean | null ? K : never;
+  // `-?` so an optional field (snpZygosity) cannot leak `undefined` in here.
+  [K in keyof LabInputs]-?: LabInputs[K] extends boolean | null ? K : never;
 }[keyof LabInputs];
 
 type FindingDef = {

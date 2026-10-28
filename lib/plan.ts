@@ -11,7 +11,10 @@ import { loadLatestGeneticResults } from "@/lib/genetic-tests-io";
 import { loadTemplatesForEngine } from "@/lib/intervention-templates";
 import { loadClinicalThresholds } from "@/lib/load-thresholds";
 import { messageFromUnknown, rawErrorText } from "@/lib/friendly-errors";
-import { labsFromGeneticStructured } from "@/lib/labs-from-genetic";
+import {
+  applyGeneticLabs,
+  labsFromGeneticStructured,
+} from "@/lib/labs-from-genetic";
 import { labsFromTestResults } from "@/lib/labs-from-results";
 import { factsFromSavedAnswers } from "@/lib/rules-facts";
 import {
@@ -331,18 +334,12 @@ export async function regenerateDraftPlan(
     // Merge SNP flags from the caller's most recent genetic panel(s) on
     // top of biochemistry-derived labs. Genetic results are returned
     // newest-first; first non-undefined status per gene wins so the
-    // freshest genotype call takes precedence. A missing genetic_test_
-    // results table is a soft "no rows", not an error.
+    // freshest genotype call takes precedence, and a gene's zygosity comes
+    // from the same panel as its call (see applyGeneticLabs). A missing
+    // genetic_test_results table is a soft "no rows", not an error.
     if (genetics.ok) {
       for (const row of genetics.rows) {
-        const geneticLabs = labsFromGeneticStructured(row.structured);
-        for (const [key, value] of Object.entries(geneticLabs)) {
-          const field = key as keyof typeof labs;
-          if (value === undefined) continue;
-          if (labs[field] === null || labs[field] === undefined) {
-            (labs as Record<string, unknown>)[field] = value;
-          }
-        }
+        applyGeneticLabs(labs, labsFromGeneticStructured(row.structured));
       }
     }
     const thresholds = await loadClinicalThresholds();

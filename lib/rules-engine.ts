@@ -35,11 +35,31 @@ export type RuleResult = {
  * Extra boolean flags are for Phase 2 mapping (and fake test sets)
  * when a full numeric lab row is not in the app yet.
  */
+
+/** Copies of a variant allele: one is heterozygous, two is homozygous. */
+export type Zygosity = "het" | "hom";
+
+/** The four oestrogen-metabolism genes DUTCH Rule A reads. */
+export type OestrogenGene = "cyp1a1" | "cyp1b1" | "comt" | "mthfr";
+
 export type LabInputs = {
+  /**
+   * The four oestrogen-metabolism SNP fields mean "a variant was reported":
+   * true for any variant, false for wildtype, null for unknown. They do NOT
+   * say how many copies. Zygosity lives in `snpZygosity` below, because the
+   * protocol's DUTCH rule turns on it. A field that is true with no matching
+   * snpZygosity entry is a variant whose zygosity was not reported.
+   */
   snpCyp1a1: boolean | null;
   snpCyp1b1: boolean | null;
   snpComtImpaired: boolean | null;
   snpMthfr: boolean | null;
+  /**
+   * Copies of the variant allele, where the panel reported it. Absent means
+   * unknown. Optional so it cannot be a shared mutable default: PHASE1_LABS is
+   * spread into every lab bag and must never carry an object they would share.
+   */
+  snpZygosity?: Partial<Record<OestrogenGene, Zygosity>>;
   /**
    * Phase I pharmacokinetic genes. Separate from CYP1A1/CYP1B1 above, which
    * are oestrogen-metabolism genes: these five drive drug and botanical
@@ -117,16 +137,40 @@ function hasHormoneSnp(labs: LabInputs): boolean {
   );
 }
 
+const OESTROGEN_GENES: { gene: OestrogenGene; label: string }[] = [
+  { gene: "cyp1a1", label: "CYP1A1" },
+  { gene: "cyp1b1", label: "CYP1B1" },
+  { gene: "comt", label: "COMT" },
+  { gene: "mthfr", label: "MTHFR" },
+];
+
+/**
+ * DUTCH Rule A — genetic expression. Met by a HOMOZYGOUS variant in any of
+ * CYP1A1, CYP1B1, COMT or MTHFR, or by a DOUBLE HETEROZYGOUS combination (two
+ * of the four genes heterozygous). A single heterozygous copy does not meet
+ * it, and neither does a variant whose zygosity was not reported, because
+ * without copies it cannot show either condition.
+ */
+function dutchRuleA(labs: LabInputs): string | null {
+  const zygosity = labs.snpZygosity ?? {};
+  const hom = OESTROGEN_GENES.filter((g) => zygosity[g.gene] === "hom");
+  const het = OESTROGEN_GENES.filter((g) => zygosity[g.gene] === "het");
+  if (hom.length > 0) {
+    return `Homozygous variant in ${hom.map((g) => g.label).join(", ")}.`;
+  }
+  if (het.length >= 2) {
+    return `Heterozygous variants in ${het.map((g) => g.label).join(" and ")} (double heterozygous).`;
+  }
+  return null;
+}
+
 export function shouldOrderDUTCH(
   facts: RulesFacts,
   labs: LabInputs = PHASE1_LABS,
 ): RuleResult {
-  if (hasHormoneSnp(labs)) {
-    return {
-      recommended: true,
-      reason:
-        "SNP variant in CYP1A1, CYP1B1, COMT, or MTHFR (from source protocol).",
-    };
+  const ruleA = dutchRuleA(labs);
+  if (ruleA) {
+    return { recommended: true, reason: ruleA };
   }
 
   // Cortisol is null in Phase 1, so this branch leans on the stress answer.
@@ -151,6 +195,20 @@ export function shouldOrderDUTCH(
       recommended: true,
       reason:
         "Current or recent (within 12 months) hormonal contraception or HRT use from the questionnaire.",
+    };
+  }
+
+  // A variant was seen but did not meet Rule A. Say so, so a clinician reading
+  // this knows the panel was looked at and why it stopped short.
+  if (hasHormoneSnp(labs)) {
+    const anyReported = OESTROGEN_GENES.some(
+      (g) => (labs.snpZygosity ?? {})[g.gene] !== undefined,
+    );
+    return {
+      recommended: false,
+      reason: anyReported
+        ? "SNP variant seen, but only one heterozygous gene: DUTCH Rule A needs a homozygous variant or two heterozygous genes."
+        : "SNP variant reported without zygosity (copies of the variant allele): DUTCH Rule A needs to know whether it is homozygous or heterozygous.",
     };
   }
 
