@@ -36,6 +36,23 @@ check("consents come first", () => {
   );
 });
 
+check("baseline tests written early do not mark the Tests step done", () => {
+  const early: JourneyProgress = {
+    ...base,
+    questionnaireCount: 4,
+    hasRecommendations: true,
+    hasLabResults: false,
+    hasPlan: false,
+    hasStoreOrders: false,
+  };
+  assert.equal(isJourneyStepComplete("tests", early), false);
+  assert.equal(loopStepState("tests", currentJourneyStep(early), early), "later");
+  assert.equal(
+    isJourneyStepComplete("tests", { ...early, questionnaireCount: 10 }),
+    true,
+  );
+});
+
 check("walks Questionnaire → Tests → Results → Plan → Store → Follow-up", () => {
   assert.equal(
     currentJourneyStep({

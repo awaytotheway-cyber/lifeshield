@@ -523,6 +523,18 @@ const BASELINE: { term: TermKey; reason: string }[] = [
 ];
 
 /**
+ * The Tier 3 baseline on its own. It does not depend on any questionnaire
+ * answer, so it can be requisitioned as soon as the pathway opens.
+ */
+export function baselineRecommendations(): EngineRecommendation[] {
+  return BASELINE.map((item) => ({
+    test_tier: 3,
+    test_name: item.term,
+    trigger_reason: item.reason,
+  }));
+}
+
+/**
  * Always includes the Tier 3 baseline. Then loops the four Tier 4 rules
  * and keeps only recommended: true.
  */
@@ -531,11 +543,7 @@ export function collectRecommendations(
   labs: LabInputs = PHASE1_LABS,
   thresholds: ClinicalThresholdValues = THRESHOLDS,
 ): EngineRecommendation[] {
-  const out: EngineRecommendation[] = BASELINE.map((item) => ({
-    test_tier: 3,
-    test_name: item.term,
-    trigger_reason: item.reason,
-  }));
+  const out: EngineRecommendation[] = baselineRecommendations();
 
   for (const rule of TIER4) {
     const result = rule.run(facts, labs, thresholds);

@@ -491,7 +491,7 @@ export default function HomeScreen() {
           questionnaireTotal={10}
           consentCount={consentCount}
           consentTotal={3}
-          testPlanReady={hasRecommendations}
+          testPlanReady={hasRecommendations && questionnaireCount >= 10}
           onPressQuestionnaire={() => {
             router.replace(routes.questionnaire);
           }}

@@ -17,6 +17,7 @@ import { messageFromUnknown } from "@/lib/friendly-errors";
 import { parseFiniteNumber } from "@/lib/questionnaire/numbers";
 import type { EngineRecommendation } from "@/lib/rules-engine";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { planOrderSync } from "@/lib/test-order-sync";
 import { useEligibilityStore } from "@/stores/eligibility-store";
 
 type HubProgress = Record<HubSectionKey, boolean>;
@@ -134,9 +135,10 @@ type QuestionnaireState = {
     sections: Record<string, Record<string, unknown> | null>;
     message?: string;
   }>;
-  replaceTestOrders: (
+  syncTestOrders: (
     userId: string,
     orders: EngineRecommendation[],
+    options: { removeStale: boolean },
   ) => Promise<SaveResult>;
   loadTestOrders: (userId: string) => Promise<{
     ok: boolean;
@@ -433,35 +435,59 @@ export const useQuestionnaireStore = create<QuestionnaireState>((set, get) => ({
     }
   },
 
-  replaceTestOrders: async (userId, orders) => {
+  syncTestOrders: async (userId, orders, options) => {
     if (!isSupabaseConfigured) {
       return { ok: false, message: COPY.missingKeys };
     }
     try {
-      const { error: deleteError } = await supabase
+      const { data, error: loadError } = await supabase
         .from("test_orders")
-        .delete()
+        .select("id, test_name, test_tier, status, trigger_reason")
         .eq("user_id", userId);
-      if (deleteError) {
-        throw deleteError;
+      if (loadError) {
+        throw loadError;
       }
-      if (orders.length === 0) {
-        set({ hasRecommendations: false });
-        return { ok: true };
+      // Only rows still "recommended" are ever changed or removed: a paid
+      // order must survive a re-run of the rules (lib/test-order-sync.ts).
+      const plan = planOrderSync(data ?? [], orders, options);
+
+      if (plan.remove.length > 0) {
+        const { error } = await supabase
+          .from("test_orders")
+          .delete()
+          .in("id", plan.remove)
+          .eq("status", "recommended");
+        if (error) {
+          throw error;
+        }
       }
-      const { error: insertError } = await supabase.from("test_orders").insert(
-        orders.map((order) => ({
-          user_id: userId,
-          test_tier: order.test_tier,
-          test_name: order.test_name,
-          trigger_reason: order.trigger_reason,
-          status: "recommended",
-        })),
-      );
-      if (insertError) {
-        throw insertError;
+      for (const change of plan.update) {
+        const { error } = await supabase
+          .from("test_orders")
+          .update({ trigger_reason: change.trigger_reason })
+          .eq("id", change.id)
+          .eq("status", "recommended");
+        if (error) {
+          throw error;
+        }
       }
-      set({ hasRecommendations: true });
+      if (plan.insert.length > 0) {
+        const { error } = await supabase.from("test_orders").insert(
+          plan.insert.map((order) => ({
+            user_id: userId,
+            test_tier: order.test_tier,
+            test_name: order.test_name,
+            trigger_reason: order.trigger_reason,
+            status: "recommended",
+          })),
+        );
+        if (error) {
+          throw error;
+        }
+      }
+      const remaining =
+        (data ?? []).length - plan.remove.length + plan.insert.length;
+      set({ hasRecommendations: remaining > 0 });
       return { ok: true };
     } catch (error) {
       return {

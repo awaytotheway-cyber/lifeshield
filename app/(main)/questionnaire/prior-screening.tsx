@@ -58,8 +58,8 @@ export default function PriorScreeningScreen() {
   const loadSection = useQuestionnaireStore((state) => state.loadSection);
   const saveSection = useQuestionnaireStore((state) => state.saveSection);
   const loadForEngine = useQuestionnaireStore((state) => state.loadForEngine);
-  const replaceTestOrders = useQuestionnaireStore(
-    (state) => state.replaceTestOrders,
+  const syncTestOrders = useQuestionnaireStore(
+    (state) => state.syncTestOrders,
   );
   const [ready, setReady] = useState(false);
   const [loadMessage, setLoadMessage] = useState<string | null>(null);
@@ -151,7 +151,11 @@ export default function PriorScreeningScreen() {
         PHASE1_LABS,
         thresholds,
       );
-      const written = await replaceTestOrders(session.user.id, recommendations);
+      // Full sync: also drops recommendations that no longer apply, but never
+      // touches an order the patient has already bought.
+      const written = await syncTestOrders(session.user.id, recommendations, {
+        removeStale: true,
+      });
       if (!written.ok) {
         setSaveMessage(written.message ?? COPY.resultsSaveFailed);
         return;

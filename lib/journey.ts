@@ -67,7 +67,10 @@ export function isJourneyStepComplete(
     case "questionnaire":
       return progress.questionnaireCount >= 10;
     case "tests":
-      return progress.hasRecommendations;
+      // The Tier 3 baseline is requisitioned when the pathway opens, before
+      // the questionnaire. Recommendations only mean "your test plan is
+      // ready" once the questionnaire that completes it is done.
+      return progress.questionnaireCount >= 10 && progress.hasRecommendations;
     case "results":
       return progress.hasLabResults;
     case "plan":
