@@ -22,6 +22,8 @@ import {
   TeamOutlined,
   UnorderedListOutlined,
   AuditOutlined,
+  SafetyCertificateOutlined,
+  StopOutlined,
   FileTextOutlined,
   FormOutlined,
 } from "@ant-design/icons";
@@ -94,6 +96,8 @@ import {
 } from "./pages/recipes";
 import { FollowUpCreate, FollowUpEdit, FollowUpList } from "./pages/follow-ups";
 import { GoalEdit, GoalList } from "./pages/goals";
+import { BlockList, ReportList } from "./pages/moderation";
+import { PersonDetail, ReportDetail } from "./pages/moderation/report";
 import { MealPlanEdit, MealPlanList } from "./pages/meal-plans";
 import { ProfileList } from "./pages/profiles";
 import { ReviewQueueList } from "./pages/review-queue";
@@ -270,6 +274,16 @@ export default function App() {
                 },
               },
               {
+                name: "reports",
+                list: "/moderation/reports",
+                meta: { label: "Reports", icon: <SafetyCertificateOutlined /> },
+              },
+              {
+                name: "blocks",
+                list: "/moderation/blocks",
+                meta: { label: "Blocks", icon: <StopOutlined /> },
+              },
+              {
                 name: "review_queue",
                 list: "/review-queue",
                 meta: {
@@ -403,6 +417,12 @@ export default function App() {
                 <Route path="/meal-plans">
                   <Route index element={<MealPlanList />} />
                   <Route path="edit/:id" element={<MealPlanEdit />} />
+                </Route>
+                <Route path="/moderation">
+                  <Route path="reports" element={<ReportList />} />
+                  <Route path="reports/:id" element={<ReportDetail />} />
+                  <Route path="blocks" element={<BlockList />} />
+                  <Route path="people/:id" element={<PersonDetail />} />
                 </Route>
                 <Route path="/review-queue">
                   <Route index element={<ReviewQueueList />} />
