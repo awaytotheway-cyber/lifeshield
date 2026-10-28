@@ -62,6 +62,7 @@ function baseContext(partial: Partial<UserContext> = {}): UserContext {
     autoimmuneThyroid: false,
     hormoneTherapy: false,
     bloodThinners: false,
+    thyroidMedication: false,
     linkedInterventions: [],
     ...partial,
   };
@@ -219,6 +220,31 @@ check("BRCA allowed when matching consent is recorded", () => {
     }),
   );
   assert.deepEqual(result, { allowed: true });
+});
+
+const thyroidSensitive: Product = {
+  product_type: "supplement",
+  plain_name: "Thyroid-sensitive item",
+  clinical_name: "Example product tagged for thyroid medication",
+  linked_finding: "Raised stool beta-glucuronidase",
+  price: 1299,
+  interaction_flags: ["thyroid_medication"],
+};
+
+check("a product tagged for thyroid medication needs a check for someone on it", () => {
+  const result = canPurchase(thyroidSensitive, baseContext({ thyroidMedication: true }));
+  assert.equal(result.allowed, false);
+  assert.equal(result.needsCheck, true);
+});
+
+check("the same product is not held back for someone not on thyroid medication", () => {
+  const result = canPurchase(thyroidSensitive, baseContext({ thyroidMedication: false }));
+  assert.equal(result.needsCheck, undefined);
+});
+
+check("thyroid medication alone does not hold back a product with no such tag", () => {
+  const result = canPurchase(calciumProduct, baseContext({ thyroidMedication: true }));
+  assert.equal(result.needsCheck, undefined);
 });
 
 console.log(`\n${passed} checks passed.`);

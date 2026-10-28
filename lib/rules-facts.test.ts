@@ -168,4 +168,50 @@ assert.equal(
   "a user on neither hormones nor anticoagulants is not flagged",
 );
 
+// ---------- thyroidMedication ----------
+// Thyroid replacement is a medication the interaction check has to know about.
+// It is read from an active medication, by tag or by a recognised name, because
+// patients rarely tag their own medications.
+assert.equal(facts({}).thyroidMedication, false, "no medications");
+assert.equal(
+  facts({}, [med({ contraindication_codes: ["thyroid_medication"] })]).thyroidMedication,
+  true,
+  "by tag",
+);
+for (const name of [
+  "Levothyroxine 50 mcg",
+  "levothyroxine",
+  "L-Thyroxine",
+  "Eltroxin",
+  "THYRONORM 75",
+  "Euthyrox",
+  "Synthroid",
+  "Liothyronine",
+]) {
+  assert.equal(
+    facts({}, [med({ contraindication_codes: [], name })]).thyroidMedication,
+    true,
+    name,
+  );
+}
+for (const name of ["Warfarin", "Vitamin D", "Thyroid support herbal blend", "Iodine"]) {
+  assert.equal(
+    facts({}, [med({ contraindication_codes: [], name })]).thyroidMedication,
+    false,
+    name,
+  );
+}
+assert.equal(
+  facts({}, [med({ contraindication_codes: [], name: "Levothyroxine", active: false })])
+    .thyroidMedication,
+  false,
+  "a stopped prescription does not keep flagging",
+);
+// It is its own fact: thyroid medication is not read as hormone therapy or a blood thinner.
+{
+  const f = facts({}, [med({ contraindication_codes: [], name: "Levothyroxine" })]);
+  assert.equal(f.hrtUse, false);
+  assert.equal(f.bloodThinners, false);
+}
+
 console.log("rules-facts.test.ts passed");

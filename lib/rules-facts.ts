@@ -32,6 +32,14 @@ export type RulesFacts = {
    * Gates the DIM/I3C and high-dose omega-3 practitioner check.
    */
   bloodThinners: boolean;
+  /**
+   * Thyroid replacement (thyroxine and similar), from an active medication
+   * tagged "thyroid_medication" or named as one. Named as well as tagged
+   * because people rarely tag their own medications. It gates products tagged
+   * "thyroid_medication" for a practitioner check; which products carry that
+   * tag is the clinicians' call, set on the product, not decided here.
+   */
+  thyroidMedication: boolean;
   gallstones: boolean;
   chronicGutInfection: boolean;
   /**
@@ -64,6 +72,7 @@ export const EMPTY_RULES_FACTS: RulesFacts = {
   hormonalContraceptionRecent: false,
   hrtUse: false,
   bloodThinners: false,
+  thyroidMedication: false,
   gallstones: false,
   chronicGutInfection: false,
   estrogenDominantCondition: false,
@@ -108,7 +117,41 @@ export function occupationIsHighRisk(occupation: string): boolean {
 export type MedicationFact = {
   contraindication_codes: readonly string[];
   active: boolean;
+  /** The name as the patient entered it; optional for older callers. */
+  name?: string;
 };
+
+/**
+ * Generic and common brand names for thyroid replacement. A starting list for
+ * clinician review: a miss only means the tag route is needed, and matching is
+ * on whole words so "thyroid support herbal blend" does not count.
+ */
+const THYROID_REPLACEMENT_NAMES = [
+  "thyroxine",
+  "levothyroxine",
+  "liothyronine",
+  "eltroxin",
+  "euthyrox",
+  "synthroid",
+  "thyronorm",
+  "unithroid",
+  "cytomel",
+];
+
+export function hasActiveThyroidReplacement(
+  medications: readonly MedicationFact[] | undefined,
+): boolean {
+  if (!medications) {
+    return false;
+  }
+  return medications.some((med) => {
+    if (!med.active || !med.name) {
+      return false;
+    }
+    const words = med.name.toLowerCase().split(/[^a-z]+/);
+    return THYROID_REPLACEMENT_NAMES.some((name) => words.includes(name));
+  });
+}
 
 /**
  * Contraindication tags are free text on the medications table. Match
@@ -165,6 +208,9 @@ export function factsFromSavedAnswers(input: {
       isYes(reproductive?.hrt_use) ||
       hasActiveMedicationCode(input.medications, "hormones"),
     bloodThinners: hasActiveMedicationCode(input.medications, "blood_thinners"),
+    thyroidMedication:
+      hasActiveMedicationCode(input.medications, "thyroid_medication") ||
+      hasActiveThyroidReplacement(input.medications),
     gallstones: isYes(comorbidities?.gallstones),
     chronicGutInfection: infections.includes("gut"),
     estrogenDominantCondition: hasRealSelection(

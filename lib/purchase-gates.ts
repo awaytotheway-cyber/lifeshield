@@ -40,6 +40,8 @@ export type UserContext = {
   hormoneTherapy: boolean;
   /** Blood-thinner use — maps to blood_thinners interaction flag. */
   bloodThinners: boolean;
+  /** Thyroid replacement — maps to the thyroid_medication interaction flag. */
+  thyroidMedication: boolean;
   /** Plan rows that may block or flag a linked product. */
   linkedInterventions: LinkedIntervention[];
 };
@@ -154,7 +156,10 @@ function interactionGate(
   const needsBloodThinnerCheck =
     flags.includes("blood_thinners") && context.bloodThinners;
 
-  if (!needsHormoneCheck && !needsBloodThinnerCheck) {
+  const needsThyroidCheck =
+    flags.includes("thyroid_medication") && context.thyroidMedication;
+
+  if (!needsHormoneCheck && !needsBloodThinnerCheck && !needsThyroidCheck) {
     return null;
   }
 
@@ -162,7 +167,7 @@ function interactionGate(
     allowed: false,
     needsCheck: true,
     blockReason:
-      "Because of your hormone therapy or blood-thinner answers, this needs a practitioner check before you can order it. Please review with your clinician first.",
+      "Because of your hormone therapy, blood-thinner or thyroid medication answers, this needs a practitioner check before you can order it. Please review with your clinician first.",
   };
 }
 

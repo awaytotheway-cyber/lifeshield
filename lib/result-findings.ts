@@ -37,6 +37,8 @@ type FindingDef = {
    * retest must not lift a block that a positive result raised.
    */
   positiveIsSticky?: boolean;
+  /** Further fields that take the same state as `field`. */
+  alsoSets?: readonly FindingField[];
 };
 
 const ABSENT_FLAGS: readonly string[] = ["negative", "normal"];
@@ -74,6 +76,15 @@ export const FINDINGS = {
   oestrogenDetox: {
     field: "oestrogenDetoxImpaired",
     presentFlags: ["positive", "critical"],
+  },
+  // The diurnal cortisol rhythm (flattened curve or raised night level), as a
+  // reviewer reads it from the salivary profile. One reviewed outcome rather
+  // than four timepoints, so the engine never has to guess a threshold: the
+  // clinical call is theirs and DUTCH Rule B consumes it literally.
+  cortisolRhythm: {
+    field: "cortisolAbnormal",
+    presentFlags: ["positive", "high", "critical"],
+    alsoSets: ["adrenalResilienceImpaired"],
   },
   // ALT/AST sit inside the routine biochemistry panel, so a combined
   // routineBloods row cannot say they are raised. This is the one way to
@@ -132,14 +143,19 @@ export function applyFindingRow(
   if (state === "unknown") {
     return true;
   }
+  const fields = [def.field, ...(def.alsoSets ?? [])];
   if (state === "present") {
-    labs[def.field] = true;
+    for (const field of fields) {
+      labs[field] = true;
+    }
     return true;
   }
   // state === "absent"
   if (def.positiveIsSticky && labs[def.field] === true) {
     return true;
   }
-  labs[def.field] = false;
+  for (const field of fields) {
+    labs[field] = false;
+  }
   return true;
 }

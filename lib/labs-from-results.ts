@@ -125,13 +125,16 @@ export function labsFromTestResults(rows: TestResultRow[]): LabInputs {
       }
     }
 
-    if (
-      isTerm(row, "salivaryCortisol") ||
-      mentions(blob, "salivary cortisol", "cortisol")
-    ) {
+    // Read by its result key and flag only. A measured normal result sets
+    // false, which is what closes the Phase 1 "lean on the stress answer"
+    // proxy in DUTCH Rule B once cortisol has actually been measured.
+    if (isTerm(row, "salivaryCortisol")) {
       if (flagIs(row, "high", "low", "critical", "positive")) {
         labs.cortisolAbnormal = true;
         labs.adrenalResilienceImpaired = true;
+      } else if (flagIs(row, "normal", "negative")) {
+        labs.cortisolAbnormal = false;
+        labs.adrenalResilienceImpaired = false;
       }
     }
 

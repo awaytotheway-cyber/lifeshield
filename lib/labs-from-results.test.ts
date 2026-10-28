@@ -268,4 +268,72 @@ check("raised ALT/AST recorded as a result orders the heavy-metal panel", () => 
   assert.equal(normal.some((rec) => rec.test_name === "heavyMetals"), false);
 });
 
+// ---------------------------------------------------------------------------
+// Cortisol: the rhythm is a structured finding, and a measured result closes
+// the "lean on the stress answer" proxy in DUTCH Rule B.
+// ---------------------------------------------------------------------------
+
+const STRESSED = { ...EMPTY_RULES_FACTS, stressMediumOrHigh: true };
+
+check("an abnormal cortisol rhythm with stress orders DUTCH and flags adrenal resilience", () => {
+  const labs = labsFromTestResults([
+    row({ test_name: "cortisolRhythm", flag: "positive" }),
+  ]);
+  assert.equal(labs.cortisolAbnormal, true);
+  assert.equal(labs.adrenalResilienceImpaired, true);
+  const dutch = collectRecommendations(STRESSED, labs).find(
+    (rec) => rec.test_name === "dutch",
+  );
+  assert.ok(dutch, "DUTCH should be recommended");
+  assert.match(dutch.trigger_reason, /Abnormal cortisol/);
+});
+
+check("a normal measured cortisol stops stress alone from ordering DUTCH", () => {
+  for (const test_name of ["cortisolRhythm", "salivaryCortisol"]) {
+    const labs = labsFromTestResults([row({ test_name, flag: "normal" })]);
+    assert.equal(labs.cortisolAbnormal, false, test_name);
+    assert.equal(labs.adrenalResilienceImpaired, false, test_name);
+    const recs = collectRecommendations(STRESSED, labs);
+    assert.equal(recs.some((rec) => rec.test_name === "dutch"), false, test_name);
+  }
+  // Unmeasured is still the Phase 1 proxy, unchanged.
+  const unmeasured = collectRecommendations(STRESSED, labsFromTestResults([]));
+  assert.ok(unmeasured.some((rec) => rec.test_name === "dutch"));
+});
+
+check("a salivary cortisol result is read by its flag", () => {
+  for (const flag of ["high", "low", "critical", "positive"]) {
+    const labs = labsFromTestResults([row({ test_name: "salivaryCortisol", flag })]);
+    assert.equal(labs.cortisolAbnormal, true, flag);
+  }
+  const unflagged = labsFromTestResults([row({ test_name: "salivaryCortisol", flag: null })]);
+  assert.equal(unflagged.cortisolAbnormal, null);
+});
+
+check("the newest cortisol result wins, whichever key recorded it", () => {
+  const labs = labsFromTestResults([
+    row({ test_name: "cortisolRhythm", flag: "positive", created_at: "2026-01-01T00:00:00Z" }),
+    row({ test_name: "salivaryCortisol", flag: "normal", created_at: "2026-03-01T00:00:00Z" }),
+  ]);
+  assert.equal(labs.cortisolAbnormal, false);
+  const worse = labsFromTestResults([
+    row({ test_name: "salivaryCortisol", flag: "normal", created_at: "2026-01-01T00:00:00Z" }),
+    row({ test_name: "cortisolRhythm", flag: "positive", created_at: "2026-03-01T00:00:00Z" }),
+  ]);
+  assert.equal(worse.cortisolAbnormal, true);
+});
+
+check("free text that mentions cortisol sets nothing", () => {
+  const labs = labsFromTestResults([
+    row({
+      test_name: "routineBloods",
+      plain_name: "Cortisol high",
+      result_value: "salivary cortisol high",
+      flag: "high",
+    }),
+  ]);
+  assert.equal(labs.cortisolAbnormal, null);
+  assert.equal(labs.adrenalResilienceImpaired, null);
+});
+
 console.log(`\n${passed} checks passed`);

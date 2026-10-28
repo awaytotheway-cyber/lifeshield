@@ -115,6 +115,7 @@ export async function loadUserContext(
         hrtUse: facts.hrtUse,
       }),
       bloodThinners: facts.bloodThinners || bloodThinnersFromSections(sections),
+      thyroidMedication: facts.thyroidMedication,
       linkedInterventions,
     };
 

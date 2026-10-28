@@ -203,6 +203,12 @@ export const TERMS = {
       "Whether your body looks to be clearing oestrogen more slowly than expected.",
     medicalName: "Oestrogen-detoxification pathway finding",
   },
+  cortisolRhythm: {
+    plainName: "Cortisol daily rhythm",
+    plainExplanation:
+      "Whether your stress hormone rises and falls through the day the way it usually does.",
+    medicalName: "Diurnal salivary cortisol rhythm",
+  },
   liverEnzymes: {
     plainName: "Liver enzyme levels",
     plainExplanation:
