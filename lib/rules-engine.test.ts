@@ -172,6 +172,39 @@ check("iodine does not fire from a diet answer without a urine result", () => {
   );
 });
 
+// Source row: "Elevated toxin exposure ON TESTING -> sauna therapy, magnesium
+// salt baths, glutathione support". Exposure answers are a reason to ORDER the
+// heavy-metal panel; they are not a result, so they must not draft the plan.
+check("elevated toxin exposure is not drafted from questionnaire answers alone", () => {
+  const rows = mapResultsToInterventions(
+    facts({
+      pollutantExposure: true,
+      vehicleExhaust: true,
+      occupation: "welding",
+      predatoryFishFrequent: true,
+      wellWater: true,
+    }),
+    labs({}),
+  );
+  assert.equal(findByTrigger(rows, "Elevated toxin exposure"), undefined);
+});
+
+check("elevated toxin exposure is drafted once a heavy-metal result is positive", () => {
+  const rows = mapResultsToInterventions(
+    facts({}),
+    labs({ elevatedToxinExposure: true }),
+  );
+  assert.ok(findByTrigger(rows, "Elevated toxin exposure"));
+});
+
+check("a measured-normal heavy-metal result does not draft it even with exposure answers", () => {
+  const rows = mapResultsToInterventions(
+    facts({ pollutantExposure: true, occupation: "welding" }),
+    labs({ elevatedToxinExposure: false }),
+  );
+  assert.equal(findByTrigger(rows, "Elevated toxin exposure"), undefined);
+});
+
 check("medium self-rated stress fires coping support", () => {
   const rows = mapResultsToInterventions(
     facts({ stressMediumOrHigh: true }),
@@ -220,8 +253,6 @@ check("every mapped row is draft and has both reason fields", () => {
   const rows = mapResultsToInterventions(
     facts({
       stressMediumOrHigh: true,
-      dietaryIodineLow: true,
-      pollutantExposure: true,
     }),
     labs({
       stoolDysbiosis: true,
@@ -239,6 +270,9 @@ check("every mapped row is draft and has both reason fields", () => {
       // antibodies; a diet answer alone no longer fires it.
       urinaryIodineLow: true,
       thyroidAntibodiesPositive: false,
+      // Toxin exposure is drafted "on testing": it needs a heavy-metal
+      // result, not a pollutant answer.
+      elevatedToxinExposure: true,
     }),
   );
 
@@ -303,10 +337,12 @@ check(
 
     const factsBundle = facts({
       stressMediumOrHigh: true,
-      dietaryIodineLow: true,
-      pollutantExposure: true,
     });
     const labsBundle = labs({
+      // Iodine and toxin are drafted from RESULTS, not answers; include them
+      // so all 14 pairs still go through the DB-template path.
+      urinaryIodineLow: true,
+      elevatedToxinExposure: true,
       stoolDysbiosis: true,
       stoolBetaGlucuronidaseRaised: true,
       liverDetoxOrBarrierImpaired: true,

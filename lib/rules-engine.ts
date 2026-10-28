@@ -743,13 +743,12 @@ function findingIsPresent(
       );
     case "stress":
       return facts.stressMediumOrHigh;
-    case "toxin": {
-      const fromAnswers =
-        occupationIsHighRisk(facts.occupation) ||
-        facts.pollutantExposure ||
-        facts.vehicleExhaust;
-      return labs.elevatedToxinExposure === true || fromAnswers;
-    }
+    case "toxin":
+      // Source row: "Elevated toxin exposure ON TESTING". Occupation and
+      // pollutant answers are the reason to order the heavy-metal panel
+      // (shouldOrderHeavyMetals); only a positive result drafts sauna,
+      // magnesium baths and glutathione.
+      return labs.elevatedToxinExposure === true;
     case "iodine": {
       // Source row: "Low urinary iodine, with thyroid antibodies negative —
       // iodine supplementation (only if thyroid antibodies negative)".
