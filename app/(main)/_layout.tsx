@@ -16,6 +16,7 @@ import { routes } from "@/lib/routes";
 import { fontFamily } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
+import { useEligibilityStore } from "@/stores/eligibility-store";
 import { useEscalationStore } from "@/stores/escalation-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -52,6 +53,8 @@ export default function MainLayout() {
   const triageStatus = useTriageStore((state) => state.status);
   const consentLoaded = useConsentStore((state) => state.loaded);
   const decided = useConsentStore((state) => state.decided);
+  const eligibilityLoaded = useEligibilityStore((state) => state.loaded);
+  const eligibility = useEligibilityStore((state) => state.status);
   const ctcPositive = useEscalationStore((state) => state.state.ctcPositive);
   const loadEscalation = useEscalationStore((state) => state.load);
   const pathname = usePathname();
@@ -72,7 +75,7 @@ export default function MainLayout() {
     onboardingCompleted &&
     !triageLoading &&
     triageStatus === "clear" &&
-    !consentLoaded;
+    (!consentLoaded || !eligibilityLoaded);
 
   if (authLoading || (session && onboardingCompleted && triageLoading) || waitingConsents) {
     return <GateLoading />;
@@ -123,6 +126,11 @@ export default function MainLayout() {
     pathname === "/questionnaire" || pathname.endsWith("/questionnaire");
   const onQuestionnaireSection = onQuestionnaire && !questionnaireHub;
   const consentScreen = consentScreenFromPath(pathname);
+  const onEligibility = pathname.includes("eligibility") && !pathname.includes("not-eligible");
+  const onNotEligible = pathname.includes("not-eligible");
+  // Settings stays reachable whatever the eligibility result, so someone
+  // turned away can still sign out or delete their account.
+  const onSettingsAny = pathname.includes("(settings)") || pathname.includes("settings");
   // Decided, not agreed: each test is the patient's choice, so saying no to
   // one does not lock them out of the rest of the pathway.
   const consentsDone = allConsentsDecided(decided);
@@ -131,11 +139,47 @@ export default function MainLayout() {
     return <Redirect href={routes.symptomCheck} />;
   }
 
+  // Age and sex come before any consent. Under the age floor the patient is
+  // shown a plain explanation and nothing else but Settings; missing details
+  // are collected before the pathway, the consents or the questionnaire.
+  if (triageStatus === "clear" && eligibility === "under_age") {
+    if (!onNotEligible && !onSettingsAny) {
+      return <Redirect href={routes.notEligible} />;
+    }
+  } else if (triageStatus === "clear" && (onEligibility || onNotEligible)) {
+    // Eligible (or still to be asked): these two screens are not for them.
+    if (eligibility === "eligible") {
+      const next = firstUndecidedConsent(decided);
+      return <Redirect href={next ? hrefForConsent(next) : routes.home} />;
+    }
+    if (onNotEligible) {
+      return <Redirect href={routes.eligibility} />;
+    }
+  }
+
   if (triageStatus === "clear" && onSymptomCheck) {
+    if (eligibility === "needs_details") {
+      return <Redirect href={routes.eligibility} />;
+    }
     const next = firstUndecidedConsent(decided);
     return (
       <Redirect href={next ? hrefForConsent(next) : routes.home} />
     );
+  }
+
+  if (
+    triageStatus === "clear" &&
+    eligibility === "needs_details" &&
+    !onEligibility &&
+    (consentScreen ||
+      onQuestionnaire ||
+      onResults ||
+      onPlan ||
+      onFollowup ||
+      onStore ||
+      onOrders)
+  ) {
+    return <Redirect href={routes.eligibility} />;
   }
 
   // Questionnaire hub and results wait until BRCA, CTC, and SNP have each been
@@ -170,6 +214,8 @@ export default function MainLayout() {
   // of the bar's own five tabs.
   const hideTabBar =
     onSymptomCheck ||
+    onEligibility ||
+    onNotEligible ||
     Boolean(consentScreen) ||
     onQuestionnaireSection ||
     onPlan ||

@@ -4,6 +4,7 @@ import { allConsentsDecided } from "@/lib/consent-flow";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 import { useConsentStore } from "@/stores/consent-store";
+import { useEligibilityStore } from "@/stores/eligibility-store";
 import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 import { useTriageStore } from "@/stores/triage-store";
 
@@ -21,6 +22,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const triageLoading = useTriageStore((state) => state.loading);
   const loadConsent = useConsentStore((state) => state.load);
   const resetConsent = useConsentStore((state) => state.reset);
+  const loadEligibility = useEligibilityStore((state) => state.load);
+  const resetEligibility = useEligibilityStore((state) => state.reset);
   const consentsAnswered = useConsentStore((state) =>
     allConsentsDecided(state.decided),
   );
@@ -35,12 +38,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (!session?.user.id) {
       resetTriage();
       resetConsent();
+      resetEligibility();
       resetQuestionnaire();
       return;
     }
     if (!onboardingCompleted) {
       resetTriage();
       resetConsent();
+      resetEligibility();
       resetQuestionnaire();
       return;
     }
@@ -51,6 +56,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     loadTriage,
     resetTriage,
     resetConsent,
+    resetEligibility,
     resetQuestionnaire,
   ]);
 
@@ -63,9 +69,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
     if (triageStatus === "clear") {
       void loadConsent(session.user.id);
+      void loadEligibility(session.user.id);
       return;
     }
     resetConsent();
+    resetEligibility();
     resetQuestionnaire();
   }, [
     session?.user.id,
@@ -73,7 +81,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     triageLoading,
     triageStatus,
     loadConsent,
+    loadEligibility,
     resetConsent,
+    resetEligibility,
     resetQuestionnaire,
   ]);
 

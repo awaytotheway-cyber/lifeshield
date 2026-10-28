@@ -96,6 +96,7 @@
     "test:chat": "npx --yes tsx --tsconfig tsconfig.json lib/chat.test.ts",
     "test:findings": "npx --yes tsx --tsconfig tsconfig.json lib/result-findings.test.ts",
     "test:consent-flow": "npx --yes tsx --tsconfig tsconfig.json lib/consent-flow.test.ts",
+    "test:eligibility": "npx --yes tsx --tsconfig tsconfig.json lib/eligibility.test.ts",
     "test:reproductive": "npx --yes tsx --tsconfig tsconfig.json lib/reproductive-recency.test.ts",
     "test:cyp450": "npx --yes tsx --tsconfig tsconfig.json lib/cyp450.test.ts",
     "test:escalation": "npx --yes tsx --tsconfig tsconfig.json lib/escalation.test.ts",

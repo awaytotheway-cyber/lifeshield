@@ -17,6 +17,7 @@ import { messageFromUnknown } from "@/lib/friendly-errors";
 import { parseFiniteNumber } from "@/lib/questionnaire/numbers";
 import type { EngineRecommendation } from "@/lib/rules-engine";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { useEligibilityStore } from "@/stores/eligibility-store";
 
 type HubProgress = Record<HubSectionKey, boolean>;
 
@@ -325,6 +326,9 @@ export const useQuestionnaireStore = create<QuestionnaireState>((set, get) => ({
         throw error;
       }
       await get().load(userId);
+      // Date of birth or sex may have changed: keep the eligibility gate's
+      // copy in step, so editing them here cannot leave it stale.
+      void useEligibilityStore.getState().load(userId);
       return { ok: true };
     } catch (error) {
       return {

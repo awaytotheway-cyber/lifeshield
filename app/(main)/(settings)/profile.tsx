@@ -50,6 +50,7 @@ import {
 import { routes } from "@/lib/routes";
 import { fontFamily, typography } from "@/lib/typography";
 import { useAuthStore } from "@/stores/auth-store";
+import { useEligibilityStore } from "@/stores/eligibility-store";
 import { useTriageStore } from "@/stores/triage-store";
 
 /** Failure text borrows the clay of `worthDiscussing`. Moss has no red. */
@@ -144,6 +145,8 @@ export default function ProfileScreen() {
       if (result.needsMigration) {
         setMigrationNote(COPY.profileNeedsMigration);
       }
+      // Date of birth or sex can change here: refresh the eligibility gate.
+      void useEligibilityStore.getState().load(session.user.id);
       setToast(COPY.profileSavedToast);
       await refresh();
     } catch (error) {
@@ -170,6 +173,8 @@ export default function ProfileScreen() {
       const uri = picked.assets[0].uri;
       setAvatarUri(uri);
       await setLocalAvatarUri(session.user.id, uri);
+      // Date of birth or sex can change here: refresh the eligibility gate.
+      void useEligibilityStore.getState().load(session.user.id);
       setToast(COPY.profileSavedToast);
     } catch (error) {
       setSaveMessage(messageFromUnknown(error, COPY.profilePhotoFailed));

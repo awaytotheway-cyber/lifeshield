@@ -200,6 +200,20 @@ export const COPY = {
   questionnaireStubBody:
     "Finish the three consent screens first. Then you’ll land here.",
 
+  // Eligibility: asked once, before the consents. Wording is a draft for
+  // clinician / governance review; the under-18 line follows the protocol.
+  eligibilityTitle: "Two quick details first",
+  eligibilityBody:
+    "PRESCOPE is built for adults, so we need your date of birth and sex before anything else. You can change them later in More → Profile.",
+  eligibilitySex: "Sex",
+  eligibilityDob: "Date of birth",
+  eligibilityContinue: "Continue",
+  eligibilityPickBoth: "Please choose both before continuing.",
+  eligibilitySaveFailed: "We couldn’t save that. Please try again.",
+  notEligibleTitle: "PRESCOPE isn’t available for you yet",
+  notEligibleBody:
+    "PRESCOPE is for adults aged 18 and over, so we can’t offer the screening pathway yet. If you have a breast symptom or any worry about your health, please see a doctor.",
+  notEligibleSettings: "Go to settings",
   consentTitle: "A short consent before you continue",
   // The first two sentences are the product's standing disclaimer: keep them
   // verbatim. Wording below them is for clinician / governance review.
