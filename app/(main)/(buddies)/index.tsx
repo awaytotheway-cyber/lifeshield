@@ -13,6 +13,7 @@ import { SafetyStrip } from "@/components/buddies/SafetyStrip";
 import { IconButton, SecondaryButton } from "@/components/ui/Button";
 import { InitialDisc } from "@/components/ui/InitialDisc";
 import { Screen } from "@/components/ui/Screen";
+import { SwitchRow } from "@/components/ui/SwitchRow";
 import { StaticSkeleton } from "@/components/ui/StaticSkeleton";
 import { Surface } from "@/components/ui/Surface";
 import { Toast } from "@/components/ui/Toast";
@@ -37,6 +38,13 @@ import {
   isFeatureEnabled,
   type FeatureFlagProfile,
 } from "@/lib/feature-flags";
+import { COPY } from "@/lib/copy";
+import { messageFromUnknown } from "@/lib/friendly-errors";
+import {
+  discoverableFromProfile,
+  loadExtendedProfile,
+  saveBuddyDiscoverable,
+} from "@/lib/profile-extended";
 import { buddyChatHref, routes } from "@/lib/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { fontFamily, typography } from "@/lib/typography";
@@ -90,7 +98,7 @@ type MyProfile = FeatureFlagProfile & {
 
 /**
  * With no Supabase configured there is no profile to read, so the flag falls
- * to its shipped default (false) and there are no chips. Derived rather than
+ * to its shipped default (now true) and there are no chips. Derived rather than
  * written into state, so the effect below never sets state synchronously.
  */
 const OFFLINE_PROFILE: MyProfile = {
@@ -174,6 +182,49 @@ export default function BuddiesScreen() {
 
   useFocusEffect(reload);
 
+  // Being found is each person's own choice and starts off. It is the same
+  // setting as More → Let others find me, kept here so it is right beside the
+  // search it affects.
+  const [discoverable, setDiscoverable] = useState(false);
+  const [savingDiscoverable, setSavingDiscoverable] = useState(false);
+  useEffect(() => {
+    if (!userId || !isSupabaseConfigured) return;
+    let cancelled = false;
+    void (async () => {
+      const result = await loadExtendedProfile(userId);
+      if (!cancelled) {
+        // A failed load leaves the switch off, the safe reading.
+        setDiscoverable(discoverableFromProfile(result.profile));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, reloadKey]);
+
+  const onToggleDiscoverable = (next: boolean) => {
+    if (!userId) return;
+    const previous = discoverable;
+    setDiscoverable(next);
+    setSavingDiscoverable(true);
+    void (async () => {
+      try {
+        const result = await saveBuddyDiscoverable(userId, next);
+        if (!result.ok) {
+          setDiscoverable(previous);
+          setToast(result.message ?? COPY.settingsDiscoverableSaveFailed);
+        } else {
+          setToast(next ? "Others can find you now" : "You are hidden from search");
+        }
+      } catch (error) {
+        setDiscoverable(previous);
+        setToast(messageFromUnknown(error, COPY.settingsDiscoverableSaveFailed));
+      } finally {
+        setSavingDiscoverable(false);
+      }
+    })();
+  };
+
   // The flag lives on `profiles.feature_flags`, which no other read on this
   // screen fetches, so city and interests ride along in the same select.
   useEffect(() => {
@@ -202,7 +253,7 @@ export default function BuddiesScreen() {
 
   // While the profile read is in flight the compile-time default stands, so a
   // gated surface is never rendered on an unread flag. For social_v1 that
-  // default is false.
+  // default is true.
   const enabled =
     profile === null
       ? FEATURE_FLAG_DEFAULTS.social_v1
@@ -442,6 +493,17 @@ export default function BuddiesScreen() {
         <TwoTone size={HEADLINE_SIZE} parts={HEADLINE} />
       </View>
       <Text style={styles.lede}>{LEDE}</Text>
+
+      <Surface padded={false} style={styles.discoverBlock}>
+        <SwitchRow
+          title={COPY.settingsDiscoverable}
+          subtitle={COPY.settingsDiscoverableHint}
+          value={discoverable}
+          disabled={savingDiscoverable}
+          onChange={onToggleDiscoverable}
+          divided={false}
+        />
+      </Surface>
 
       <View style={styles.searchField}>
         <Feather
@@ -714,6 +776,11 @@ const styles = StyleSheet.create({
   },
   block: {
     marginTop: 16,
+  },
+  discoverBlock: {
+    marginTop: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 4,
   },
   empty: {
     marginTop: 16,

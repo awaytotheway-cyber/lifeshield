@@ -19,7 +19,9 @@ assert.equal(FEATURE_FLAG_DEFAULTS.meal_planner_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.test_booking_v1, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.supplements_v2, false);
 assert.equal(FEATURE_FLAG_DEFAULTS.genetic_testing_v1, false);
-assert.equal(FEATURE_FLAG_DEFAULTS.social_v1, false);
+// Buddies is on for everyone; being found is a separate opt-in, default off.
+assert.equal(FEATURE_FLAG_DEFAULTS.social_v1, true);
+assert.equal(FEATURE_FLAG_DEFAULTS.tier1_ordering_v1, false);
 assert.equal(isFeatureEnabled(null, "goals_v1"), false);
 assert.equal(isFeatureEnabled(undefined, "goals_v1"), false);
 assert.equal(isFeatureEnabled({}, "goals_v1"), false);
@@ -30,9 +32,10 @@ assert.equal(isFeatureEnabled(null, "meal_planner_v1"), false);
 assert.equal(isFeatureEnabled(null, "test_booking_v1"), false);
 assert.equal(isFeatureEnabled(null, "supplements_v2"), false);
 assert.equal(isFeatureEnabled(null, "genetic_testing_v1"), false);
-assert.equal(isFeatureEnabled(null, "social_v1"), false);
-assert.equal(isFeatureEnabled(undefined, "social_v1"), false);
-assert.equal(isFeatureEnabled({}, "social_v1"), false);
+assert.equal(isFeatureEnabled(null, "social_v1"), true);
+assert.equal(isFeatureEnabled(undefined, "social_v1"), true);
+assert.equal(isFeatureEnabled({}, "social_v1"), true);
+assert.equal(isFeatureEnabled(null, "tier1_ordering_v1"), false);
 
 // A per-user boolean override wins over the default.
 assert.equal(
@@ -44,22 +47,23 @@ assert.equal(
   false,
 );
 
-// social_v1 ships off, so the beta path — a per-user override to true — is
-// the only way it lights up. That path is the one worth asserting.
-assert.equal(
-  isFeatureEnabled({ feature_flags: { social_v1: true } }, "social_v1"),
-  true,
-);
+// social_v1 ships on, so the override that matters is the per-account kill
+// switch: an explicit false turns it off for that account.
 assert.equal(
   isFeatureEnabled({ feature_flags: { social_v1: false } }, "social_v1"),
   false,
 );
 assert.equal(
+  isFeatureEnabled({ feature_flags: { social_v1: true } }, "social_v1"),
+  true,
+);
+// A string is not a boolean: it is ignored and the default stands.
+assert.equal(
   isFeatureEnabled(
-    { feature_flags: { social_v1: "true" as unknown as boolean } },
+    { feature_flags: { social_v1: "false" as unknown as boolean } },
     "social_v1",
   ),
-  false,
+  true,
 );
 assert.equal(
   resolveFeatureFlags({ feature_flags: { social_v1: true } }).social_v1,
@@ -100,7 +104,9 @@ assert.deepEqual(fromUnknown, {
   test_booking_v1: false,
   supplements_v2: false,
   genetic_testing_v1: false,
-  social_v1: false,
+  activity_v1: false,
+  social_v1: true,
+  tier1_ordering_v1: false,
 });
 
 // eslint-disable-next-line no-console

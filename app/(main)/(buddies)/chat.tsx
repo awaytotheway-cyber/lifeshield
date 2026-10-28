@@ -75,7 +75,7 @@ type SheetMode = "menu" | "block" | "report" | null;
 
 /**
  * With no Supabase configured there is no profile to read, so the flag falls
- * to its shipped default (false). Derived rather than written into state.
+ * to its shipped default (now true). Derived rather than written into state.
  */
 const OFFLINE_FLAGS: FeatureFlagProfile = { feature_flags: {} };
 

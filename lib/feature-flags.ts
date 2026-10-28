@@ -60,8 +60,10 @@ export type FeatureFlagName =
    */
   | "activity_v1"
   /**
-   * Phase J social: buddy discovery and chat. Default off per the rollout
-   * rule. Gates the whole social surface — discovery, connections, threads
+   * Phase J social: buddy discovery and chat. On for everyone since
+   * 2026-10-28. Being found is a separate, per-person opt-in
+   * (profiles.is_buddy_discoverable, default false), so switching the surface
+   * on exposes nobody. Gates the whole social surface — discovery, connections, threads
    * and the "Let others find me" switch in Settings — because discovery is
    * the only route by which one member learns another exists, and that is
    * not something to light up for everyone before the moderation queue has
@@ -88,7 +90,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     supplements_v2: false,
     genetic_testing_v1: false,
     activity_v1: false,
-    social_v1: false,
+    social_v1: true,
     tier1_ordering_v1: false,
   });
 

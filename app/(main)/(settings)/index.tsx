@@ -1,12 +1,13 @@
 import Constants from "expo-constants";
 import { Redirect, useFocusEffect, useRouter, type Href } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 
 import { IconButton, TextButton } from "@/components/ui/Button";
 import { InitialDisc } from "@/components/ui/InitialDisc";
 import { Screen } from "@/components/ui/Screen";
+import { SwitchRow } from "@/components/ui/SwitchRow";
 import { Surface } from "@/components/ui/Surface";
 import { TrustBanner } from "@/components/ui/TrustBanner";
 import { TwoTone } from "@/components/ui/TwoTone";
@@ -85,55 +86,6 @@ function LinkRow({ title, value, href, divided = true }: LinkRowProps) {
   );
 }
 
-type SwitchRowProps = {
-  title: string;
-  /** Sits under the label, inside the row, and grows the row past 56pt. */
-  subtitle?: string;
-  value: boolean;
-  disabled?: boolean;
-  onChange: (next: boolean) => void;
-  divided?: boolean;
-};
-
-/**
- * A row that is a switch. The whole row is the label — the switch is
- * right-aligned and the hit area is the switch itself, so a mis-tap on a
- * privacy control cannot flip it.
- */
-function SwitchRow({
-  title,
-  subtitle,
-  value,
-  disabled = false,
-  onChange,
-  divided = true,
-}: SwitchRowProps) {
-  return (
-    <View style={[styles.row, divided ? styles.rowDivided : null]}>
-      <View style={styles.rowTextCol}>
-        <Text style={styles.rowLabel}>{title}</Text>
-        {subtitle ? <Text style={styles.rowSubtitle}>{subtitle}</Text> : null}
-      </View>
-      <Switch
-        value={value}
-        disabled={disabled}
-        onValueChange={onChange}
-        accessibilityLabel={title}
-        accessibilityHint={subtitle}
-        // The board's switch accent is ink. Off is the hairline, the one
-        // divider colour, so an off switch reads as absent rather than grey.
-        trackColor={{ false: colors.hairline, true: colors.ink }}
-        thumbColor={colors.white}
-        ios_backgroundColor={colors.hairline}
-        // A platform switch is about 31pt tall, under the 44pt floor. The row
-        // is 56, so the slop costs nothing and nothing else is near enough to
-        // steal.
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      />
-    </View>
-  );
-}
-
 /** Settings hub — replaces the old instant redirect to profile. */
 export default function SettingsIndex() {
   const router = useRouter();
@@ -196,7 +148,7 @@ export default function SettingsIndex() {
    * one-column read, as on the sibling Health permissions screen.
    *
    * A read that fails leaves `flagProfile` null and the gate falls back to
-   * the shipped default. For social_v1 that default is false: a flag we could
+   * the shipped default. For social_v1 that default is true: a flag we could
    * not read is a flag that is not on.
    */
   useEffect(() => {
