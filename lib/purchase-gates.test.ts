@@ -84,6 +84,68 @@ check("iodine blocked when thyroid antibodies are positive", () => {
   assert.notEqual(result.needsCheck, true);
 });
 
+// The protocol says iodine is "only if thyroid antibodies negative" — a known
+// state. The plan engine already requires a measured negative; the store must
+// agree, or iodine is drafted by no one and still sold to anyone untested.
+const approvedIodinePlan = [
+  {
+    trigger_finding: "Low urinary iodine (antibodies NEGATIVE)",
+    status: "clinician_approved",
+  },
+];
+
+check("iodine blocked when thyroid antibodies were never measured", () => {
+  const result = canPurchase(
+    iodineSupplement,
+    baseContext({
+      thyroidAntibodiesPositive: null,
+      linkedInterventions: approvedIodinePlan,
+    }),
+  );
+  assert.equal(result.allowed, false);
+  assert.ok(result.blockReason?.toLowerCase().includes("iodine"));
+  assert.ok(result.blockReason?.toLowerCase().includes("antibod"));
+});
+
+check("iodine allowed once thyroid antibodies are measured negative", () => {
+  const result = canPurchase(
+    iodineSupplement,
+    baseContext({
+      thyroidAntibodiesPositive: false,
+      linkedInterventions: approvedIodinePlan,
+    }),
+  );
+  assert.deepEqual(result, { allowed: true });
+});
+
+check("iodine stays blocked by an autoimmune thyroid diagnosis even with negative antibodies", () => {
+  const result = canPurchase(
+    iodineSupplement,
+    baseContext({
+      thyroidAntibodiesPositive: false,
+      autoimmuneThyroid: true,
+      linkedInterventions: approvedIodinePlan,
+    }),
+  );
+  assert.equal(result.allowed, false);
+});
+
+check("unknown antibodies do not block products that are not iodine", () => {
+  const result = canPurchase(
+    calciumProduct,
+    baseContext({
+      thyroidAntibodiesPositive: null,
+      linkedInterventions: [
+        {
+          trigger_finding: "Raised stool beta-glucuronidase",
+          status: "clinician_approved",
+        },
+      ],
+    }),
+  );
+  assert.deepEqual(result, { allowed: true });
+});
+
 check("DIM flagged when contraceptive counts as hormone therapy", () => {
   const result = canPurchase(
     dimProduct,

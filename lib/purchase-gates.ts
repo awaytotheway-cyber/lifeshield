@@ -81,10 +81,17 @@ export function consentTypeForProduct(product: Product): keyof ConsentFlags | nu
   return null;
 }
 
-/** Same iodine hard-stop as shouldOrderUrinaryIodine / mapResultsToInterventions. */
+/**
+ * Same iodine hard-stop as mapResultsToInterventions: iodine is offered only
+ * when thyroid antibodies are KNOWN to be negative.
+ *
+ * `false` means measured negative; `null` means never measured, and unknown is
+ * not safe. Blocking only on `true` would sell iodine to anyone who has not
+ * been tested, which is the exact case the antibody check exists to catch.
+ */
 export function iodinePurchaseBlocked(context: UserContext): boolean {
   return (
-    context.thyroidAntibodiesPositive === true || context.autoimmuneThyroid
+    context.thyroidAntibodiesPositive !== false || context.autoimmuneThyroid
   );
 }
 
@@ -203,6 +210,19 @@ function iodineGate(
 
   if (!iodinePurchaseBlocked(context)) {
     return null;
+  }
+
+  // Never measured is a different situation from positive, and the person
+  // needs a different explanation: one is "get tested", the other is "see
+  // your clinician".
+  const untested =
+    context.thyroidAntibodiesPositive === null && !context.autoimmuneThyroid;
+  if (untested) {
+    return {
+      allowed: false,
+      blockReason:
+        "Iodine is only offered once a thyroid antibody check has come back negative. Ask your clinician about that test first.",
+    };
   }
 
   return {
