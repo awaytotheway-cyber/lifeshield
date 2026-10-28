@@ -264,7 +264,11 @@ export const COPY = {
     "Change years — periods becoming irregular, heading toward stopping",
   menoPostExplain:
     "Periods have stopped for a long time (about a year or more)",
-  contraceptiveUseLabel: "Do you use contraception?",
+  // Matches the seeded content_fields label. The fallback used to read "Do you
+  // use contraception?", which also covers condoms and copper coils and so
+  // disagreed with what the database shows. Recency is the follow-up below.
+  contraceptiveUseLabel: "Have you used hormonal contraception?",
+  contraceptiveLastUseLabel: "When did you last use it?",
   menstrualRegularityLabel: "Are your periods regular?",
   placeOfWorkLabel: "What does your usual workplace look like?",
   placeOfWorkHint:

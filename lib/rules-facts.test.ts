@@ -97,7 +97,7 @@ const hrtOnly = facts({
   stress: { stress_level: "low" },
   diet_environment: { iodine_sources: ["seafood"] },
 });
-assert.equal(hrtOnly.contraceptiveUse, false, "contraceptive is not the trigger here");
+assert.equal(hrtOnly.hormonalContraceptionRecent, false, "contraceptive is not the trigger here");
 assert.equal(
   shouldOrderDUTCH(hrtOnly).recommended,
   true,

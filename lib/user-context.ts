@@ -111,7 +111,7 @@ export async function loadUserContext(
       thyroidAntibodiesPositive,
       autoimmuneThyroid: facts.autoimmuneThyroid,
       hormoneTherapy: hormoneTherapyFromFacts({
-        contraceptiveUse: facts.contraceptiveUse,
+        hormonalContraceptionRecent: facts.hormonalContraceptionRecent,
         hrtUse: facts.hrtUse,
       }),
       bloodThinners: facts.bloodThinners || bloodThinnersFromSections(sections),

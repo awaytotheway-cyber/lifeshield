@@ -17,6 +17,7 @@ import { RadioGroup } from "@/components/ui/RadioGroup";
 import { SelectPicker } from "@/components/ui/SelectPicker";
 import { TextField } from "@/components/ui/TextField";
 import {
+  CONTRACEPTIVE_LAST_USE_OPTIONS,
   CONTRACEPTIVE_TYPE_OPTIONS,
   ESTROGEN_CONDITION_OPTIONS,
   MENOPAUSAL_STATUS_OPTIONS,
@@ -427,6 +428,19 @@ export default function ReproductiveScreen() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.contraceptiveDurationYears?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="contraceptiveLastUse"
+            render={({ field: { value, onChange } }) => (
+              <RadioGroup
+                label={COPY.contraceptiveLastUseLabel}
+                options={CONTRACEPTIVE_LAST_USE_OPTIONS}
+                value={value}
+                onChange={onChange}
+                error={errors.contraceptiveLastUse?.message}
               />
             )}
           />

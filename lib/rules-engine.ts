@@ -144,10 +144,13 @@ export function shouldOrderDUTCH(
     };
   }
 
-  if (facts.contraceptiveUse || facts.hrtUse) {
+  // Rule C — active or recent (<12 months) systemic HRT or hormonal
+  // contraception. Use that stopped longer ago does not count.
+  if (facts.hormonalContraceptionRecent || facts.hrtUse) {
     return {
       recommended: true,
-      reason: "Current or recent contraceptive / HRT use from the questionnaire.",
+      reason:
+        "Current or recent (within 12 months) hormonal contraception or HRT use from the questionnaire.",
     };
   }
 
@@ -171,12 +174,14 @@ export function shouldOrderStoolAnalysis(
     };
   }
 
-  // Estrogen-related history in Phase 1 = contraceptive / HRT (COMT SNP is null).
-  if (facts.contraceptiveUse || facts.hrtUse) {
+  // Estrogen-related history in Phase 1 = current or recent hormonal
+  // contraception / HRT (COMT SNP is null). This proxy is a documented
+  // deviation from the stool rules; it is not in the source document.
+  if (facts.hormonalContraceptionRecent || facts.hrtUse) {
     return {
       recommended: true,
       reason:
-        "Hormone-related history (contraceptive / HRT). Impaired COMT SNP is not available in Phase 1.",
+        "Hormone-related history (current or recent contraception / HRT). Impaired COMT SNP is not available in Phase 1.",
     };
   }
   if (labs.snpComtImpaired === true) {
@@ -699,7 +704,7 @@ function iodineHardBlocked(facts: RulesFacts, labs: LabInputs): boolean {
 }
 
 function hormoneOrBloodThinnerInteraction(facts: RulesFacts): boolean {
-  return facts.contraceptiveUse || facts.hrtUse || facts.bloodThinners;
+  return facts.hormonalContraceptionRecent || facts.hrtUse || facts.bloodThinners;
 }
 
 function hasOestrogenDetoxSnp(labs: LabInputs): boolean {

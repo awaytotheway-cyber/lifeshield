@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { CONTRACEPTIVE_LAST_USE_OPTIONS } from "@/lib/constants";
 import { isHHmm } from "@/lib/datetime";
 import {
   isRealIsoDate,
@@ -69,6 +70,8 @@ export const reproductiveSchema = z
     contraceptiveUse: yesNoSchema,
     contraceptiveType: z.string(),
     contraceptiveDurationYears: z.string(),
+    /** "current" | "within_year" | "over_year"; required once they have used it. */
+    contraceptiveLastUse: z.string(),
     hrtUse: yesNoSchema,
     amenorrhoea: yesNoSchema,
     amenorrhoeaEpisodes: z.string(),
@@ -102,6 +105,17 @@ export const reproductiveSchema = z
           code: "custom",
           message: "Enter how many years",
           path: ["contraceptiveDurationYears"],
+        });
+      }
+      if (
+        !CONTRACEPTIVE_LAST_USE_OPTIONS.some(
+          (option) => option.value === values.contraceptiveLastUse,
+        )
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Please say when you last used it",
+          path: ["contraceptiveLastUse"],
         });
       }
     }
@@ -152,6 +166,7 @@ export const emptyReproductive = (): ReproductiveForm => ({
   contraceptiveUse: undefined as unknown as ReproductiveForm["contraceptiveUse"],
   contraceptiveType: "",
   contraceptiveDurationYears: "",
+  contraceptiveLastUse: "",
   hrtUse: undefined as unknown as ReproductiveForm["hrtUse"],
   amenorrhoea: undefined as unknown as ReproductiveForm["amenorrhoea"],
   amenorrhoeaEpisodes: "",

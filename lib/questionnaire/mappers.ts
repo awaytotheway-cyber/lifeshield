@@ -157,6 +157,8 @@ export function reproductiveToJson(
       parsed.contraceptiveUse === "yes"
         ? parseFiniteNumber(parsed.contraceptiveDurationYears)
         : null,
+    contraceptive_last_use:
+      parsed.contraceptiveUse === "yes" ? parsed.contraceptiveLastUse : null,
     hrt_use: parsed.hrtUse === "yes",
     amenorrhoea: parsed.amenorrhoea === "yes",
     amenorrhoea_episodes:
@@ -197,6 +199,9 @@ export function jsonToReproductiveForm(
       undefined) as ReproductiveForm["contraceptiveUse"],
     contraceptiveType: String(json?.contraceptive_type ?? ""),
     contraceptiveDurationYears: numberToField(json?.contraceptive_duration_years),
+    // Answers saved before this question existed have no value. They load as
+    // unanswered rather than as a guess, so the form asks again on next save.
+    contraceptiveLastUse: String(json?.contraceptive_last_use ?? ""),
     hrtUse: (hrt || undefined) as ReproductiveForm["hrtUse"],
     amenorrhoea: (amenorrhoea || undefined) as ReproductiveForm["amenorrhoea"],
     amenorrhoeaEpisodes: numberToField(json?.amenorrhoea_episodes),

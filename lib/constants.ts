@@ -186,6 +186,16 @@ export const CONTRACEPTIVE_TYPE_OPTIONS = [
   { value: "other", label: "Other" },
 ] as const;
 
+/**
+ * When hormonal contraception was last used. The protocol's DUTCH rule is
+ * "active or recent (<12 months)", so the boundary that matters is 12 months.
+ */
+export const CONTRACEPTIVE_LAST_USE_OPTIONS = [
+  { value: "current", label: "I use it now" },
+  { value: "within_year", label: "I stopped in the last 12 months" },
+  { value: "over_year", label: "I stopped more than 12 months ago" },
+] as const;
+
 export const MENSTRUAL_REGULARITY_OPTIONS = [
   { value: "regular", label: "Regular" },
   { value: "irregular", label: "Irregular" },

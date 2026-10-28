@@ -6,7 +6,18 @@ import { HIGH_RISK_OCCUPATIONS } from "@/lib/clinical-thresholds";
 import { parseFiniteNumber } from "@/lib/questionnaire/numbers";
 
 export type RulesFacts = {
-  contraceptiveUse: boolean;
+  /**
+   * Hormonal contraception used now or within the last 12 months. The
+   * protocol's DUTCH Rule C is "active or recent (<12 months)", so use that
+   * stopped longer ago does not count. The contraceptive question asks "have
+   * you used it", which is why recency is a separate follow-up.
+   *
+   * An answer saved before the recency question existed has no value and is
+   * treated as recent: over-flagging only over-orders a test, while treating
+   * it as old would silently drop the interaction check for someone who may
+   * be on the pill today.
+   */
+  hormonalContraceptionRecent: boolean;
   /**
    * Systemic hormone therapy. True from the reproductive-section HRT answer,
    * or from an active medication tagged "hormones" — the medication route
@@ -50,7 +61,7 @@ export type RulesFacts = {
 
 /** Empty fact bag for unit tests and “labs only” mapping. */
 export const EMPTY_RULES_FACTS: RulesFacts = {
-  contraceptiveUse: false,
+  hormonalContraceptionRecent: false,
   hrtUse: false,
   bloodThinners: false,
   gallstones: false,
@@ -147,7 +158,9 @@ export function factsFromSavedAnswers(input: {
   const stressLevel = stress?.stress_level;
 
   return {
-    contraceptiveUse: isYes(reproductive?.contraceptive_use),
+    hormonalContraceptionRecent:
+      isYes(reproductive?.contraceptive_use) &&
+      reproductive?.contraceptive_last_use !== "over_year",
     hrtUse:
       isYes(reproductive?.hrt_use) ||
       hasActiveMedicationCode(input.medications, "hormones"),

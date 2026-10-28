@@ -293,7 +293,7 @@ check("medium self-rated stress fires coping support", () => {
 
 check("DIM is flagged when contraceptive use is yes", () => {
   const rows = mapResultsToInterventions(
-    facts({ contraceptiveUse: true }),
+    facts({ hormonalContraceptionRecent: true }),
     labs({ oestrogenDetoxImpaired: true }),
   );
   const dim = findByTrigger(
@@ -308,7 +308,7 @@ check("DIM is flagged when contraceptive use is yes", () => {
 
 check("high-dose omega-3 row is also flagged for contraceptives", () => {
   const rows = mapResultsToInterventions(
-    facts({ contraceptiveUse: true }),
+    facts({ hormonalContraceptionRecent: true }),
     labs({ inflammatoryOxidativeBurden: true }),
   );
   const row = findByTrigger(
@@ -366,7 +366,7 @@ check("every mapped row is draft and has both reason fields", () => {
 
 check("Phase 1 shouldOrder* helpers still exist", () => {
   const dutch = shouldOrderDUTCH(
-    facts({ contraceptiveUse: true }),
+    facts({ hormonalContraceptionRecent: true }),
     PHASE1_LABS,
   );
   assert.equal(dutch.recommended, true);

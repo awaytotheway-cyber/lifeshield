@@ -269,12 +269,13 @@ export function canPurchase(
 }
 
 /**
- * Build hormoneTherapy from questionnaire facts (contraceptive OR HRT).
- * Re-exported helper so store screens use the same definition as the rules engine.
+ * Build hormoneTherapy from questionnaire facts (current or recent hormonal
+ * contraception, OR HRT). Re-exported helper so store screens use the same
+ * definition as the rules engine.
  */
 export function hormoneTherapyFromFacts(input: {
-  contraceptiveUse: boolean;
+  hormonalContraceptionRecent: boolean;
   hrtUse: boolean;
 }): boolean {
-  return input.contraceptiveUse || input.hrtUse;
+  return input.hormonalContraceptionRecent || input.hrtUse;
 }
