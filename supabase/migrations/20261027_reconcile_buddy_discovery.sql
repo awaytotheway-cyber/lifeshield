@@ -9,8 +9,8 @@
 -- This drops the duplicate and folds the safety properties it had into the
 -- function that was already here.
 --
--- NOT YET APPLIED. 20261026 IS applied, so the live database currently has
--- BOTH functions. Applying this file resolves that.
+-- APPLIED to the LifeShield database on 2026-10-28. Before that the live database had
+-- BOTH functions; this file resolved that.
 
 drop function if exists public.search_buddies(text);
 

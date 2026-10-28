@@ -10,7 +10,7 @@
 -- service role), may change the column. A patient's attempt is ignored, not an
 -- error, so a normal profile save that happens to include the column still works.
 --
--- NOT YET APPLIED: the live apply was declined and needs your approval.
+-- APPLIED to the LifeShield database on 2026-10-28.
 
 create or replace function public.guard_profile_feature_flags()
 returns trigger
