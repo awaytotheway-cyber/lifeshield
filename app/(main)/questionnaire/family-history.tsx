@@ -291,6 +291,26 @@ export default function FamilyHistoryScreen() {
 
       <Controller
         control={control}
+        name="brcaPositiveRelative"
+        render={({ field: { value, onChange } }) => (
+          <RadioGroup
+            label={label(
+              "brca_positive_relative",
+              "Has any blood relative been told they carry a BRCA1 or BRCA2 gene change?",
+            )}
+            options={opts("brca_positive_relative", [
+              ...YES_NO_OPTIONS,
+              { value: "unsure", label: "Not sure" },
+            ])}
+            value={value}
+            onChange={onChange}
+            error={errors.brcaPositiveRelative?.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
         name="ovarianCancer"
         render={({ field: { value, onChange } }) => (
           <RadioGroup

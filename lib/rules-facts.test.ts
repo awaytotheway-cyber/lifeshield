@@ -234,4 +234,13 @@ for (const frequency of ["monthly", "rarely", "never", undefined]) {
 }
 assert.equal(facts({}).highProcessedFoodIntake, false, "no diet section");
 
+// ---------- brcaPositiveRelative ----------
+// Half of what makes BRCA testing "indicated". Unanswered or "not sure" is
+// null, never false: unknown must not read as "no relative carries it".
+assert.equal(facts({ family_history: { brca_positive_relative: "yes" } }).brcaPositiveRelative, true);
+assert.equal(facts({ family_history: { brca_positive_relative: "no" } }).brcaPositiveRelative, false);
+assert.equal(facts({ family_history: { brca_positive_relative: "unsure" } }).brcaPositiveRelative, null);
+assert.equal(facts({ family_history: {} }).brcaPositiveRelative, null);
+assert.equal(facts({}).brcaPositiveRelative, null);
+
 console.log("rules-facts.test.ts passed");

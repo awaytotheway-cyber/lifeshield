@@ -67,7 +67,15 @@ export type FeatureFlagName =
    * not something to light up for everyone before the moderation queue has
    * been watched in production.
    */
-  | "social_v1";
+  | "social_v1"
+  /**
+   * Protocol Tier 1 ordering: once a patient has consented, BRCA1/2 (if
+   * indicated) and CTC are added to their Tests list as recommended orders.
+   * Off by default: the app says it does not book or interpret tests, and the
+   * protocol itself asks for governance review before this is used with
+   * patients. Turn it on per account, then by default, once that is done.
+   */
+  | "tier1_ordering_v1";
 
 export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
   Object.freeze({
@@ -81,6 +89,7 @@ export const FEATURE_FLAG_DEFAULTS: Readonly<Record<FeatureFlagName, boolean>> =
     genetic_testing_v1: false,
     activity_v1: false,
     social_v1: false,
+    tier1_ordering_v1: false,
   });
 
 /**

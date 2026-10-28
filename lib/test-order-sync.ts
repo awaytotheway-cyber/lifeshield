@@ -14,7 +14,7 @@
  * Pure: no Supabase import, so it can be tested under tsx.
  */
 export type WantedOrder = {
-  test_tier: 3 | 4;
+  test_tier: 1 | 2 | 3 | 4;
   test_name: string;
   trigger_reason: string;
 };
@@ -38,9 +38,19 @@ const RECOMMENDED = "recommended";
 export function planOrderSync(
   existing: readonly ExistingOrder[],
   wanted: readonly WantedOrder[],
-  options: { removeStale: boolean },
+  options: {
+    removeStale: boolean;
+    /**
+     * Only these tiers are considered: other rows are invisible and other
+     * wishes are ignored. Lets Tier 1 and Tier 3/4 sync independently.
+     */
+    tiers?: readonly number[];
+  },
 ): OrderSyncPlan {
   const plan: OrderSyncPlan = { insert: [], update: [], remove: [] };
+  const inScope = (tier: number) => !options.tiers || options.tiers.includes(tier);
+  existing = existing.filter((row) => inScope(row.test_tier));
+  wanted = wanted.filter((order) => inScope(order.test_tier));
 
   const wantedByName = new Map<string, WantedOrder>();
   for (const order of wanted) {

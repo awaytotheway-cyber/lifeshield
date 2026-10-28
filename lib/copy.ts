@@ -173,7 +173,9 @@ export const COPY = {
 
   pathwayBTitle: "Let's get you the right care",
   pathwayBBody:
-    "Based on your answers, seeing a doctor soon is the right next step. This app will be here when you're ready to return.\n\nContact a doctor, nurse, or local urgent care. If this feels like an emergency, use your local emergency number.",
+    // The first sentence is the protocol's own Pathway B instruction, kept as
+    // written. The rest is unchanged.
+    "Please contact your primary care physician immediately for an urgent / 2-week-wait specialist referral.\n\nThis app will be here when you're ready to return. If this feels like an emergency, use your local emergency number.",
   pathwayBLockedNote:
     "The questionnaire is paused on purpose. You can’t go back to change these answers. This screen stays after you close and reopen PRESCOPE.",
   // ---- Tier 1 escalation (BRCA / CTC) ----

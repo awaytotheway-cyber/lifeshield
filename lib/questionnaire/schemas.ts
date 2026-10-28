@@ -295,6 +295,11 @@ export const familyHistorySchema = z
   .object({
     breastCancer: yesNoSchema,
     breastRelatives: z.array(relativeSchema),
+    // The protocol offers BRCA testing "where indicated by ethnicity and/or
+    // family history of BRCA-positive relatives", so that is asked outright.
+    brcaPositiveRelative: z.enum(["yes", "no", "unsure"], {
+      message: "Please choose an answer",
+    }),
     ovarianCancer: yesNoSchema,
     ovarianRelationship: z.string(),
     colonCancer: yesNoSchema,
@@ -345,6 +350,8 @@ export type FamilyHistoryParsed = z.output<typeof familyHistorySchema>;
 export const emptyFamilyHistory = (): FamilyHistoryForm => ({
   breastCancer: undefined as unknown as FamilyHistoryForm["breastCancer"],
   breastRelatives: [{ relationship: "", ageAtDiagnosis: "" }],
+  brcaPositiveRelative:
+    undefined as unknown as FamilyHistoryForm["brcaPositiveRelative"],
   ovarianCancer: undefined as unknown as FamilyHistoryForm["ovarianCancer"],
   ovarianRelationship: "",
   colonCancer: undefined as unknown as FamilyHistoryForm["colonCancer"],

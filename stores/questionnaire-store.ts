@@ -17,7 +17,7 @@ import { messageFromUnknown } from "@/lib/friendly-errors";
 import { parseFiniteNumber } from "@/lib/questionnaire/numbers";
 import type { EngineRecommendation } from "@/lib/rules-engine";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import { planOrderSync } from "@/lib/test-order-sync";
+import { planOrderSync, type WantedOrder } from "@/lib/test-order-sync";
 import { useEligibilityStore } from "@/stores/eligibility-store";
 
 type HubProgress = Record<HubSectionKey, boolean>;
@@ -137,8 +137,9 @@ type QuestionnaireState = {
   }>;
   syncTestOrders: (
     userId: string,
-    orders: EngineRecommendation[],
-    options: { removeStale: boolean },
+    orders: readonly WantedOrder[],
+    /** `tiers` is required so each caller says which part of the pathway it owns. */
+    options: { removeStale: boolean; tiers: readonly number[] },
   ) => Promise<SaveResult>;
   loadTestOrders: (userId: string) => Promise<{
     ok: boolean;

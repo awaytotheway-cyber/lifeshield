@@ -6,6 +6,9 @@
  * Never presents a row as an instruction — status stays draft.
  */
 import { COPY } from "@/lib/copy";
+import { isFeatureEnabled } from "@/lib/feature-flags";
+import { brcaIndicated, tier1Orders } from "@/lib/tier1-orders";
+import { useConsentStore } from "@/stores/consent-store";
 import { seedFollowUpsIfNeeded } from "@/lib/follow-ups";
 import { loadLatestGeneticResults } from "@/lib/genetic-tests-io";
 import { loadTemplatesForEngine } from "@/lib/intervention-templates";
@@ -371,10 +374,53 @@ export async function refreshTier4Orders(userId: string): Promise<void> {
     await store.syncTestOrders(
       userId,
       collectRecommendations(inputs.facts, inputs.labs, inputs.thresholds),
-      { removeStale: questionnaireDone },
+      { removeStale: questionnaireDone, tiers: [3, 4] },
     );
   } catch {
     // A failed refresh leaves the existing recommendations as they were.
+  }
+}
+
+/**
+ * Tier 1 ordering (BRCA1/2 if indicated and consented; CTC if consented).
+ * Behind `tier1_ordering_v1`, off by default: when the flag is off this does
+ * nothing at all. It owns Tier 1 only, so it never touches Tier 3/4 rows, and
+ * a Tier 1 order the patient has already bought is never changed.
+ */
+export async function refreshTier1Orders(userId: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    return;
+  }
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("feature_flags, ethnicity")
+      .eq("id", userId)
+      .maybeSingle();
+    if (!isFeatureEnabled(profile, "tier1_ordering_v1")) {
+      return;
+    }
+    const consent = useConsentStore.getState();
+    if (!consent.loaded) {
+      return;
+    }
+    const store = useQuestionnaireStore.getState();
+    const engine = await store.loadForEngine(userId);
+    if (!engine.ok) {
+      return;
+    }
+    const facts = factsFromSavedAnswers({ bmi: engine.bmi, sections: engine.sections });
+    const indicated = brcaIndicated({
+      brcaPositiveRelative: facts.brcaPositiveRelative,
+      ethnicity: profile?.ethnicity ?? null,
+    });
+    await store.syncTestOrders(
+      userId,
+      tier1Orders({ agreed: consent.agreed, indicated }),
+      { removeStale: true, tiers: [1] },
+    );
+  } catch {
+    // Leaves the existing Tier 1 rows as they were.
   }
 }
 

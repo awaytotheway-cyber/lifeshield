@@ -155,6 +155,7 @@ export default function PriorScreeningScreen() {
       // touches an order the patient has already bought.
       const written = await syncTestOrders(session.user.id, recommendations, {
         removeStale: true,
+        tiers: [3, 4],
       });
       if (!written.ok) {
         setSaveMessage(written.message ?? COPY.resultsSaveFailed);

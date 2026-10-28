@@ -67,6 +67,12 @@ export type RulesFacts = {
    * for predatory fish.
    */
   highProcessedFoodIntake: boolean;
+  /**
+   * A blood relative known to carry BRCA1 or BRCA2: yes / no, or null when it
+   * has not been asked or the answer was "not sure". Half of what makes BRCA
+   * testing "indicated" (lib/tier1-orders.ts).
+   */
+  brcaPositiveRelative: boolean | null;
   occupation: string;
   pollutantExposure: boolean;
   vehicleExhaust: boolean;
@@ -90,6 +96,7 @@ export const EMPTY_RULES_FACTS: RulesFacts = {
   autoimmuneThyroid: false,
   dietaryIodineLow: false,
   highProcessedFoodIntake: false,
+  brcaPositiveRelative: null,
   occupation: "",
   pollutantExposure: false,
   vehicleExhaust: false,
@@ -199,6 +206,7 @@ export function factsFromSavedAnswers(input: {
   const lifestyle = input.sections.lifestyle;
   const stress = input.sections.stress;
   const diet = input.sections.diet_environment;
+  const family = input.sections.family_history;
 
   const infections = stringList(comorbidities?.chronic_infections);
   const iodine = stringList(diet?.iodine_sources);
@@ -237,6 +245,12 @@ export function factsFromSavedAnswers(input: {
     dietaryIodineLow: diet == null ? false : !hasRealIodine,
     highProcessedFoodIntake:
       diet?.packaged_food === "daily" || diet?.packaged_food === "weekly",
+    brcaPositiveRelative:
+      family?.brca_positive_relative === "yes"
+        ? true
+        : family?.brca_positive_relative === "no"
+          ? false
+          : null,
     occupation: String(radiation?.occupation ?? ""),
     pollutantExposure: lifestyle?.pollutant_exposure === "yes",
     vehicleExhaust: isYes(lifestyle?.vehicle_exhaust),

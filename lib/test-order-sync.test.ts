@@ -14,8 +14,8 @@
 import assert from "node:assert/strict";
 import { planOrderSync } from "./test-order-sync";
 
-type Want = { test_tier: 3 | 4; test_name: string; trigger_reason: string };
-const want = (name: string, tier: 3 | 4 = 3, reason = "r"): Want => ({
+type Want = { test_tier: 1 | 2 | 3 | 4; test_name: string; trigger_reason: string };
+const want = (name: string, tier: 1 | 2 | 3 | 4 = 3, reason = "r"): Want => ({
   test_tier: tier,
   test_name: name,
   trigger_reason: reason,
@@ -101,6 +101,28 @@ for (const status of ["ordered", "completed", "resulted", "cancelled"]) {
   const plan = planOrderSync(rows, [want("a")], { removeStale: true });
   assert.deepEqual(plan.remove, ["2"]);
   assert.deepEqual(plan.insert, []);
+}
+
+// Scoped to some tiers: rows and wishes outside them are invisible, so one
+// part of the pathway can re-sync itself without deleting another's rows.
+{
+  const rows = [
+    have("1", "brca", "recommended", "r", 1),
+    have("2", "stool", "recommended", "r", 4),
+  ];
+  // A Tier 3/4 sync that wants nothing must not remove the Tier 1 row.
+  const plan = planOrderSync(rows, [], { removeStale: true, tiers: [3, 4] });
+  assert.deepEqual(plan.remove, ["2"]);
+  // A Tier 1 sync removes only Tier 1 rows.
+  assert.deepEqual(planOrderSync(rows, [], { removeStale: true, tiers: [1] }).remove, ["1"]);
+  // Wishes outside the scope are ignored rather than inserted.
+  const wishes = [want("brca", 3), want("x", 4)];
+  assert.deepEqual(
+    planOrderSync([], wishes, { removeStale: false, tiers: [4] }).insert.map((o) => o.test_name),
+    ["x"],
+  );
+  // No scope means every tier, as before.
+  assert.deepEqual(planOrderSync(rows, [], { removeStale: true }).remove, ["1", "2"]);
 }
 
 console.log("test-order-sync.test.ts OK");

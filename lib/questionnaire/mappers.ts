@@ -319,6 +319,7 @@ export function familyHistoryToJson(
               age_at_diagnosis: parseFiniteNumber(row.ageAtDiagnosis),
             }))
         : [],
+    brca_positive_relative: parsed.brcaPositiveRelative,
     ovarian_cancer: parsed.ovarianCancer === "yes",
     ovarian_relationship:
       parsed.ovarianCancer === "yes" ? parsed.ovarianRelationship : null,
@@ -354,6 +355,11 @@ export function jsonToFamilyHistoryForm(
       undefined) as FamilyHistoryForm["breastCancer"],
     breastRelatives:
       mappedRelatives.length > 0 ? mappedRelatives : empty.breastRelatives,
+    brcaPositiveRelative: (["yes", "no", "unsure"].includes(
+      String(json?.brca_positive_relative),
+    )
+      ? json?.brca_positive_relative
+      : undefined) as FamilyHistoryForm["brcaPositiveRelative"],
     ovarianCancer: (yesNoFromUnknown(json?.ovarian_cancer) ||
       undefined) as FamilyHistoryForm["ovarianCancer"],
     ovarianRelationship: String(json?.ovarian_relationship ?? ""),

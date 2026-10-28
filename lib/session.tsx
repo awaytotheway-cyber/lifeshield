@@ -130,6 +130,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     baselineRequestedFor.current = userId;
     void syncTestOrders(userId, baselineRecommendations(), {
       removeStale: false,
+      tiers: [3],
     }).then((result) => {
       if (!result.ok) {
         // Let a later change of state try again; the questionnaire's full
