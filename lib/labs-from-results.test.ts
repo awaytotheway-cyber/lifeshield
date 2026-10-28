@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 
 import { THRESHOLDS } from "./clinical-thresholds";
 import { labsFromTestResults } from "./labs-from-results";
-import { mapResultsToInterventions } from "./rules-engine";
+import { collectRecommendations, mapResultsToInterventions } from "./rules-engine";
 import { EMPTY_RULES_FACTS } from "./rules-facts";
 import type { TestResultRow } from "./test-results";
 
@@ -147,6 +147,7 @@ const BINARY_FINDINGS: [string, keyof LabsShape][] = [
   ["liverDetoxBarrier", "liverDetoxOrBarrierImpaired"],
   ["inflammatoryOxidative", "inflammatoryOxidativeBurden"],
   ["oestrogenDetox", "oestrogenDetoxImpaired"],
+  ["liverEnzymes", "liverEnzymesElevated"],
 ];
 
 check("each finding key: positive sets it, negative or normal clears it, no flag leaves it unknown", () => {
@@ -244,6 +245,27 @@ check("iodine stays hard-blocked by positive antibodies or an autoimmune thyroid
   assert.equal(drafted(EMPTY_RULES_FACTS, [lowUrine(), antibodiesPositive()]), false);
   const autoimmune = { ...EMPTY_RULES_FACTS, autoimmuneThyroid: true };
   assert.equal(drafted(autoimmune, [lowUrine(), antibodiesNegative()]), false);
+});
+
+// ---------------------------------------------------------------------------
+// End to end: a recorded result reaches the Tier 4 rule that reads it.
+// ---------------------------------------------------------------------------
+
+check("raised ALT/AST recorded as a result orders the heavy-metal panel", () => {
+  const labs = labsFromTestResults([
+    row({ test_name: "liverEnzymes", flag: "high" }),
+  ]);
+  const recs = collectRecommendations(EMPTY_RULES_FACTS, labs);
+  const heavy = recs.find((rec) => rec.test_name === "heavyMetals");
+  assert.ok(heavy, "heavyMetals should be recommended");
+  assert.equal(heavy.test_tier, 4);
+
+  // Normal enzymes, no exposure answers: nothing is ordered.
+  const normal = collectRecommendations(
+    EMPTY_RULES_FACTS,
+    labsFromTestResults([row({ test_name: "liverEnzymes", flag: "normal" })]),
+  );
+  assert.equal(normal.some((rec) => rec.test_name === "heavyMetals"), false);
 });
 
 console.log(`\n${passed} checks passed`);

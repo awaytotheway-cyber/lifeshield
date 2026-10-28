@@ -203,6 +203,12 @@ export const TERMS = {
       "Whether your body looks to be clearing oestrogen more slowly than expected.",
     medicalName: "Oestrogen-detoxification pathway finding",
   },
+  liverEnzymes: {
+    plainName: "Liver enzyme levels",
+    plainExplanation:
+      "Whether the blood markers that show how hard the liver is working are higher than expected.",
+    medicalName: "Liver enzymes (ALT / AST)",
+  },
 } as const satisfies Record<string, TermEntry>;
 
 export type TermKey = keyof typeof TERMS;

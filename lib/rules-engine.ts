@@ -296,60 +296,61 @@ export function shouldOrderHeavyMetals(
   labs: LabInputs = PHASE1_LABS,
   thresholds: ClinicalThresholdValues = THRESHOLDS,
 ): RuleResult {
-  const occupationRisk = occupationIsHighRisk(facts.occupation);
-  // Rule A lists occupational AND dietary/environmental routes together:
-  // industrial work, welding, dentistry, frequent large predatory fish, or
-  // well water.
-  const environmental =
-    facts.pollutantExposure ||
-    facts.vehicleExhaust ||
-    occupationRisk ||
-    facts.predatoryFishFrequent ||
-    facts.wellWater;
+  // Rule A — occupational, dietary and water exposure: industrial work,
+  // welding, dentistry, frequent large predatory fish, or well water.
+  // Pollutant and vehicle-exhaust exposure are deliberately NOT here: the
+  // document uses them only as the second half of Rule B, paired with
+  // Gilbert's syndrome. On their own they are far too common to order a panel.
+  const ruleA: string[] = [];
+  if (occupationIsHighRisk(facts.occupation)) {
+    ruleA.push(
+      `occupation matches high-risk list (${HIGH_RISK_OCCUPATIONS.join(", ")})`,
+    );
+  }
+  if (facts.predatoryFishFrequent) {
+    ruleA.push("frequent large predatory fish");
+  }
+  if (facts.wellWater) {
+    ruleA.push("well water");
+  }
+  if (ruleA.length > 0) {
+    return { recommended: true, reason: ruleA.join("; ") };
+  }
 
-  if (environmental) {
-    const bits: string[] = [];
-    if (occupationRisk) {
-      bits.push(
-        `occupation matches high-risk list (${HIGH_RISK_OCCUPATIONS.join(", ")})`,
-      );
-    }
-    if (facts.pollutantExposure) {
-      bits.push("pollutant exposure");
-    }
-    if (facts.vehicleExhaust) {
-      bits.push("vehicle exhaust exposure");
-    }
-    if (facts.predatoryFishFrequent) {
-      bits.push("frequent large predatory fish");
-    }
-    if (facts.wellWater) {
-      bits.push("well water");
-    }
+  // Rule B — either limb is enough:
+  //   (1) raised ALT/AST on the Tier 3 routine bloods, or
+  //   (2) Gilbert's syndrome paired with high pollutant / exhaust exposure.
+  // Limb (2) does not wait for an enzyme result, and a normal enzyme result
+  // does not cancel it.
+  if (labs.liverEnzymesElevated === true) {
     return {
       recommended: true,
-      reason: bits.join("; "),
+      reason: `Raised liver enzymes (ALT/AST, threshold ${thresholds.liverEnzyme_altAstElevated}) on the baseline bloods.`,
+    };
+  }
+  if (facts.gilbertYes && (facts.pollutantExposure || facts.vehicleExhaust)) {
+    return {
+      recommended: true,
+      reason: `Gilbert syndrome with high ${
+        facts.pollutantExposure && facts.vehicleExhaust
+          ? "pollutant and vehicle exhaust"
+          : facts.pollutantExposure
+            ? "pollutant"
+            : "vehicle exhaust"
+      } exposure.`,
     };
   }
 
-  // Unexplained liver enzymes + Gilbert’s + exposure. Labs are null in Phase 1.
-  if (facts.gilbertYes && labs.liverEnzymesElevated === true) {
-    return {
-      recommended: true,
-      reason:
-        "Unexplained elevated liver enzymes with Gilbert syndrome (exposure not reported separately).",
-    };
-  }
-  if (facts.gilbertYes && labs.liverEnzymesElevated === null) {
+  if (labs.liverEnzymesElevated === null) {
     return {
       recommended: false,
-      reason: `${DEFERRED_LABS} (liver enzymes not yet measured; Gilbert syndrome noted). Uses ALT/AST threshold ${thresholds.liverEnzyme_altAstElevated}.`,
+      reason: `No heavy-metal trigger from occupation, diet, water or exposure answers. ${DEFERRED_LABS} (liver enzymes not yet measured).`,
     };
   }
 
   return {
     recommended: false,
-    reason: "No heavy-metal trigger from occupation or exposure answers.",
+    reason: "No heavy-metal trigger from occupation, diet, water or exposure answers.",
   };
 }
 

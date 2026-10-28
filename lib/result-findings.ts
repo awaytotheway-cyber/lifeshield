@@ -74,6 +74,14 @@ export const FINDINGS = {
     field: "oestrogenDetoxImpaired",
     presentFlags: ["positive", "critical"],
   },
+  // ALT/AST sit inside the routine biochemistry panel, so a combined
+  // routineBloods row cannot say they are raised. This is the one way to
+  // record it; without it the heavy-metal rule's liver-enzyme limb can never
+  // fire, because nothing else sets liverEnzymesElevated.
+  liverEnzymes: {
+    field: "liverEnzymesElevated",
+    presentFlags: ["positive", "high", "critical"],
+  },
 } as const satisfies Record<string, FindingDef>;
 
 export type FindingKey = keyof typeof FINDINGS;

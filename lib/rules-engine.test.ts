@@ -13,6 +13,7 @@ import {
   PHASE1_LABS,
   mapResultsToInterventions,
   shouldOrderDUTCH,
+  shouldOrderHeavyMetals,
   shouldOrderStoolAnalysis,
   shouldOrderUrinaryIodine,
   type LabInputs,
@@ -170,6 +171,75 @@ check("iodine does not fire from a diet answer without a urine result", () => {
     findByTrigger(rows, "Low urinary iodine (antibodies NEGATIVE)"),
     undefined,
   );
+});
+
+// ---------------------------------------------------------------------------
+// Heavy-metal panel, per the document's rules matrix:
+//   Rule A: occupational / dietary / water exposure — industrial work,
+//           welding, dentistry, frequent large predatory fish, or well water.
+//   Rule B: unexplained ALT/AST elevation, OR Gilbert's syndrome PAIRED with
+//           high self-reported pollutant / exhaust exposure.
+// Pollutant or exhaust exposure is a Rule B ingredient only; it is not a
+// standalone trigger.
+// ---------------------------------------------------------------------------
+
+check("heavy metals: pollutant exposure alone does not order the panel", () => {
+  assert.equal(shouldOrderHeavyMetals(facts({ pollutantExposure: true })).recommended, false);
+});
+
+check("heavy metals: vehicle exhaust alone does not order the panel", () => {
+  assert.equal(shouldOrderHeavyMetals(facts({ vehicleExhaust: true })).recommended, false);
+});
+
+check("heavy metals Rule A: a high-risk occupation orders the panel", () => {
+  for (const occupation of ["welding", "Welder / welding", "dentistry"]) {
+    assert.equal(
+      shouldOrderHeavyMetals(facts({ occupation })).recommended,
+      true,
+      occupation,
+    );
+  }
+});
+
+check("heavy metals Rule A: predatory fish or well water orders the panel", () => {
+  assert.equal(shouldOrderHeavyMetals(facts({ predatoryFishFrequent: true })).recommended, true);
+  assert.equal(shouldOrderHeavyMetals(facts({ wellWater: true })).recommended, true);
+});
+
+check("heavy metals Rule B: raised ALT/AST alone orders the panel", () => {
+  // No Gilbert's, no exposure answers: the enzyme result is enough.
+  const result = shouldOrderHeavyMetals(facts({}), labs({ liverEnzymesElevated: true }));
+  assert.equal(result.recommended, true);
+  assert.match(result.reason, /ALT|AST|liver enzyme/i);
+});
+
+check("heavy metals Rule B: Gilbert's plus pollutant or exhaust exposure orders the panel", () => {
+  assert.equal(
+    shouldOrderHeavyMetals(facts({ gilbertYes: true, pollutantExposure: true })).recommended,
+    true,
+  );
+  assert.equal(
+    shouldOrderHeavyMetals(facts({ gilbertYes: true, vehicleExhaust: true })).recommended,
+    true,
+  );
+  // The pairing does not wait for an enzyme result: enzymes known-normal
+  // do not cancel it.
+  assert.equal(
+    shouldOrderHeavyMetals(
+      facts({ gilbertYes: true, pollutantExposure: true }),
+      labs({ liverEnzymesElevated: false }),
+    ).recommended,
+    true,
+  );
+});
+
+check("heavy metals: Gilbert's alone, or normal enzymes alone, orders nothing", () => {
+  assert.equal(shouldOrderHeavyMetals(facts({ gilbertYes: true })).recommended, false);
+  assert.equal(
+    shouldOrderHeavyMetals(facts({ gilbertYes: true }), labs({ liverEnzymesElevated: false })).recommended,
+    false,
+  );
+  assert.equal(shouldOrderHeavyMetals(facts({}), labs({ liverEnzymesElevated: false })).recommended, false);
 });
 
 // Source row: "Elevated toxin exposure ON TESTING -> sauna therapy, magnesium
